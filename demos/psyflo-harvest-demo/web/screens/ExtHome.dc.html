@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo extension — three buttons, by role</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+body{margin:0;background:#E9E6E0;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45}
+a{color:#217A78}a:hover{color:#15605E}
+*{box-sizing:border-box}
+.ef{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#222}
+.ef label{display:block;font-size:11px;color:#666;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.ef .in{border:1px solid #C9CDD3;background:#fff;padding:6px 8px;border-radius:3px;min-height:30px}
+.ef .in.g{background:#E6F4EA}
+.lnav{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:12px;color:#C8CFD8}
+.lnav.on{background:#3C4756;color:#fff;border-left:3px solid #E0A030;padding-left:11px}
+.lnav .b{margin-left:auto;background:#C2410C;color:#fff;border-radius:999px;font-size:10px;padding:0 6px;font-weight:700}
+.tab{font-size:12px;color:#555;padding:8px 0;border-bottom:2px solid transparent}
+.tab.on{color:#222;font-weight:700;border-bottom-color:#E0A030}
+.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+.chip.r{background:#FBE9E4;color:#8A2E1C}.chip.y{background:#FCEFD0;color:#6F4A05}.chip.g{background:#DDF1EF;color:#15605E}.chip.n{background:#EEEBE5;color:#3E4652}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 14px;border-radius:8px;font:inherit;font-weight:600;font-size:13px;cursor:pointer;text-decoration:none;border:1px solid transparent;white-space:nowrap}
+.btn.p{background:#217A78;color:#fff}.btn.p:hover{background:#15605E;color:#fff}
+.btn.o{background:#fff;color:#151B24;border-color:#D9D4CC}.btn.o:hover{background:#F3F0EA;color:#151B24}
+.tog{border:1px solid #D9D4CC;background:#fff;border-radius:8px;padding:0 10px;min-height:36px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;color:#151B24}
+.tog.on{background:#151B24;color:#fff;border-color:#151B24}
+.ck{display:flex;gap:8px;align-items:flex-start;font-size:12px;padding:5px 0}
+.ck svg{flex:0 0 16px;margin-top:1px}
+.mark{background:#FBE9E4;color:#8A2E1C;border-radius:3px;padding:0 3px;font-weight:600}
+.stamp{display:grid;grid-template-columns:104px minmax(0,1fr) 44px;gap:8px;font-size:12px;padding:4px 0;border-top:1px solid #EFEBE4;align-items:start}
+.sec .chip{white-space:normal;text-align:right;max-width:60%}
+.stamp>div{min-width:0}
+</style>
+</helmet>
+
+<div style="width:1440px;height:1080px;display:flex;flex-direction:column;background:#E9E6E0;overflow:hidden">
+  <!-- Browser chrome -->
+  <div style="background:#DEDAD3;padding:8px 12px 0;display:flex;align-items:flex-end;gap:8px">
+    <div style="display:flex;gap:6px;padding:0 6px 10px"><span style="width:12px;height:12px;border-radius:50%;background:#C9C4BC;display:inline-block"></span><span style="width:12px;height:12px;border-radius:50%;background:#C9C4BC;display:inline-block"></span><span style="width:12px;height:12px;border-radius:50%;background:#C9C4BC;display:inline-block"></span></div>
+    <div style="background:#F8F6F2;border-radius:8px 8px 0 0;padding:8px 14px;font-size:12px;font-weight:500;display:flex;gap:8px;align-items:center"><span style="width:14px;height:14px;border-radius:3px;background:#8E99A6;display:inline-block"></span>Lauris Online — Consumers</div>
+  </div>
+  <div style="background:#F8F6F2;padding:8px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #D9D4CC">
+    <div style="flex:1;background:#fff;border:1px solid #D9D4CC;border-radius:999px;padding:6px 14px;font-size:12px;color:#525B66">https://…laurisonline…/consumers</div>
+    <div style="display:flex;align-items:center;gap:6px;background:#151B24;color:#fff;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:#F0B44C;display:inline-block"></span>psyflo · on</div>
+  </div>
+
+  <div style="flex:1;display:flex;min-height:0">
+    <!-- Schematic of the EHR (structure and labels only, not its styling) -->
+    <div class="ef" style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;background:#F2F3F5">
+      <div style="background:#2F3A4A;color:#fff;padding:9px 16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700"><span style="color:#E0A030">»</span> Lauris Online <span style="margin-left:auto;font-weight:400;font-size:11px;color:#C8CFD8">Switch to Classic · Sign Out</span></div>
+      <div style="flex:1;display:flex;min-height:0">
+        <nav aria-label="EHR menu (schematic)" style="flex:0 0 170px;background:#2F3A4A;padding:6px 0;display:flex;flex-direction:column">
+          <div class="lnav on">Consumers</div><div class="lnav">Authorizations</div><div class="lnav">Approvals</div><div class="lnav">Add Session</div><div class="lnav">Saved Session<span class="b">2</span></div><div class="lnav">Reports</div><div class="lnav">User Information</div><div class="lnav">Time Tracker</div>
+          <div style="border-top:1px solid #46525F;margin:8px 0"></div>
+          <div class="lnav">Forms to Approve<span class="b">6</span></div><div class="lnav">Rejected Forms<span class="b">1</span></div><div class="lnav">Consumers w/o Authorizations<span class="b">3</span></div>
+        </nav>
+        <div style="flex:1;min-width:0;padding:14px 20px;overflow:hidden">
+          <div style="display:flex;gap:16px;margin-bottom:10px"><span class="tab on">Active Consumers</span><span class="tab">Discharged Consumers</span></div>
+          <div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-end;flex-wrap:wrap">
+            <div style="flex:1 1 140px"><label>Consumer</label><div class="in"></div></div>
+            <div style="flex:0 0 120px"><label>Record #</label><div class="in"></div></div>
+            <div style="flex:0 0 150px"><label>Assigned staff</label><div class="in">K. Hale</div></div>
+            <div style="flex:0 0 150px"><label>Caseload group</label><div class="in">TDT · ES-1</div></div>
+            <button class="btn o" style="font-family:Arial,sans-serif;border-radius:3px;min-height:30px;font-size:12px">Search Consumers</button>
+          </div>
+          <div style="background:#fff;border:1px solid #DDE1E6;border-radius:4px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:90px 80px 110px 150px 120px 150px;gap:8px;padding:8px 12px;background:#EDEDED;font-size:11px;font-weight:700;color:#555">
+              <div>Unique ID</div><div>Name</div><div>Staff</div><div>Group</div><div>Last updated</div><div>Units</div>
+            </div>
+            <div style="display:grid;grid-template-columns:90px 80px 110px 150px 120px 150px;gap:8px;padding:9px 12px;border-top:1px solid #EEE;font-size:12px"><div>on file</div><div>M.R.</div><div>K. Hale</div><div>TDT – Campbell ES-1</div><div>10/29/2026</div><div style="color:#1F6FBF;font-weight:700">27 units available</div></div>
+            <div style="display:grid;grid-template-columns:90px 80px 110px 150px 120px 150px;gap:8px;padding:9px 12px;border-top:1px solid #EEE;font-size:12px"><div>on file</div><div>J.T.</div><div>K. Hale</div><div>TDT – Campbell ES-1</div><div>10/29/2026</div><div style="color:#1F6FBF;font-weight:700">41 units available</div></div>
+            <div style="display:grid;grid-template-columns:90px 80px 110px 150px 120px 150px;gap:8px;padding:9px 12px;border-top:1px solid #EEE;font-size:12px"><div>on file</div><div>D.P.</div><div>K. Hale</div><div>TDT – Campbell ES-1</div><div>10/28/2026</div><div style="color:#1F6FBF;font-weight:700">88 units available</div></div>
+            <div style="display:grid;grid-template-columns:90px 80px 110px 150px 120px 150px;gap:8px;padding:9px 12px;border-top:1px solid #EEE;font-size:12px"><div>on file</div><div>A.G.</div><div>K. Hale</div><div>TDT – Campbell ES-1</div><div>10/29/2026</div><div style="color:#1F6FBF;font-weight:700">102 units available</div></div>
+            <div style="display:grid;grid-template-columns:90px 80px 110px 150px 120px 150px;gap:8px;padding:9px 12px;border-top:1px solid #EEE;font-size:12px"><div>on file</div><div>E.S.</div><div>K. Hale</div><div>TDT – Campbell ES-1</div><div>10/27/2026</div><div style="color:#C2410C;font-weight:700">No authorizations available</div></div>
+            <div style="display:grid;grid-template-columns:90px 80px 110px 150px 120px 150px;gap:8px;padding:9px 12px;border-top:1px solid #EEE;font-size:12px"><div>on file</div><div>C.B.</div><div>K. Hale</div><div>TDT – Campbell ES-1</div><div>10/29/2026</div><div style="color:#1F6FBF;font-weight:700">64 units available</div></div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- Psyflo side panel -->
+    <aside style="flex:0 0 400px;background:#fff;border-left:1px solid #D9D4CC;display:flex;flex-direction:column;overflow:hidden">
+      <div style="background:#151B24;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px">
+        <svg role="img" aria-label="psyflo" viewBox="0 0 3191 1060" width="78" height="26"><g transform="translate(-6.0,780.0) scale(1,-1)"><path d="M66 -220V504H186L201 434Q217 456 239.0 474.5Q261 493 291.5 504.5Q322 516 363 516Q434 516 488.0 481.0Q542 446 573.5 386.5Q605 327 605 251Q605 175 573.0 115.5Q541 56 487.0 22.0Q433 -12 364 -12Q308 -12 267.5 8.5Q227 29 201 65V-220ZM332 106Q372 106 402.5 124.0Q433 142 450.0 175.0Q467 208 467 251Q467 294 450.0 327.5Q433 361 402.5 379.5Q372 398 332 398Q293 398 262.5 379.5Q232 361 214.5 328.0Q197 295 197 252Q197 209 214.5 175.5Q232 142 262.5 124.0Q293 106 332 106Z" fill="#FFFFFF"></path></g><g transform="translate(624.0,780.0) scale(1,-1)"><path d="M272 -12Q203 -12 152.0 10.0Q101 32 72.0 71.0Q43 110 39 159H173Q178 140 190.0 124.5Q202 109 222.0 100.0Q242 91 270 91Q297 91 314.0 98.5Q331 106 339.5 119.0Q348 132 348 146Q348 167 336.0 178.5Q324 190 301.0 197.0Q278 204 245 211Q209 218 174.5 228.5Q140 239 113.0 255.0Q86 271 70.0 296.0Q54 321 54 358Q54 403 78.0 438.5Q102 474 148.0 495.0Q194 516 259 516Q350 516 403.0 475.0Q456 434 466 362H339Q333 385 312.5 398.5Q292 412 258 412Q222 412 203.0 399.0Q184 386 184 365Q184 351 196.5 340.0Q209 329 232.0 321.5Q255 314 288 307Q346 295 390.0 279.5Q434 264 459.0 235.5Q484 207 484 153Q484 105 458.0 67.5Q432 30 384.5 9.0Q337 -12 272 -12Z" fill="#FFFFFF"></path></g><g transform="translate(1105.0,780.0) scale(1,-1)"><path d="M130 -220 252 56H222L20 504H167L311 179L441 504H584L273 -220Z" fill="#FFFFFF"></path></g><g transform="translate(1734.0,780.0) scale(1,-1)"><path d="M89 0V549Q89 612 110.0 649.0Q131 686 170.5 703.0Q210 720 263 720H325V605H283Q251 605 237.5 592.5Q224 580 224 549V0ZM20 391V504H333V391Z" fill="#5FC0BE"></path></g><g transform="translate(2080.0,780.0) scale(1,-1)"><path d="M66 0V720H201V0Z" fill="#5FC0BE"></path></g><g transform="translate(2322.0,780.0) scale(1,-1)"><path d="M304 -12Q232 -12 174.5 21.5Q117 55 83.5 114.5Q50 174 50 251Q50 330 83.5 389.5Q117 449 175.0 482.5Q233 516 305 516Q378 516 435.5 482.5Q493 449 526.5 389.5Q560 330 560 252Q560 174 526.5 114.5Q493 55 435.0 21.5Q377 -12 304 -12ZM304 105Q338 105 364.5 121.0Q391 137 406.5 170.0Q422 203 422 252Q422 301 406.5 333.5Q391 366 364.5 382.5Q338 399 305 399Q273 399 246.0 382.5Q219 366 203.5 333.5Q188 301 188 252Q188 203 203.5 170.0Q219 137 245.5 121.0Q272 105 304 105Z" fill="#5FC0BE"></path></g><g transform="translate(2922.0,780.0) scale(1,-1)"><path d="M127 -5Q89 -5 66.0 17.5Q43 40 43 73Q43 106 66.0 128.5Q89 151 127 151Q163 151 186.0 128.5Q209 106 209 73Q209 40 186.0 17.5Q163 -5 127 -5Z" fill="#F0B44C"></path></g></svg>
+        <div style="font-size:12px;color:#C9D1D6">{{who}}</div>
+      </div>
+
+      <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px;overflow:auto">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600">Signed in as</span>
+          <button class="tog {{tDS}}" onClick="{{pDS}}">Support staff</button>
+          <button class="tog {{tLC}}" onClick="{{pLC}}">Clinician</button>
+          <button class="tog {{tSV}}" onClick="{{pSV}}">Supervisor</button>
+          <button class="tog {{tAD}}" onClick="{{pAD}}">Admin</button>
+        </div>
+        <div>
+          <div style="font-size:17px;font-weight:600">{{hello}}</div>
+          <div style="font-size:13px;color:#525B66;margin-top:2px">Thursday Oct 29 · {{sub}}</div>
+        </div>
+
+        <sc-if value="{{notAdmin}}">
+        <!-- 1 · Scribe -->
+        <div style="border:1px solid #E6E1D9;border-radius:12px;padding:10px 12px;background:#F8F6F2">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:10px;background:#217A78;color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 34px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg></span><div><div style="font-weight:600;font-size:15px">Record this call</div><div style="font-size:12px;color:#525B66">Scribe · the form fills as you talk.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+            <select class="tog" aria-label="Which form" style="flex:1;min-height:40px;text-align:left;font-weight:500"><sc-for list="{{forms}}" as="f" hint-placeholder-count="5"><option>{{f}}</option></sc-for></select>
+            <a class="btn p" href="{{scribeHref}}" style="min-height:40px">Start</a>
+          </div>
+        </div>
+
+        <!-- 2 · Track time -->
+        <div style="border:1px solid #E6E1D9;border-radius:12px;padding:10px 12px;background:#F8F6F2">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:10px;background:#151B24;color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 34px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4l3 2"></path></svg></span><div><div style="font-weight:600;font-size:15px">Time with a student</div><div style="font-size:12px;color:#525B66">Track time · start and stop.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+            <select class="tog" aria-label="Student" style="flex:1;min-height:40px;text-align:left;font-weight:500"><option>M.R.</option><option>J.T.</option><option>D.P.</option><option>A.G.</option><option>E.S.</option><option>C.B.</option></select>
+            <a class="btn p" href="ExtDPN.dc.html" style="min-height:40px">Start</a>
+          </div>
+          
+        </div>
+
+        <!-- 3 · Scan & enhance -->
+        <div style="border:1px solid #E6E1D9;border-radius:12px;padding:10px 12px;background:#F8F6F2">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:10px;background:#F0B44C;color:#151B24;display:flex;align-items:center;justify-content:center;flex:0 0 34px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.5-4.5M9 11h4M11 9v4"></path></svg></span><div><div style="font-weight:600;font-size:15px">Improve this note</div><div style="font-size:12px;color:#525B66">Scan &amp; enhance · the open note.</div></div></div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+            <div style="flex:1;font-size:12px;color:#525B66">Open a note first.</div>
+            <a class="btn o" href="ExtDPN.dc.html" style="min-height:40px">Scan this page</a>
+          </div>
+        </div>
+
+        </sc-if>
+        <!-- 4 · Review PA (licensed only) -->
+        <sc-if value="{{isLC}}">
+        <div style="border:1.5px solid #217A78;border-radius:12px;padding:12px 14px;background:#F2F9F8">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:10px;background:#5FC0BE;color:#151B24;display:flex;align-items:center;justify-content:center;flex:0 0 34px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M4 4h12l4 4v12H4z"></path></svg></span><div><div style="font-weight:600;font-size:15px">Draft the request</div><div style="font-size:12px;color:#525B66">Review a request · into the Lauris form.</div></div></div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+            <a class="btn o" href="ExtSRA.dc.html" style="justify-content:space-between;font-weight:500;white-space:normal;text-align:left"><span>T.W., 12 · first request · sent Oct 22 · decision due today</span><span class="chip g">open</span></a>
+            <a class="btn o" href="ExtCase.dc.html" style="justify-content:space-between;font-weight:500;white-space:normal;text-align:left"><span>M.R., 7 · continued stay · 27 units left</span><span class="chip y">due Nov 12</span></a>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{isAD}}">
+        <div style="border:1px solid #E6E1D9;border-radius:12px;padding:10px 12px;background:#F8F6F2">
+          <div style="font-weight:600;font-size:15px">Open Psyflo</div>
+          
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <a class="btn o" href="Authorizations.dc.html" style="justify-content:space-between;font-weight:500;white-space:normal;text-align:left"><span>Authorizations · where every request stands</span><span class="chip r">4 need action</span></a>
+            <a class="btn o" href="Analytics.dc.html" style="justify-content:space-between;font-weight:500"><span>Analytics · what to show the grant funder</span><span class="chip n">12 months</span></a>
+            <a class="btn o" href="Referrals.dc.html" style="justify-content:space-between;font-weight:500"><span>Referrals · new students from schools</span><span class="chip y">3 waiting</span></a>
+            <a class="btn o" href="StaffDashboard.dc.html" style="justify-content:space-between;font-weight:500;white-space:normal;text-align:left"><span>Staff · who is behind, who needs review</span><span class="chip y">2 flags</span></a>
+            <a class="btn o" href="Compliance.dc.html" style="justify-content:space-between;font-weight:500;white-space:normal;text-align:left"><span>Compliance · incidents, QI, credentials</span><span class="chip r">1 due today</span></a>
+          </div>
+        </div>
+        <div style="border:1px solid #E6E1D9;border-radius:12px;padding:12px 14px;background:#fff">
+          <div style="font-weight:600;font-size:14px">Who can see what</div>
+          <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:5px 10px;font-size:12px;margin-top:6px">
+            <div style="font-weight:600">Direct support</div><div>Record this call (daily, collateral, monthly), Time with a student, Improve this note. Their own students' units. No screening, intake or request content.</div>
+            <div style="font-weight:600">Clinician</div><div>Everything above, plus screening and intake Scribe, request drafts, and the Authorizations page for their caseload.</div>
+            <div style="font-weight:600">Site supervisor</div><div>Everything direct support sees, for their site, plus notes to review and the Staff dashboard.</div>
+            <div style="font-weight:600">Admin</div><div>Authorizations and Analytics for the whole program. Sets these levels.</div>
+          </div>
+        </div>
+        </sc-if>
+
+        
+
+        
+      </div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(p){ super(p); this.state = { r: 'ds' }; }
+  renderVals() {
+    const r = this.state.r;
+    const R = {
+      ds:{who:'K. Hale · direct support · Campbell ES-1', hello:'Good morning, Kayla.', sub:'6 students today', nextHref:'MobileApp.dc.html', scribeHref:'ExtDPN.dc.html', forms:['Daily note','Collateral contact','Monthly summary'],
+          seeNote:'Your students, their units left, and the notes you write. Screening, intake and request details are hidden from this level.'},
+      lc:{who:'Jordan Perez, LPC · licensed clinical · Lynchburg', hello:'Good morning, Jordan.', sub:'1 screening call · 1 request to review', nextHref:'ExtScreening.dc.html', scribeHref:'ExtScreening.dc.html', forms:['Admission screening','Intake (CNA)','Daily note','Collateral contact','Monthly summary'],
+          seeNote:'Everything direct support sees, plus screening and intake drafts and service requests for your caseload.'},
+      sv:{who:'C. Diaz · site supervisor · Campbell ES-1', hello:'Good morning, Carla.', sub:'14 notes to review · 2 flags', nextHref:'ReviewQueue.dc.html', scribeHref:'ExtDPN.dc.html', forms:['Daily note','Collateral contact','Monthly summary','Incident report'],
+          seeNote:'Your site: every note to review, who is behind, and the Staff dashboard.'},
+      ad:{who:'D. Owens · admin · program office', hello:'Good morning, Dana.', sub:'4 requests need action', nextHref:'Authorizations.dc.html', scribeHref:'Authorizations.dc.html', forms:[],
+          seeNote:'Every request and the program numbers. You set who sits at which level.'}
+    }[r];
+    const t = x => r===x ? 'on' : '';
+    return Object.assign({}, R, { isDS:r==='ds', isLC:r==='lc', isAD:r==='ad', isSV:r==='sv', notAdmin:r!=='ad',
+      tDS:t('ds'), tLC:t('lc'), tSV:t('sv'), tAD:t('ad'),
+      pDS:()=>this.setState({r:'ds'}), pLC:()=>this.setState({r:'lc'}), pSV:()=>this.setState({r:'sv'}), pAD:()=>this.setState({r:'ad'}) });
+  }
+}
+</script>
+</body>
+</html>

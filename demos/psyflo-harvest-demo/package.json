@@ -1,0 +1,13 @@
+{
+  "name": "psyflo-harvest-demo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Psyflo × Harvest full-vision demo: Psyflo app, portals, phone app, Lauris extension panel and a mock Lauris. Synthetic data only.",
+  "type": "module",
+  "scripts": {
+    "start": "node server/index.js",
+    "reset": "rm -f data/psyflo.json data/lauris.json data/files/* && echo reset",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

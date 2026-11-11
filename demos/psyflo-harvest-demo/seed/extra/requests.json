@@ -1,0 +1,253 @@
+{
+  "_about": "Seeded tracker details for the request screens (Authorizations, Sent, Info request, Partials, Early discharge, Peer-to-peer). Synthetic. Keyed by request id; 'fill' supplies tracker fields the seed row lacks (the live row always wins).",
+  "request_details": {
+    "R-0399": {
+      "school": "LC-ES3",
+      "fill": {
+        "pages": 9,
+        "receipt_confirmed": "2026-10-28T09:40",
+        "receipt_by": "cdiaz",
+        "signed_pdf": "R-0399_A.L._initial_signed.pdf"
+      }
+    },
+    "R-0391": {
+      "fill": {
+        "sent": "2026-10-23T11:20",
+        "decision_due": "2026-10-30",
+        "pages": 14,
+        "signed_pdf": "R-0391_J.O._early_discharge_new_initial_signed.pdf"
+      },
+      "units_note": "prior auth: 80 awarded, used in 7 wks",
+      "next": "Expect \"why were units used early?\" — justification attached."
+    },
+    "R-0408": {
+      "fill": {
+        "sent": "2026-10-21T15:10",
+        "signed_pdf": "R-0408_K.T._initial_signed.pdf"
+      },
+      "info": {
+        "asked": "Please provide additional clinical information to support medical necessity: (1) frequency and duration of physical aggression within the last 30 days; (2) documentation of prior outpatient treatment and outcome; (3) current IEP supports and why they are insufficient.",
+        "items": [
+          "Frequency and duration of physical aggression within the last 30 days",
+          "Prior outpatient treatment and outcome",
+          "Current IEP supports and why they are insufficient"
+        ],
+        "answers": [
+          "Between September 29 and October 28, K.T. was physically aggressive toward peers on seven dated occasions (October 2, 6, 9, 14, 17, 22 and 27)<sup>1</sup>, each lasting 5–15 minutes at moderate intensity and requiring staff de-escalation<sup>1</sup>. Two of these incidents resulted in office referrals<sup>2</sup>. This frequency is unchanged from the 2–3 times per week reported at screening<sup>3</sup>.",
+          "K.T. attended weekly outpatient counseling at Piedmont Counseling from January to April 2026, nine sessions<sup>4</sup>. Treatment ended when the family lost transportation. The school's incident count did not decrease during or after that period (four incidents in March, five in April)<sup>2</sup>.",
+          "K.T.'s IEP, reviewed March 2026, provides a behaviour plan, preferential seating and a check-in/check-out system<sup>5</sup>. These supports are classroom-based and delivered by school personnel; they do not provide daily clinical intervention or de-escalation during unstructured periods, where five of the seven incidents above occurred<sup>1</sup>. TDT adds licensed clinical oversight and three units of direct intervention per school day, which the IEP cannot provide<sup>3</sup>."
+        ],
+        "sources": [
+          "Daily notes Sep 29 – Oct 28",
+          "School incident log (counselor portal)",
+          "Screening call Oct 9",
+          "Piedmont Counseling record (family link upload)",
+          "IEP summary, March 2026"
+        ],
+        "dates": "Nov 3 – Jan 30"
+      }
+    },
+    "R-0402": {
+      "fill": {
+        "dates": "2026-11-03 to 2027-01-30",
+        "signed_pdf": "R-0402_D.W._continued_stay_signed.pdf"
+      },
+      "units_note": "payer called Oct 27",
+      "early_discharge_text": "Units were exhausted ahead of the authorization end date because the client required 3 units per school day throughout (timer log attached: 5 h 10 m average). Need is unchanged: 2 physical incidents and 1 elopement in the last 30 days."
+    },
+    "R-0388": {
+      "fill": {
+        "dates": "2026-10-05 to 2027-02-06",
+        "signed_pdf": "R-0388_T.N._continued_stay_signed.pdf"
+      },
+      "units_note": "exhausted Nov 24",
+      "brief": {
+        "open_with": "\"This is Jordan Perez, LPC, license and NPI on the request. I'm calling about an eight-year-old girl at an elementary school in Campbell County who was approved for 65 of the 150 units we requested.\"",
+        "criteria": [
+          {
+            "title": "Relationships.",
+            "text": "Hitting or pushing peers 3× a week in the last 30 days (Oct 1, 3, 8, 10, 15, 17, 22, 24, 28), 5–10 minutes each, needing staff to separate her. 3 office referrals. Classes: 6, passing 3."
+          },
+          {
+            "title": "Interventions that have not worked.",
+            "text": "School counseling weekly since Sep 2025 — ongoing, no change. Outpatient Jan–May 2026, 11 sessions — ended by the provider as \"not making progress.\""
+          }
+        ],
+        "level_of_care": "Risk of a more restrictive setting: the school raised an alternative placement at the Oct 14 IEP meeting. Without daily intervention she is likely to be moved.",
+        "questions": [
+          [
+            "\"Why can't the IEP handle this?\"",
+            "The IEP gives her a behaviour plan and seating. It gives her no clinical staff at lunch and transitions, where 6 of the 9 incidents happened."
+          ],
+          [
+            "\"Is she actively suicidal?\"",
+            "That is not a criterion for TDT. She meets two of the three listed criteria and one level-of-care criterion."
+          ],
+          [
+            "\"You can't be spending 5 hours a day.\"",
+            "Staff log start and stop times on their phones. October average: 5 h 12 min a day, including lunch and transitions. I can send the log."
+          ],
+          [
+            "\"She's been in services a long time.\"",
+            "Since Feb 2026. Incidents fell from daily to 3× a week; the goal is 1× a week before step-down. Progress is the reason to continue, not to stop."
+          ]
+        ]
+      }
+    },
+    "R-0384": {
+      "fill": {
+        "sent": "2026-10-14T10:05",
+        "signed_pdf": "R-0384_E.C._initial_signed.pdf"
+      },
+      "units_note": "denied Oct 22",
+      "denial_text": "Only the guardian can appeal. Drafted for her: a one-page plain-language letter, the reason restated, and what the payer's own letter means — so \"approved for less\" is not read as \"out of danger.\" Harvest keeps serving in the meantime; that choice is logged with the date."
+    }
+  },
+  "payer_history": [
+    {
+      "payer": "sentara",
+      "school": "CC-HS1",
+      "when": "Sep",
+      "requested": 150,
+      "offer": 120,
+      "sent": "More evidence (suspended, eloped, aggressive) + counter at 140",
+      "award": 110,
+      "lesson": "below the opening offer. More information produced a smaller award."
+    }
+  ],
+  "denial_reasons": [
+    {
+      "reason": "\"Already connected to other services\"",
+      "count": 6,
+      "check": "Current-services table states each service's frequency and why it is insufficient alone — the too-many / too-few catch-22, answered in one field."
+    },
+    {
+      "reason": "\"Can be addressed through the IEP\"",
+      "count": 5,
+      "check": "IEP status and school-coordination narrative required; what the IEP does and does not provide is named."
+    },
+    {
+      "reason": "\"Can be addressed in outpatient\"",
+      "count": 4,
+      "check": "Prior-services table: provider, dates, outcome — pro-bono and phantom services flagged as \"will not count as evidence of prior care.\""
+    },
+    {
+      "reason": "\"Internalizing symptoms not observable\"",
+      "count": 3,
+      "check": "PHQ-9 trend, safety-plan reviews and guardian-reported sleep/withdrawal are pulled in as observed data, dated within 30 days."
+    },
+    {
+      "reason": "\"School counseling is not a covered service\"",
+      "count": 2,
+      "check": "Listed under care coordination rather than as the failed prior service, so it cannot be dismissed."
+    },
+    {
+      "reason": "\"No documented failed prior service\"",
+      "count": 2,
+      "check": "Draft blocks on an empty outcomes column; asks the guardian question before submission, not after a denial."
+    },
+    {
+      "reason": "\"There's no way you're spending 5+ hours with these kids\"",
+      "count": 3,
+      "check": "Staff tap start/stop on their phone during the day, so there is a time-stamped record of 3 units a day, including lunch and transitions."
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-10-13T09:20",
+      "what": "Send pressed · faxed through Sfax · 150 units · Nov 3 – Jan 30",
+      "who": "jperez",
+      "record": "R-0402"
+    },
+    {
+      "at": "2026-10-22T11:05",
+      "what": "Receipt confirmed by phone (day 9)",
+      "who": "cdiaz",
+      "record": "R-0402"
+    },
+    {
+      "at": "2026-10-27T15:30",
+      "what": "Sentara called: \"we'd really like to give you 110.\" Call logged; no reply sent yet.",
+      "who": "slane",
+      "record": "R-0402"
+    },
+    {
+      "at": "2026-10-19T10:30",
+      "what": "Send pressed · faxed through Sfax · ref F-2280",
+      "who": "jperez",
+      "record": "R-0399"
+    },
+    {
+      "at": "2026-10-19T10:31",
+      "what": "Delivery receipt · 9 pages delivered",
+      "who": "Sfax",
+      "record": "R-0399"
+    },
+    {
+      "at": "2026-10-27T08:00",
+      "what": "No reply by the due date · overdue notice drafted for a clinician to send",
+      "who": "Psyflo",
+      "record": "R-0399"
+    },
+    {
+      "at": "2026-10-28T09:40",
+      "what": "Receipt confirmed by phone",
+      "who": "cdiaz",
+      "record": "R-0399"
+    },
+    {
+      "at": "2026-10-23T11:20",
+      "what": "Send pressed · faxed through Sfax · ref F-2287 · early-discharge justification attached",
+      "who": "jperez",
+      "record": "R-0391"
+    },
+    {
+      "at": "2026-10-23T11:21",
+      "what": "Delivery receipt · 14 pages delivered",
+      "who": "Sfax",
+      "record": "R-0391"
+    },
+    {
+      "at": "2026-10-21T15:10",
+      "what": "Initial request uploaded in Availity in the clinician's own session (150 units)",
+      "who": "jperez",
+      "record": "R-0408"
+    },
+    {
+      "at": "2026-10-28T17:40",
+      "what": "Availity opened; the extension read Anthem's information request and started the 24-hour clock",
+      "who": "jperez",
+      "record": "R-0408"
+    },
+    {
+      "at": "2026-10-28T17:41",
+      "what": "Reply drafted from the request already sent + the last 30 days of notes; Jordan emailed and texted",
+      "who": "Psyflo",
+      "record": "R-0408"
+    },
+    {
+      "at": "2026-10-27T10:15",
+      "what": "Partial award: 65 of 150. Peer-to-peer requested by phone; 48 min on hold.",
+      "who": "jperez",
+      "record": "R-0388"
+    },
+    {
+      "at": "2026-10-27T11:03",
+      "what": "Sentara offered Dec 9, 2:00 pm. First available.",
+      "who": "jperez",
+      "record": "R-0388"
+    },
+    {
+      "at": "2026-10-14T10:05",
+      "what": "Initial request uploaded in Availity in the clinician's own session (90 units)",
+      "who": "jperez",
+      "record": "R-0384"
+    },
+    {
+      "at": "2026-10-22T16:20",
+      "what": "Denied: \"already connected to other services\" · read when Availity was opened · guardian letter drafted",
+      "who": "jperez",
+      "record": "R-0384"
+    }
+  ]
+}

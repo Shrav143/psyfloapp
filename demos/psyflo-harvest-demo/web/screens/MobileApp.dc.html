@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo phone app — direct support staff</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:17px;line-height:1.45}
+a{color:#217A78}a:hover{color:#15605E}
+*{box-sizing:border-box}
+label{display:block;font-size:15px;font-weight:600;margin-bottom:6px}
+.in{width:100%;border:1.5px solid #C9CDD3;border-radius:10px;padding:12px 14px;font:inherit;font-size:17px;background:#fff;min-height:50px;color:#151B24}
+.rad{display:flex;gap:10px}
+.rad label{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:500;margin:0;border:1.5px solid #C9CDD3;border-radius:10px;min-height:50px;background:#fff;font-size:16px}
+.rad label.on{border-color:#217A78;background:#DDF1EF;color:#15605E;font-weight:600}
+.rad input{width:18px;height:18px;margin:0;accent-color:#217A78}
+.btn{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:12px;font:inherit;font-weight:600;font-size:17px;border:0;width:100%;text-decoration:none}
+.btn.p{background:#217A78;color:#fff}
+.chipr{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #C9CDD3;border-radius:999px;padding:8px 14px;font-size:15px;font-weight:600;background:#fff}
+.chipr.on{border-color:#217A78;background:#DDF1EF;color:#15605E}
+.tile{border:1px solid #E6E1D9;border-radius:14px;padding:14px 16px;background:#fff}
+.tile b{font-size:16px}
+.tile .s{font-size:14px;color:#525B66;margin-top:2px}
+.bar{height:8px;border-radius:4px;background:#EFEBE4;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:#217A78}
+.chip{display:inline-block;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600;white-space:nowrap}
+.chip.r{background:#FBE9E4;color:#8A2E1C}.chip.y{background:#FCEFD0;color:#6F4A05}.chip.g{background:#DDF1EF;color:#15605E}.chip.n{background:#EEEBE5;color:#3E4652}
+.btn.o{background:#fff;color:#151B24;border:1.5px solid #D9D4CC}
+.btn.r{background:#B9541F;color:#fff}
+</style>
+</helmet>
+
+<div style="width:100%;height:844px;background:#F8F6F2;display:flex;flex-direction:column;overflow:hidden">
+  <div style="background:#151B24;color:#fff;padding:16px 20px 12px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <svg role="img" aria-label="psyflo" viewBox="0 0 3191 1060" width="70" height="23"><g transform="translate(-6.0,780.0) scale(1,-1)"><path d="M66 -220V504H186L201 434Q217 456 239.0 474.5Q261 493 291.5 504.5Q322 516 363 516Q434 516 488.0 481.0Q542 446 573.5 386.5Q605 327 605 251Q605 175 573.0 115.5Q541 56 487.0 22.0Q433 -12 364 -12Q308 -12 267.5 8.5Q227 29 201 65V-220ZM332 106Q372 106 402.5 124.0Q433 142 450.0 175.0Q467 208 467 251Q467 294 450.0 327.5Q433 361 402.5 379.5Q372 398 332 398Q293 398 262.5 379.5Q232 361 214.5 328.0Q197 295 197 252Q197 209 214.5 175.5Q232 142 262.5 124.0Q293 106 332 106Z" fill="#FFFFFF"></path></g><g transform="translate(624.0,780.0) scale(1,-1)"><path d="M272 -12Q203 -12 152.0 10.0Q101 32 72.0 71.0Q43 110 39 159H173Q178 140 190.0 124.5Q202 109 222.0 100.0Q242 91 270 91Q297 91 314.0 98.5Q331 106 339.5 119.0Q348 132 348 146Q348 167 336.0 178.5Q324 190 301.0 197.0Q278 204 245 211Q209 218 174.5 228.5Q140 239 113.0 255.0Q86 271 70.0 296.0Q54 321 54 358Q54 403 78.0 438.5Q102 474 148.0 495.0Q194 516 259 516Q350 516 403.0 475.0Q456 434 466 362H339Q333 385 312.5 398.5Q292 412 258 412Q222 412 203.0 399.0Q184 386 184 365Q184 351 196.5 340.0Q209 329 232.0 321.5Q255 314 288 307Q346 295 390.0 279.5Q434 264 459.0 235.5Q484 207 484 153Q484 105 458.0 67.5Q432 30 384.5 9.0Q337 -12 272 -12Z" fill="#FFFFFF"></path></g><g transform="translate(1105.0,780.0) scale(1,-1)"><path d="M130 -220 252 56H222L20 504H167L311 179L441 504H584L273 -220Z" fill="#FFFFFF"></path></g><g transform="translate(1734.0,780.0) scale(1,-1)"><path d="M89 0V549Q89 612 110.0 649.0Q131 686 170.5 703.0Q210 720 263 720H325V605H283Q251 605 237.5 592.5Q224 580 224 549V0ZM20 391V504H333V391Z" fill="#5FC0BE"></path></g><g transform="translate(2080.0,780.0) scale(1,-1)"><path d="M66 0V720H201V0Z" fill="#5FC0BE"></path></g><g transform="translate(2322.0,780.0) scale(1,-1)"><path d="M304 -12Q232 -12 174.5 21.5Q117 55 83.5 114.5Q50 174 50 251Q50 330 83.5 389.5Q117 449 175.0 482.5Q233 516 305 516Q378 516 435.5 482.5Q493 449 526.5 389.5Q560 330 560 252Q560 174 526.5 114.5Q493 55 435.0 21.5Q377 -12 304 -12ZM304 105Q338 105 364.5 121.0Q391 137 406.5 170.0Q422 203 422 252Q422 301 406.5 333.5Q391 366 364.5 382.5Q338 399 305 399Q273 399 246.0 382.5Q219 366 203.5 333.5Q188 301 188 252Q188 203 203.5 170.0Q219 137 245.5 121.0Q272 105 304 105Z" fill="#5FC0BE"></path></g><g transform="translate(2922.0,780.0) scale(1,-1)"><path d="M127 -5Q89 -5 66.0 17.5Q43 40 43 73Q43 106 66.0 128.5Q89 151 127 151Q163 151 186.0 128.5Q209 106 209 73Q209 40 186.0 17.5Q163 -5 127 -5Z" fill="#F0B44C"></path></g></svg>
+      <div style="margin-left:auto;font-size:13px;color:#C9D1D6">{{who}}</div>
+    </div>
+    <div style="margin-top:12px;background:#222A35;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px">
+      <span style="width:12px;height:12px;border-radius:50%;background:{{dot}};display:inline-block"></span>
+      <div style="flex:1"><div style="font-size:13px;color:#C9D1D6">{{timerLabel}}</div><div style="font-size:22px;font-weight:700;letter-spacing:-.01em">{{timerWho}}<sc-if value="{{running}}"> · <span id="elapsed">{{elapsed}}</span></sc-if></div></div>
+      <sc-if value="{{running}}"><button class="btn r" style="width:auto;min-height:44px;padding:0 18px;border-radius:10px" onClick="{{stop}}">Stop</button></sc-if>
+      <sc-if value="{{!running}}"><button class="btn p" style="width:auto;min-height:44px;padding:0 18px;border-radius:10px" onClick="{{startPicked}}">Start</button></sc-if>
+    </div>
+    <div style="font-size:12px;color:#8E99A6;margin-top:8px">{{timerSub}}</div>
+  </div>
+
+  <div style="flex:1;padding:16px 20px 0;display:flex;flex-direction:column;gap:14px;overflow-y:auto">
+    <div>
+      <label style="font-size:13px;color:#525B66;font-weight:600;margin-bottom:8px">Who are you with?</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{chips}}" as="c"><span class="chipr{{c.on}}" role="button" tabindex="0" style="cursor:pointer" onClick="{{c.pick}}">{{c.ini}}</span></sc-for></div>
+      <div style="font-size:13px;color:#525B66;margin-top:8px">Or just say the name.</div>
+    </div>
+
+    <a class="btn p" href="#start" style="min-height:58px;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4l3 2"></path></svg>{{startLabel}}</a>
+    <a class="btn o" href="#dictate" style="min-height:58px;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px;color:#151B24"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg>Say what happened</a>
+    <div style="font-size:13px;color:#525B66;margin-top:-6px;text-align:center"><a href="#type" style="color:#525B66">or type</a></div>
+
+    <div class="tile">
+      <div style="display:flex;align-items:center;gap:8px"><b>Your day so far</b><span class="chip g" style="margin-left:auto">{{notesChip}}</span></div>
+      <div class="s">{{day}}</div><sc-if value="{{waiting}}"><div class="s" style="margin-top:6px">{{waiting}}</div></sc-if>
+      
+    </div>
+  </div>
+
+  <div style="padding:12px 20px 22px;display:flex;justify-content:space-around;border-top:1px solid #E6E1D9;background:#F8F6F2;font-size:12px;color:#525B66">
+    <a href="MobileApp.dc.html" style="text-align:center;color:#217A78;font-weight:600;text-decoration:none">Today</a><div style="text-align:center">My students</div><a href="MobileAssess.dc.html" style="text-align:center;color:#525B66;text-decoration:none">Assessments <span class="chip y">{{dueN}}</span></a><div style="text-align:center">Me</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
