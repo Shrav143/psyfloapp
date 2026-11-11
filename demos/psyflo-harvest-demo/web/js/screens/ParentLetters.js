@@ -3,7 +3,8 @@
 // usually nothing. A denial links to the appeal letter (39); only a guardian can appeal. Product direction #68:
 // guardians "don't really" understand the payer's letters. A glossary of the words those letters use closes the page.
 import { register, Screen } from '../app.js';
-import { famCtx, getLang, setLang, fdate, pgo, callSheet, childName, lettersFor, LANG_ON, LANG_OFF } from './ParentPortal.js';
+import { famCtx, getLang, setLang, fdate, pgo, callSheet, childName, lettersFor, guardHeader, guardFooter } from './ParentPortal.js';
+import { C_CSS } from './MobileApp.js';
 
 const GLOSSARY = {
   en: [
@@ -24,38 +25,42 @@ const GLOSSARY = {
   ]
 };
 const T = {
-  en: { title: c => `Insurance updates · ${c}`, sub: 'Letters from the insurance company, in plain words', youDo: 'What you need to do:',
-    emptyTitle: 'Nothing from the insurance company yet', emptyText: c => `When Harvest asks the insurance company to approve ${c}'s help at school, every step shows here, explained.`,
-    example: 'See an example: a family with an appeal', appeal: 'Read and sign the appeal letter', see: 'See your appeal letter',
-    words: 'Words in insurance letters', wordsSub: 'What they mean', back: 'Back to the family page', call: 'Questions? Call us' },
-  es: { title: c => `Noticias del seguro · ${c}`, sub: 'Cartas del seguro, en palabras sencillas', youDo: 'Lo que tiene que hacer:',
-    emptyTitle: 'Todavía no hay nada del seguro', emptyText: c => `Cuando Harvest le pida al seguro que apruebe la ayuda de ${c} en la escuela, cada paso aparece aquí, explicado.`,
-    example: 'Ver un ejemplo: una familia con una apelación', appeal: 'Leer y firmar la carta de apelación', see: 'Ver su carta de apelación',
-    words: 'Palabras en las cartas del seguro', wordsSub: 'Lo que significan', back: 'Volver a la página de la familia', call: '¿Preguntas? Llámenos' }
+  en: { title: c => `Insurance updates · ${c}`, emptyTitle: 'Nothing from the insurance company yet', example: 'See an example',
+    appeal: 'Sign the appeal', see: 'See the appeal', words: 'Word list', more: n => `Earlier updates · ${n}`, fewer: 'Fewer' },
+  es: { title: c => `Noticias del seguro · ${c}`, emptyTitle: 'Todavía no hay nada del seguro', example: 'Ver un ejemplo',
+    appeal: 'Firmar la apelación', see: 'Ver la apelación', words: 'Lista de palabras', more: n => `Noticias anteriores · ${n}`, fewer: 'Menos' }
 };
 
 register('ParentLetters', class extends Screen {
+  init() { this.state = { all: false, words: false }; }
   ctx() { return famCtx(this.s, this.params); }
-  renderVals() {
-    const s = this.s; const ctx = this.ctx(); const c = ctx.client; const lang = getLang(c); const t = T[lang]; const child = childName(c);
-    const letters = lettersFor(s, c, lang).map(l => ({
-      ...l, when: l.at ? fdate(l.at, lang) : '',
-      style: l.urgent ? 'border-color:#B9541F' : '', doBg: l.urgent ? '#FBE9E4' : '#F4F1EB',
-      btn: l.action ? (l.action.kind === 'appeal' ? t.appeal : t.see) : '', btnCls: l.action?.kind === 'appeal' ? 'p' : 'o',
-      act: l.action ? () => pgo(this.params, l.action.screen, { id: l.action.id }) : null
+  all() {
+    const s = this.s; const ctx = this.ctx(); const c = ctx.client; const lang = getLang(c); const t = T[lang];
+    return lettersFor(s, c, lang).map((l, i) => ({
+      ...l, i, chip: l.chip.charAt(0).toUpperCase() + l.chip.slice(1), when: l.at ? fdate(l.at, lang) : '',
+      style: l.urgent ? 'border-color:var(--late-fg)' : '',
+      btn: l.action ? (l.action.kind === 'appeal' ? t.appeal : t.see) : '', btnCls: l.action?.kind === 'appeal' ? 'pri' : ''
     }));
+  }
+  renderVals() {
+    const ctx = this.ctx(); const c = ctx.client; const lang = getLang(c); const t = T[lang]; const child = childName(c);
+    const all = this.all(); const letters = this.state.all ? all : all.slice(0, 2);
     return {
-      t: { title: t.title(child), sub: t.sub, youDo: t.youDo, emptyTitle: t.emptyTitle, emptyText: t.emptyText(child), example: t.example, words: t.words, wordsSub: t.wordsSub, back: t.back, call: t.call },
-      enStyle: lang === 'en' ? LANG_ON : LANG_OFF, esStyle: lang === 'es' ? LANG_ON : LANG_OFF,
-      letters, example: !letters.length && !this.params.t ? () => pgo({ c: 'EC' }, 'ParentLetters') : null,
+      hd: guardHeader(t.title(child), lang), ft: guardFooter(lang),
+      t: { emptyTitle: t.emptyTitle, example: t.example, words: t.words },
+      letters, example: !all.length && !this.params.t ? () => pgo({ c: 'EC' }, 'ParentLetters') : null,
+      moreN: all.length > 2, moreLabel: this.state.all ? t.fewer : t.more(all.length - 2), toggleAll: () => this.setState({ all: !this.state.all }),
+      showWords: this.state.words, wordsOpen: this.state.words ? 'true' : 'false', toggleWords: () => this.setState({ words: !this.state.words }),
       glossary: GLOSSARY[lang].map(([term, def]) => ({ term, def }))
     };
   }
+  get css() { return C_CSS; }
   get anchors() {
     const ctx = () => this.ctx();
     return {
       en: () => { setLang('en'); this.setState({}); },
       es: () => { setLang('es'); this.setState({}); },
+      act: (e, el) => { const l = this.all()[+el?.dataset?.i]; if (l?.action) pgo(this.params, l.action.screen, { id: l.action.id }); },
       back: () => pgo(this.params, 'ParentPortal'),
       call: () => callSheet(this.s, ctx(), getLang(ctx().client))
     };

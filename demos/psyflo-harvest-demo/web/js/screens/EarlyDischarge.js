@@ -2,7 +2,7 @@
 // day a new request can go. Set this plan writes the plan and its reminders (plan.set).
 import { register, Screen, M, toast } from '../app.js';
 import { STATUS } from '../shared/labels.js';
-import { pickReq, clientOf, payerFirst, unitPlan, todayLine, chipCls, CSS } from './Partials.js';
+import { pickReq, clientOf, payerFirst, unitPlan, todayLine, CSS } from './Partials.js';
 import { fmtDate, dow, addBusinessDays } from '../shared/dates.js';
 
 const DAY = { Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday' };

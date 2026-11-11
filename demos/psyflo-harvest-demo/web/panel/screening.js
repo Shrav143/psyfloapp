@@ -63,7 +63,7 @@ export function screeningView(c) {
       + renderBoxes('sc', items, d.sources, { cur })
       + `<div class="row"><h2 class="h">Still to ask</h2></div>${askList(prompts, true)}`
       + checksLine(d.checks, { open: u.checksOpen })
-      + `<div class="bx-s"><button type="button" class="btn t s" data-act="txToggle" aria-expanded="${u.txOpen ? 'true' : 'false'}">Transcript ${u.txOpen ? I.up : I.chev}</button>${u.txOpen ? `<div class="tx" data-doc>${esc(u.transcript || '')}</div>` : ''}</div>
+      + `<div class="bx-s"><button type="button" class="btn t s" data-act="txToggle" aria-expanded="${u.txOpen ? 'true' : 'false'}">Transcript ${u.txOpen ? I.up : I.chev}</button>${u.txOpen ? `<div class="tscr" data-doc>${esc(u.transcript || '')}</div>` : ''}</div>
          <div>${btn('Record again', 'recAgain', { k: 't', s: true })}</div>`;
   }
   return wrap(head, body);

@@ -46,7 +46,7 @@ register('InfoRequest', class extends Screen {
   reply(r) {
     const s = this.s; const info = details(s, r.id).info;
     const items = info?.items?.length ? info.items : r.info_items?.length ? r.info_items : parseAsked(info?.asked);
-    if (r.info_reply?.text) {
+    if (r.info_reply?.text && r.info_reply.edited_at) {   // a saved edit replaces the drafted answers (and their chips)
       const answers = r.info_reply.text.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean).map(p => { const m = p.match(/^(\d+\.\s[^.]*\.)\s*([\s\S]*)$/); const head = m ? m[1] : '', a = m ? m[2] : p; return { head, html: esc(a), text: a }; });
       return { items, edited: true, answers, sources: [] };
     }

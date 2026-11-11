@@ -2,7 +2,8 @@
 // words. Built from goals and daily ratings (client.quarter, parent_progress, daily notes), office referrals
 // (quarter / counselor_counts), the skills practised (goal interventions) and the guardian's own check-ins. No scores and no diagnoses, per the portal note (12).
 import { register, Screen, M } from '../app.js';
-import { famCtx, getLang, setLang, fdate, pgo, callSheet, childName, progressFor, LANG_ON, LANG_OFF } from './ParentPortal.js';
+import { famCtx, getLang, setLang, fdate, pgo, callSheet, childName, progressFor, guardHeader, guardFooter } from './ParentPortal.js';
+import { C_CSS } from './MobileApp.js';
 
 const MON = { en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], es: ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'] };
 // the three months a quarter's numbers cover, from the authorization start (else the three months to today)
@@ -25,28 +26,23 @@ const ANS_ES = { Always: 'Siempre', Often: 'A menudo', Sometimes: 'A veces', Rar
 const MINE_Q = { sad: { en: 'Sad', es: 'Triste' }, angry: { en: 'Angry', es: 'Enojado' }, sleep: { en: 'Sleep', es: 'Sueño' } };
 
 const T = {
-  en: { title: c => `How ${c} is doing`, sub: (d, c) => d ? `With Harvest since ${d} · plain words, no scores` : `${c}'s progress · plain words, no scores`,
-    emptyTitle: c => `${c} hasn't started yet`, emptyText: c => `Once ${c} starts with Harvest at school, you'll see here how each goal is going, and what ${c} practises. Updated every school day.`,
-    example: 'See an example: a child in services', goodDays: 'Good days at school', up: 'going up', steady: 'steady', down: 'harder lately',
-    trendText: (c, a, b) => `${c}'s daily rating went from ${a} to ${b} out of 4. Staff rate every school day.`, weekText: t => t,
-    goals: 'Goals', onTrack: 'on track', getting: 'getting there', started: 'just started', goalDays: (a, b) => `Met on ${a} of ${b} school days this quarter`, justStarted: 'Just started · progress shows after the first weeks',
-    office: 'Trips to the office', officeSub: 'Times sent to the office in a month (from the school counselor)', fewer: 'fewer', more: 'more', same: 'about the same',
-    practice: 'What we practise at school', practiceSub: 'Skills Harvest staff work on with your child, linked to the goals',
-    yours: 'Your check-ins', every2: 'every 2 weeks', noMine: 'No check-ins yet.', start: 'Start a check-in', how: 'Harvest staff enter these. If something looks wrong, call us.',
-    back: 'Back to the family page', call: 'Call us' },
-  es: { title: c => `Cómo le va a ${c}`, sub: (d, c) => d ? `Con Harvest desde el ${d} · palabras sencillas, sin puntajes` : `Progreso de ${c} · palabras sencillas, sin puntajes`,
-    emptyTitle: c => `${c} todavía no ha empezado`, emptyText: c => `Cuando ${c} empiece con Harvest en la escuela, aquí verá cómo va cada meta y qué practica ${c}. Se actualiza cada día escolar.`,
-    example: 'Ver un ejemplo: un niño en servicios', goodDays: 'Días buenos en la escuela', up: 'mejorando', steady: 'estable', down: 'más difícil',
-    trendText: (c, a, b) => `La calificación diaria de ${c} pasó de ${a} a ${b} de 4. El personal califica cada día escolar.`, weekText: t => t,
-    goals: 'Metas', onTrack: 'va bien', getting: 'avanzando', started: 'recién empieza', goalDays: (a, b) => `Lo logró ${a} de ${b} días escolares este trimestre`, justStarted: 'Recién empieza · el progreso aparece después de las primeras semanas',
-    office: 'Visitas a la oficina', officeSub: 'Veces que lo mandaron a la oficina en un mes (de la consejera escolar)', fewer: 'menos', more: 'más', same: 'igual',
-    practice: 'Lo que practicamos en la escuela', practiceSub: 'Habilidades que el personal de Harvest trabaja con su hijo, ligadas a las metas',
-    yours: 'Sus chequeos', every2: 'cada 2 semanas', noMine: 'Todavía no hay chequeos.', start: 'Empezar un chequeo', how: 'El personal de Harvest ingresa esto. Si algo parece mal, llámenos.',
-    back: 'Volver a la página de la familia', call: 'Llámenos' }
+  en: { title: c => `How ${c} is doing`, emptyTitle: c => `${c} has not started`, example: 'See an example',
+    goodDays: 'Good days', up: 'Going up', steady: 'Steady', down: 'Harder lately',
+    trendText: t => t, goals: 'Goals', onTrack: 'On track', getting: 'Getting there', started: 'Just started',
+    goalDays: (a, b) => `Met on ${a} of ${b} school days`,
+    office: 'Trips to the office', fewer: 'Fewer', more: 'More', same: 'Same',
+    practice: 'What we practise', yours: 'Your check-ins', last: d => `last ${d}`, start: 'Start' },
+  es: { title: c => `Cómo le va a ${c}`, emptyTitle: c => `${c} no ha empezado`, example: 'Ver un ejemplo',
+    goodDays: 'Días buenos', up: 'Mejorando', steady: 'Estable', down: 'Más difícil',
+    trendText: t => t, goals: 'Metas', onTrack: 'Va bien', getting: 'Avanzando', started: 'Recién empieza',
+    goalDays: (a, b) => `Lo logró ${a} de ${b} días escolares`,
+    office: 'Visitas a la oficina', fewer: 'Menos', more: 'Más', same: 'Igual',
+    practice: 'Lo que practicamos', yours: 'Sus chequeos', last: d => `último ${d}`, start: 'Empezar' }
 };
 const cap = x => x ? x.charAt(0).toUpperCase() + x.slice(1) : x;
 
 register('ParentProgress', class extends Screen {
+  init() { this.state = { practice: false }; }
   ctx() { return famCtx(this.s, this.params); }
   renderVals() {
     const s = this.s; const ctx = this.ctx(); const c = ctx.client; const lang = getLang(c); const t = T[lang]; const child = childName(c);
@@ -57,17 +53,17 @@ register('ParentProgress', class extends Screen {
     let trend = null;
     if (started && q?.daily_rating?.length) {
       const r = q.daily_rating; const lab = months(s, c, r.length, lang); const a = r[0], b = r.at(-1);
-      trend = { chip: b > a + 0.2 ? t.up : b < a - 0.2 ? t.down : t.steady, text: t.trendText(child, a.toFixed(1), b.toFixed(1)), rows: r.map((v, i) => ({ label: lab[i], pct: Math.round(100 * v / 4), v: v.toFixed(1) })) };
+      trend = { chip: b > a + 0.2 ? t.up : b < a - 0.2 ? t.down : t.steady, rows: r.map((v, i) => ({ label: lab[i], pct: Math.round(100 * v / 4), v: v.toFixed(1) })) };
     } else if (started && prog) {
-      trend = { chip: prog.pct >= 60 ? t.up : t.steady, text: prog.text, rows: [{ label: lang === 'es' ? 'sem.' : 'week', pct: prog.pct, v: prog.pct + '%' }] };
+      trend = { chip: prog.pct >= 60 ? t.up : t.steady, rows: [{ label: lang === 'es' ? 'sem.' : 'week', pct: prog.pct, v: prog.pct + '%' }] };
     }
 
     const goals = !started ? [] : (c.goals || []).map((g, i) => {
       const days = q?.goal_progress_days?.[i];
-      let pct = 0, text = t.justStarted;
+      let pct = 0, text = '';
       if (days != null && q.days) { pct = Math.round(100 * days / q.days); text = t.goalDays(days, q.days); }
       else if (i === 0 && prog) { pct = prog.pct; text = prog.text; }
-      return { name: cap(lang === 'es' && i === 0 && s.parent_progress?.[c.id]?.goal_es && !q ? s.parent_progress[c.id].goal_es : g.name), pct, text, ...(pct >= 60 ? { cls: 'g', chip: t.onTrack } : pct >= 30 ? { cls: 'y', chip: t.getting } : { cls: 'n', chip: t.started }) };
+      return { name: cap(lang === 'es' && i === 0 && s.parent_progress?.[c.id]?.goal_es && !q ? s.parent_progress[c.id].goal_es : g.name), pct, ...(pct >= 60 ? { cls: 'g', chip: t.onTrack } : pct >= 30 ? { cls: 'y', chip: t.getting } : { cls: 'n', chip: t.started }) };
     });
 
     // office referrals: quarter months, else the counselor's monthly counts
@@ -85,13 +81,16 @@ register('ParentProgress', class extends Screen {
     const mine = s.checkins.filter(x => x.client === c.id && x.role === 'guardian').sort((a, b) => ((a.at || a.week_of) < (b.at || b.week_of) ? 1 : -1)).slice(0, 3)
       .map(x => ({ when: fdate(x.at || x.week_of, lang), text: Object.entries(MINE_Q).filter(([k]) => x.answers?.[k]).map(([k, l]) => `${l[lang]}: ${(lang === 'es' ? (ANS_ES[x.answers[k]] || x.answers[k]) : x.answers[k]).toLowerCase()}`).join(' · ') }));
 
+    const lastMine = mine[0] ? t.last(mine[0].when) : '';
     return {
-      t: { ...Object.fromEntries(Object.entries(t).filter(([, v]) => typeof v === 'string')), title: t.title(child), sub: t.sub(started ? fdate(c.service_start, lang) : '', child), emptyTitle: t.emptyTitle(child), emptyText: t.emptyText(child) },
-      enStyle: lang === 'en' ? LANG_ON : LANG_OFF, esStyle: lang === 'es' ? LANG_ON : LANG_OFF,
+      hd: guardHeader(t.title(child), lang), ft: guardFooter(lang),
+      t: { emptyTitle: t.emptyTitle(child), example: t.example, goodDays: t.goodDays, goals: t.goals, office: t.office, practice: t.practice, yours: t.yours, start: t.start },
       empty: !started, example: !started && !this.params.t ? () => pgo({ c: 'MR' }, 'ParentProgress') : null,
-      trend, goals, office, practice, mine,
+      trend, goals, office, practice, lastMine,
+      showPractice: !!this.state.practice, practiceOpen: this.state.practice ? 'true' : 'false', togglePractice: () => this.setState({ practice: !this.state.practice })
     };
   }
+  get css() { return C_CSS; }
   get anchors() {
     const ctx = () => this.ctx();
     return {

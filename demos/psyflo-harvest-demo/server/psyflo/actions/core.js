@@ -260,7 +260,7 @@ export default {
     const r = need(byId(s.requests, id), 'Request');
     r.info_reply = { ...(r.info_reply || {}), text: text || r.info_reply?.text, sent_at: this.now() };
     // Nov 8: replies go by fax through Sfax by default (one place for the whole history); the payer portal stays an option
-    if (r.channel === 'fax' || via === 'fax') { r.stage = 'submitted'; r.sent = this.now(); r.decision_due = addDays(s.today, 7); this.event('Reply faxed through Sfax · decision clock restarts', 'jperez', id); return {}; }
+    if (r.channel === 'fax' || via === 'fax') { r.stage = 'submitted'; r.sent = this.now(); r.decision_due = addDays(s.today, s.clocks.decision_days); r.call_on = addDays(s.today, s.clocks.call_day); this.event('Reply faxed through Sfax · decision clock restarts', 'jperez', id); return {}; }
     r.info_reply_pending = true; r.stage = 'portal_open';
     this.event('"Open in Availity and send" pressed · reply ready to paste in the clinician\'s own session', 'jperez', id);
     return { open: `/${r.channel}/upload?request=${id}&kind=reply` };

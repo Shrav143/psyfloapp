@@ -11,7 +11,7 @@ const b = await chromium.launch(); const errs = [];
 const desk = await (await b.newContext({ viewport: { width: 1440, height: 950 } })).newPage(); desk.on('pageerror', e => errs.push(e.message));
 await desk.goto(APP + '/#/Login'); await desk.evaluate(() => localStorage.setItem('psyflo_user', 'jperez'));
 await desk.goto(APP + '/#/Referral?id=REF-118'); await desk.waitForTimeout(800);
-await desk.getByText(/Send the family link/).first().click(); await desk.waitForTimeout(1200);
+await desk.getByText(/Send family link/).first().click(); await desk.waitForTimeout(1200);
 const link = await desk.evaluate(() => (document.body.innerText.match(/https?:\/\/\S+\/f\/[\w-]+/) || [])[0]);
 log('SMS link:', link);
 await desk.goto(APP + '/#/Eligibility?referral=REF-118'); await desk.waitForTimeout(600);

@@ -330,7 +330,7 @@ async function boot() {
 }
 
 // Controllers live in web/js/screens/<Id>.js and call register(). Listed here so they load up front.
-const MODULES = Object.fromEntries(SCREENS.map(s => [s.id, () => import(`./screens/${s.id}.js`).catch(e => { if (!/Failed to fetch|Importing a module script failed|error loading dynamically/i.test(String(e))) throw e; })]));
+const MODULES = Object.fromEntries(SCREENS.filter(s => s.surface !== 'ext').map(s => [s.id, () => import(`./screens/${s.id}.js`).catch(e => { if (!/Failed to fetch|Importing a module script failed|error loading dynamically/i.test(String(e))) throw e; })]));
 
 export const app = { route, go, toast, modal, session, hrefFor, present, get current() { return current; } };
 window.psyflo = app;

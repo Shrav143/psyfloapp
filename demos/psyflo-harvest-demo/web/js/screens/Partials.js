@@ -2,7 +2,7 @@
 // with the guardian letter. This file also holds what the five decision pages share (34 Additional info, 35 Partial
 // approval, 36 Early discharge, 38 P2P call notes, 39 Appeal letter): request lookup, portal and file helpers, the
 // unit arithmetic every date on these pages comes from, and the layout CSS.
-import { register, Screen, M, raw, esc, toast, api, helpIcon } from '../app.js';
+import { register, Screen, M, raw, toast, api, helpIcon } from '../app.js';
 import { REQ_TYPE, STATUS } from '../shared/labels.js';
 import { isSchoolDay, addBusinessDays, addDays, daysBetween, businessDaysBetween, fmtDate } from '../shared/dates.js';
 

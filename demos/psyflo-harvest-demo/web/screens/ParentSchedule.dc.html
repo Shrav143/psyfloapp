@@ -10,89 +10,37 @@
 <helmet>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
 <style>
-body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:17px;line-height:1.45}
-a{color:#217A78}a:hover{color:#15605E}
-*{box-sizing:border-box}
-label{display:block;font-size:15px;font-weight:600;margin-bottom:6px}
-.in{width:100%;border:1.5px solid #C9CDD3;border-radius:10px;padding:12px 14px;font:inherit;font-size:17px;background:#fff;min-height:50px;color:#151B24}
-.rad{display:flex;gap:10px}
-.rad label{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:500;margin:0;border:1.5px solid #C9CDD3;border-radius:10px;min-height:50px;background:#fff;font-size:16px}
-.rad label.on{border-color:#217A78;background:#DDF1EF;color:#15605E;font-weight:600}
-.rad input{width:18px;height:18px;margin:0;accent-color:#217A78}
-.btn{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:12px;font:inherit;font-weight:600;font-size:17px;border:0;width:100%;text-decoration:none}
-.btn.p{background:#217A78;color:#fff}
-.chipr{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #C9CDD3;border-radius:999px;padding:8px 14px;font-size:15px;font-weight:600;background:#fff}
-.chipr.on{border-color:#217A78;background:#DDF1EF;color:#15605E}
-.tile{border:1px solid #E6E1D9;border-radius:14px;padding:14px 16px;background:#fff}
-.tile b{font-size:16px}
-.tile .s{font-size:14px;color:#525B66;margin-top:2px}
-.bar{height:8px;border-radius:4px;background:#EFEBE4;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:#217A78}
-.chip{display:inline-block;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:600;white-space:nowrap}
-.chip.r{background:#FBE9E4;color:#8A2E1C}.chip.y{background:#FCEFD0;color:#6F4A05}.chip.g{background:#DDF1EF;color:#15605E}.chip.n{background:#EEEBE5;color:#3E4652}
-.btn.o{background:#fff;color:#151B24;border:1.5px solid #D9D4CC}
-.btn.r{background:#B9541F;color:#fff}
-.rowbtn{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:0;font:inherit;color:#151B24;text-align:left;cursor:pointer}
-.num{flex:0 0 30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;background:#EEEBE5;color:#3E4652}
-.num.g{background:#217A78;color:#fff}
-.num.y{background:#FCEFD0;color:#6F4A05}
-.btn.o{background:#fff;color:#151B24;border:1.5px solid #D9D4CC}
-.kv{display:flex;justify-content:space-between;gap:12px;font-size:15px;padding:6px 0;border-top:1px solid #EFEBE4}
-.kv:first-of-type{border-top:0}
-.kv span:last-child{font-weight:600;text-align:right}
-.mon{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;font-size:14px;margin-top:6px}
-.mon .bar{margin-top:0}
-.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.foot{padding:12px 20px 22px;border-top:1px solid #E6E1D9;background:#F8F6F2;font-size:12px;color:#525B66;text-align:center}
-.hd{background:#151B24;color:#fff;padding:18px 20px 14px}
-.hd .t{font-weight:700;font-size:17px}
-.hd .u{font-size:14px;color:#C9D1D6;margin-top:2px}
-.body{flex:1;padding:14px 20px 16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
-.body>*{flex-shrink:0}
-.slot{border:1.5px solid #C9CDD3;border-radius:10px;background:#fff;min-height:44px;padding:0 12px;font:inherit;font-size:15px;font-weight:600;color:#151B24;cursor:pointer}
-.slot.on{border-color:#217A78;background:#DDF1EF;color:#15605E}
-.frame{width:100%;height:844px;background:#F8F6F2;display:flex;flex-direction:column;overflow:hidden}
+/* shared phone look: C_CSS in js/screens/MobileApp.js */
+.c-slot{min-height:44px;padding:0 14px;border:1px solid var(--line-strong);border-radius:8px;background:var(--white);font:600 15px/20px 'DM Sans',system-ui,sans-serif;color:var(--navy);cursor:pointer}.c-slot.on{background:var(--teal-tint);border-color:var(--teal);color:var(--teal-dark)}
 </style>
 </helmet>
-<div class="frame">
-  <div class="hd">
-    <div class="t">{{t.title}}</div>
-    <div class="u">{{t.sub}}</div>
-    <div style="display:flex;gap:8px;margin-top:10px;font-size:13px"><a href="#en" style="{{enStyle}}" lang="en">English</a><a href="#es" style="{{esStyle}}" lang="es">Español</a></div>
-  </div>
-  <div class="body">
-    <sc-if value="{{waitingText}}"><div class="tile"><b>{{t.notYet}}</b><div class="s" style="margin-top:4px">{{waitingText}}</div></div></sc-if>
+<div class="c-ph">
+  {{hd}}
+  <main class="c-bd">
+    <sc-if value="{{waitingText}}"><div class="c-card"><b>{{waitingText}}</b></div></sc-if>
     <sc-if value="{{booked}}">
-      <div class="tile" style="border-color:#217A78;background:#F2F9F8">
-        <div style="display:flex;align-items:center;gap:8px"><b>{{t.booked}}</b><span class="chip {{booked.cls}}" style="margin-left:auto">{{booked.chip}}</span></div>
-        <div style="font-size:19px;font-weight:700;margin-top:6px">{{booked.when}}</div>
-        <div class="s">{{booked.sub}}</div>
-        <sc-if value="{{booked.ride}}"><div class="s" style="margin-top:6px;color:#151B24">{{booked.ride}}</div></sc-if>
-      </div>
-      <sc-if value="{{confirmAsk}}">
-        <div class="tile" style="border-color:#F0B44C;background:#FFF8EA"><b>{{t.tomorrow}}</b><div class="s">{{confirmAsk}}</div>
-          <div style="display:flex;gap:8px;margin-top:10px"><button class="btn p" onClick="{{confirmYes}}" style="min-height:46px">{{t.yes}}</button><button class="btn o" onClick="{{confirmNo}}" style="min-height:46px">{{t.change}}</button></div></div>
-      </sc-if>
-      <sc-if value="{{rideToggle}}"><button class="btn o" onClick="{{rideToggle}}" style="min-height:46px">{{rideLabel}}</button></sc-if>
-      <button class="btn o" onClick="{{rebook}}" style="min-height:46px">{{t.pickAnother}}</button>
+      <section class="c-card" style="border-color:var(--teal);background:var(--teal-tint)">
+        <div style="display:flex;align-items:center;gap:8px"><b>{{t.booked}}</b><span class="u-chip {{booked.cls}}" style="margin-left:auto">{{booked.chip}}</span></div>
+        <div style="font-size:20px;line-height:28px;font-weight:700;margin-top:6px">{{booked.when}}</div>
+        <div class="c-mut">{{booked.sub}}</div>
+        <sc-if value="{{booked.ride}}"><div style="margin-top:4px">{{booked.ride}}</div></sc-if>
+      </section>
+      <sc-if value="{{confirmAsk}}"><section class="c-card" style="border-color:var(--marigold)"><b>{{t.tomorrow}}</b>
+        <div style="display:flex;gap:8px;margin-top:10px"><button type="button" class="c-btn pri" onClick="{{confirmYes}}" style="flex:1">{{t.yes}}</button><button type="button" class="c-btn" onClick="{{confirmNo}}" style="flex:1">{{t.change}}</button></div></section></sc-if>
+      <sc-if value="{{rideToggle}}"><button type="button" class="c-btn" onClick="{{rideToggle}}">{{rideLabel}}</button></sc-if>
+      <button type="button" class="c-btn" onClick="{{rebook}}">{{t.pickAnother}}</button>
     </sc-if>
     <sc-if value="{{picking}}">
-      <div class="s" style="font-size:14px;color:#525B66">{{t.pickHint}}</div>
       <sc-for list="{{days}}" as="d">
-        <div class="tile"><b>{{d.label}}</b>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"><sc-for list="{{d.slots}}" as="x"><button class="slot {{x.cls}}" onClick="{{x.pick}}" aria-pressed="{{x.pressed}}">{{x.time}}</button></sc-for></div>
-        </div>
+        <section class="c-card"><b>{{d.label}}</b>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"><sc-for list="{{d.slots}}" as="x"><button type="button" class="c-slot {{x.cls}}" onClick="{{x.pick}}" aria-pressed="{{x.pressed}}">{{x.time}}</button></sc-for></div></section>
       </sc-for>
-      <sc-if value="{{chosen}}">
-        <div class="tile" style="border-color:#217A78">
-          <b>{{chosen.when}}</b><div class="s">{{chosen.sub}}</div>
-          <sc-if value="{{isIntake}}"><label style="display:flex;align-items:center;gap:10px;margin-top:12px;font-weight:500"><input type="checkbox" id="ride" {{rideChecked}} onChange="{{setRide}}" style="width:22px;height:22px;accent-color:#217A78"> {{t.needRide}}</label></sc-if>
-          <button class="btn p" onClick="{{book}}" style="min-height:52px;margin-top:12px">{{t.bookIt}}</button>
-        </div>
-      </sc-if>
+      <sc-if value="{{moreDays}}"><button type="button" class="c-lnk" onClick="{{showMore}}" style="text-align:left">{{t.moreDays}}</button></sc-if>
+      <sc-if value="{{isIntake}}"><label class="c-rad" style="display:flex"><label style="flex:1"><input type="checkbox" id="ride" {{rideChecked}} onChange="{{setRide}}"> {{t.needRide}}</label></label></sc-if>
+      <sc-if value="{{chosen}}"><button type="button" class="c-btn pri lg" onClick="{{book}}">{{chosen.label}}</button></sc-if>
     </sc-if>
-    <div class="s" style="text-align:center;font-size:13px">{{t.how}}</div>
-  </div>
-  <div class="foot"><a href="#back">{{t.back}}</a> · <a href="#call">{{t.call}}</a></div>
+  </main>
+  {{ft}}
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>

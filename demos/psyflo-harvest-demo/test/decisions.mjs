@@ -283,6 +283,7 @@ for (const preset of ['live', 'canvas']) {
   }
 }
 
+await reset('live');
 await browser.close();
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

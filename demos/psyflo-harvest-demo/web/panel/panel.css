@@ -112,7 +112,8 @@ textarea.ed{width:100%;min-height:80px;border:1px solid var(--line-strong);borde
 .li .tt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.li .tt b{font-weight:600}
 .tm{display:grid;grid-template-columns:92px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:32px;padding:2px 12px;border-top:1px solid var(--line);font-size:13px}
 .tm:first-child{border-top:0}
-.tm .tt{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm .tt{min-width:0}
+.tm{padding-top:4px;padding-bottom:4px}
 .tm.dim{color:var(--ink-3)}
 .kt{display:flex;gap:6px;flex-wrap:wrap}
 
@@ -129,7 +130,7 @@ textarea.ed{width:100%;min-height:80px;border:1px solid var(--line-strong);borde
 .fl.y{border-color:var(--lauris-yellow-bd);background:var(--lauris-yellow-bg)}
 .fl.r{border-color:var(--late-fg);background:var(--late-bg)}
 .fl.n{border-color:var(--line);background:var(--paper)}
-.tx{font-size:12px;line-height:16px;color:var(--ink-2);max-height:200px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--paper);white-space:pre-wrap}
+.tscr{font-size:12px;line-height:16px;color:var(--ink-2);max-height:200px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--paper);white-space:pre-wrap}
 .bars{display:flex;flex-direction:column;gap:2px}
 .bars .br{display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:8px;font-size:13px;min-height:28px}
 .bars .u-bar{width:100%}

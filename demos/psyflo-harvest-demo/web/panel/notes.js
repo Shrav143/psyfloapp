@@ -81,7 +81,7 @@ export const DPN_EXAMPLE = 'played basketball with M.R. after he got upset in ma
 export function sayCard(kind) {
   const u = P.ui;
   if (u.recKind === kind && P.rec)
-    return card(`<div class="t"><span class="dot on"></span>Listening <span data-timer>${mmss(recSeconds())}</span></div><div class="tx" data-doc>${esc(u.transcript || '')}${u.interim ? (u.transcript ? '\n' : '') + esc(u.interim) : ''}</div>
+    return card(`<div class="t"><span class="dot on"></span>Listening <span data-timer>${mmss(recSeconds())}</span></div><div class="tscr" data-doc>${esc(u.transcript || '')}${u.interim ? (u.transcript ? '\n' : '') + esc(u.interim) : ''}</div>
       <div class="row">${btn('Stop', 'sayStop', { k: 'p', f: true, attrs: `data-k="${kind}"` })}${btn('Cancel', 'sayCancel', { k: 't' })}</div>`);
   if (u.typing === kind)
     return card(`<div class="t">Say what happened</div><textarea class="ed" data-doc aria-label="What happened" data-in="sayText" placeholder="What happened?">${esc(u.said || '')}</textarea>

@@ -117,7 +117,7 @@ export function intakeStatus(s, r) {
   if (r.stage === 'declined') return { key: 'closed', text: 'Declined', sev: 'n', btn: 'View', href: ref };
   if (r.stage === 'in_service') return { key: 'closed', text: 'In service', sev: 'ok', btn: 'View', href: ref };
   if (r.stage === 'in_intake') { const ck = intakeClock(s, r); return { key: 'intake', text: ck ? ck.text : 'In intake', sev: ck ? ck.sev : 'n', btn: 'Review', href: ref, primary: !!ck && ck.sev !== 'n' }; }
-  if (r.stage === 'screening_booked') {
+  if (r.stage === 'screening_booked' || (booked && r.stage === 'needs_screening')) {
     const w = booked ? booked.when : r.screening && r.screening.when;
     const today = w && String(w).slice(0, 10) === t;
     return { key: 'booked', text: w ? `Call ${M.fmtDate(w)}${M.fmtTime(w) ? ', ' + M.fmtTime(w) : ''}` : 'Screening booked', sev: today ? 'y' : 'n', btn: 'Open in Lauris', href: 'ExtScreening.dc.html?referral=' + r.id, primary: !!today };
@@ -129,7 +129,7 @@ export function intakeStatus(s, r) {
   if (fl && fl.sent_at && !fl.submitted_at) return { key: 'family', text: 'Awaiting family · ' + M.fmtDate(fl.sent_at), sev: 'n', btn: 'Review', href: ref };
   return { key: 'new', text: 'New · ' + M.fmtDate(r.received), sev: 'y', btn: 'Review', href: ref };
 }
-const STAGE_NAME = (s, r) => ({ needs_screening: 'Referral', waiting_on_school: 'Referral', screening_booked: 'Screening', in_service: 'Service' })[r.stage]
+const STAGE_NAME = (s, r) => (r.stage === 'needs_screening' && s.screenings.some(x => x.referral === r.id && x.status === 'booked') ? 'Screening' : ({ needs_screening: 'Referral', waiting_on_school: 'Referral', screening_booked: 'Screening', in_service: 'Service' })[r.stage])
   || (r.stage === 'in_intake' ? ((M.byId(s.clients, r.client)?.goals || []).length ? 'Plan' : 'Intake') : 'Closed');
 const STATUS_NAME = { new: 'New', family: 'Awaiting family', verify: 'Details received', eligible: 'Eligibility', school: 'Awaiting school', booked: 'Screening booked', intake: 'In intake', hold: 'On hold', closed: 'Closed' };
 

@@ -72,6 +72,10 @@ textarea.c-in{padding:12px 14px;min-height:104px;resize:vertical}
 .c-rad label{flex:1 1 0;display:flex;align-items:center;gap:10px;min-height:52px;padding:0 14px;border:1px solid var(--line-strong);border-radius:8px;background:var(--white);font-size:16px;font-weight:500;margin:0;cursor:pointer}
 .c-rad label.on{border-color:var(--teal);background:var(--teal-tint);color:var(--teal-dark);font-weight:600}
 .c-rad input{width:20px;height:20px;margin:0;accent-color:var(--teal);flex:0 0 20px}
+.c-rad label{position:relative}
+.c-rad.pill label{justify-content:center;text-align:center;padding:6px;line-height:20px;min-height:56px}
+.c-rad.pill input{position:absolute;opacity:0;width:1px;height:1px}
+.c-rad.pill label:focus-within{outline:2px solid var(--teal);outline-offset:2px}
 .c-bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
 .c-bar i{display:block;height:100%;background:var(--teal)}
 .c-bar.y i{background:var(--marigold)}

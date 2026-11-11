@@ -127,6 +127,8 @@ function rowAct(s, r) {
   }
 }
 
+// M.statusChip can read "30 days days left" for a request near its 30-day limit; show it once
+const chipText = chip => String(chip.text).replace(/(\d+) days days/, '$1 days');
 const chipCls = (r, chip) => r.stage === 'active' ? 'ok' : chip.sev === 'r' ? 'r' : chip.sev === 'y' ? 'y' : 'n';
 const CH = r => M.CHANNEL_LABEL[r.channel] || r.channel;
 const stageKey = r => r.stage;
@@ -137,7 +139,7 @@ export function row(s, r0) {
   return {
     id: r.id, raw: r, student: M.clientLabel(s, r.client), type, payer: M.payerTag(s, r.payer), channel: CH(r),
     units: u.text, hasBar: u.pct != null, pct: u.pct, barCls: 'u-bar ' + (u.bar || ''),
-    status: chip.text, statusCls: 'u-chip ' + chipCls(r, chip), helpClock: /follow-up/.test(chip.text), helpApproval: r.stage === 'needs_approval',
+    status: chipText(chip), statusCls: 'u-chip ' + chipCls(r, chip), helpClock: /follow-up/.test(chip.text), helpApproval: r.stage === 'needs_approval',
     btn: act.btn, btnCls: 'u-btn' + (act.pri ? ' pri' : ''), href: act.href, isLink: !act.drawer
   };
 }
@@ -230,7 +232,7 @@ register('Authorizations', class extends Screen {
     }
     return {
       id: r.id, label: `${r.id} · ${student} · ${M.payerTag(s, r.payer)}`, title: `${r.id} · ${student} · ${M.payerTag(s, r.payer)}`, sub,
-      status: chip.text, statusCls: 'u-chip ' + chipCls(r, chip), helpClock: /follow-up/.test(chip.text), log, hasAtt: att.length > 0, att, acts,
+      status: chipText(chip), statusCls: 'u-chip ' + chipCls(r, chip), helpClock: /follow-up/.test(chip.text), log, hasAtt: att.length > 0, att, acts,
       activity: PART.activity, attachments: PART.attachments, helpClockText: HELP.clock
     };
   }
@@ -274,5 +276,5 @@ register('Authorizations', class extends Screen {
     if (this.state.focus === 'drawer' && d) { (d.querySelector('[data-x]') || d).focus(); this.state.focus = null; }
     else if (this.state.focus === 'row') { const b = root.querySelector(`[data-row="${this.state.last}"] button`); if (b) b.focus(); this.state.focus = null; }
   }
-  get css() { return B1_CSS + '.b1-drawer-h{display:flex;align-items:center;gap:8px}.b1-log{list-style:none;margin:0;padding:0}.b1-log li{display:grid;grid-template-columns:84px minmax(0,1fr);gap:0 12px;padding:8px 0;border-top:1px solid var(--line)}.b1-log li:first-child{border-top:0}.b1-log .when{color:var(--ink-3);font-size:12px;line-height:20px}.b1-log .who{color:var(--ink-3);font-size:12px;line-height:16px}.b1-att{display:flex;flex-wrap:wrap;gap:8px}.b1-acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:24px}'; }
+  get css() { return B1_CSS + '.b1-drawer-h{display:flex;align-items:center;gap:8px}.b1-log{list-style:none;margin:0;padding:0}.b1-log li{display:grid;grid-template-columns:112px minmax(0,1fr);gap:0 12px;padding:8px 0;border-top:1px solid var(--line)}.b1-log li:first-child{border-top:0}.b1-log .when{color:var(--ink-3);font-size:12px;line-height:20px;white-space:nowrap}.b1-log .who{color:var(--ink-3);font-size:12px;line-height:16px}.b1-att{display:flex;flex-wrap:wrap;gap:8px}.b1-acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:24px}'; }
 });

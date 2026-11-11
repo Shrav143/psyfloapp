@@ -90,7 +90,7 @@ register('FamilyLink', class extends Screen {
       t: { ...t, thanks: t.thanks((a.guardian_name || '').split(' ')[0]) },
       dots: pages.map((p, j) => done || j < i ? 'done' : j === i ? 'cur' : ''), n: pages.length, at: i + 1,
       done, q: qv || '', opts,
-      pg: { ...pg, text: pg.kind === 'text', select: pg.kind === 'select', card: pg.kind === 'card', radio: pg.kind === 'radio', col: pg.col ? ' col' : '' },
+      pg: { ...pg, text: pg.kind === 'text', select: pg.kind === 'select', card: pg.kind === 'card', radio: pg.kind === 'radio', col: pg.col ? ' col' : ' pill' },
       photoName: a.card_photo || '',
       nextLabel: i === pages.length - 1 ? t.submit : t.next, canBack: !done && i > 0,
       doneText: t.done(timeLabel), portalHref: this.token ? `/parent/${this.token}/ParentPortal` : 'ParentPortal.dc.html',

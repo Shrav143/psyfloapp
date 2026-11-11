@@ -20,7 +20,7 @@ await panel().getByText('Dictation dropped in').waitFor({ timeout: 20000 });
 const v = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll('#lauris-form label[for]')].map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
 log('Narrative:', v['Narrative'].slice(0, 90) + '…'); log('Direct time:', v['Direct time'], '· Units:', v['Units'], '· Mood:', v['Mood check-in']);
 await p.screenshot({ path: shot + '/flowB-1-dropped.png' });
-await panel().getByText(/^Confirm \d units/).click();
+await panel().getByRole('button', { name: /^Confirm \d units/ }).click();
 await p.waitForTimeout(800);
 await p.getByRole('button', { name: 'Process Form' }).click();
 await p.waitForURL(/processed=/); await p.waitForTimeout(1500);

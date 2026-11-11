@@ -58,7 +58,7 @@ export function homeView() {
   return wrap({ form: 'Psyflo', link: { text: 'Open Psyflo ↗', href: '#/' + (lvl >= 3 ? 'DoNext' : 'MobileApp') } }, `
     <div><h2 class="h">Worklist</h2></div>
     ${rows.length ? `<div class="wl">${rows.map(wrow).join('')}</div>` : '<div class="muted">Nothing due</div>'}
-    <div><input class="in" type="search" list="stud-list" aria-label="Student" data-in="pickStudent" placeholder="Student" value="${esc(P.ui.studentText != null ? P.ui.studentText : (st ? st.initials : ''))}"><datalist id="stud-list">${opts}</datalist></div>
+    <div><div class="lab">Student</div><input class="in" type="search" list="stud-list" aria-label="Student" data-in="pickStudent" placeholder="Student" value="${esc(P.ui.studentText != null ? P.ui.studentText : (st ? st.initials : ''))}"><datalist id="stud-list">${opts}</datalist></div>
     <div class="lau">${launchers.join('')}</div>
     ${running ? `<div class="row small muted">${I.open}<span>${esc(M.clientLabel(s, t.client, false))} since ${esc(fmtTime(t.started))}</span></div>` : ''}`);
 }
@@ -135,12 +135,12 @@ export function recordView(c, { requestView } = {}) {
     const f = ev.form; const next = { screening: ['cna', 'Open intake'], cna: ['isp', 'Open plan'], isp: ['sra-initial', 'Open request'], 'sra-initial': ['/approvals', 'Open Forms to Approve'], 'sra-continued': ['/approvals', 'Open Forms to Approve'] }[f];
     rows.push(card(`<div class="stat ok">${I.ok}${esc(FORM_NAME[f] || f)} processed</div>${next ? btn(next[1], 'nav', { k: 'p', f: true, attrs: `data-href="${next[0].startsWith('/') ? next[0] : `/consumers/${no}/session/${next[0]}`}"` }) : ''}${f === 'isp' ? ispSignLine(c) : ''}`));
     rows.push(savedLine());
-  } else if (ev && ev.event === 'created') rows.push(card(`<div class="stat ok">${I.ok}In Lauris · Harvest # ${esc(no)}</div>`));
+  } else if (ev && ev.event === 'created' && !(lvl >= 3 && !(s.screenings.some(x => x.client === c.id && (x.status === 'done' || x.processed_at)) || !!c.timeline?.screening))) rows.push(card(`<div class="stat ok">${I.ok}In Lauris · Harvest # ${esc(no)}</div>`));
   if (!rows.length || (ev && ev.event === 'saved')) { if (ev && ev.event === 'saved') rows.push(savedLine()); }
   if (d.length) rows.push(card(`<div class="t">${I.mic}Dictation waiting</div>${btn('Open daily note', 'nav', { k: 'p', f: true, attrs: `data-href="/consumers/${no}/session/dpn"` })}`));
   if (a.length) rows.push(card(`<div class="t">${I.mic}${esc(a.map(x => x.instrument).join(', '))} waiting</div>${p.kind === 'surveys' ? btn(`Type the ${a[0].instrument} answers`, 'dropSurvey', { k: 'p', f: true }) : btn('Open Surveys', 'nav', { k: 'p', f: true, attrs: `data-href="/consumers/${no}/surveys?instrument=${encodeURIComponent(a[0].instrument)}"` })}`));
   const screened = s.screenings.some(x => x.client === c.id && (x.status === 'done' || x.processed_at)) || !!c.timeline?.screening;
-  if (lvl >= 3 && !screened && !(ev && ev.event === 'processed')) rows.push(card(btn('Record a call', 'nav', { k: 'p', f: true, icon: I.mic, attrs: `data-href="/consumers/${no}/session/screening"` })));
+  if (lvl >= 3 && !screened && !(ev && ev.event === 'processed')) rows.push(card(`${ev && ev.event === 'created' ? `<div class="stat ok">${I.ok}In Lauris · Harvest # ${esc(no)}</div>` : ''}${btn('Open screening', 'nav', { k: 'p', f: true, attrs: `data-href="/consumers/${no}/session/screening"` })}`));
   const forms = ['dpn', 'weekly', 'collateral', 'incident'].concat(lvl >= 3 ? ['screening', 'cna', 'isp', 'sra-initial', 'sra-continued', 'quarterly', 'discharge'] : []);
   const reqRows = reqs.length && lvl >= 3 ? `<div class="bl">${reqs.map(r => { const st = M.statusChip(s, r); return `<div class="li"><span class="tt"><b>${esc(M.TYPE_LABEL[r.type])}</b></span>${chip(st.text, sevKind(st.sev))}</div>`; }).join('')}</div>` : '';
   const formRows = `<div class="bl">${forms.map(f => `<div class="li"><span class="tt"><b>${esc(FORM_NAME[f])}</b></span>${btn('Open', 'nav', { k: 'o', s: true, attrs: `data-href="/consumers/${no}/session/${f}"` })}</div>`).join('')}</div>`;

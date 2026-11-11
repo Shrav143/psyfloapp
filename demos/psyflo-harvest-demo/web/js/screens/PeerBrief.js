@@ -2,7 +2,7 @@
 // Evidence. Print; enter the call date the payer agreed by phone (stage peer_to_peer_requested); optionally record the
 // call (with everyone's consent; request.p2pRecording keeps the transcript); Log outcome moves the request, its note
 // pre-filled from the recording.
-import { register, Screen, M, raw, esc, modal, toast } from '../app.js';
+import { register, Screen, M, esc, modal, toast } from '../app.js';
 import { STATUS } from '../shared/labels.js';
 import { pickReq, details, clientOf, rateFor, runOut, payerFirst, openFile, stamp, todayLine, CSS } from './Partials.js';
 import { fmtDate, fmtDateTime, daysBetween } from '../shared/dates.js';
