@@ -514,20 +514,8 @@ export default {
     this.event(`Early-discharge plan set · discharge ${fmtDate(discharge)} · new intake ${fmtDate(intake)} · new initial earliest ${fmtDate(new_initial)}`, by, request);
   },
 
-  // ---------- notes, dictation, timer, assessments (Flow B) ----------
+  // ---------- notes, dictation, assessments (Flow B) ----------
   // staff = the session actor (authz checks the student is on the caseload)
-  'timer.start'(s, { client }) {
-    const staff = this.who();
-    s.timers[staff] = { client, started: this.now(), blocks: s.timers[staff]?.blocks || [] };
-    this.event('Timer started with ' + clientLabel(s, client), staff, client);
-  },
-  'timer.stop'(s) {
-    const staff = this.who();
-    const t = s.timers[staff]; if (!t || !t.started) return;
-    t.blocks = (t.blocks || []).concat([[t.started.slice(11, 16), this.now().slice(11, 16), t.client]]);
-    t.started = null;
-    this.event('Timer stopped', staff, t.client);
-  },
   'dictation.save'(s, { client, spoken, rewritten, chips, checks, ...rest }) {
     const staff = this.who();
     const { staff: _s, by: _b, ...clean } = rest;

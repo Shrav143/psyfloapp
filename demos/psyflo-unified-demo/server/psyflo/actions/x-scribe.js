@@ -58,7 +58,6 @@ function resolves(s, src, d) {
     case 'note': return (s.notes || []).some(n => n.id === src.ref && n.client === d.client);
     case 'notes': return Array.isArray(src.refs) && src.refs.length > 0 && src.refs.every(r => (s.notes || []).some(n => n.id === r && n.client === d.client));
     case 'plan': { const c = byId(s.clients, d.client); return (s.plans || []).some(p => p.client === d.client) || !!(c && (c.goals || []).length); }
-    case 'timer': return Object.values(s.timers || {}).some(t => t && (t.client === d.client)) || !!(src.ref && (s.timers || {})[src.ref]);
     case 'referral': return !!byId(s.referrals, src.ref);
     case 'family': return (s.family_links || []).some(f => f.client === d.client && f.submitted_at);
     case 'request': return !!byId(s.requests, src.ref);

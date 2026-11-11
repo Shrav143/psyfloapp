@@ -319,7 +319,7 @@ const PANEL = [
   ['base-live', [['jperez', '/consumers', 'home'], ['khale', '/consumers', 'home-ds'], ['cdiaz', '/consumers', 'home-supervisor'], ['dowens', '/consumers', 'home-admin'], ['jperez', '/consumers/3310', 'record'],
     ['khale', '/consumers/3310/session/dpn', 'daily-note'], ['jperez', '/consumers/3310/session/weekly', 'weekly'], ['jperez', '/consumers/3310/session/collateral', 'monthly'], ['jperez', '/consumers/4102/session/incident', 'incident'],
     ['jperez', '/consumers/3310/session/quarterly', 'quarterly'], ['jperez', '/consumers/3310/session/sra-continued', 'continued-stay'], ['jperez', '/consumers/4102/session/discharge', 'discharge'], ['jperez', '/approvals', 'forms-to-approve'],
-    ['khale', '/time', 'time-tracker'], ['jperez', '/consumers/5120', 'psyflo-off'], ['khale', '/consumers/3310/session/screening', 'screening-denied-ds']]],
+    ['khale', '/time', 'lauris-time-page'], ['jperez', '/consumers/5120', 'psyflo-off'], ['khale', '/consumers/3310/session/screening', 'screening-denied-ds']]],
   ['tw-isp-ready', [['jperez', '/consumers/4492/session/screening', 'tw-screening'], ['jperez', '/consumers/4492/session/cna', 'tw-cna'], ['jperez', '/consumers/4492/session/isp', 'tw-isp'], ['jperez', '/consumers/4492/session/sra-initial', 'tw-sra']]],
   ['tw-signed', [['jperez', '/approvals', 'forms-to-approve-signed']]]
 ];

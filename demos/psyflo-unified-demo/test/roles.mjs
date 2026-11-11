@@ -16,7 +16,7 @@ const EXPECT = {
   'notes.own': 'A N Y N N N', 'notes.review': 'N Y Y N N N', 'notes.view': 'A A Y N N N', 'auth.status': 'A Y Y Y N N', 'drafts.clinical': 'N N Y N N N',
   'approve.sra': 'N D D N N N', 'sign.lauris': 'N N Y N N N', 'send.packet': 'N D Y D N N', 'payer.reply': 'N N Y N N N', 'payer.decision': 'N D Y D N N',
   'eligibility.run': 'N D Y D N N', 'analytics.aggregate': 'N A Y Y N N', 'analytics.drilldown': 'N N A N N N', 'admin.settings': 'N N N Y N N', 'admin.users': 'N N N Y N N',
-  'demo.controls': 'D D D D N N', 'referrals': 'N N Y N N N', 'myWork': 'Y Y Y Y N N', 'denials': 'N N Y Y N N', 'authorizations': 'N Y Y Y N N', 'scanEnhance': 'N D Y N N N', 'trackTime': 'A N Y N N N'
+  'demo.controls': 'D D D D N N', 'referrals': 'N N Y N N N', 'myWork': 'Y Y Y Y N N', 'denials': 'N N Y Y N N', 'authorizations': 'N Y Y Y N N', 'scanEnhance': 'N D Y N N N'
 };
 const ORDER = ['direct_support', 'supervisor', 'clinician', 'admin', 'guardian', 'school'];
 
@@ -88,7 +88,7 @@ await T.test('no screening transcript reaches an unauthenticated caller: /api/st
 });
 
 await T.test('a made-up or tampered token is the same as no token', async () => {
-  await assert.refused(tryApi('timer.stop', {}, { token: 'not-a-token' }), /Sign in/, 401);
+  await assert.refused(tryApi('dictation.discard', {}, { token: 'not-a-token' }), /Sign in/, 401);
   const r = await fetch(BASE + '/api/state', { headers: { 'X-Psyflo-Session': 'nope' } }); assert.eq(r.status, 401);
 });
 
@@ -133,7 +133,7 @@ await T.test('projection: direct support sees only their caseload; no screenings
   for (const k of ['screenings', 'drafts', 'lauris_versions', 'fills', 'requests', 'referrals', 'family_links', 'consents', 'eligibility', 'internal_quarterlies']) assert.eq((Array.isArray(s[k]) ? s[k].length : Object.keys(s[k] || {}).length), 0, k + ' is empty for direct support');
   assert.ok(s.notes.every(n => n.staff === 'khale'), 'only their own notes');
   assert.ok(s.clients.every(c => !('diagnosis' in c) && !('medicaid' in c)), 'no diagnosis or Medicaid fields');
-  assert.eq(Object.keys(s.timers).filter(k => k !== 'khale').length, 0, 'only their own timer');
+  assert.ok((s.dictations || []).every(d => d.staff === 'khale'), 'only their own dictations');
 });
 
 await T.test('projection: admin sees unit balances and authorization status but no clinical text', async () => {
@@ -188,9 +188,9 @@ await T.test('files need a session and the right role', async () => {
 
 await T.test('cross-origin: JSON only and an origin allow-list on state-changing calls', async () => {
   const s = await session('jperez');
-  let r = await fetch(BASE + '/api/do', { method: 'POST', headers: { 'Content-Type': 'text/plain', 'X-Psyflo-Session': s.token }, body: JSON.stringify({ action: 'timer.stop', args: {} }) });
+  let r = await fetch(BASE + '/api/do', { method: 'POST', headers: { 'Content-Type': 'text/plain', 'X-Psyflo-Session': s.token }, body: JSON.stringify({ action: 'dictation.discard', args: {} }) });
   assert.eq(r.status, 415, 'text/plain is refused');
-  r = await fetch(BASE + '/api/do', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'http://evil.example', 'X-Psyflo-Session': s.token }, body: JSON.stringify({ action: 'timer.stop', args: {} }) });
+  r = await fetch(BASE + '/api/do', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'http://evil.example', 'X-Psyflo-Session': s.token }, body: JSON.stringify({ action: 'dictation.discard', args: {} }) });
   assert.eq(r.status, 403, 'an unlisted origin is refused');
   assert.ok(!r.headers.get('access-control-allow-origin'), 'no reflected CORS');
   r = await fetch(BASE + '/api/do', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: LAURIS }, body: JSON.stringify({ action: 'portal.observed', args: {} }) });

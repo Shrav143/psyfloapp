@@ -9,8 +9,7 @@
 // This build is deterministic: extractors over the transcript/dictation and the record. A hosted LLM can
 // sit behind the same function later; the checks below still gate whatever it returns.
 
-import { fmtDate, fmtUS, daysBetween, mins, fmtDuration, unitsForDirectMinutes, clock12, addDays } from './dates.js';
-import { unitsFor } from './rules.js';
+import { fmtDate, fmtUS, daysBetween, addDays } from './dates.js';
 
 // ---------------------------------------------------------------- the checks (rules 1–14)
 const MONTHS = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
@@ -183,7 +182,7 @@ export function draftScreening({ transcript, today, guardianPhone = '', referral
 // FACTS ONLY. The draft is the staffer's own words, tidied; nothing is added. No keyword template, no invented times, events or outcomes,
 // no objective or intervention inserted for the staffer. What the words do not say becomes a QUESTION (and the box stays blank / "Not stated").
 // "Observed", "watched", "monitored" are flagged and the staffer is asked what they did; the verb is never substituted.
-export function enhanceDictation({ text, client, goals = [], interventions = [], blocks = [], recent = [], today, flagTerms = ['observed', 'monitored', 'watched'] }) {
+export function enhanceDictation({ text, client, goals = [], interventions = [], recent = [], today, flagTerms = ['observed', 'monitored', 'watched'] }) {
   const raw = String(text || '').trim(); const t = raw.toLowerCase();
   const ini = client?.initials || 'the student';
   const questions = []; const fixed = []; let chips = []; let objective = null; let ivs = [];
@@ -198,11 +197,9 @@ export function enhanceDictation({ text, client, goals = [], interventions = [],
     ivs = interventions.filter(i => i.name && t.includes(i.name.toLowerCase())).map(i => i.code || i.name);
     if (ivs.length) chips.push({ text: ivs.join(', '), from: 'you named them' });
     else questions.push({ q: 'What did you do (which intervention from the ISP list)?' });
-    // how long: from the timer blocks or the words
-    const ct = blocks.length ? contactTime(blocks) : null;
+    // how long: from the words (Psyflo does not time sessions; the contact time is typed in Lauris)
     const said = t.match(/(\d+)\s*(min|minutes)\b/);
-    if (ct && ct.total) chips.push({ text: ct.text, from: 'from your timer' });
-    else if (said) chips.push({ text: `${said[1]} min`, from: 'you said it' });
+    if (said) chips.push({ text: `${said[1]} min`, from: 'you said it' });
     else questions.push({ q: 'How long was it?' });
     chips.push({ text: 'your words', from: 'from what you said' });
     // flagged words: ask, never rewrite
@@ -216,20 +213,11 @@ export function enhanceDictation({ text, client, goals = [], interventions = [],
   const checks = [
     { rule: 'Intervention on the ISP list, with why it was used', pass: ivs.length > 0, detail: ivs.length ? ivs.join(', ') : 'Not stated: say what you did' },
     { rule: 'Linked to an ISP objective; progress as a count, not a percentage', pass: objective != null && CHECKS.counts(all).pass, detail: objective != null ? '' : 'Not stated: pick the objective' },
-    { rule: 'Frequency, duration and intensity present', pass: /\d+\s?(min|minutes)/.test(all) || /\d+ of \d+/.test(all) || !!(blocks.length && contactTime(blocks).total), detail: 'Not stated: how long, how often' },
+    { rule: 'Frequency, duration and intensity present', pass: /\d+\s?(min|minutes)/.test(all) || /\d+ of \d+/.test(all), detail: 'Not stated: how long, how often' },
     { rule: 'No "observed"', pass: flagged.length === 0, fixed: '', detail: flagged.length ? `"${flagged.join('", "')}" — say what you did (not changed for you)` : '' },
     { rule: 'Language varies from your last notes', pass: repeated.length === 0, detail: repeated.length ? `Repeated from a recent note: "${repeated[0].slice(0, 60)}…"` : '' }
   ];
   return { spoken: raw, phone, narrative, chips, checks, objective, interventions: ivs, mood: '', progress: '', fixed, questions, flagged, repeated };
-}
-
-// Contact-time rows and units from the timer. Units come from the rules table (unitsFor): pass the store state as `s`;
-// without it the OFFICIAL bands apply (below 120 minutes = 0 units). Time recorded is not time billable.
-export function contactTime(blocks = [], { confirmed = true, s = null } = {}) {
-  const rows = blocks.map(b => ({ from: b[0], to: b[1], what: b[2] || '', min: mins(b[1]) - mins(b[0]), unconfirmed: !!b[3] }));
-  const total = rows.filter(r => confirmed || !r.unconfirmed).reduce((a, r) => a + r.min, 0);
-  const units = s ? unitsFor(s, 'tdt', total) : unitsForDirectMinutes(total);
-  return { rows, total, text: fmtDuration(total), units, lines: rows.map(r => `${clock12(r.from)}–${clock12(r.to)} · ${r.what}${r.unconfirmed ? ' (unconfirmed)' : ''}`).join('\n') };
 }
 
 // ---------------------------------------------------------------- Flow C · initial SRA

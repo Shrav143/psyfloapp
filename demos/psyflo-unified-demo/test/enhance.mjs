@@ -215,7 +215,7 @@ try {
     await p.goto(`${LAURIS}/login?as=jperez&next=${encodeURIComponent('/consumers/4492')}`); await p.waitForTimeout(1800);
     const txt = (await frame().locator('#panel').innerText()).replace(/\s+/g, ' ');
     assert.match(txt, /Wrong student\?/); assert.match(txt, /Change student/); assert.match(txt, /X\.Y\./); assert.match(txt, /T\.W\./);
-    assert.noMatch(txt, /Scribe|Track Time|Scan & Enhance/, 'no action is offered');
+    assert.noMatch(txt, /Scribe|Scan & Enhance/, 'no action is offered');
     await p.locator('#psyflo-slot').screenshot({ path: SHOTS + '/wrong-patient.png' }).catch(() => { });
   });
   await T.test('no console errors in the page or the panel', async () => { assert.deepEq(errs, [], errs.join(' | ')); });

@@ -19,7 +19,7 @@ const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 
 function monday(d) { const w = M.parse(d).getUTCDay(); return M.addDays(d, -((w + 6) % 7)); }
 const monthEndOf = d => M.addDays(M.addDays(d.slice(0, 8) + '28', 4).slice(0, 8) + '01', -1);
-const SESSION_END = '15:30'; // dismissal; a session with no Psyflo timer is taken to end then
+const SESSION_END = '15:30'; // dismissal; a session is taken to end then
 const dueLabel = (at, today) => at.slice(0, 10) === today ? 'today ' + M.fmtTime(at) : at.slice(0, 10) === M.addDays(today, 1) ? 'tomorrow ' + M.fmtTime(at) : M.fmtDate(at, { dow: true }) + (at.slice(11, 16) === '23:59' ? '' : ' ' + M.fmtTime(at));
 
 // On-time tracking for one staffer, from the notes the extension reported at Process Form.
@@ -30,8 +30,7 @@ export function noteTimeliness(s, sid) {
   const today = clockToday(s), nowT = M.now(s), monthStart = today.slice(0, 8) + '01';
   const kids = s.clients.filter(c => c.staff === sid && c.stage !== 'discharged');
   const mine = s.notes.filter(n => n.staff === sid);
-  const timer = s.timers?.[sid];
-  const endOf = (cid, d) => (timer && timer.client === cid && d === today && timer.blocks?.length ? timer.blocks[timer.blocks.length - 1][1] : SESSION_END);
+  const endOf = () => SESSION_END;   // Psyflo does not time sessions
   const behind = [], due = [], late = [];
   let onTime = 0, counted = 0;
   const tally = (d, ok) => { if (d >= monthStart) { counted++; if (ok) onTime++; } };
@@ -156,16 +155,12 @@ register('StaffDashboard', class extends Screen {
     const lateTxt = tl.late.length ? `Came in late this month: ${tl.late.map(x => `${lbl(x.c)} ${M.fmtDate(x.date)}${x.hours ? ` (${x.hours} h after the session)` : ''}`).join(', ')}.` : '';
 
     const open = [];
-    const timer = s.timers?.[sid];
     for (const c of openDaily) {
       const w = M.waitingDictations(s, c.id).filter(x => x.staff === sid || !x.staff);
-      let tracked = 0, running = '';
-      if (timer && timer.client === c.id) { tracked = (timer.blocks || []).reduce((a, b) => a + Math.max(0, minsOf(b)), 0); if (timer.started) running = M.fmtTime(timer.started); }
-      const t = tracked ? `${fmtMin(tracked)} tracked today${running ? ', timer running since ' + running : ''}` : running ? `timer running since ${running}` : 'no time tracked in Psyflo yet';
       const dd = tl.due.find(x => x.type === 'daily' && x.c.id === c.id && x.date === clockToday(s));
       const by = dd ? ` Due by ${dueLabel(dd.dueAt, clockToday(s))} (24 h).` : '';
-      if (w.length) open.push({ title: 'Daily note · ' + lbl(c), text: `${t}; the ${M.fmtTime(w[0].at)} dictation is waiting in your Lauris panel.${by}`, href: 'ExtDPN.dc.html?client=' + c.id, link: 'Open in Lauris' });
-      else open.push({ title: 'Daily note · ' + lbl(c), text: `${t}; nothing dictated yet.${by}`, href: 'MobileApp.dc.html', link: 'Dictate on the phone' });
+      if (w.length) open.push({ title: 'Daily note · ' + lbl(c), text: `The ${M.fmtTime(w[0].at)} dictation is waiting in your Lauris panel.${by}`, href: 'ExtDPN.dc.html?client=' + c.id, link: 'Open in Lauris' });
+      else open.push({ title: 'Daily note · ' + lbl(c), text: `Nothing dictated yet.${by}`, href: 'MobileApp.dc.html', link: 'Dictate on the phone' });
     }
     for (const x of tl.due.filter(x => x.type === 'daily' && x.date < clockToday(s))) open.push({ title: `Daily note · ${lbl(x.c)} ${M.fmtDate(x.date)}`, text: `due by ${dueLabel(x.dueAt, clockToday(s))} (24 h from the session).`, href: 'ExtDPN.dc.html?client=' + x.c.id, link: 'Open in Lauris' });
     for (const c of wkMissing) {

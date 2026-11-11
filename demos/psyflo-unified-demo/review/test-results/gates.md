@@ -1,6 +1,6 @@
 # gates · PASS
 
-Run 2026-11-11T19-10-20Z · 5345 ms · instance 2 · exit 0
+Run 2026-11-11T20-07-23Z · 5597 ms · instance 1 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -8,7 +8,7 @@ Run 2026-11-11T19-10-20Z · 5345 ms · instance 2 · exit 0
 | PASS | WPS-02 the right Harvest # with the wrong initials on the page is a hard stop (audited), nothing applied |  |
 | PASS | WPS-03 no default person: an unknown or missing Lauris user, Harvest # or session records nothing |  |
 | PASS | WPS-04 a forged event (no such session, or another user) is not believed |  |
-| PASS | WPS-05 a timer or dictation for a student off the caseload is refused |  |
+| PASS | WPS-05 a dictation for a student off the caseload is refused |  |
 | PASS | WPS-08 a portal confirmation needs its request, and an issued reference |  |
 | PASS | MCS-01 Process Form (observed) lands in Pending clinical approval; nothing can be signed or sent from a client call |  |
 | PASS | MCS-02 a second Process Form for the same request is an anomaly, not a second processed state |  |

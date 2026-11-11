@@ -25,13 +25,12 @@ try {
     assert.eq(v['Narrative'].replace(/\s+/g, ' ').trim().slice(0, 60), 'Played basketball with M.R. after he got upset in math, he c');
     assert.noMatch(v['Narrative'], /6 minutes|lost the game|walked off|co-regulation|Objective 1/i, 'nothing invented');
     assert.eq(v['Mood check-in'], '', 'mood not stated'); assert.eq(v['Progress today'], '', 'progress not stated');
-    assert.ok(/h|min/.test(v['Direct time']), 'direct time comes from the timer');
-    assert.eq(v['Units'], '2', 'the confirmed 220 minutes = 2 units (official bands)');
+    assert.eq(v['Direct time'], '', 'Psyflo does not time sessions: direct time stays blank for the person to type in Lauris');
+    assert.eq(v['Units'], '', 'units stay blank for the person to type in Lauris');
     await p.screenshot({ path: SHOTS + '/flowB-1-dropped.png' });
   });
-  await T.test('a person confirms the units and presses Process Form; the note counts: 5 of 6', async () => {
-    await panel().getByText(/^Confirm \d units/).click();
-    await p.waitForTimeout(800);
+  await T.test('a person types the direct time and the units in Lauris and presses Process Form; the note counts: 5 of 6', async () => {
+    await p.getByLabel('Direct time', { exact: true }).fill('3 h 40 min'); await p.getByLabel('Units', { exact: true }).fill('2');
     await p.getByRole('button', { name: 'Process Form' }).click();
     await p.waitForURL(/processed=/); await p.waitForTimeout(1500);
     const s = await state('khale');

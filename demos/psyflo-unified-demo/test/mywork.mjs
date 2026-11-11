@@ -76,7 +76,7 @@ async function open(user, path, o = {}) {
   const ctx = await browser.newContext({ viewport: { width: o.w || 1440, height: o.h || 900 } }); ctxs.push(ctx); const page = await ctx.newPage(); page.errs = errors(page);
   if (user) await login(page, user, { presenter: false });
   await page.goto(BASE + path); if (user) await page.reload();
-  await page.waitForFunction(() => document.querySelector('#root .mw') && !document.querySelector('#root .sh-loading'), null, { timeout: 15000 });
+  await page.waitForFunction(sel => document.querySelector(sel) && !document.querySelector('#root .sh-loading'), o.sel || '#root .mw', { timeout: 15000 });
   await page.waitForTimeout(300);
   return page;
 }
@@ -86,7 +86,7 @@ const rootText = p => p.evaluate(() => document.getElementById('root').innerText
 
 try {
   await T.test('clinician lands on To do: top three with verbs, Show all expands, tabs carry counts, one h1, no console errors', async () => {
-    const p = await open('jperez', '/#/MyWork');
+    const p = await open('jperez', '/#/MyWork?legacy=1');
     assert.eq(await p.locator('#root h1').count(), 1); assert.eq((await p.locator('#root h1').innerText()).trim(), 'My Work');
     const tabs = await p.locator('.mw-tabs .mw-tab').allInnerTexts(); assert.match(tabs.join('|'), /To do.*Review.*Team.*Referrals/s);
     assert.eq(await p.locator('.mw-group').first().locator('.mw-row').count(), 3, 'top three');
@@ -99,7 +99,7 @@ try {
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
   await T.test('supervisor lands on Review: approve a note, return one with a required note, approval mode in Team', async () => {
-    const p = await open('cdiaz', '/#/MyWork');
+    const p = await open('cdiaz', '/#/MyWork?legacy=1');
     assert.match(await p.locator('.mw-tab[aria-current=page]').innerText(), /Review/);
     const n0 = (await state('cdiaz')).notes.filter(n => n.review === 'pending').length;
     const who = await p.locator('.mw-detail__h').innerText();
@@ -112,7 +112,7 @@ try {
     await p.fill('#mw-c', 'Name the goal and the intervention.'); await p.click('.ui-dialog [data-ui-action="1"]'); await p.waitForTimeout(700);
     const s = await state('cdiaz'); assert.eq(s.notes.filter(n => n.review === 'returned').length >= 1, true); assert.eq(s.notes.filter(n => n.review === 'pending').length, n0 - 2);
     assert.match(await rootText(p), /Decided today/);
-    await p.goto(BASE + '/#/MyWork?section=team'); await p.waitForSelector('.ui-qt'); await p.waitForTimeout(300);
+    await p.goto(BASE + '/#/MyWork?legacy=1&section=team'); await p.waitForSelector('.ui-qt'); await p.waitForTimeout(300);
     const row = p.locator('tr', { hasText: 'R. Owens' }); await row.locator('[data-x="apprOff"]').click(); await p.waitForSelector('.ui-dialog');
     await p.click('.ui-dialog [data-ui-action="1"]'); await p.waitForTimeout(700);
     assert.eq((await state('cdiaz')).staff.find(x => x.id === 'rowens').review_mode, 'spot_check', 'approval turned off through staff.reviewMode');
@@ -120,37 +120,42 @@ try {
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
   await reset('live');
-  await T.test('Team deep link ?staff= opens that person\'s day; the old StaffDashboard and ReviewQueue routes land here', async () => {
-    let p = await open('cdiaz', '/#/MyWork?section=team&staff=khale');
+  await T.test('legacy: ?legacy=1 keeps the old Team deep link; without it My Work, StaffDashboard, ReviewQueue and DoNext land on Dashboard, Documentation or Referrals', async () => {
+    let p = await open('cdiaz', '/#/MyWork?legacy=1&section=team&staff=khale');
     assert.match(await rootText(p), /Kayla Hale's day/); assert.match(await rootText(p), /Behind/); await p.close();
-    p = await open('cdiaz', '/#/StaffDashboard?staff=khale'); assert.eq(await p.evaluate(() => psyflo.current.id), 'MyWork');
-    assert.match(await p.evaluate(() => location.hash), /section=team/); assert.match(await rootText(p), /Kayla Hale's day/); await p.close();
-    p = await open('cdiaz', '/#/ReviewQueue'); assert.match(await p.evaluate(() => location.hash), /section=review/); await p.close();
-    p = await open('jperez', '/#/DoNext'); assert.match(await p.evaluate(() => location.hash), /section=todo/); await done();
+    const lands = async (user, path, id, re, sel = '#root h1') => { const q = await open(user, path, { sel }); assert.eq(await q.evaluate(() => psyflo.current.id), id, path); if (re) assert.match(await q.evaluate(() => location.hash), re, path); await q.close(); };
+    await lands('cdiaz', '/#/StaffDashboard?staff=khale', 'Dashboard', /staff=khale/);
+    await lands('cdiaz', '/#/ReviewQueue', 'Documentation', /status=pending_review/, '#root .doc-page');
+    await lands('cdiaz', '/#/MyWork?section=review', 'Documentation', /status=pending_review/, '#root .doc-page');
+    await lands('cdiaz', '/#/MyWork?section=team', 'Documentation', /view=staff/, '#root .doc-page');
+    await lands('cdiaz', '/#/MyWork', 'Dashboard');
+    await lands('jperez', '/#/DoNext', 'Dashboard');
+    await lands('jperez', '/#/MyWork?section=referrals', 'Referrals');
+    await done();
   });
   await T.test('administrator: Operations and Team, "Clinical text hidden for your role", no note text, review is denied with the reason', async () => {
-    const p = await open('dowens', '/#/MyWork');
+    const p = await open('dowens', '/#/MyWork?legacy=1');
     const text = await rootText(p); assert.match(text, /Clinical text hidden for your role/); assert.match(text, /Operations/);
     assert.noMatch(text, /played basketball|cooled down|Reply to|Send reply|Review draft|New referral/i);
     assert.ok(!(await p.locator('.mw-tab', { hasText: 'Review' }).count()), 'no Review tab');
-    await p.goto(BASE + '/#/MyWork?section=review'); await p.waitForTimeout(500);
+    await p.goto(BASE + '/#/MyWork?legacy=1&section=review'); await p.waitForTimeout(500);
     assert.match(await rootText(p), /needs a different role/i); assert.match(await rootText(p), /Clinical text hidden/);
-    await p.goto(BASE + '/#/MyWork?section=team'); await p.waitForSelector('.ui-qt'); const t = await rootText(p); assert.match(t, /Clinical text hidden for your role/);
+    await p.goto(BASE + '/#/MyWork?legacy=1&section=team'); await p.waitForSelector('.ui-qt'); const t = await rootText(p); assert.match(t, /Clinical text hidden for your role/);
     assert.eq(await p.locator('[data-x="apprOn"], [data-x="apprOff"]').count(), 0, 'no approval toggles for an administrator');
     await p.screenshot({ path: SHOTS + '/mywork-admin.png' }); assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
   await T.test('direct support: My day only, one progress line, Write note goes to the form; works at phone width without sideways scroll', async () => {
-    const p = await open('khale', '/#/MyWork', { w: 390, h: 844 });
+    const p = await open('khale', '/#/MyWork?legacy=1', { w: 390, h: 844 });
     assert.eq(await p.locator('.mw-tab').count(), 0, 'a single section has no tabs'); assert.match(await rootText(p), /4 of 6 daily notes in/);
     const prog = await p.locator('[role=progressbar]').count(); assert.eq(prog >= 1, true);
     assert.ok(await p.locator('.mw-next .ui-btn--primary').count() === 1, 'one primary: the next note');
     const w = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth })); assert.ok(w.sw <= w.iw + 1, `no horizontal scroll (${w.sw} > ${w.iw})`);
     const small = await p.evaluate(() => [...document.querySelectorAll('#root .mw-row .ui-btn')].filter(b => b.getBoundingClientRect().height < 44).length); assert.eq(small, 0, 'touch targets 44 px');
     await p.screenshot({ path: SHOTS + '/mywork-ds-390.png' }); assert.deepEq(fatal(p), [], 'console errors');
-    await p.goto(BASE + '/#/MyWork?section=review'); await p.waitForTimeout(500); assert.match(await rootText(p), /needs a different role/i); await done();
+    await p.goto(BASE + '/#/MyWork?legacy=1&section=review'); await p.waitForTimeout(500); assert.match(await rootText(p), /needs a different role/i); await done();
   });
   await T.test('a row whose screen the role may not open says why (a disabled button), never a dead link', async () => {
-    const p = await open('dowens', '/#/MyWork');
+    const p = await open('dowens', '/#/MyWork?legacy=1');
     await p.click('[data-x="toggle"][data-key="waiting"]'); await p.waitForTimeout(300);
     const dead = await p.evaluate(() => [...document.querySelectorAll('#root .mw-row a[href]')].filter(a => /Submission|InfoRequest|Partials|PeerBrief|ExtSignOff/.test(a.getAttribute('href'))).length);
     assert.eq(dead, 0, 'admin rows never link to clinician-only screens'); await done();
@@ -158,9 +163,9 @@ try {
   await T.test('every link on every My Work section, for every role, resolves to a screen the role may open', async () => {
     const bad = [];
     for (const [user, secs] of [['jperez', ['todo', 'review', 'team', 'referrals']], ['cdiaz', ['review', 'team', 'todo']], ['dowens', ['todo', 'team']], ['khale', ['day']]]) {
-      const p = await open(user, '/#/MyWork');
+      const p = await open(user, '/#/MyWork?legacy=1');
       for (const sec of secs) {
-        await p.goto(BASE + '/#/MyWork?section=' + sec); await p.waitForTimeout(500);
+        await p.goto(BASE + '/#/MyWork?legacy=1&section=' + sec); await p.waitForTimeout(500);
         for (const k of ['all', 'week', 'waiting']) { const b = p.locator(k === 'all' ? '[data-x="all"]' : `[data-x="toggle"][data-key="${k}"]`); if (await b.count()) { if ((await b.first().getAttribute('aria-expanded')) !== 'true') await b.first().click(); await p.waitForTimeout(150); } }
         const hrefs = await p.evaluate(() => [...document.querySelectorAll('#root a[href^="#/"]')].map(a => a.getAttribute('href')));
         for (const h of new Set(hrefs)) {

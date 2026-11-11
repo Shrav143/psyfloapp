@@ -100,7 +100,7 @@ register('PeerBrief', class extends Screen {
       { text: 'Level of care', bold: true, gap: 10 }, { text: x.levelOfCare },
       { text: `What ${x.awarded} units means`, bold: true, gap: 10 }, { text: x.unitsText },
       { text: 'Questions they usually ask · short answers', bold: true, gap: 10 }, ...x.questions.map(q => ({ text: q.q + ' — ' + q.a })),
-      { text: 'Assembled in advance from the submitted request, the notes and the timer log. Synthetic demo data.', size: 9, gap: 14 }
+      { text: 'Assembled in advance from the submitted request and the notes. Synthetic demo data.', size: 9, gap: 14 }
     ];
     openFile(this, 'file.pdf', { name: `${x.r.id}_peer_to_peer_call_notes.pdf`, title: 'Peer-to-peer call notes', blocks, kind: 'p2p_brief', record: x.r.id });
   }

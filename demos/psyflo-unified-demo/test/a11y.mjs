@@ -185,7 +185,7 @@ for (const g of PHONE) {
 }
 
 // ------------------------------------------------------------------------------------------------ 4. the panel in its in-page mode, 400 px beside the mock Lauris
-const PANEL = [['jperez', '/consumers', 'home'], ['khale', '/consumers', 'home (direct support)'], ['khale', '/consumers/3310/session/dpn', 'daily note'], ['jperez', '/consumers/3310/session/weekly', 'weekly'], ['jperez', '/consumers/3310/session/sra-continued', 'continued stay'], ['jperez', '/approvals', 'forms to approve'], ['khale', '/time', 'time tracker']];
+const PANEL = [['jperez', '/consumers', 'home'], ['khale', '/consumers', 'home (direct support)'], ['khale', '/consumers/3310/session/dpn', 'daily note'], ['jperez', '/consumers/3310/session/weekly', 'weekly'], ['jperez', '/consumers/3310/session/sra-continued', 'continued stay'], ['jperez', '/approvals', 'forms to approve'], ['khale', '/time', 'lauris time page']];
 if (on('panel')) {
   const { ctx, page } = await ctxFor({});
   for (const [as, p, name] of PANEL) {

@@ -8,7 +8,7 @@ export const TABS = [
 
 // ---- permission matrix ------------------------------------------------------------------------------------------------------
 export const CAP_GROUPS = [
-  ['Notes and review', ['notes.own', 'notes.review', 'notes.view', 'scanEnhance', 'trackTime', 'ext.use']],
+  ['Notes and review', ['notes.own', 'notes.review', 'notes.view', 'scanEnhance', 'ext.use']],
   ['Authorizations and payers', ['auth.status', 'authorizations', 'drafts.clinical', 'approve.sra', 'sign.lauris', 'send.packet', 'payer.reply', 'payer.decision', 'denials', 'eligibility.run', 'referrals', 'appeal.prepare']],
   ['Analytics and units', ['analytics.aggregate', 'analytics.drilldown', 'notes.billing']],
   ['Administration', ['myWork', 'admin.settings', 'admin.users', 'demo.controls']],
@@ -84,7 +84,7 @@ export const MODE_LABEL = { remote_allowed: 'Remote allowed', in_person_required
 // ---- presenter --------------------------------------------------------------------------------------------------------------
 export const SURFACES = [
   ['Lauris and the extension', 'Every Lauris form is written by the extension on the page a person has open: screening, intake, plan, notes, both SRAs. A person presses Process Form and Get Signature.', 'lauris'],
-  ['Phone', 'Pick a student, track time, say what happened, assessments. Answers wait in Psyflo until the student is open in Lauris.', 'phone'],
+  ['Phone', 'Pick a student, say what happened, assessments. Answers wait in Psyflo until the student is open in Lauris.', 'phone'],
   ['Platform', 'What Lauris has no place for: My Work, referrals, send and track, payer replies, partial decisions, peer-to-peer, analytics, settings.', 'platform'],
   ['Portals', 'Guardians and schools without a Lauris login: family link, signing, referral, status. Never clinical content.', 'family']
 ];

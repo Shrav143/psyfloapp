@@ -1,13 +1,11 @@
-// 20 · Mobile app (phone, S1). Home = My students · Current activity · Say what happened · Review · Ready in Lauris, under a sticky student bar.
-// One model of time with the panel (shared/time.js, actions time.*): start / pause / stop, a stopped timer becomes a draft entry, saving describes it.
-// Recorded, direct, in-the-note and potentially billable are four separate figures; a running timer is none of them. The timer reads the demo clock.
+// 20 · Mobile app (phone, S1). Home = My students · Say what happened · Review · Ready in Lauris, under a sticky student bar.
+// (The timer, time entries and the four time figures were removed on Nov 11 on the direct-support feedback: Psyflo no longer records or counts time.)
 // Nothing is picked for the person: no default student, no initials fallback (the server also checks the caseload and the Harvest #).
 // State chips on every note: Draft · Waiting for Lauris · Processed in Lauris (processed only when a processed note exists, i.e. an observed page event).
 // No promise of background or locked-screen capture. Also exports the phone helpers MobileDictate and MobileAssess share.
 import { register, Screen, M, raw, esc, session, toast, go, app, ui } from '../app.js';
-import { clock12, fmtDate } from '../shared/dates.js';
-import { today as clockToday, nowFull } from '../shared/clock.js';
-import { timeSummary, timerOf, identityCard, fmtMin, fmtElapsed, range12, FIGURES, kindOptions, needsCheck, unitRuleOf, stalenessLabel, isHHMM } from '../shared/time.js';
+import { today as clockToday } from '../shared/clock.js';
+import { identityCard } from '../shared/identity.js';
 
 // ---------- shared phone helpers ----------
 // the phone acts as the person signed in: no fallback to another staff member (the server also checks the caseload and the role)
@@ -24,15 +22,7 @@ export function dueAssessments(s, uid) {
   return (s.assessments_due || []).filter(d => (d.staff === uid || !d.staff) && mine.has(d.client))
     .filter(d => !(s.assessments || []).some(a => a.client === d.client && a.instrument === d.instrument && a.date === clockToday(s)));
 }
-// seconds since the timer started, from the demo clock (store.clock via shared/clock.js): never the machine's clock
-export function elapsedSec(s, started) {
-  if (!started) return 0;
-  const t = nowFull(s);
-  if (started.slice(0, 10) !== t.slice(0, 10)) return 0;
-  const sec = x => { const [h, m, z] = x.slice(11, 19).split(':').map(Number); return h * 3600 + m * 60 + (z || 0); };
-  return Math.max(0, sec(t) - sec(started));
-}
-export { fmtElapsed };
+// a one-second ticker for a screen (the dictation screen's microphone time)
 export function tick(inst, fn) {
   clearInterval(inst._tick);
   inst._tick = setInterval(() => { if (app.current?.inst !== inst) return clearInterval(inst._tick); fn(); }, 1000);
@@ -57,94 +47,32 @@ export const STATE_CHIP = {
 };
 
 register('MobileApp', class extends Screen {
-  init() { this.state = { pick: this.params.client || null, changing: false, desc: {}, act: '', ending: '', discarding: null, discardWhy: '', open: false }; }
+  init() { this.state = { pick: this.params.client || null, changing: false }; }
   user() { return phoneUser(this.s); }
   students() { const u = this.user(); return u ? myStudents(this.s, u.id) : []; }
-  timer() { const u = this.user(); return u ? timerOf(this.s, u.id, nowFull(this.s)) : null; }
   picked() { return this.students().find(c => c.id === this.state.pick) || null; }
-  // the student the screen is about: the one the person picked, else the one the running timer is with (never a guess)
-  focus() { if (this.state.changing) return null; const t = this.timer(); return this.picked() || (t && this.students().find(c => c.id === t.client)) || null; }
-  drafts() { const u = this.user(); return u ? (this.s.time_entries || []).filter(e => e.staff === u.id && e.status === 'draft') : []; }
+  // the student the screen is about: the one the person picked (never a guess)
+  focus() { if (this.state.changing) return null; return this.picked(); }
   renderVals() {
     const s = this.s; const u = this.user(); const today = clockToday(s);
-    if (!u) return { who: '', bar: raw(patientBar(s, null, { change: false })), hasStudents: false, chips: [], figs: [], entries: [], drafts: [], review: [], stuNote: '', figCount: 0 };
-    const st = this.students(); const t = this.timer(); const pk = this.picked(); const fc = this.focus();
-    const running = !!t && !t.stale && !t.paused, paused = !!t && !t.stale && t.paused, stale = !!t && t.stale;
-    const tc = t ? M.client(s, t.client) : null; const tCard = t ? identityCard(s, t.client) : null;
+    if (!u) return { who: '', bar: raw(patientBar(s, null, { change: false })), hasStudents: false, chips: [], review: [], stuNote: '' };
+    const st = this.students(); const fc = this.focus();
     const nt = M.notesToday(s, u.id);
-    const unitR = unitRuleOf(s);
     // my notes today (waiting, used, and a draft someone started but did not save)
     const myD = (s.dictations || []).filter(d => d.staff === u.id && (d.at || '').slice(0, 10) === today);
     const rows = myD.map(d => { const c = M.client(s, d.client); const stt = dictationState(s, d); return { ini: c.initials, text: (d.spoken || '').length > 70 ? d.spoken.slice(0, 68) + '…' : d.spoken, chip: raw(STATE_CHIP[stt]()), open: () => go('MobileDictate', { client: d.client, edit: d.id }), canOpen: stt === 'waiting', at: M.fmtTime(d.at) }; });
     for (const c of st) { const k = ui.draft.get('phone:say:' + c.id, ''); if (k && k.trim() && !myD.some(d => d.client === c.id && d.spoken === k.trim())) rows.unshift({ ini: c.initials, text: k.length > 70 ? k.slice(0, 68) + '…' : k, chip: raw(STATE_CHIP.draft()), open: () => go('MobileDictate', { client: c.id }), canOpen: true, at: '' }); }
     const waitD = myD.filter(d => d.status === 'waiting');
-    // the four figures for the student in focus (today, this person's entries)
-    let sum = null; const figs = [];
-    if (fc) {
-      sum = timeSummary(s, fc.id, today, { staff: u.id });
-      const run = t && t.client === fc.id && !t.stale;
-      const docText = sum.documented.source === 'note' ? (sum.documented.minutes != null ? fmtMin(sum.documented.minutes) : 'in the note') : 'Not yet';
-      const vals = { recorded: fmtMin(sum.recorded) + (run ? ' + running' : ''), direct: fmtMin(sum.direct), documented: docText, units: sum.units + (sum.units === 1 ? ' unit' : ' units') };
-      for (const f of FIGURES) figs.push({ label: f.label, value: vals[f.key], hint: f.hint, extra: f.key === 'units' ? raw(ui.sourceChip(unitR)) : f.key === 'documented' && sum.linkedCount && sum.documented.source !== 'note' ? raw(ui.chip(`${sum.linkedCount} linked`, { tone: 'neutral', size: 'sm' })) : raw('') });
-    }
-    const entries = sum ? sum.entries.filter(e => e.status === 'saved').map(e => ({
-      time: range12(e.start, e.end), min: fmtMin(e.minutes), what: e.what || 'Not described',
-      chips: raw([!e.confirmed ? ui.chip('To confirm', { tone: 'warning', size: 'sm', title: 'Not counted as direct time until you confirm it.' }) : '', needsCheck(e) ? ui.chip('Check', { tone: 'neutral', size: 'sm', title: 'Idle or waiting time, transport, documentation and classroom monitoring without treatment are not reimbursable (Officially verified). If this was one of those, say so.' }) : '', e.dpn && e.dpn.note ? ui.chip('In the note', { tone: 'success', size: 'sm' }) : e.dpn ? ui.chip('Linked', { tone: 'info', size: 'sm' }) : '', e.source === 'manual' ? ui.chip('By hand', { tone: 'neutral', size: 'sm' }) : ''].join('')),
-      canConfirm: !e.confirmed && !(e.dpn && e.dpn.note), canDiscard: !(e.dpn && e.dpn.note), askWhy: this.state.discarding === e.id,
-      confirm: () => this.act(`Confirmed · ${fmtMin(e.minutes)} counts as direct service`, 'time.save', { id: e.id, confirm: true }),
-      askDiscard: () => this.setState({ discarding: e.id, discardWhy: '' }), cancelDiscard: () => this.setState({ discarding: null }),
-      why: ev => { this.state.discardWhy = ev.target.value; },
-      discard: () => { if ((this.state.discardWhy || '').trim().length < 4) return toast('Say why (a few words)', 'err'); return this.act('Discarded · kept in the record', 'time.discard', { id: e.id, reason: this.state.discardWhy }).then(() => this.setState({ discarding: null })); }
-    })) : [];
-    const kinds = kindOptions(s).map(k => ({ key: k.key, label: k.label }));
-    const drafts = this.drafts().map(e => {
-      const c = M.client(s, e.client); const d = this.state.desc[e.id] || (this.state.desc[e.id] = { what: '', kind: 'direct' });
-      return { id: e.id, title: `${c.initials} · ${range12(e.start, e.end)}`, min: fmtMin(e.minutes) + ' recorded', what: d.what, kinds: kinds.map(k => ({ ...k, sel: k.key === d.kind ? ' selected' : '' })),
-        typed: ev => { d.what = ev.target.value; }, kind: ev => { d.kind = ev.target.value; },
-        save: () => { if ((d.what || '').trim().length < 3) return toast('Say what you did (a few words)', 'err'); return this.act(`Saved · ${fmtMin(e.minutes)}`, 'time.save', { id: e.id, what: d.what, kind: d.kind }); },
-        discard: () => this.act('Discarded · it was not saved', 'time.discard', { id: e.id }) };
-    });
     const dot = c => { const done = nt.doneSet.has(c.id); const w = (s.dictations || []).some(d => d.client === c.id && d.status === 'waiting' && d.staff === u.id); return done ? 'ok' : w ? 'wait' : ''; };
     return {
-      who: whoLine(s, u), bar: raw(patientBar(s, fc && fc.id, { note: !pk && fc ? 'Timing now' : '', choosing: this.state.changing })), hasStudents: st.length > 0,
+      who: whoLine(s, u), bar: raw(patientBar(s, fc && fc.id, { choosing: this.state.changing })), hasStudents: st.length > 0,
       chips: st.map(c => ({ ini: c.initials, on: fc && c.id === fc.id ? ' on' : '', pressed: !!(fc && c.id === fc.id), dot: dot(c), sr: dot(c) === 'ok' ? 'daily note processed today' : dot(c) === 'wait' ? 'a note is waiting for Lauris' : 'no note yet today', pick: () => this.setState({ pick: c.id, changing: false }) })),
       stuNote: st.length ? `${nt.done} of ${nt.total} daily notes processed today` : '',
-      hasFocus: !!fc, focusIni: fc ? fc.initials : '',
-      isIdle: !t, isRunning: running, isPaused: paused, isStale: stale, hasDrafts: drafts.length > 0, drafts,
-      timerWho: tCard ? tCard.line : '', timerIni: tc ? tc.initials : '', elapsed: t && !t.stale ? fmtElapsed(t.elapsedSec) : '', timerSince: t ? `${t.paused ? 'Paused · ' : ''}since ${clock12(t.start)}` : '',
-      staleText: stalenessLabel(s, t), ending: this.state.ending, endTyped: ev => { this.state.ending = ev.target.value; },
-      canStart: !!fc && !t, canSwitch: !!t && !t.stale && !!pk && pk.id !== t.client, switchLabel: pk ? `Switch to ${pk.initials}` : '',
-      startLabel: fc ? `Start with ${fc.initials}` : 'Pick a student to start',
-      start: () => this.start(), pause: () => this.act('Paused', 'time.pause', {}), resume: () => this.act('Resumed', 'time.resume', {}), stop: () => this.stop(), switchTo: () => this.start(true), stopStale: () => this.stopStale(),
-      actText: this.state.act, actTyped: ev => { this.state.act = ev.target.value; }, timerWhat: t ? t.what || '' : '', actSet: ev => this.act('Activity noted', 'time.activity', { what: ev.target.value }),
-      timerNote: t && !t.stale ? 'Recorded time only. A running timer is not billable.' : '',
-      figs, figCount: figs.length, entries, entryCount: entries.length, showEntries: this.state.open && entries.length > 0, toggleLabel: this.state.open ? 'Hide entries' : `Today's entries (${entries.length})`, toggle: () => this.setState({ open: !this.state.open }),
       review: rows, hasReview: rows.length > 0,
       readyText: waitD.length ? `${waitD.length} waiting. It drops in when ${[...new Set(waitD.map(d => M.client(s, d.client).initials))].join(' or ')}'s daily note is open in Lauris, matched by Harvest #.` : 'Nothing waiting for Lauris.',
       readySub: waitD.length ? 'You review the words and press Process Form yourself.' : '',
       dueN: dueAssessments(s, u.id).length, canSay: !!fc, sayDisabled: !fc, sayHint: fc ? '' : 'Pick a student first'
     };
-  }
-  after(root) {
-    const t = this.timer();
-    if (t && !t.stale && !t.paused) tick(this, () => { const el = document.getElementById('elapsed'); const x = this.timer(); if (el && x && !x.stale) el.textContent = fmtElapsed(x.elapsedSec); });
-    else clearInterval(this._tick);
-  }
-  // one place for a person's tap that changes time: the server decides, the screen says what happened
-  async act(msg, action, args) { try { await this.do(action, args); toast(msg); } catch (e) { /* this.do already toasted the server's reason */ } }
-  async start(sw = false) {
-    const fc = this.focus(); if (!fc) return toast('Pick a student first', 'err');
-    const card = identityCard(this.s, fc.id);
-    await this.act(`Timer started with ${fc.initials}`, 'time.start', { client: fc.id, harvest_no: card.harvest_no, switch: sw, what: this.state.act });
-    this.state.act = '';
-  }
-  async stop() {
-    const t = this.timer(); if (!t) return;
-    try { const r = await this.do('time.stop', {}); toast(`Stopped · ${fmtMin(r.minutes)} recorded. Say what you did, then save it.`); } catch (e) { }
-  }
-  async stopStale() {
-    if (!isHHMM(this.state.ending)) return toast('Enter the time it really ended, like 14:30', 'err');
-    try { const r = await this.do('time.stop', { end: this.state.ending }); this.state.ending = ''; toast(`Recorded ${fmtMin(r.minutes)}. Say what you did, then save it.`); } catch (e) { }
   }
   get anchors() {
     return {

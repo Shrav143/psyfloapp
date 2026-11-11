@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo — Documentation</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+/* Documentation (notes, intake forms, CNAs, plans across patients). Prefix doc-. Tokens and the shared kit come from tokens.css and components.css. */
+.doc-page{max-width:1320px;margin:0 auto;padding:var(--sp-5) var(--gutter) 64px;display:flex;flex-direction:column;gap:var(--sp-4);min-width:0}
+.doc-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--sp-3) var(--sp-4)}
+.doc-head h1{margin:0;font-size:var(--fs-28);line-height:var(--lh-28);font-weight:600;letter-spacing:-.01em}
+.doc-head__t{display:flex;align-items:center;gap:var(--sp-2);flex-wrap:wrap}
+.doc-head__r{margin-left:auto;display:flex;gap:var(--sp-4);align-items:flex-end;flex-wrap:wrap}
+.doc-ontime{display:inline-flex;align-items:baseline;gap:8px;font-size:var(--fs-13);color:var(--muted-700);white-space:nowrap}
+.doc-ontime b{font-size:var(--fs-18);line-height:var(--lh-18);color:var(--ink-900);font-weight:600}
+.doc-range{border:0;margin:0;padding:0;display:flex;gap:var(--sp-2);align-items:center;flex-wrap:wrap}
+.doc-range__l{float:left;width:100%;font-size:var(--fs-12);line-height:var(--lh-12);font-weight:600;color:var(--muted-700);padding:0;margin-bottom:2px}
+.doc-range__f input{width:150px}
+.doc-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line-200);overflow-x:auto;max-width:100%}
+.doc-tab{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;color:var(--muted-700);font:600 var(--fs-14)/1 var(--font);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.doc-tab:hover{color:var(--ink-900)}
+.doc-tab[aria-current=page]{color:var(--ink-900);border-bottom-color:var(--teal-600)}
+.doc-sub{display:block;color:var(--muted-700);font-size:var(--fs-12);line-height:var(--lh-12);margin-top:2px;white-space:nowrap}
+.doc-nw{white-space:nowrap}
+.doc-muted{color:var(--muted-700)}
+.doc-page a:not(.ui-btn):not(.ui-qt__link){color:var(--teal-700)}
+.doc-page .ui-qt__table td{padding:7px 7px;vertical-align:middle}
+.doc-page .ui-qt__table th{padding-left:7px;padding-right:7px}
+.doc-page .ui-qt__table td:last-child{white-space:nowrap}
+.doc-page .ui-qt__link{color:inherit}
+.doc-page .ui-qt__table .ui-chip{padding:0 8px}
+.doc-acts{display:flex;gap:6px;align-items:center;justify-content:flex-end}
+.doc-sample{display:flex;align-items:center}
+.doc-acc{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:10px 16px}
+.doc-acc summary{cursor:pointer;font-weight:600;min-height:32px;display:flex;align-items:center;gap:8px}
+.doc-acc ul{margin:8px 0 0;padding-left:18px}
+.doc-acc li{margin:4px 0}
+.doc-hidden{display:flex;align-items:center;gap:8px;color:var(--muted-700);font-size:var(--fs-13)}
+/* review drawer */
+.doc-rv{display:flex;flex-direction:column;gap:var(--sp-3)}
+.doc-rv__who{font-weight:600;color:var(--muted-700);font-size:var(--fs-13)}
+.doc-rv__chips,.doc-rv__checks{display:flex;flex-wrap:wrap;gap:6px}
+.doc-rv__cmp{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3)}
+.doc-rv__cmp section{border:1px solid var(--line-200);border-radius:var(--r-2);padding:10px 12px;min-width:0}
+.doc-rv__cmp h3{margin:0 0 6px;font:600 var(--fs-13)/var(--lh-13) var(--font);display:flex;align-items:center;gap:6px}
+.doc-rv__txt{white-space:pre-wrap;overflow-wrap:anywhere;font-size:var(--fs-14);line-height:1.45}
+.doc-rv mark.mw-add{background:var(--success-bg);color:inherit;border-radius:3px;padding:0 2px}
+.doc-rv__pat{display:flex;align-items:center;gap:6px;font-size:var(--fs-13);color:var(--warning-fg)}
+.doc-rv__trail{font-size:var(--fs-12);color:var(--muted-700);line-height:1.4}
+.doc-err{color:var(--danger-fg);font-size:var(--fs-13);min-height:18px}
+@media (max-width:760px){
+  .doc-page{padding:16px 16px 40px}
+  .doc-head__r{margin-left:0;width:100%}
+  .doc-rv__cmp{grid-template-columns:1fr}
+  .doc-range__f input{width:132px}
+}
+</style>
+</helmet>
+<main class="doc-page">
+  <header class="doc-head">
+    <div class="doc-head__t"><h1>Documentation</h1>{{maturity}}{{sample}}</div>
+    <div class="doc-head__r">{{ontime}}{{range}}</div>
+  </header>
+  {{tabs}}
+  {{bar}}
+  {{body}}
+</main>
+</x-dc>
+</body>
+</html>

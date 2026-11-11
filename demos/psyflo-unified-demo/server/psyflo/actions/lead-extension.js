@@ -10,7 +10,7 @@ import { attest } from '../../attest.js';
 
 const byId = (arr, id) => arr.find(x => x.id === id);
 const NOTE_TYPE = { dpn: 'daily', weekly: 'weekly_guardian', collateral: 'monthly_collateral', quarterly: 'quarterly', incident: 'incident', discharge: 'discharge' };
-const FORM_NAME = { screening: 'Admission Screening', cna: 'CNA', isp: 'ISP 2.0', dpn: 'Daily Progress Note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', time: 'Time Tracker entry', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'TDT Initial SRA', 'sra-continued': 'CMHRS Continued Stay', discharge: 'Discharge summary' };
+const FORM_NAME = { screening: 'Admission Screening', cna: 'CNA', isp: 'ISP 2.0', dpn: 'Daily Progress Note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'TDT Initial SRA', 'sra-continued': 'CMHRS Continued Stay', discharge: 'Discharge summary' };
 
 // Wrong-patient protection: a Lauris record is matched to a Psyflo student by the Harvest # ONLY (never by initials), and the
 // initials shown on the open page must agree with Psyflo's record (the identity card). Returns { client, status, reason }.
@@ -49,6 +49,8 @@ export default {
     s.lauris_seen = s.lauris_seen || [];
     const staff = validateBridgeEvent(this, s, a);
     const who = staff.id;
+    // Lauris's own Time Tracker page is not read: Psyflo does not record or count time (Track Time was removed on Nov 11)
+    if (a.form === 'time') return { ignored: 'Psyflo does not read the Lauris Time Tracker.' };
     const key = `${a.event}:${a.session || ''}:${a.consumer?.no || ''}${a.event === 'authorization' ? ':' + String(a.consumer?.units || '') : ''}`;
     if (s.lauris_seen.includes(key)) return { duplicate: true };
     const idn = identity(s, a.consumer);
@@ -74,7 +76,6 @@ export default {
       c.lauris_no = Number(a.consumer.no); this.event(`Consumer created in Lauris by a person · Harvest # ${a.consumer.no} (seen by the extension)`, who, c.referral || c.id, asBridge);
       return done();
     }
-    if (a.event === 'saved' && a.form === 'time') { this.event(`Lauris Time Tracker: time saved in Lauris by a person · ${a.consumer?.initials || ''} (seen by the extension; not turned into units)`.replace(' ·  (', ' ('), who, rec, asBridge); return done(); }
     if (a.event === 'saved') { this.event(`${FORM_NAME[a.form] || a.form} saved in Lauris (not processed)`, who, rec, asBridge); return done(); }
     if (a.event === 'rejected') { this.event(`${FORM_NAME[a.form] || a.form} rejected in Lauris Forms to Approve`, who, rec, asBridge); return done(); }
 

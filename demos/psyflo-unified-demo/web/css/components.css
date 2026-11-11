@@ -372,3 +372,21 @@ body[data-surface="parent"] .sh-rail,body[data-surface="school"] .sh-rail,body[d
 .sh-note__f li{display:flex;gap:10px;align-items:flex-start}
 .sh-note__f small{display:block;color:var(--muted-700);font-size:var(--fs-12)}
 .sh-help-k{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;align-items:center;margin:0}
+
+/* ---- at-a-glance: unit bar and deadline date (ui/glance.js; feedback round Nov 11) ---- */
+.ui-units{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;font-size:var(--fs-13);color:var(--ink-900)}
+.ui-units__bar{display:inline-block;width:72px;height:8px;border-radius:4px;background:var(--sand-100);overflow:hidden;flex:none}
+.ui-units__bar i{display:block;height:100%;border-radius:4px;background:var(--teal-600)}
+.ui-units__n b{font-weight:600}
+.ui-units.is-warn .ui-units__bar i{background:#D9A21B}
+.ui-units.is-out .ui-units__bar i{background:var(--danger-fg)}
+.ui-units__flag{display:inline-flex;flex:none;color:#8A5A00}
+.ui-units.is-out .ui-units__flag{color:var(--danger-fg)}
+.ui-units--compact .ui-units__bar{width:48px}
+.ui-units--none{color:var(--muted-700)}
+.ui-dateflag{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:var(--fs-13)}
+.ui-dateflag__t{font-weight:600}
+.ui-dateflag__i{display:inline-flex;flex:none}
+.ui-dateflag--soon .ui-dateflag__i{color:#8A5A00}
+.ui-dateflag--overdue .ui-dateflag__i,.ui-dateflag--overdue .ui-dateflag__t{color:var(--danger-fg)}
+.ui-dateflag--none{color:var(--muted-700)}

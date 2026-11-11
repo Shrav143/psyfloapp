@@ -63,16 +63,4 @@ await T.test('/api/state and the roster never serve a screening transcript to an
   assert.ok(JSON.stringify(await state('jperez')).includes('Piedmont') || (await state('jperez')).screenings.length >= 0);
 });
 await reset('canvas');
-await T.test('the phone timer follows store.clock, not the machine clock', async () => {
-  const s = await state('khale');
-  if (!s.clock.fixed) return T.skip('phone timer follows the demo clock', 'needs DEMO_TIME for a repeatable assertion');
-  const { chromium } = playwright(); const b = await chromium.launch(); const p = await (await b.newContext({ viewport: { width: 390, height: 844 } })).newPage(); const errs = errors(p);
-  try {
-    await login(p, 'khale', { presenter: false, hash: '/MobileApp' }); await p.goto(BASE + '/#/MobileApp'); await p.waitForTimeout(1500);
-    const txt = await p.locator('#elapsed').innerText().catch(() => '');
-    const t = s.timers.khale.started.slice(11, 16); const [h, m] = s.clock.fixed.split(':').map(Number); const [h0, m0] = t.split(':').map(Number);
-    const want = (h * 60 + m) - (h0 * 60 + m0);
-    assert.match(txt, new RegExp('^' + Math.floor(want / 60) + ':' + String(want % 60).padStart(2, '0') + ':\\d\\d$'), `elapsed ${txt} vs clock ${s.clock.fixed} - start ${t}`);
-  } finally { await b.close(); }
-});
 await T.done();

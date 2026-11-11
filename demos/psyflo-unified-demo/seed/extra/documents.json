@@ -1,0 +1,24 @@
+{
+ "_about": "Documentation that every client has whether or not an authorization exists: intake form, CNA (comprehensive needs assessment), treatment plan, quarterly report, discharge summary. Status and due date only: no clinical text. Daily, weekly and monthly notes are NOT here: they come from the notes the extension reports (notes) and the on-time rules (notes.daily_due_hours and the weekly and monthly rules). Illustrative: Harvest never exported this tracker (build brief rule 7), so Psyflo shows it labelled as sample data until the intake tracker is wired to Lauris. status: not_started | in_progress (draft open in Lauris) | needs_review (processed in Lauris, waiting for a review) | done.",
+ "documents": [
+  { "id": "doc-tw-intake", "client": "TW", "kind": "intake", "due": "2026-10-30", "status": "in_progress", "owner": "jperez", "illustrative": true },
+  { "id": "doc-tw-cna", "client": "TW", "kind": "cna", "due": "2026-11-05", "status": "not_started", "owner": "jperez", "illustrative": true },
+  { "id": "doc-tw-isp", "client": "TW", "kind": "isp", "due": "2026-11-12", "status": "not_started", "owner": "jperez", "illustrative": true },
+  { "id": "doc-kt-intake", "client": "KT", "kind": "intake", "due": "2026-10-09", "status": "done", "done_on": "2026-10-08", "owner": "jperez", "illustrative": true },
+  { "id": "doc-kt-cna", "client": "KT", "kind": "cna", "due": "2026-10-12", "status": "done", "done_on": "2026-10-12", "owner": "jperez", "illustrative": true },
+  { "id": "doc-kt-isp", "client": "KT", "kind": "isp", "due": "2026-10-16", "status": "done", "done_on": "2026-10-15", "owner": "jperez", "illustrative": true },
+  { "id": "doc-mr-quarterly", "client": "MR", "kind": "quarterly", "due": "2026-11-02", "status": "in_progress", "owner": "jperez", "illustrative": true },
+  { "id": "doc-mr-isp", "client": "MR", "kind": "isp", "due": "2026-08-17", "status": "done", "done_on": "2026-08-14", "owner": "jperez", "illustrative": true },
+  { "id": "doc-dw-quarterly", "client": "DW", "kind": "quarterly", "due": "2026-11-09", "status": "not_started", "owner": "jperez", "illustrative": true },
+  { "id": "doc-dw-cna", "client": "DW", "kind": "cna", "due": "2026-10-30", "status": "needs_review", "owner": "jperez", "illustrative": true },
+  { "id": "doc-jo-intake", "client": "JO", "kind": "intake", "due": "2026-10-27", "status": "not_started", "owner": "jperez", "illustrative": true },
+  { "id": "doc-jo-discharge", "client": "JO", "kind": "discharge", "due": "2026-11-02", "status": "in_progress", "owner": "jperez", "illustrative": true },
+  { "id": "doc-sb-quarterly", "client": "SB", "kind": "quarterly", "due": "2026-10-02", "status": "done", "done_on": "2026-10-01", "owner": "jperez", "illustrative": true },
+  { "id": "doc-tn-cna", "client": "TN", "kind": "cna", "due": "2026-10-31", "status": "in_progress", "owner": "jperez", "illustrative": true },
+  { "id": "doc-ec-isp", "client": "EC", "kind": "isp", "due": "2026-09-30", "status": "done", "done_on": "2026-09-29", "owner": "jperez", "illustrative": true },
+  { "id": "doc-jt-quarterly", "client": "JT", "kind": "quarterly", "due": "2026-11-04", "status": "in_progress", "owner": "jperez", "illustrative": true },
+  { "id": "doc-lv-quarterly", "client": "LV", "kind": "quarterly", "due": "2026-11-20", "status": "not_started", "owner": "jperez", "illustrative": true },
+  { "id": "doc-am-intake", "client": "AM", "kind": "intake", "due": "2026-09-18", "status": "done", "done_on": "2026-09-17", "owner": "jperez", "illustrative": true },
+  { "id": "doc-dp-isp", "client": "DP", "kind": "isp", "due": "2026-10-26", "status": "not_started", "owner": "jperez", "illustrative": true }
+ ]
+}

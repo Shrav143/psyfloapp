@@ -1,10 +1,7 @@
 // Box builders shared by the views (E5): the boxes a referral and the family link already answer, the new-consumer boxes, the school
-// updates (the counselor's words, credited, never staff observation) and the contact-time rows from the timer.
+// updates (the counselor's words, credited, never staff observation).
 // Every function takes ctx (views/index.js) and builds from stored records only.
-import { fmtDate, fmtTime, clock12 } from '../../js/shared/dates.js';
-import { contactTime } from '../../js/shared/draft.js';
-import { today as clockToday } from '../../js/shared/clock.js';
-import { blocksFor, entriesOf, timeSummary, unionMinutes, unitsFor, fmtMin } from '../../js/shared/time.js';
+import { fmtDate, fmtTime } from '../../js/shared/dates.js';
 
 export const usDate = iso => { const [y, m, d] = String(iso).slice(0, 10).split('-'); return `${m}/${d}/${y}`; };
 
@@ -87,37 +84,5 @@ export function collateralBoxes(ctx, c, sh) {
   return b;
 }
 
-// ---------- the daily note: timer rows and units (recorded time is not billable time; an unconfirmed block is never counted)
-export const DPN_SOURCES = [{ n: 1, label: 'What you said', source: 'Your words' }, { n: 2, label: 'Your timer', source: 'Timer blocks' }, { n: 3, label: 'The plan (ISP 2.0)', source: 'ISP goals and interventions' }, { n: 4, label: 'School counselor · school portal', source: 'School portal' }];
-// The ONE model of time (web/js/shared/time.js, actions time.*): the day's saved entries of THIS person with THIS student. A stopped timer nobody described
-// yet (a draft) is not a block; a block that is not direct service (idle, transport, documentation ...) is not listed as direct time. Nothing falls back to
-// another person, another student or a seeded sample: no signed-in person, no blocks.
-const dayOf = ctx => clockToday(ctx.S());
-const staffOf = ctx => { const m = ctx.me(); return m && m.id ? m.id : null; };
-const dayEntries = (ctx, c) => { const who = staffOf(ctx); return who ? entriesOf(ctx.S(), { client: c.id, date: dayOf(ctx), staff: who }) : []; };
-export function timerBlocks(ctx, c) {
-  const who = staffOf(ctx); if (!who) return [];
-  const notDirect = new Set(dayEntries(ctx, c).filter(e => e.status === 'saved' && (e.kind || 'direct') !== 'direct').map(e => `${e.start}|${e.end}`));
-  return blocksFor(ctx.S(), c.id, dayOf(ctx), who).filter(b => !notDirect.has(`${b[0]}|${b[1]}`));
-}
-// the saved blocks a person has not confirmed yet (direct service by kind): they are listed, never counted, until time.save confirms them
-export const unconfirmedEntries = (ctx, c) => dayEntries(ctx, c).filter(e => e.status === 'saved' && !e.confirmed && (e.kind || 'direct') === 'direct');
-// stopped timers nobody has described yet (Track Time): recorded, not saved, not counted
-export const draftEntries = (ctx, c) => dayEntries(ctx, c).filter(e => e.status === 'draft');
-// units if the unconfirmed blocks were confirmed: the same union-of-minutes figure the server would show after time.save {confirm:true}
-export function unitsIfConfirmed(ctx, c) {
-  const list = dayEntries(ctx, c).filter(e => e.status === 'saved' && (e.kind || 'direct') === 'direct');   // confirmed or not: this is "if they were all confirmed"
-  const min = unionMinutes(list); return { minutes: min, units: unitsFor(ctx.S(), 'tdt', min) };
-}
-export function timerBoxes(ctx, c) {
-  const blocks = timerBlocks(ctx, c); if (!blocks.length) return { blocks, ct: null, boxes: [] };
-  const s = ctx.S();
-  const sum = timeSummary(s, c.id, dayOf(ctx), { staff: staffOf(ctx) });   // confirmed direct minutes (pauses taken out, overlaps counted once) and the rule's units
-  const raw = contactTime(blocks, { confirmed: false, s });
-  // The note's Contact time lists ONLY confirmed direct blocks (a processed note is write-once, so nothing unconfirmed may be typed into it). The unconfirmed
-  // block stays in `ct.rows` (flagged) for the panel's own card; it reaches the form only after the person confirms it (time.save), never before.
-  const lines = raw.rows.filter(r => !r.unconfirmed).map(r => `${clock12(r.from)}\u2013${clock12(r.to)} \u00b7 ${r.what}`).join('\n');
-  const ct = { ...raw, lines, total: sum.direct, text: fmtMin(sum.direct), units: sum.units };
-  return { blocks, ct, boxes: [{ label: 'Contact time', value: ct.lines, src: [2] }, { label: 'Direct time', value: ct.text, src: [2] }, { label: 'Units', value: String(ct.units), src: [2] }] };
-}
-export const fmtT = hhmm => { let [h, m] = hhmm.split(':').map(Number); h = h % 12 || 12; return `${h}:${String(m).padStart(2, '0')}`; };
+// ---------- the daily note: where each box comes from (a note's contact time is typed in Lauris; Psyflo no longer records or counts time)
+export const DPN_SOURCES = [{ n: 1, label: 'What you said', source: 'Your words' }, { n: 2, label: 'The plan (ISP 2.0)', source: 'ISP goals and interventions' }, { n: 3, label: 'School counselor · school portal', source: 'School portal' }];

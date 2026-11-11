@@ -2,7 +2,6 @@
 // as it stands; the review has no accept-all; the person's own words are what gets typed; nothing is typed before Approve; Process Form is the person's click.
 import { suite, assert, api, tryApi, state, reset, playwright, errors, LAURIS, SHOTS } from './lib/index.mjs';
 import { dailyGuidance, weeklyGuidance, collateralGuidance, tidySentence } from '../web/js/shared/enhance.js';
-import { timeSummary } from '../web/js/shared/time.js';
 
 const T = suite('scribe');
 const item = (id, label, psyflo, sources) => ({ id, label, staff: '', psyflo, sources });
@@ -84,7 +83,7 @@ try {
     await panel().getByText('Say what happened').first().waitFor();
     const v = await form(); assert.eq(v['Narrative'], '', 'nothing typed before the person acts');
     await panel().getByText(/Still to answer/).first().waitFor();
-    const open0 = await panel().locator('#sg .cr:not(.done)').count(); assert.eq(open0, 4, 'four questions: the timer already answers how long');
+    const open0 = await panel().locator('#sg .cr:not(.done)').count(); assert.eq(open0, 5, 'five questions: without a timer nothing answers how long');
     await panel().locator('textarea[data-in="sayText"]').fill('Worked on Objective 1 with M.R. for 20 minutes. He calmed down and used the break card twice.');
     await p.waitForTimeout(500);
     const open1 = await panel().locator('#sg .cr:not(.done)').allInnerTexts(); assert.eq(open1.length, 1, 'one question left: ' + open1.join('|')); assert.match(open1[0], /What did you do with M\.R\./);
@@ -101,7 +100,7 @@ try {
     await panel().getByRole('button', { name: 'Approve and fill' }).click();
     await panel().getByText(/boxes? typed into the form/).first().waitFor({ timeout: 20000 });
     const v = await form(); assert.eq(v['Narrative'], 'Worked on Objective 1 with M.R. for 20 minutes. He calmed down and used the break card twice.');
-    assert.match(v['Objective addressed'], /^Obj\. 1/); assert.eq(v['Units'], '2', 'the confirmed 220 minutes under the unit bands'); assert.eq(v['Mood check-in'], '', 'mood not said: left empty');
+    assert.match(v['Objective addressed'], /^Obj\. 1/); assert.eq(v['Units'], '', 'units are left for the person to type in Lauris'); assert.eq(v['Mood check-in'], '', 'mood not said: left empty');
     const s = await state('khale'); const d = s.doc_versions.at(-1);
     assert.ok(d.stages.some(x => x.stage === 'approved') && d.stages.at(-1).stage === 'filled' && d.lauris_status === 'filled');
   });
@@ -143,32 +142,14 @@ try {
     await panel().getByRole('button', { name: /Open the monthly collateral/i }).click(); await p.waitForURL(/session\/collateral/); await p.waitForTimeout(1500);
     assert.eq(await panel().locator('#sc-type').inputValue(), 'collateral', 'on the page that takes it, the type matches');
   });
-  // Confirm and "didn't happen" go through the time model (time.save / time.discard), so the note, Track Time and the phone always show the same minutes.
-  const sumOf = async () => { const s = await state('khale'); const t = timeSummary(s, 'MR', s.today, { staff: 'khale' }); return { s, t }; };
+  // Psyflo does not time sessions (Track Time was removed on Nov 11): the daily note's contact time, direct time and units are for the person to type in Lauris.
   await reset('live');
   await p.goto(`${LAURIS}/login?as=khale&next=${encodeURIComponent('/consumers/3310/session/dpn')}`); await p.waitForTimeout(1800);
-  await T.test('Confirm saves the block through time.save: the entries, the note boxes and the units all say 5 h 10 min / 3 units; before it, the 90-minute block is not counted', async () => {
-    const v0 = await form(); assert.noMatch(v0['Contact time'] || '', /Afternoon classes|unconfirmed/, 'the unconfirmed block is not in the typed Contact time');
-    await panel().getByText(/Contact time . your timer/).first().waitFor(); assert.ok(await panel().getByText(/Afternoon classes/).count() >= 1, 'the panel lists it (flagged), not the note');
-    let { t } = await sumOf(); assert.eq(t.direct, 220, 'seeded confirmed time'); assert.eq(t.units, 2); assert.eq(t.unconfirmed.length, 1, 'the afternoon block starts unconfirmed'); assert.eq(t.unconfirmed[0].minutes, 90);
-    await panel().getByText(/^Confirm 3 units/).click(); await p.waitForTimeout(1500);
-    const r = await sumOf(); assert.eq(r.t.unconfirmed.length, 0); assert.eq(r.t.direct, 310); assert.eq(r.t.units, 3);
-    const v = await form(); assert.eq(v['Direct time'], '5 h 10 min'); assert.eq(v['Units'], '3', 'the note says what the entries say');
-    assert.noMatch(v['Contact time'], /unconfirmed/, 'the confirmed block is no longer marked unconfirmed'); assert.match(v['Contact time'], /1:40 pm\u20133:10 pm . Afternoon classes/, 'listed only after the person pressed Confirm');
-    assert.eq(await panel().getByText(/^Confirm \d units/).count(), 0, 'nothing left to confirm');
-  });
-  await reset('live');
-  await p.goto(`${LAURIS}/login?as=khale&next=${encodeURIComponent('/consumers/3310/session/dpn')}`); await p.waitForTimeout(1800);
-  await T.test('"The afternoon block didn\'t happen" voids the entry through time.discard (kept in the record with its reason); the note says 3 h 40 min / 2 units', async () => {
-    await panel().getByRole('button', { name: /afternoon block didn't happen/ }).click(); await p.waitForTimeout(1500);
-    const { s, t } = await sumOf(); const e = s.time_entries.find(x => x.id === 'te-6');
-    assert.eq(e.status, 'voided'); assert.ok(e.void_reason && e.void_reason.length >= 4, 'a reason is kept'); assert.eq(t.direct, 220); assert.eq(t.units, 2); assert.eq(t.entries.length, 5);
-    const v = await form(); assert.eq(v['Direct time'], '3 h 40 min'); assert.eq(v['Units'], '2'); assert.noMatch(v['Contact time'], /Afternoon classes/);
-  });
-  await T.test('a supervisor cannot confirm time: the server refuses the call and the block stays unconfirmed', async () => {
-    await reset('live');
-    await assert.refused(tryApi('time.save', { id: 'te-6', confirm: true }, 'cdiaz'), /./, 403);
-    assert.eq((await sumOf()).t.unconfirmed.length, 1, 'still unconfirmed');
+  await T.test('the panel offers no timer, no unit confirmation and types no contact time, direct time or units into the daily note', async () => {
+    const t = (await panel().locator('#panel').innerText()).replace(/\s+/g, ' ');
+    assert.noMatch(t, /your timer|Confirm \d+ units|afternoon block|Track Time|Contact time/i, 'no time tracking in the panel');
+    const v = await form(); assert.eq(v['Contact time'] || '', '', 'contact time is left for the person'); assert.eq(v['Direct time'] || '', ''); assert.eq(v['Units'] || '', '');
+    const st = await state('khale'); assert.ok(!('time_entries' in st) && !('timers' in st), 'Psyflo keeps no time entries');
   });
   await T.test('no console errors in the page or the panel', async () => { assert.deepEq(errs, [], errs.join(' | ')); });
 } finally { await b.close(); }

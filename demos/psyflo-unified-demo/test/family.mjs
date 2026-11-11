@@ -44,7 +44,7 @@ try {
     assert.ok(s.referrals.every(r => r.client === 'TW'), 'only own referral');
     assert.ok(s.family_links.every(f => f.client === 'TW'), 'only own link');
     assert.ok(s.eligibility.every(e => Object.keys(e).every(k => ['referral', 'client', 'status'].includes(k))), 'eligibility is status only (no Medicaid ID, plan or screenshot)');
-    for (const k of ['notes', 'screenings', 'drafts', 'internal_quarterlies', 'incidents', 'dictations', 'timers', 'lauris_tasks', 'payer_history', 'denial_reasons']) assert.deepEq(s[k] == null ? [] : Array.isArray(s[k]) ? s[k] : Object.keys(s[k]), [], k + ' is withheld');
+    for (const k of ['notes', 'screenings', 'drafts', 'internal_quarterlies', 'incidents', 'dictations', 'lauris_tasks', 'payer_history', 'denial_reasons']) assert.deepEq(s[k] == null ? [] : Array.isArray(s[k]) ? s[k] : Object.keys(s[k]), [], k + ' is withheld');
     assert.ok(s.rules.length > 0 && s.rules.every(r => /^(signature\.mode\.|family_link\.|appeal\.(window_days|start_event|initiators)|recording\.require_consent_record)/.test(r.key)), 'only the signature, family-link, appeal-window and recording-consent rule rows: ' + s.rules.map(r => r.key).join(','));
     assert.ok(!(s.appeal_drafts && s.appeal_drafts['R-0384']), "another child's appeal letter is not sent");
   });

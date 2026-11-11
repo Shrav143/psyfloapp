@@ -1,151 +1,39 @@
 {
- "runId": "2026-11-11T19-27-19Z",
- "commit": "2061d60",
+ "runId": "2026-11-11T20-12-06Z",
+ "commit": "5a5a60f",
  "release": false,
  "releaseReady": false,
  "env": {
   "node": "v22.22.0",
   "time": "15:30",
   "preset": "live",
-  "workers": 2,
+  "workers": 1,
   "repeat": 1,
-  "basePort": 5040
+  "basePort": 5520
  },
  "summary": {
-  "pass": 5,
+  "pass": 1,
   "fail": 0,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 265983,
+  "durationMs": 11618,
   "tests": {
-   "pass": 78,
+   "pass": 8,
    "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "denials",
-   "tags": [],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 2311,
-   "counts": {
-    "pass": 19,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "four seeded cases match their requests (D.W. R-0402, K.T. R-0408, T.N. R-0388, E.C. R-0384)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the queue selector: columns, filters, deadline with its source, sorted by deadline",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a request that enters a decision stage opens a case by itself, once (the receive-reply simulation)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5: D.W. partial -> peer-to-peer -> outcome 130 -> Active, 130 units to the tracker, a task for Lauris, case closed",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "closed cases and recorded decisions are write-once",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "D.W. decision document: a phone offer has none until a person records it; stored once",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "accept as offered / stretch / use them up reconcile through the request actions",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "K.T. information request: grounded draft, placeholders block review, the portal send waits for the page, then the case closes",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a fax payer: the reference comes only from the send stub (simulated Sfax), never from the caller",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "E.C. appeal (Availity): seeded sample cannot be reviewed; the guardian signs; Mark ready for upload is not a send; the send is recorded only when the portal page confirms; the answer is recorded with its document",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "appeal on a FAX payer: Send records the stub reference at once (simulated Sfax); a caller-supplied reference is ignored",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "E.C. appeal upheld closes the request; reconsideration upheld returns to the decision with the path marked tried",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "T.N. peer-to-peer: held awaiting, then denied -> the case becomes a denial with the p2p path tried; then approved 150 elsewhere is overturned",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "T.N. p2p approved at 150 -> overturned (the 65 of 65 authorization is kept as history)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "evidence is dated, sourced and gated; missing items print \"Evidence missing",
-     "note": "verify …\"; sensitive records stay out of drafts unless included"
-    },
-    {
-     "status": "PASS",
-     "title": "roles: admin sees status and deadlines but no clinical text; only a clinician works the case; DS and supervisor see nothing",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "guardian: only the reviewed appeal letter of their own child; no dispute, evidence or other child",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "reconcile is idempotent and survives a day advance; no second case opens; presets both seed four cases",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the status is derived from the request, never stored out of step (selector agrees with the stored status for every case)",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T19-27-19Z"
-  },
-  {
-   "name": "denials-ui",
+   "name": "patient",
    "tags": [],
    "instance": 0,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 31465,
+   "durationMs": 11517,
    "counts": {
     "pass": 8,
     "fail": 0,
@@ -154,356 +42,46 @@
    "tests": [
     {
      "status": "PASS",
-     "title": "queue: nine columns, four open cases sorted by deadline, each deadline carries a source chip, rows are links to the case",
+     "title": "selector fails closed: no actor, a portal actor, an unknown id, and a patient outside the role's scope all return null",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "old routes keep working and hand over: Partials, InfoRequest, PeerBrief -> the case; Partials (no id) -> the queue filtered",
+     "title": "the chart holds documentation with or without an authorization: T.W. has forms and no authorization; M.R. has both",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5 by clicking: D.W. partial -> evidence and options -> peer-to-peer -> outcome 130 -> back to the authorization with the stage Active",
+     "title": "clinician: header, Documentation tab with open items first, Open / All and Notes / Forms filters, sample-data chip on forms, tab to Authorization",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "K.T. information reply: Evidence-missing blocks review, an edit clears it, Send opens the mock Availity page and the case closes when the page confirms",
+     "title": "a patient with no authorization says so in one line; the chart still shows intake, CNA and plan",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "E.C. appeal on Availity: Mark ready for upload reads \"Ready to upload\", never \"Sent\"; the send appears only after the Availity page confirms (QA2 D3)",
+     "title": "supervisor: Review buttons for notes waiting on them go to the Documentation queue with the note; no write verbs",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "admin: the queue and the case show status and deadlines; no clinical text reaches the page",
+     "title": "direct support: Write note on what is behind, own patient only; another person's patient is denied and shows nothing of theirs",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "keyboard and dialogs: tabs and rows are reachable, the dialog traps focus, Escape closes it and focus returns",
+     "title": "administrator: statuses only, Open case allowed, no Review or Write buttons",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "1024 px and 390 px: no horizontal scroll on the queue or any section",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T19-27-19Z"
-  },
-  {
-   "name": "parity",
-   "tags": [
-    "parity"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 146591,
-   "counts": {
-    "pass": 4,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "the map holds exactly the 291 ids of the inventory (191 master, 100 v3), no duplicate and none blank",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "every id has a status and evidence; the results file has 291 rows (PRESERVED 48, MOVED 209, REPLACED-BY 5, DROPPED-WITH-REASON 29, NOT-VERIFIED 0)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no id is NOT-VERIFIED that could have been verified: no silent removal of a kept feature, no id without a probe or a passing suite",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "every DROPPED id carries a reason from the review documents; drops that 00-unified-recommendations does not itemise are listed",
+     "title": "phone width: the chart has no horizontal scroll and the documentation rows stack with 44 px buttons",
      "note": ""
     }
    ],
-   "runId": "2026-11-11T19-27-19Z"
-  },
-  {
-   "name": "s5",
-   "tags": [
-    "scenario",
-    "realtime"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 70711,
-   "counts": {
-    "pass": 47,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · first state: four open cases (D.W. partial 110 of 150, K.T. information request, T.N. peer-to-peer booked, E.C. denied); no Lauris task; Lauris holds D.W. and T.N. as seeded; the queue and Analytics are the baseline",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · first state (soft): before a decision is recorded the offered 110 units are not already in the tracker and in Lauris (an offer by phone is not an award)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 1 D.W.: the Authorizations queue row says Partial: decide and opens the case; \"Open in Denial Intelligence\" lands on the same case in the queue of four",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 2 evidence and options: dated sourced evidence, \"Evidence missing",
-     "note": "verify …\" for what is not stored, only valid options, unverified paths labelled"
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 3 choose peer-to-peer: stage peer_to_peer_requested; the page says it is NOT sent to the payer; a next task appears in My Work; owner and deadline stay visible",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 4 brief and schedule: \"Draft from records\" prints Evidence missing items and Simulated; Mark reviewed; Set the call stores p2p_at (stage booked)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 5 log the outcome (130 units): a decision needs its document (the dialog stays open and says so); then Active, 130 awarded, dispute resolved and closed, an \"Enter units in Lauris\" task opens; Psyflo writes NO units into Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 6 back to the authorization: R-0402 is Active with 130 units and the \"Enter units in Lauris\" card (with the Lauris link); the queue says Active; Denial Intelligence lists three open cases",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 7 a person enters the units in Lauris (Authorization Information) and the page bridge reports it: the task closes, the mock shows 130, the two stores agree",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 8 queues and Analytics (admin): unresolved requests -1 (screen = selector), units approved and offers waiting move; the admin payload and the page carry no clinical text",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 9 K.T. (R-0408, Availity): \"Draft from records\", a placeholder blocks Mark reviewed, an edit clears it; Open Availity and send opens the mock portal; the case closes ONLY when the portal page confirms; no \"faxed\" wording",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 10 T.N. (R-0388): the peer-to-peer call outcome \"approved\" at 150: overturned, Active with 150 units, the old 65 of 65 kept as history; the task asks a person for the units in Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 11 E.C. (R-0384): the clinician drafts and reviews the appeal letter; the guardian signs on the phone (the signer is the guardian behind the link); staff press Send; \"faxed\" appears only after Send, the reference comes from the stub",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 11b E.C. appeal on an Availity payer: \"Mark ready for upload\" is a person's note that a upload is next, NOT a send: the stage stays out of \"Appeal sent\" and the status out of \"sent\" until the portal page confirms (the way K.T. does)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 12 the leadership readout agrees with the stores: the four requests show Active, Submitted, Active and the appeal recorded state in the queue; one open Denial Intelligence case remains (the appeal waits for the payer); Analytics = selectors",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · no console errors on the desk, the portal, the guardian page, Lauris or Analytics",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · first state: four open cases (D.W. partial 110 of 150, K.T. information request, T.N. peer-to-peer booked, E.C. denied); no Lauris task; Lauris holds D.W. and T.N. as seeded; the queue and Analytics are the baseline",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 1 D.W.: the Authorizations queue row says Partial: decide and opens the case; \"Open in Denial Intelligence\" lands on the same case in the queue of four",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 2 evidence and options: dated sourced evidence, \"Evidence missing",
-     "note": "verify …\" for what is not stored, only valid options, unverified paths labelled"
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 3 choose peer-to-peer: stage peer_to_peer_requested; the page says it is NOT sent to the payer; a next task appears in My Work; owner and deadline stay visible",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 4 brief and schedule: \"Draft from records\" prints Evidence missing items and Simulated; Mark reviewed; Set the call stores p2p_at (stage booked)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 5 log the outcome (130 units): a decision needs its document (the dialog stays open and says so); then Active, 130 awarded, dispute resolved and closed, an \"Enter units in Lauris\" task opens; Psyflo writes NO units into Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 6 back to the authorization: R-0402 is Active with 130 units and the \"Enter units in Lauris\" card (with the Lauris link); the queue says Active; Denial Intelligence lists three open cases",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 7 a person enters the units in Lauris (Authorization Information) and the page bridge reports it: the task closes, the mock shows 130, the two stores agree",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 8 queues and Analytics (admin): unresolved requests -1 (screen = selector), units approved and offers waiting move; the admin payload and the page carry no clinical text",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 9 K.T. (R-0408, Availity): \"Draft from records\", a placeholder blocks Mark reviewed, an edit clears it; Open Availity and send opens the mock portal; the case closes ONLY when the portal page confirms; no \"faxed\" wording",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 10 T.N. (R-0388): the peer-to-peer call outcome \"approved\" at 150: overturned, Active with 150 units, the old 65 of 65 kept as history; the task asks a person for the units in Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 11 E.C. (R-0384): the clinician drafts and reviews the appeal letter; the guardian signs on the phone (the signer is the guardian behind the link); staff press Send; \"faxed\" appears only after Send, the reference comes from the stub",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 11b E.C. appeal on an Availity payer: \"Mark ready for upload\" is a person's note that a upload is next, NOT a send: the stage stays out of \"Appeal sent\" and the status out of \"sent\" until the portal page confirms (the way K.T. does)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 12 the leadership readout agrees with the stores: the four requests show Active, Submitted, Active and the appeal recorded state in the queue; one open Denial Intelligence case remains (the appeal waits for the payer); Analytics = selectors",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · no console errors on the desk, the portal, the guardian page, Lauris or Analytics",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · first state: four open cases (D.W. partial 110 of 150, K.T. information request, T.N. peer-to-peer booked, E.C. denied); no Lauris task; Lauris holds D.W. and T.N. as seeded; the queue and Analytics are the baseline",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 1 D.W.: the Authorizations queue row says Partial: decide and opens the case; \"Open in Denial Intelligence\" lands on the same case in the queue of four",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 2 evidence and options: dated sourced evidence, \"Evidence missing",
-     "note": "verify …\" for what is not stored, only valid options, unverified paths labelled"
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 3 choose peer-to-peer: stage peer_to_peer_requested; the page says it is NOT sent to the payer; a next task appears in My Work; owner and deadline stay visible",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 4 brief and schedule: \"Draft from records\" prints Evidence missing items and Simulated; Mark reviewed; Set the call stores p2p_at (stage booked)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 5 log the outcome (130 units): a decision needs its document (the dialog stays open and says so); then Active, 130 awarded, dispute resolved and closed, an \"Enter units in Lauris\" task opens; Psyflo writes NO units into Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 6 back to the authorization: R-0402 is Active with 130 units and the \"Enter units in Lauris\" card (with the Lauris link); the queue says Active; Denial Intelligence lists three open cases",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 7 a person enters the units in Lauris (Authorization Information) and the page bridge reports it: the task closes, the mock shows 130, the two stores agree",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 8 queues and Analytics (admin): unresolved requests -1 (screen = selector), units approved and offers waiting move; the admin payload and the page carry no clinical text",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 9 K.T. (R-0408, Availity): \"Draft from records\", a placeholder blocks Mark reviewed, an edit clears it; Open Availity and send opens the mock portal; the case closes ONLY when the portal page confirms; no \"faxed\" wording",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 10 T.N. (R-0388): the peer-to-peer call outcome \"approved\" at 150: overturned, Active with 150 units, the old 65 of 65 kept as history; the task asks a person for the units in Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 11 E.C. (R-0384): the clinician drafts and reviews the appeal letter; the guardian signs on the phone (the signer is the guardian behind the link); staff press Send; \"faxed\" appears only after Send, the reference comes from the stub",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 11b E.C. appeal on an Availity payer: \"Mark ready for upload\" is a person's note that a upload is next, NOT a send: the stage stays out of \"Appeal sent\" and the status out of \"sent\" until the portal page confirms (the way K.T. does)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 12 the leadership readout agrees with the stores: the four requests show Active, Submitted, Active and the appeal recorded state in the queue; one open Denial Intelligence case remains (the appeal waits for the payer); Analytics = selectors",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · no console errors on the desk, the portal, the guardian page, Lauris or Analytics",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5 parity: the first and the last state are the same whether it started from demo.scenario, the fixture payer-decision or a fresh canvas reset",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T19-27-19Z"
-  },
-  {
-   "name": "hosted",
-   "tags": [],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 263414,
-   "counts": {
-    "pass": 0,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [],
-   "runId": "2026-11-11T19-27-19Z"
+   "runId": "2026-11-11T20-12-06Z"
   }
  ],
  "manual": [

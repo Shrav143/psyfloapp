@@ -1,4 +1,4 @@
-// Extension home (E5), 400 px: three equal buttons (Scribe, Track Time, Scan & Enhance where permitted), one next task, the current document,
+// Extension home (E5), 400 px: two equal buttons (Scribe, Scan & Enhance where permitted), one next task, the current document,
 // and collapsed accordions (Checks, Sources, Recent activity). No demo role toggles: the presenter dock replaces them.
 // Everything here is read from the page the person has open and from Psyflo's own records; it types nothing.
 import { esc } from '../../js/runtime.js';
@@ -102,11 +102,11 @@ function html(ctx) {
   const ic = incidentClock(ctx);
   if (ic) h += banner('r', `<b>State portal clock · ${esc(ic.c ? ic.c.initials : '')} Level ${ic.inc.level}</b> · due ${esc(fmtDate(ic.inc.state_portal_due))} ${esc(fmtTime(ic.inc.state_portal_due))} ${ic.left > 0 ? `(${Math.floor(ic.left / 60)} h ${ic.left % 60} min left)` : '(past due)'}.${ic.c && (ic.c.lauris_no || ic.c.harvest_no) ? ` <a href="#" data-act="nav" data-href="/consumers/${ic.c.lauris_no || ic.c.harvest_no}/session/incident">Open the incident report</a>` : ''}`);
   h += observedHTML(ctx, c);
-  // the three equal buttons
-  const scanOk = ctx.can('scanEnhance', c ? { clientId: c.id } : undefined); const timeOk = ctx.can('trackTime', c ? { clientId: c.id } : undefined); const scribeOk = ctx.can('notes.own') || ctx.can('drafts.clinical');
-  const btns = [scribeOk && ['scribe', ctx.I.mic, 'Scribe'], timeOk && ['time', ctx.I.clock, 'Track Time'], scanOk && ['enhance', ctx.I.scan, 'Scan &amp; Enhance']].filter(Boolean);
+  // the equal buttons
+  const scanOk = ctx.can('scanEnhance', c ? { clientId: c.id } : undefined); const scribeOk = ctx.can('notes.own') || ctx.can('drafts.clinical');
+  const btns = [scribeOk && ['scribe', ctx.I.mic, 'Scribe'], scanOk && ['enhance', ctx.I.scan, 'Scan &amp; Enhance']].filter(Boolean);
   if (btns.length) h += `<div class="trio" role="group" aria-label="Actions" style="grid-template-columns:repeat(${btns.length},minmax(0,1fr))">${btns.map(([v, ic, l]) => `<button class="btn o" data-act="goView" data-view="${v}">${ic}<span>${l}</span></button>`).join('')}</div>`;
-  if (ctx.can('myWork') && (timeOk || role === 'supervisor')) h += `<div class="row w"><button class="btn o sm" data-act="openApp" data-href="#/MyWork?section=day">${role === 'direct_support' ? 'My day' : 'Team day'} in Psyflo ↗</button><span class="small muted">time, notes and what is left today</span></div>`;
+  if (ctx.can('myWork') && (role === 'direct_support' || role === 'clinician' || role === 'supervisor')) h += `<div class="row w"><button class="btn o sm" data-act="openApp" data-href="#/MyWork?section=day">${role === 'direct_support' ? 'My day' : 'Team day'} in Psyflo ↗</button><span class="small muted">notes and what is left today</span></div>`;
   if (!scanOk) h += `<div class="hint">${ctx.I.lock} Scan &amp; Enhance is for licensed clinical staff${role === 'direct_support' && c ? ' on their own caseload' : ''}.</div>`;
   if (role === 'clinician' && ctx.can('drafts.clinical') && c && (p.kind === 'record' || p.kind === 'session')) h += `<button class="btn o blk" data-act="goView" data-view="authorize"><span>Prepare authorization</span></button>`;
   // the next task

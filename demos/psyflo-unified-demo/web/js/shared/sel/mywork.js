@@ -52,7 +52,7 @@ const staffShort = (s, id) => id ? M.staffShort(s, id) : '';
 const schoolShort = name => String(name || '').replace(/ (City|County) · /, ' ');
 const monday = d => { const w = M.parse(d).getUTCDay(); return M.addDays(d, -((w + 6) % 7)); };
 const monthEndOf = d => M.addDays(M.addDays(d.slice(0, 8) + '28', 4).slice(0, 8) + '01', -1);
-const SESSION_END = '15:30';       // dismissal: a session with no Psyflo timer is taken to end then (documented in seed/notes/e1.md)
+const SESSION_END = '15:30';       // dismissal: a session is taken to end then (documented in seed/notes/e1.md)
 const studentOf = (s, rid, fallback) => {
   const r = M.byId(s.referrals, rid);
   if (r) return M.byId(s.clients, r.client) ? M.clientLabel(s, r.client) : (r.client || (r.form && r.form.client) || 'New student');
@@ -71,8 +71,7 @@ export function noteTimeliness(s, sid) {
   const hours = ruleValue(s, 'notes.daily_due_hours', 24);
   const kids = (s.clients || []).filter(c => c.staff === sid && c.stage !== 'discharged');
   const mine = (s.notes || []).filter(n => n.staff === sid);
-  const timer = (s.timers || {})[sid];
-  const endOf = (cid, d) => (timer && timer.client === cid && d === today && timer.blocks && timer.blocks.length ? timer.blocks[timer.blocks.length - 1][1] : SESSION_END);
+  const endOf = () => SESSION_END;   // Psyflo does not time sessions: a session is taken to end at dismissal
   const behind = [], due = [], late = [];
   let onTime = 0, counted = 0;
   const tally = (d, ok) => { if (d >= monthStart) { counted++; if (ok) onTime++; } };
@@ -420,7 +419,6 @@ export function dayView(s, actor, sid) {
   const assessDue = (d.assessments_due || []).filter(a => a.staff === sid && ![...have].some(k => k.startsWith(a.client + '|') && k.includes(a.instrument.toLowerCase().split(' ')[0])));
   const rel = c => ((c.guardian && c.guardian.relationship) || 'guardian');
   const fri = fmtDate(friday, { dow: true }).startsWith('Fri') ? 'Friday' : fmtDate(friday);
-  const timer = (s.timers || {})[sid];
   const hours = tl.hours;
 
   const behind = tl.behind.map(b => b.type === 'daily'
@@ -431,11 +429,8 @@ export function dayView(s, actor, sid) {
   const due = [];
   for (const c of openDaily) {
     const w = M.waitingDictations(s, c.id).filter(x => x.staff === sid || !x.staff);
-    let tracked = 0, running = '';
-    if (timer && timer.client === c.id) { tracked = (timer.blocks || []).reduce((a, b) => a + Math.max(0, minsOf(b)), 0); if (timer.started) running = fmtTime(timer.started); }
-    const tt = tracked ? `${fmtMin(tracked)} tracked${running ? ', timer running since ' + running : ''}` : running ? `timer running since ${running}` : 'no time tracked in Psyflo yet';
     const dd = tl.due.find(x => x.type === 'daily' && x.c.id === c.id && x.date === t);
-    due.push({ kind: 'daily', title: `Daily note · ${lbl(c)}`, text: `${tt}${w.length ? ` · ${plural(w.length, 'dictation')} waiting` : ''}${dd ? ` · due ${dueLabel(dd.dueAt, t)}` : ''}`, verb: 'Write note', to: w.length ? 'ExtDPN.dc.html?client=' + c.id : 'MobileApp.dc.html', tone: 'neutral', rule: rule(s, 'notes.daily_due_hours'), chip: w.length ? 'Dictation waiting' : '' });
+    due.push({ kind: 'daily', title: `Daily note · ${lbl(c)}`, text: [w.length ? `${plural(w.length, 'dictation')} waiting` : '', dd ? `due ${dueLabel(dd.dueAt, t)}` : ''].filter(Boolean).join(' · ') || 'not written yet', verb: 'Write note', to: w.length ? 'ExtDPN.dc.html?client=' + c.id : 'MobileApp.dc.html', tone: 'neutral', rule: rule(s, 'notes.daily_due_hours'), chip: w.length ? 'Dictation waiting' : '' });
   }
   for (const x of tl.due.filter(x => x.type === 'daily' && x.date < t)) due.push({ kind: 'daily', title: `Daily note · ${lbl(x.c)} ${fmtDate(x.date)}`, text: `due ${dueLabel(x.dueAt, t)}`, verb: 'Write note', to: 'ExtDPN.dc.html?client=' + x.c.id, tone: 'warning' });
   for (const c of wkMissing) { const last = (s.notes || []).filter(n => n.client === c.id && n.type === 'weekly_guardian').map(n => n.date).sort().pop(); due.push({ kind: 'weekly', title: `Weekly call · ${lbl(c)}'s ${rel(c)}`, text: `due ${fri}${last ? ' · last call ' + fmtDate(last) : ''}`, verb: 'Write call note', to: 'ExtWeekly.dc.html?client=' + c.id, tone: 'neutral', rule: rule(s, 'notes.weekly_guardian_due') }); }

@@ -13,6 +13,9 @@
 //   E4 (analytics): REDIRECTS_LIVE.PayerPlaybook (Analytics?section=payer&panel=guidance)
 export const ROUTES_LIVE = {
   MyWork: true,
+  Dashboard: true,         // the patient roster (feedback round Nov 11)
+  Documentation: true,     // notes, intake forms, CNAs across patients
+  Patient: true,           // the patient chart: documentation first, the authorization as one section
   Authorization: true,
   DenialIntelligence: true,
   DenialCase: true,
@@ -21,6 +24,7 @@ export const ROUTES_LIVE = {
 };
 
 export const REDIRECTS_LIVE = {
+  MyWork: true,            // My Work sections land on Dashboard (todo, day), Documentation (review, team) or Referrals; ?legacy=1 still opens the old screen
   DoNext: true,
   ReviewQueue: true,
   StaffDashboard: true,

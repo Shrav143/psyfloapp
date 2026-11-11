@@ -191,7 +191,7 @@ const RESPONSE = /\b(responded|calmed|cooled|settled|returned|went back|re-?enga
 const PROGRESS = /\b(progress|improv|better|worse|more than|less than|fewer|again|first time|each time|every time|twice|three times|\d+\s*(?:of|times|x)\b)/i;
 const DURATION = /(\d+\s*(?:min|mins|minutes|hour|hours|hr|hrs)\b|half an hour|an hour)/i;
 const OBJECTIVE = /\b(?:objective|obj\.?|goal)\s*([1-3])\b/i;
-export function dailyGuidance(text, { client = {}, interventions = [], hasTimer = false } = {}) {
+export function dailyGuidance(text, { client = {}, interventions = [] } = {}) {
   const raw = String(text || ''); const t = raw.toLowerCase(); const ini = client.initials || 'the student';
   const named = interventions.filter(i => i.name && (t.includes(String(i.name).toLowerCase()) || (i.code && t.includes(String(i.code).toLowerCase()))));
   const goals = client.goals || [];
@@ -199,7 +199,7 @@ export function dailyGuidance(text, { client = {}, interventions = [], hasTimer 
     { key: 'intervention', title: 'What you did', done: named.length > 0, ask: `What did you do with ${ini}? Name the intervention from the ISP list.`, options: [...new Set(goals.flatMap(g => g.interventions || []))] },
     { key: 'objective', title: 'ISP objective', done: OBJECTIVE.test(raw), ask: 'Which ISP objective did this address?', options: goals.map(g => `Objective ${g.n} · ${g.name || g.objective || ''}`) },
     { key: 'response', title: `${ini}'s response`, done: RESPONSE.test(raw), ask: `How did ${ini} respond?` },
-    { key: 'duration', title: 'How long', done: DURATION.test(raw) || hasTimer, ask: 'How long was it?' },
+    { key: 'duration', title: 'How long', done: DURATION.test(raw), ask: 'How long was it?' },
     { key: 'progress', title: 'Progress', done: PROGRESS.test(raw), ask: 'What progress did you see, as a count?' }
   ];
   const questions = items.filter(i => !i.done).map(i => ({ key: i.key, q: i.ask, options: i.options }));

@@ -548,6 +548,22 @@
    "history": []
   },
   {
+   "key": "units.warn_used_pct",
+   "label": "Units warning at",
+   "value": 75,
+   "unit": "percent of units used",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Site supervisor feedback, Nov 11: show a yellow flag when about 75% of the units are used. Not a payer or DMAS rule.",
+   "verified_on": null,
+   "note": "Display threshold only. It changes the flag on the unit bar, nothing else.",
+   "default": 75,
+   "register": "R-055",
+   "scope": null,
+   "enabled": true,
+   "effective_from": "2026-10-29",
+   "history": []
+  },
+  {
    "key": "units.weeks_equivalent",
    "label": "Units expressed in weeks",
    "value": "derived",
@@ -577,7 +593,7 @@
    "category": "OFFICIAL-VERIFIED",
    "source": "Chapter IV (T-070)",
    "verified_on": "2026-11-11",
-   "note": "Track Time separates recorded, direct, documented and potentially billable time.",
+   "note": "Reimbursement rule, shown on Settings for reference. Psyflo does not time sessions, so it applies no check to it.",
    "default": [
     "idle or waiting",
     "transport",

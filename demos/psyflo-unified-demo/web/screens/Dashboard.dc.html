@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo — Dashboard</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+/* Dashboard (patient roster). Prefix d-. Tokens and the shared kit come from tokens.css and components.css. */
+.d-page{max-width:1320px;margin:0 auto;padding:var(--sp-5) var(--gutter) 64px;display:flex;flex-direction:column;gap:var(--sp-4);min-width:0}
+.d-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.d-head h1{margin:0 8px 0 0;font:600 var(--fs-28)/var(--lh-28) var(--font);letter-spacing:-.01em}
+.d-date{margin-left:auto;color:var(--muted-700);font-size:var(--fs-13)}
+.d-page .ui-fbar{align-items:flex-end}
+.d-qt .ui-qt__scroll{max-height:none}
+.d-table{table-layout:auto}
+.d-table th,.d-table td{vertical-align:top}
+.d-table td{padding:12px}
+.d-table .d-all{margin-left:12px;font-weight:600}
+.d-nm{display:flex;align-items:flex-start;gap:6px}
+.d-row.is-urgent .d-c-name{box-shadow:inset 3px 0 0 var(--danger-fg)}
+.d-row td{border-top:1px solid var(--line-200)}
+.d-table tbody tr:first-child td{border-top:0}
+.d-tog{flex:none;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin:-2px 0 0 -6px;border:0;border-radius:var(--r-2);background:none;color:var(--muted-700);cursor:pointer}
+.d-tog:hover{background:var(--sand-100);color:var(--ink-900)}
+.d-tog svg{transition:transform .12s}
+.d-tog[aria-expanded=false] svg{transform:rotate(-90deg)}
+.d-tog--none{cursor:default;pointer-events:none}
+.d-name{display:flex;flex-direction:column;min-width:0}
+.d-link{color:var(--ink-900);font-weight:600;font-size:var(--fs-14);text-decoration:none}
+.d-link:hover{color:var(--teal-700);text-decoration:underline}
+.d-sub{display:block;color:var(--muted-700);font-size:var(--fs-12);line-height:var(--lh-12);margin-top:2px;white-space:nowrap}
+.d-resp{white-space:nowrap}
+.d-none{color:var(--muted-700)}
+.d-badges{display:inline-flex;flex-wrap:wrap;gap:6px}
+.d-badge{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:var(--r-pill);font-size:var(--fs-12);border:1px solid transparent}
+.d-badge b{font-weight:600}
+.d-badge--r{background:var(--danger-bg);color:var(--danger-fg)}
+.d-badge--y{background:var(--warning-bg);color:var(--warning-fg)}
+.d-badge--b{background:var(--teal-tint);color:var(--teal-700)}
+.d-auth{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.d-alerts{display:flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:nowrap}
+.d-alert{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 6px;border-radius:var(--r-pill);text-decoration:none;font-size:var(--fs-12);font-weight:600}
+.d-alert--r{background:var(--danger-bg);color:var(--danger-fg)}
+.d-alert--y{background:var(--warning-bg);color:var(--warning-fg)}
+.d-alert--more{background:var(--sand-100);color:var(--ink-900)}
+.d-open{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:var(--r-2);color:var(--muted-700);text-decoration:none}
+.d-open:hover{background:var(--sand-100);color:var(--ink-900)}
+.d-c-alerts{text-align:right}
+/* two-person confirmations */
+.d-confirms{list-style:none;margin:0;padding:0;border:1px solid var(--line-200);border-radius:var(--r-2);background:var(--surface-0)}
+.d-confirm{display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:4px 12px;padding:8px 12px;border-top:1px solid var(--line-200)}
+.d-confirm:first-child{border-top:0}
+.d-confirm__i{display:inline-flex;color:var(--teal-700)}
+.d-confirm__t{font-weight:600;min-width:0}
+/* items under a patient */
+.d-items-row td{padding:0 12px 12px 46px;border-top:0;background:var(--surface-0)}
+.d-items-row[hidden]{display:none}
+.d-items{list-style:none;margin:0;padding:0;border:1px solid var(--line-200);border-radius:var(--r-2);background:var(--sand-50)}
+.d-item{display:grid;grid-template-columns:24px minmax(0,1fr) 120px auto;align-items:center;gap:4px 12px;padding:8px 12px;border-top:1px solid var(--line-200)}
+.d-item:first-child{border-top:0}
+.d-item__i{display:inline-flex;color:var(--muted-700)}
+.d-item--r .d-item__i{color:var(--danger-fg)}
+.d-item--y .d-item__i{color:#8A5A00}
+.d-item__t{min-width:0;display:flex;flex-wrap:wrap;gap:0 8px;align-items:baseline}
+.d-item__t b{font-weight:600}
+.d-item__s{color:var(--muted-700);font-size:var(--fs-12)}
+.d-item__d{font-size:var(--fs-13);color:var(--ink-900);white-space:nowrap}
+.d-item--r .d-item__d{color:var(--danger-fg);font-weight:600}
+@media (max-width:1099px){.d-hide-lt-1100{display:none}}
+/* phone and narrow: each patient becomes a card; the column names come back as small labels */
+@media (max-width:820px){
+  .d-page{padding:16px 16px 40px}
+  .d-date{margin-left:0;width:100%}
+  .d-qt{background:none;border:0;border-radius:0}
+  .d-table,.d-table tbody,.d-table tr,.d-table td{display:block;width:100%}
+  .d-table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .d-table thead .d-all{position:static}
+  .d-row{margin-top:12px;background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3) var(--r-3) 0 0;padding:4px 0}
+  .d-row.is-urgent{border-left:3px solid var(--danger-fg)}
+  .d-row td,.d-table tbody tr:first-child td{border-top:0;padding:6px 14px}
+  .d-row.is-urgent .d-c-name{box-shadow:none}
+  .d-row td[data-label]::before{content:attr(data-label);display:block;font-size:var(--fs-12);font-weight:600;color:var(--muted-700);margin-bottom:2px}
+  .d-row td.d-empty{display:none}
+  .d-c-alerts{text-align:left}
+  .d-alerts{justify-content:flex-start}
+  .d-items-row td{padding:0 0 4px 0;background:none}
+  .d-items{border-radius:0 0 var(--r-3) var(--r-3);border-top:0}
+  .d-item{grid-template-columns:24px minmax(0,1fr);padding:10px 14px}
+  .d-item__d{grid-column:2}
+  .d-item .ui-btn{grid-column:2;justify-self:start;min-height:44px}
+  .d-confirm{grid-template-columns:24px minmax(0,1fr)}
+  .d-confirm .ui-btn{grid-column:2;justify-self:start;min-height:44px}
+  .d-sub{white-space:normal}
+}
+</style>
+</helmet>
+<main class="d-page">
+  <header class="d-head"><h1>Dashboard</h1>{{roleChip}}{{maturity}}<span class="d-date">{{dateText}}</span></header>
+  {{confirms}}
+  {{bar}}
+  {{table}}
+</main>
+</x-dc>
+</body>
+</html>

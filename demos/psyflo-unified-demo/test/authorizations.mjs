@@ -161,7 +161,27 @@ try {
     assert.eq(await p.locator('th[aria-sort="ascending"]').count(), 1);
     await p.fill('input[type=search]', 'Sentara'); await p.waitForTimeout(600); assert.ok((await p.locator('tbody tr[data-ui-row]').count()) <= 3);
     await p.fill('input[type=search]', ''); await p.waitForTimeout(500);
-    assert.ok(await p.getByText('In Denial Intelligence').count() >= 3, 'partial, info and denied rows link to Denial Intelligence');
+    assert.ok(await p.locator('tbody a[href^="#/DenialCase?id="]').count() >= 3, 'partial, info and denied rows open the Denial Intelligence case');
+    assert.eq(await p.locator('.a-di').count(), 0, 'no "In Denial Intelligence" line in the status cell any more');
+    assert.deepEq(realErrs(errs), []); await p.context().close();
+  });
+  await T.test('simple table (feedback Nov 11): units are one bar "N left of M" flagged from 75% used; a deadline is a date with a warning icon; every filter is on the page', async () => {
+    await reset('canvas'); const { p, errs } = await mk('jperez');
+    await p.goto(BASE + '/#/Authorizations'); await p.waitForTimeout(900);
+    const row = name => p.locator('tbody tr[data-ui-row]', { hasText: name }).first();
+    assert.match(await row('M.R.').innerText(), /27\s*left of 110/); assert.ok(await row('M.R.').locator('.ui-units.is-warn').count(), 'M.R. is at 75% used: yellow flag');
+    assert.ok(await row('T.N.').locator('.ui-units.is-out').count(), '0 left of 65 is the red state'); assert.eq(await row('D.W.').locator('.ui-units.is-warn, .ui-units.is-out').count(), 0, '110 left of 110 carries no flag');
+    assert.ok(await row('A.L.').locator('.ui-dateflag--overdue .ui-dateflag__i svg').count(), 'an overdue date carries a warning icon');
+    const cell = await row('M.R.').locator('.a-c-dl').innerText(); assert.match(cell.trim(), /^[A-Z][a-z]{2} \d{1,2}$/, 'the deadline cell is only a date: ' + cell);
+    assert.noMatch(await p.locator('tbody').innerText(), /Harvest-reported|Unverified|Payer-specific|school days|window ended/i, 'sources and sentences moved into the tooltip');
+    for (const l of ['Payer', 'Request type', 'Assigned clinician', 'Location', 'School', 'Stage', 'Units remaining', 'Next step due']) assert.ok(await p.locator('.ui-fsel__l', { hasText: new RegExp('^' + l + '$') }).count(), 'filter ' + l);
+    assert.eq(await p.locator('details.ui-fmore').count(), 0, 'no "More filters" disclosure');
+    await p.selectOption('select[data-key="units"]', 'warn'); await p.waitForTimeout(400);
+    const flagged = await p.locator('tbody tr[data-ui-row]').allInnerTexts(); assert.eq(flagged.length, 3, 'flagged rows: ' + flagged.map(x => x.split('\n')[0]).join(','));
+    assert.ok(/M\.R\./.test(flagged.join()) && /S\.B\./.test(flagged.join()) && /T\.N\./.test(flagged.join()));
+    assert.match(await p.evaluate(() => location.hash), /units=warn/);
+    await p.selectOption('select[data-key="units"]', ''); await p.selectOption('select[data-key="due"]', 'overdue'); await p.waitForTimeout(400);
+    const od = (await p.locator('tbody tr[data-ui-row]').allInnerTexts()).join('|'); assert.ok(/A\.L\./.test(od) && /M\.R\./.test(od), 'overdue rows: ' + od.replace(/\n/g, ' '));
     assert.deepEq(realErrs(errs), []); await p.context().close();
   });
   await T.test('S3 R-0416: Review packet -> Approve (Pending clinical approval) -> Sign in Lauris -> Send -> Submitted with the Sfax receipt', async () => {

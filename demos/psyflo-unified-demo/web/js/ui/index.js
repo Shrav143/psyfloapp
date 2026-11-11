@@ -8,6 +8,7 @@ import * as overlayMod from './overlay.js';
 import * as timelineMod from './timeline.js';
 import * as drMod from './draft-review.js';
 import * as miscMod from './misc.js';
+import * as glanceMod from './glance.js';
 import * as dockMod from './dock.js';
 import * as toastMod from './toast.js';
 import * as queryMod from './query.js';
@@ -29,6 +30,8 @@ export const ui = {
   // overlays
   overlay: overlayMod.overlay, modal: overlayMod.modal, drawer: overlayMod.drawer, popover: overlayMod.popover, confirm: overlayMod.confirm,
   tooltip: overlayMod.tooltip, dialogHtml: overlayMod.dialogHtml,
+  // at-a-glance pieces
+  unitsBar: glanceMod.unitsBar, dateFlag: glanceMod.dateFlag,
   // small pieces
   emptyState: miscMod.emptyState, skipLink: miscMod.skipLink, stepper: miscMod.stepper, statStrip: miscMod.statStrip, infoPopover: miscMod.infoPopover, kbd: miscMod.kbd,
   draft: miscMod.draft, draftField: miscMod.draftField,

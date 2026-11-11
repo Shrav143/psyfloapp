@@ -58,7 +58,9 @@ export function normalizeParams(p = {}, today = '') {
   let ends = g('ends') || g('exp'); ends = ['7', '30', '60'].includes(ends) ? ends : '';
   let from = okIso(g('from')), to = okIso(g('to'));
   if (!from && !to && g('range')) { const r = monthRange(g('range'), today); if (r) [from, to] = r; }
-  return { q: g('q'), status, payer: g('payer'), type: g('type'), owner: g('owner'), stage, site: g('site'), ends, from, to, sort: g('sort'), dir: g('dir') === 'desc' ? 'desc' : 'asc' };
+  const units = ['25', '50', 'warn'].includes(g('units')) ? g('units') : '';
+  const due = ['overdue', 'today', '7', '30'].includes(g('due')) ? g('due') : '';
+  return { q: g('q'), status, payer: g('payer'), type: g('type'), owner: g('owner'), stage, site: g('site'), school: g('school'), units, due, ends, from, to, sort: g('sort'), dir: g('dir') === 'desc' ? 'desc' : 'asc' };
 }
 // the query keys a legacy link may carry that the canonical state replaces (the screen clears them from the URL)
 export const LEGACY_KEYS = ['show', 'st', 'exp', 'range', 'tab'];
@@ -104,6 +106,8 @@ export function unitsView(s, r) {
   v.text = v.awarded != null ? `${v.requested} → ${v.awarded} awarded` : v.offered != null ? `${v.requested} → ${v.offered} offered` : `${v.requested ?? '—'} requested`;
   v.showBar = !!a && (['active', 'early_discharge', 'peer_to_peer_booked', 'peer_to_peer_requested', 'p2p_awaiting', 'partial_decide'].includes(r.stage) || (r.type === 'continued_stay' && PRE_SEND.includes(r.stage)));
   v.sub = a ? `${v.left} of ${v.total} left` : '';
+  v.warnPct = ruleValue(s, 'units.warn_used_pct', 75);
+  v.warn = !!a && v.total > 0 && v.pct >= v.warnPct;       // the yellow flag on the unit bar (rules table, a display threshold)
   return v;
 }
 
@@ -262,7 +266,7 @@ export function rowOf(s, r0, me) {
   const label = M.clientLabel(s, r.client);
   let type = M.TYPE_LABEL[r.type] || r.type; if (r.stage === 'info_requested' || r.info_reply) type += ' · info';
   return {
-    id: r.id, clientId: r.client, label, initials: c ? c.initials : String(r.client).split(',')[0], school: sc ? sc.name : '', locality: sc ? sc.locality || String(sc.name).split(' · ')[0] : '',
+    id: r.id, clientId: r.client, label, initials: c ? c.initials : String(r.client).split(',')[0], lauris: c ? (c.harvest_no || c.lauris_no || '') : '', schoolId: sc ? sc.id : '', school: sc ? sc.name : '', locality: sc ? sc.locality || String(sc.name).split(' · ')[0] : '',
     payerId: r.payer, payer: payerName(s, r.payer), payerFull: payer.name, channel: M.CHANNEL_LABEL[r.channel] || r.channel, service: serviceShort(r), type: r.type, typeLabel: type,
     stage: r.stage, group: GROUP[r.stage] || 'closed', tags: [...tags], inDI: DI_STAGES.includes(r.stage),
     units: u, deadline: dl, owner: own, next: na, period: per, req: r,
@@ -289,13 +293,16 @@ function matches(s, row, f) {
   if (f.owner && row.owner.id !== f.owner) return false;
   if (f.stage && row.stage !== f.stage) return false;
   if (f.site && row.locality !== f.site) return false;
+  if (f.school && row.schoolId !== f.school) return false;
+  if (f.units) { const u = row.units; if (!(u.total > 0)) return false; if (f.units === 'warn' && !u.warn) return false; if (f.units === '25' && u.left / u.total > 0.25) return false; if (f.units === '50' && u.left / u.total > 0.5) return false; }
+  if (f.due) { const d = row.deadline.date && String(row.deadline.date).slice(0, 10); if (!d) return false; if (f.due === 'overdue' ? d >= s.today : f.due === 'today' ? d !== s.today : (d < s.today || d > addDays(s.today, +f.due))) return false; }
   if (f.from || f.to) { const { start, end } = row.period; if (!start && !end) return false; if (f.to && start && start > f.to) return false; if (f.from && end && end < f.from) return false; }
   if (f.ends) { const e = row.units.end || row.period.end; if (!e) return false; if (e < s.today || e > addDays(s.today, +f.ends)) return false; }
   return true;
 }
 // authQueue(s, filters, me): filters are the canonical ones (normalizeParams). counts ignore the status chip so each chip shows what it would give.
 export function authQueue(s, filters = {}, me) {
-  const f = { q: '', status: '', payer: '', type: '', owner: '', stage: '', site: '', ends: '', from: '', to: '', sort: '', dir: 'asc', ...filters };
+  const f = { q: '', status: '', payer: '', type: '', owner: '', stage: '', site: '', school: '', units: '', due: '', ends: '', from: '', to: '', sort: '', dir: 'asc', ...filters };
   const all = (s.requests || []).map(r => rowOf(s, r, me));
   const base = all.filter(row => matches(s, row, f));
   const counts = { all: base.length }; for (const c of CHIP_VALUES) counts[c] = base.filter(row => row.tags.includes(c)).length;
@@ -312,6 +319,7 @@ export function queueOptions(s) {
     types: uniq(rows, x => x.type).map(x => [x.type, M.TYPE_LABEL[x.type] || x.type]),
     owners: uniq(rows.filter(x => x.owner.id), x => x.owner.id).map(x => [x.owner.id, x.owner.name]),
     sites: [...new Set(rows.map(x => x.locality).filter(Boolean))].sort().map(x => [x, x]),
+    schools: uniq(rows.filter(x => x.schoolId), x => x.schoolId).map(x => [x.schoolId, x.school]).sort((a, b) => a[1].localeCompare(b[1])),
     stages: STAGE_LIST.filter(st => reqs.some(r => r.stage === st)).map(st => [st, M.STAGE_LABEL[st] || st])
   };
 }

@@ -8,57 +8,42 @@
 <x-dc>
 <helmet>
 <style>
-/* Authorizations queue (E2). Classes use the a- prefix; tokens and the UI kit do the rest. */
+/* Authorizations (feedback round Nov 11): one filtered table. Classes use the a- prefix; tokens and the UI kit do the rest. */
 .a-page{max-width:1320px;margin:0 auto;padding:var(--sp-5) var(--gutter) 64px;display:flex;flex-direction:column;gap:var(--sp-4)}
 .a-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--sp-3) var(--sp-4)}
 .a-head h1{margin:0;font-size:var(--fs-28);line-height:var(--lh-28);font-weight:600;letter-spacing:-.01em}
 .a-head__t{display:flex;align-items:center;gap:var(--sp-2);flex-wrap:wrap}
 .a-head__r{margin-left:auto;display:flex;gap:var(--sp-4);align-items:flex-end;flex-wrap:wrap}
-.a-range{border:0;margin:0;padding:0;display:flex;gap:var(--sp-2);align-items:center;flex-wrap:wrap}
-.a-range__l{float:left;width:100%;font-size:var(--fs-12);line-height:var(--lh-12);font-weight:600;color:var(--muted-700);padding:0;margin-bottom:2px}
+.a-range{border:1px solid var(--line-200);background:var(--surface-0);border-radius:var(--r-3);margin:0;padding:10px 14px 12px;display:flex;gap:var(--sp-2);align-items:center;flex-wrap:wrap}
+.a-range__l{float:left;width:100%;font-size:var(--fs-12);line-height:var(--lh-12);font-weight:600;color:var(--muted-700);padding:0;margin-bottom:4px}
 .a-range__f input{width:150px}
-.a-why{font-size:var(--fs-13);color:var(--muted-700);border:1px dashed var(--control-500);border-radius:var(--r-2);padding:10px 14px}
-.a-id{font-weight:500;color:var(--muted-700);font-size:var(--fs-13)}
+.a-range__p{display:inline-flex;gap:6px;flex-wrap:wrap;margin-left:6px}
+.a-id{font-weight:500;color:var(--muted-700);font-size:var(--fs-13);white-space:nowrap}
 .a-sub{display:block;color:var(--muted-700);font-size:var(--fs-12);line-height:var(--lh-12);margin-top:2px}
+.a-muted{color:var(--muted-700);font-size:var(--fs-13)}
 .a-case-l{display:block}
-.a-di{margin-top:3px;font-size:var(--fs-12)}
-.a-di a{font-weight:600}
-.a-bar{display:inline-block;width:56px;height:6px;border-radius:3px;background:var(--sand-100);overflow:hidden;flex:none}
-.a-bar i{display:block;height:100%;background:var(--teal-600)}
-.a-bar.is-warn i{background:var(--warning-fg)}
-.a-dl{display:flex;gap:4px;align-items:center}
-.a-dl__i{display:inline-flex;flex:none}
-.a-units{display:block}
-.a-ub{display:flex;align-items:center;gap:6px}
-.a-line{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}
 .a-nw{white-space:nowrap}
-.a-dl__t{font-weight:600}
-.a-dl--overdue .a-dl__t{color:var(--danger-fg)}
-.a-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .a-page .ui-qt__sort{min-height:24px}
 .a-page a:not(.ui-btn):not(.ui-qt__link){color:var(--teal-700)}
 .a-page a:not(.ui-btn):not(.ui-qt__link):hover{text-decoration:underline}
-.a-di a{text-decoration:none}
-.a-id{white-space:nowrap}
-.a-units .ui-num{font-weight:600}
-.a-page .ui-verify{font-size:var(--fs-12)}
-.a-page .ui-qt__table td{padding:7px 7px;vertical-align:middle}
-.a-page .ui-qt__table th{padding-left:7px;padding-right:7px}
-/* three widths: all columns from 1440; below that the type joins the payer line and the owner joins the action cell; below 1280 the payer and type join the case cell */
-.a-page .a-s2,.a-page .a-s3,.a-page .a-own{display:none}
-@media (max-width:1439px){.a-page .a-s1{display:none}.a-page .a-s2,.a-page .a-own{display:block}.a-page .ui-qt__table th:nth-child(3),.a-page .ui-qt__table td:nth-child(3),.a-page .ui-qt__table th:nth-child(7),.a-page .ui-qt__table td:nth-child(7){display:none}}
-@media (max-width:1279px){.a-page .a-s3{display:block}}
-.a-c-case{min-width:150px}.a-c-case .a-sub{white-space:nowrap}
-.a-c-units{min-width:150px}.a-c-units .a-sub{white-space:nowrap}
-.a-c-dl{min-width:170px}
-.a-page .ui-qt__table .a-mini .ui-verify{gap:0;padding:0 3px}
-.a-page .ui-qt__table .a-mini .ui-chip__t{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.a-page .ui-qt__table .a-mini .ui-verify svg{width:14px;height:14px}
-.a-bar{width:40px}
-.a-page .ui-qt__table .ui-chip{padding:0 8px}
-.a-page .ui-qt__table .ui-verify{padding:0 6px;font-size:var(--fs-12);line-height:16px}
+.a-page .ui-qt__table td{padding:10px 8px;vertical-align:middle}
+.a-page .ui-qt__table th{padding-left:8px;padding-right:8px}
 .a-page .ui-qt__table td:last-child{white-space:nowrap}
 .a-page .ui-qt__link{color:inherit}
+.a-page .ui-fbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:end}
+.a-page .ui-fsearch{grid-column:span 2;order:1}
+.a-page .ui-fcount{grid-column:span 3;justify-self:end;order:2}
+.a-page .ui-fchips{grid-column:1/-1;order:3}
+.a-page .ui-fsel{order:4;min-width:0}
+.a-page .ui-fsel .ui-select{width:100%}
+@media (max-width:1100px){.a-page .ui-fbar{grid-template-columns:repeat(3,minmax(0,1fr))}.a-page .ui-fsearch{grid-column:span 2}.a-page .ui-fcount{grid-column:span 1}}
+@media (max-width:640px){.a-page .ui-fbar{grid-template-columns:repeat(2,minmax(0,1fr))}.a-page .ui-fsearch{grid-column:1/-1}.a-page .ui-fcount{grid-column:1/-1;justify-self:start}}
+.a-c-case{min-width:120px}
+.a-c-units{min-width:190px}
+.a-c-dl{min-width:96px}
+/* two widths: all columns from 1280; below that the request type and the clinician leave the row (they are in the case) */
+@media (max-width:1279px){.a-page .ui-qt__table th:nth-child(3),.a-page .ui-qt__table td:nth-child(3),.a-page .ui-qt__table th:nth-child(7),.a-page .ui-qt__table td:nth-child(7){display:none}}
+@media (max-width:760px){.a-range__f input{width:132px}.a-head__r{margin-left:0;width:100%}}
 </style>
 </helmet>
 <main class="a-page">

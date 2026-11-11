@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { draftScreening, enhanceDictation, draftInitialSRA, draftSeeded, contactTime, screeningFacts, screeningPrompts } from '../web/js/shared/draft.js';
+import { draftScreening, enhanceDictation, draftInitialSRA, draftSeeded, screeningFacts, screeningPrompts } from '../web/js/shared/draft.js';
 import { unitsFor, unitBands } from '../web/js/shared/rules.js';
 import { unitsForDirectMinutes } from '../web/js/shared/dates.js';
 
@@ -90,11 +90,10 @@ test('Units · official bands: 0 below 120 minutes, 1/2/3 at 120/180/300; the 60
   assert.equal(unitsFor(s, 'tdt', 119), 0); assert.equal(unitsFor(s, 'tdt', 120), 1);
   s.rules[0].value = [[60, 1], [180, 2], [300, 3]];   // the alternate (60-minute) value, set by an administrator
   assert.equal(unitsFor(s, 'tdt', 60), 1);
-  // 220 minutes = 2 units (the confirmed M.R. daily note), and contactTime uses the configured bands
+  // 220 minutes = 2 units under the configured bands
   s.rules[0].value = [[120, 1], [180, 2], [300, 3]];
   assert.equal(unitsFor(s, 'tdt', 220), 2);
-  assert.equal(contactTime([['08:00', '11:40', 'a']], { s }).units, 2);
-  assert.equal(contactTime([['08:00', '09:00', 'a']], { s }).units, 0);
+  assert.equal(unitsFor(s, 'tdt', 60), 0);
 });
 
 test('Evidence · counts come from stored notes; missing evidence prints "Evidence missing"; household is not included by default', () => {

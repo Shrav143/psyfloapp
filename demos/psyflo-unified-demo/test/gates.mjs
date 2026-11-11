@@ -43,12 +43,9 @@ await T.test('WPS-04 a forged event (no such session, or another user) is not be
   const sess = await lpost('/consumers/3315/session/dpn', 'khale', { action: 'process', f9: 'z' }); const id = sid(sess);
   await assert.refused(bridge('lauris.observed', ev('processed', id, 'dpn', 3315, 'J.T.', 'J. Perez, LPC')), /processed by another user/);
 });
-await T.test('WPS-05 a timer or dictation for a student off the caseload is refused', async () => {
-  await assert.refused(tryApi('timer.start', { client: 'DW' }, 'khale'), /not allowed/i, 403);
+await T.test('WPS-05 a dictation for a student off the caseload is refused', async () => {
   await assert.refused(tryApi('dictation.save', { client: 'DW', spoken: 'x' }, 'khale'), /not allowed/i, 403);
-  await api('timer.start', { client: 'MR' }, 'khale');
-  assert.ok((await state('khale')).timers.khale.started, 'own student: allowed');
-  await api('timer.stop', {}, 'khale');
+  await assert.refused(tryApi('phone.dictation', { client: 'DW', harvest_no: 4458, spoken: 'x' }, 'khale'), /not allowed/i, 403);
 });
 await T.test('WPS-08 a portal confirmation needs its request, and an issued reference', async () => {
   await assert.refused(bridge('portal.observed', { ref: 'AV-123456' }), /was not issued/);

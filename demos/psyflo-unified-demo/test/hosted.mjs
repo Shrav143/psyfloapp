@@ -15,7 +15,7 @@
 //   flowA     the Lauris panel: screening (consumer, scripted call via the presenter command, Process Form) and the intake
 //   flowB     the phone dictation (example) and the daily note in the Lauris frame
 //   flowC     ISP, SRA, Process Form, approval, Get Signature, Send
-//   time      Track Time in the panel and on the phone
+//   extension the panel home (Scribe, no Track Time) and the phone without a timer; who gets what
 //   dock      presenter dock: modes, scenario selector, role switcher, simulate, reset
 import { createRequire } from 'node:module'; import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path';
 const { chromium } = createRequire(import.meta.url)(process.env.PW || '/opt/node22/lib/node_modules/playwright/index.js');
@@ -502,8 +502,8 @@ async function flowB() {
   await P.getByText('Dictation dropped in').waitFor({ timeout: 20000 });
   const v = await L.locator('#lauris-form label[for]').evaluateAll(ls => Object.fromEntries(ls.map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
   ok(/^Played basketball with M\.R\. after he got upset in math/.test(v['Narrative'].replace(/\s+/g, ' ').trim()), 'the dictation drops in as the staffer\'s own words');
-  ok(v['Mood check-in'] === '' && v['Progress today'] === '' && v['Units'] === '2', 'nothing invented: mood and progress stay blank; the units come from the timer by the official bands');
-  await P.getByText(/^Confirm \d units/).click(); await p2.waitForTimeout(600);
+  ok(v['Mood check-in'] === '' && v['Progress today'] === '' && v['Units'] === '', 'nothing invented: mood and progress stay blank; units are left for the person to type in Lauris');
+  await L.getByLabel('Direct time', { exact: true }).fill('3 h 40 min'); await L.getByLabel('Units', { exact: true }).fill('2');
   await L.getByRole('button', { name: 'Process Form' }).click(); await D.lwait(null, /processed=/);
   ok(await until(async () => { const s = await D.state('khale'); const mine = s.clients.filter(c => c.staff === 'khale'); const done = new Set(s.notes.filter(n => n.staff === 'khale' && n.type === 'daily' && n.date === s.today).map(n => n.client)); return mine.filter(c => done.has(c.id)).length === 5; }, 10000), 'Process Form (a person) is observed: 5 of 6 daily notes');
   const st = await D.state('khale'); ok(st.dictations.find(d => d.client === 'MR').status === 'used', 'the dictation is marked used');
@@ -551,10 +551,10 @@ async function flowC() {
   H.noErrors(); await H.close();
 }
 
-// ---------------------------------------------------------------- Track Time: the panel view on M.R.'s Lauris page, and the phone
-async function time() {
-  console.log('time · Track Time');
-  const H = await fresh(); const { ui, page } = H;
+// ---------------------------------------------------------------- the extension panel home and the phone, without Track Time (removed on Nov 11)
+async function extension() {
+  console.log('extension · panel home and phone');
+  const H = await fresh(); const { ui } = H;
   await H.signIn('Direct support');
   await H.go('#/ExtDPN?client=MR'); await H.lwait(null, /3310\/session\/dpn/); await H.panelReady();
   const P = H.P();
@@ -562,28 +562,17 @@ async function time() {
   await H.L().locator('#psyflo-toggle').click();
   ok(await until(async () => (await H.L().locator('#psyflo-frame').count()) === 0 && /off/.test(await H.L().locator('#psyflo-toggle').innerText().catch(() => '')), 10000), 'the psyflo chip hides the panel: the mock Lauris page keeps working without it');
   await H.L().locator('#psyflo-toggle').click(); await H.panelReady();
-  await P.getByRole('button', { name: /Track Time/ }).first().click();
-  await P.locator('.t7-figs').or(P.getByText('No timer running')).first().waitFor({ timeout: 10000 });
   const t = await P.locator('body').innerText();
-  ok(/Track Time · M\.R\./.test(t) && /Timing M\.R\./.test(t) && /Harvest # 3310/.test(t), 'the Track Time view shows the open student and the running timer');
-  const figs = await P.locator('.t7-fig').allInnerTexts(); ok(figs.length === 4 && /Recorded[\s\S]*5 h 10 min \+ running/.test(figs[0]) && /Direct service[\s\S]*3 h 40 min/.test(figs[1]) && /2 units[\s\S]*Officially verified/.test(figs[3]), 'four separate figures with the unit rule\'s source (recorded, direct, in the note, potentially billable)');
-  ok(/Recorded time only\. A running timer is not billable\./.test(t), 'a running timer is not billable');
-  await P.getByRole('button', { name: 'Pause' }).click(); await P.getByText('Paused M.R.').waitFor(); await P.getByRole('button', { name: 'Resume' }).click(); await P.getByText('Timing M.R.').waitFor();
-  await P.getByRole('button', { name: 'Stop' }).click(); await P.getByText(/^Stopped · M\.R\./).waitFor();
-  let s = await H.state('khale'); const d = s.time_entries.find(e => e.status === 'draft'); ok(!!d && d.source === 'timer' && !d.confirmed, 'the stopped interval is kept as an entry to describe (never lost, not direct time)');
-  await P.getByRole('button', { name: 'Save time' }).click(); await sleep(400); ok(/Say what you did/.test(await P.locator('body').innerText()), 'saving needs words');
-  await P.locator(`#t7-w-${d.id}`).fill('Support during afternoon classes'); await P.getByRole('button', { name: 'Save time' }).click(); await sleep(900);
-  s = await H.state('khale'); ok(s.time_entries.find(e => e.id === d.id).status === 'saved', 'the entry is saved with its words');
-  await H.shot('time-panel');
-  // the phone (same demo): the student's four figures
+  ok(/Scribe/.test(t) && !/Track Time/.test(t) && !/your timer|Confirm \d+ units/.test(t), 'the panel offers Scribe and no Track Time, timer or unit confirmation');
+  await H.shot('panel-home');
+  // the phone (same demo): no timer, no time figures
   await H.go('#/MobileApp'); await ui.locator('.pm-chip').first().waitFor(); await ui.locator('.pm-chip', { hasText: 'M.R.' }).click(); await sleep(400);
-  const pf = await ui.locator('.pm-fig').allInnerTexts(); ok(pf.length >= 4 && /units/.test(pf.join(' ')), 'the phone shows the same four figures: ' + pf.map(x => x.replace(/\s+/g, ' ').slice(0, 24)).join(' | '));
+  const pt = await ui.locator('body').innerText(); ok(/Say what happened/.test(pt) && !/Not timing|Current activity|four separate figures|timer/i.test(pt), 'the phone has no timer and no time figures');
   H.noErrors(); await H.close();
-  // who may open it: a supervisor does not get Track Time (a reason, not a blank); the presenter command opens the view
+  // who gets what: a supervisor has no Scribe or Track Time and is told Scan & Enhance is for licensed clinical staff
   const S2 = await fresh(); await S2.signIn('Supervisor');
   await S2.go('#/ExtHome'); await S2.lwait(null, /lauris\.invalid\/consumers/); await S2.panelReady();
-  await S2.L().locator('body').evaluate(() => document.getElementById('psyflo-frame').contentWindow.postMessage({ psyflo: 'present', cmd: 'view', view: 'time' }, '*')); await sleep(900);
-  const st = await S2.P().locator('body').innerText(); ok(/Track Time is for the staff who work with students/.test(st) && await S2.P().locator('.t7-figs').count() === 0, 'a supervisor gets a reason, not Track Time');
+  const st = await S2.P().locator('body').innerText(); ok(!/Track Time/.test(st) && /Scan & Enhance is for licensed clinical staff/.test(st), 'a supervisor sees no Track Time and gets the Scan & Enhance reason');
   S2.noErrors('supervisor'); await S2.close();
 }
 
@@ -637,7 +626,7 @@ async function dock() {
 }
 
 // ---------------------------------------------------------------- run
-const ORDER = [['static', null], ['roles', roles], ['narrow', narrow], ['auth', auth], ['denial', denial], ['analytics', analytics], ['settings', settings], ['referral', referral], ['flowA', flowA], ['flowB', flowB], ['flowC', flowC], ['time', time], ['dock', dock]];
+const ORDER = [['static', null], ['roles', roles], ['narrow', narrow], ['auth', auth], ['denial', denial], ['analytics', analytics], ['settings', settings], ['referral', referral], ['flowA', flowA], ['flowB', flowB], ['flowC', flowC], ['extension', extension], ['dock', dock]];
 for (const [name, fn] of ORDER) {
   if (ONLY && !ONLY.includes(name)) continue;
   if (name === 'static') { mode = 'file'; await staticChecks(); continue; }

@@ -7,7 +7,7 @@
 import { register, Screen, M, raw, toast, go, session, ui, app } from '../app.js';
 import { enhanceDictation } from '../shared/draft.js';
 import { today as clockToday } from '../shared/clock.js';
-import { identityCard, micConsentOf, blocksFor } from '../shared/time.js';
+import { identityCard, micConsentOf } from '../shared/identity.js';
 import { phoneUser, myStudents, whoLine, dueAssessments, tick, patientBar, STATE_CHIP } from './MobileApp.js';
 
 const SR = () => window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -38,9 +38,8 @@ register('MobileDictate', class extends Screen {
   enhanced() {
     const s = this.s; const c = this.client(); const u = this.user(); const text = (this.state.spoken || '').trim();
     if (!c || !u || !text) return null;
-    const blocks = blocksFor(s, c.id, clockToday(s), u.id).filter(b => !b[3]);   // confirmed time only
     const recent = (s.notes || []).filter(n => n.staff === u.id && n.enhanced).map(n => n.enhanced).slice(-30);
-    return enhanceDictation({ text, client: c, goals: c.goals || [], interventions: s.interventions, blocks, recent });
+    return enhanceDictation({ text, client: c, goals: c.goals || [], interventions: s.interventions, recent });
   }
   micView() {
     const consent = micConsentOf(this.s, this.user()?.id);

@@ -104,7 +104,7 @@ await T.test('Time Tracker: a page where a person types the time of a service; t
   const pg = (await lget(r.loc, 'khale')).text; assert.match(pg, new RegExp(`id="lauris-flash" data-event="saved" data-session="${id}" data-form="time" data-consumer="3310"`)); assert.match(pg, /<td>13:10<\/td><td>13:40<\/td><td class="num">30<\/td>/);
   assert.match(pg, /Units come from the daily note/);
   // the bridge's observation is believed only for an entry that exists for that consumer
-  const ok = await bridge('lauris.observed', { event: 'saved', form: 'time', session: id, consumer: { no: '3310', initials: 'M.R.' }, user: 'K. Hale' }); assert.ok(ok.ok, ok.error);
+  const ok = await bridge('lauris.observed', { event: 'saved', form: 'time', session: id, consumer: { no: '3310', initials: 'M.R.' }, user: 'K. Hale' }); assert.ok(ok.ok && /does not read the Lauris Time Tracker/.test((ok.result && ok.result.ignored) || ''), 'Psyflo accepts the attested event and ignores it: ' + JSON.stringify(ok));
   const forged = await bridge('lauris.observed', { event: 'saved', form: 'time', session: '999', consumer: { no: '3310', initials: 'M.R.' }, user: 'K. Hale' }); assert.ok(!forged.ok && /no such saved entry/.test(forged.error));
   const other = await bridge('lauris.observed', { event: 'saved', form: 'time', session: id, consumer: { no: '3315', initials: 'J.T.' }, user: 'K. Hale' }); assert.ok(!other.ok, 'an entry for M.R. is not believed for J.T.');
 });

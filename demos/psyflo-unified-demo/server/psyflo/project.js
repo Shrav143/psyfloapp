@@ -4,7 +4,7 @@
 // Rules of thumb (see permissions.js MATRIX):
 //   clinician          everything TDT (clinical text included); non-TDT service lines (outpatient, SEBS) are never in the state
 //   supervisor         status, units and the notes of their own reviewees; no screening/CNA/ISP/SRA drafts, no evidence text
-//   direct_support     own caseload only: own notes, dictations, timers, balances
+//   direct_support     own caseload only: own notes, dictations, balances
 //   admin              authorization status, unit balances, aggregates, users, rules, audit; NO clinical text (notes.view = N)
 //   guardian           one child, plain fields, own letters        school   own school's referrals and short updates
 // Every key of the stored state is present in the projection (empty when withheld) so screens render honest empty states.
@@ -78,7 +78,7 @@ export function projectState(s, actor) {
     assessments: v => clin ? v : staffLike && role === 'direct_support' ? (v || []).filter(a => myCaseload.has(a.client)) : [],
     assessments_due: v => clin ? v : staffLike && role === 'direct_support' ? (v || []).filter(a => myCaseload.has(a.client || a.id)) : [],
     assessment_history: v => clin ? v : [],
-    timers: v => clin ? v : staffLike && role === 'direct_support' ? pick(v || {}, [actor.id]) : {},
+    documents: v => staffLike && role !== 'direct_support' ? v : [],   // intake, CNA, plan, quarterly, discharge: status and due date only, no text; direct support does not own these forms
     reminders: v => staffLike ? (role === 'clinician' ? v : (v || []).filter(r => r.for === actor.id)) : [],
     files: v => (v || []).filter(f => canReadFile(f)),
     review: v => staffLike && (role === 'clinician' || role === 'supervisor') ? v : [],

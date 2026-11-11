@@ -1,6 +1,7 @@
 // The rail, as data. Change the nav by editing this file; app.js only renders it.
-// Rail (review/03-ux-audit.md e): three management tabs are the only large items (Authorizations, Denial Intelligence,
-// Analytics); My Work is the logo target (not a fourth tab); below a divider two small links, Referrals and Settings.
+// Rail: patient-first (feedback round Nov 11). Dashboard is the patient roster every role starts from; Documentation is the notes, intake
+// forms and CNAs queue (owed whether or not there is an authorization); Authorizations, Denial Intelligence and Analytics follow; below a
+// divider two small links, Referrals and Settings. The logo opens the Dashboard.
 // Role decides what shows: an item appears only when the user may open the route it actually points at.
 //
 // Item: { id, label, icon, route, params?, fallback?, fallbackParams?, activeFor?:[routeIds], count?:'authNeeds'|'denialsOpen'|'referralsNew' }
@@ -12,8 +13,10 @@ import { isLive, resolveRoute } from '../registry.js';
 import { STATUS } from '../ui/chip.js';
 
 export const NAV = {
-  logo: { id: 'my-work', label: 'My Work', route: 'MyWork', fallback: 'DoNext', activeFor: ['MyWork', 'DoNext', 'ReviewQueue', 'StaffDashboard'] },
+  logo: { id: 'dashboard-logo', label: 'Dashboard', route: 'Dashboard', fallback: 'MyWork', activeFor: [] },
   primary: [
+    { id: 'dashboard', label: 'Dashboard', icon: 'home', route: 'Dashboard', fallback: 'MyWork', activeFor: ['Patient', 'MyWork', 'DoNext', 'StaffDashboard'] },
+    { id: 'documentation', label: 'Documentation', icon: 'file', route: 'Documentation', activeFor: ['ReviewQueue'] },
     { id: 'authorizations', label: 'Authorizations', icon: 'list', route: 'Authorizations', activeFor: ['Authorization', 'Submission', 'EarlyDischarge'], count: 'authNeeds' },
     { id: 'denials', label: 'Denial Intelligence', icon: 'shield', route: 'DenialIntelligence', fallback: 'Partials', activeFor: ['DenialCase', 'InfoRequest', 'Partials', 'PeerBrief'], count: 'denialsOpen' },
     { id: 'analytics', label: 'Analytics', icon: 'bars', route: 'Analytics', activeFor: ['PayerPlaybook'] }
@@ -43,7 +46,7 @@ export function targetOf(item) {
 }
 // which nav item is lit for a route id (follows activeFor and redirects' targets)
 export function activeItem(routeId) {
-  const all = [NAV.logo, ...NAV.primary, ...NAV.secondary];
+  const all = [...NAV.primary, NAV.logo, ...NAV.secondary];   // the logo comes last so the Dashboard tab, not the logo, is the lit item
   return all.find(i => i.route === routeId || i.fallback === routeId || (i.activeFor || []).includes(routeId)) || null;
 }
 

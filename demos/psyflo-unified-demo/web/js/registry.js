@@ -58,7 +58,11 @@ export const SCREENS = [
   { n: 53, id: 'DenialIntelligence', surface: 'app', min: 3, title: 'Denial Intelligence', isNew: true },
   { n: 54, id: 'DenialCase', surface: 'app', min: 3, title: 'Denial case', isNew: true },
   { n: 55, id: 'Settings', surface: 'app', min: 4, title: 'Settings', isNew: true },
-  { n: 56, id: 'UiKit', surface: 'app', min: 1, title: 'UI kit (presenter)', isNew: true, presenter: true }
+  { n: 56, id: 'UiKit', surface: 'app', min: 1, title: 'UI kit (presenter)', isNew: true, presenter: true },
+  // ---- patient-first screens (feedback round Nov 11): the roster every role starts from, the documentation queue, the patient chart ----
+  { n: 57, id: 'Dashboard', surface: 'app', min: 1, title: 'Dashboard', isNew: true },
+  { n: 58, id: 'Documentation', surface: 'app', min: 2, title: 'Documentation', isNew: true },
+  { n: 59, id: 'Patient', surface: 'app', min: 1, title: 'Patient chart', isNew: true }
 ];
 export const BY_ID = Object.fromEntries(SCREENS.map(s => [s.id, s]));
 
@@ -76,9 +80,13 @@ export const isLive = id => !(id in ROUTES_LIVE) || ROUTES_LIVE[id] === true;
 const pick = (p, keys = []) => Object.fromEntries(keys.filter(k => p && p[k] != null && p[k] !== '').map(k => [k, p[k]]));
 const rename = (p, m = {}) => Object.fromEntries(Object.entries(m).filter(([o]) => p && p[o] != null && p[o] !== '').map(([o, n]) => [n, p[o]]));
 export const REDIRECTS = [
-  { from: 'DoNext', to: 'MyWork', flag: 'DoNext', params: { section: 'todo' } },
-  { from: 'ReviewQueue', to: 'MyWork', flag: 'ReviewQueue', params: { section: 'review' } },
-  { from: 'StaffDashboard', to: 'MyWork', flag: 'StaffDashboard', carry: ['staff', 'v'], map: (p, ctx) => ({ section: ctx.role === 'supervisor' || ctx.role === 'clinician' || ctx.role === 'admin' ? 'team' : 'day', ...pick(p, ['staff', 'v']) }) },
+  // My Work became the patient roster (Dashboard) and the documentation queue (Documentation); the old ids and My Work sections land on them
+  { from: 'DoNext', to: 'Dashboard', flag: 'DoNext' },
+  { from: 'ReviewQueue', to: 'Documentation', flag: 'ReviewQueue', params: { status: 'pending_review' } },
+  { from: 'StaffDashboard', to: 'Dashboard', flag: 'StaffDashboard', map: p => pick(p, ['staff']) },
+  { from: 'MyWork', to: 'Referrals', flag: 'MyWork', when: p => p.section === 'referrals' },
+  { from: 'MyWork', to: 'Documentation', flag: 'MyWork', when: p => p.section === 'review' || p.section === 'team', map: p => ({ ...pick(p, ['id', 'staff']), ...(p.section === 'team' ? { view: 'staff' } : { status: 'pending_review' }) }) },
+  { from: 'MyWork', to: 'Dashboard', flag: 'MyWork', map: p => pick(p, ['staff']) },
   { from: 'Users', to: 'Settings', flag: 'Users', params: { tab: 'people' } },
   { from: 'Authorizations', to: 'Authorization', flag: 'Authorizations', when: p => !!p.id, carry: ['id'] },
   { from: 'Submission', to: 'Authorization', flag: 'Submission', when: p => !!p.id, carry: ['id'], params: { section: 'submission' } },
@@ -105,7 +113,7 @@ export function resolveRoute(r, ctx = {}) {
 
 // While a new route is not live, the old screen that does its job: legacyFor({ id:'Authorization', params:{ id, section:'submission' } }) -> Submission?id.
 // Used by the presenter dock (scenarios may start on a new route) so a scenario never lands on a stub. Live routes pass through.
-const LEGACY_DEFAULT = { MyWork: 'DoNext', Authorization: 'Authorizations', DenialIntelligence: 'Partials', DenialCase: 'Partials', Settings: 'Users' };
+const LEGACY_DEFAULT = { Dashboard: 'MyWork', Documentation: 'MyWork', Patient: 'MyWork', MyWork: 'DoNext', Authorization: 'Authorizations', DenialIntelligence: 'Partials', DenialCase: 'Partials', Settings: 'Users' };
 export function legacyFor(r) {
   if (!r || isLive(r.id)) return r;
   const p = r.params || {};
@@ -120,9 +128,9 @@ export function legacyFor(r) {
 // Where each role lands after sign-in. Returns the route id (homeTarget also returns params).
 export function homeTarget(role, narrow) {
   if (role === 'direct_support') return { id: narrow ? 'MobileApp' : 'ExtHome', params: {} };
+  if ((role === 'supervisor' || role === 'clinician' || role === 'admin') && isLive('Dashboard')) return { id: 'Dashboard', params: {} };
   if (role === 'supervisor') return isLive('MyWork') ? { id: 'MyWork', params: { section: 'review' } } : { id: 'ReviewQueue', params: {} };
   if (role === 'clinician') return isLive('MyWork') ? { id: 'MyWork', params: { section: 'todo' } } : { id: 'DoNext', params: {} };
-  if (role === 'admin' && isLive('MyWork')) return { id: 'MyWork', params: { section: 'todo' } };
   return { id: 'Authorizations', params: {} };
 }
 export const homeFor = (role, narrow) => homeTarget(role, narrow).id;

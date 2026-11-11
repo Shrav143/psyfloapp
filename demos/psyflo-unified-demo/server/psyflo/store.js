@@ -51,7 +51,7 @@ export function buildState(preset = 'live') {
     counselor_counts: seed.counselor_counts, analytics_baseline: seed.analytics_baseline,
     compliance: seed.compliance, migration: seed.migration,
     family_links: seed.family_links || [], eligibility: seed.eligibility || [],
-    dictations: seed.dictations || [], assessments: seed.assessments || [], timers: seed.timers || {},
+    dictations: seed.dictations || [], assessments: seed.assessments || [],
     consents: seed.consents || [], files: seed.files || [], reminders: seed.reminders || [], plans: seed.plans || [],
     portal_tasks: seed.portal_tasks || [], screenings: seed.screenings || [], exports: seed.exports || [],
     settings: seed.settings || {}, library: seed.library || [], review: seed.review || [], school_numbers: seed.school_numbers || {},

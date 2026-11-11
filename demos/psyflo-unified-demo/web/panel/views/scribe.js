@@ -12,7 +12,6 @@ import { consentFor, consentCard } from '../lib/consent.js';
 import { recFor, reviewBlock } from '../lib/review.js';
 import * as B from '../lib/boxes.js';
 import { formValue } from '../lib/items.js';
-import { needsCheck } from '../../js/shared/time.js';
 
 const TYPES = [
   { id: 'screening', label: 'Admission screening', short: 'Screening', cap: 'drafts.clinical', form: 'screening' },
@@ -176,20 +175,19 @@ function oneAtATime(ctx, boxes, typeAct, skipAct) {
 function dpnState(ctx, c) {
   const s = ctx.S(); const st = ctx.st;
   const dict = ctx.M.waitingDictations(s, c.id)[0] || (st.usedDict && (s.dictations || []).find(d => d.id === st.usedDict));
-  const t = B.timerBoxes(ctx, c, st);
   const input = dict ? dict.spoken : '';
-  const e = input ? enhanceDictation({ text: input, client: c, goals: c.goals || [], interventions: s.interventions, blocks: t.blocks, recent: s.notes.filter(n => n.client === c.id).map(n => n.enhanced) }) : null;
-  return { dict, t, e, input };
+  const e = input ? enhanceDictation({ text: input, client: c, goals: c.goals || [], interventions: s.interventions, recent: s.notes.filter(n => n.client === c.id).map(n => n.enhanced) }) : null;
+  return { dict, e, input };
 }
 function dpnBoxes(ctx, c, ds) {
   const st = ctx.st; const e = ds.e; const g = e?.objective ? (c.goals || [])[e.objective - 1] : null;   // an objective is used only if the staffer named one
-  const b = ds.t.boxes.slice();
+  const b = [];
   const sc = B.schoolSentences(ctx, c, st);
   if (e) {
-    if (g) b.push({ label: 'Objective addressed', value: `Obj. ${g.n} – ${g.objective}`, src: [3] });
-    if (e.interventions && e.interventions.length) b.push({ label: 'Interventions', value: e.interventions.map(code => { const i = ctx.S().interventions.find(x => x.code === code || x.name === code); return i ? `${i.code} ${i.name}` : code; }).join(' · '), src: [1, 3] });
-    b.push({ label: 'Narrative', value: [e.narrative, ...sc].join(' '), src: sc.length ? [1, 3, 4] : [1] });
-  } else if (sc.length) b.push({ label: 'Narrative', value: sc.join(' '), src: [4] });
+    if (g) b.push({ label: 'Objective addressed', value: `Obj. ${g.n} – ${g.objective}`, src: [2] });
+    if (e.interventions && e.interventions.length) b.push({ label: 'Interventions', value: e.interventions.map(code => { const i = ctx.S().interventions.find(x => x.code === code || x.name === code); return i ? `${i.code} ${i.name}` : code; }).join(' · '), src: [1, 2] });
+    b.push({ label: 'Narrative', value: [e.narrative, ...sc].join(' '), src: sc.length ? [1, 2, 3] : [1] });
+  } else if (sc.length) b.push({ label: 'Narrative', value: sc.join(' '), src: [3] });
   return b;
 }
 function schoolCardsHTML(ctx, c) {
@@ -203,17 +201,6 @@ function schoolCardsHTML(ctx, c) {
         : `${out ? '<span class="chip n">Left out of the note</span>' : ''}<span style="flex:1"></span><button class="btn p sm" data-act="schoolIn" data-k="${esc(sh.key)}">${out ? 'Add it back' : 'Add to the narrative'}</button>`}</div></div>`; }).join('')}</div>`;
 }
 const narrativeNow = ctx => (ctx.page.form?.fields || []).find(f => f.label === 'Narrative')?.value || '';
-function timerCard(ctx, c, ds) {
-  const t = ds.t; const drafts = B.draftEntries(ctx, c);
-  const draftHint = drafts.length ? `<div class="hint">${drafts.length} stopped timer${drafts.length === 1 ? '' : 's'} not described yet · open Track Time to say what you did. Not counted until then.</div>` : '';
-  if (!t.ct) return `<div class="hint">No saved timer blocks today · type the contact time in Lauris.</div>${draftHint}`;
-  const open = B.unconfirmedEntries(ctx, c); const unconf = open.length > 0; const canAct = ctx.can('trackTime');
-  return `<div class="tile"><div class="row w"><h2 style="flex:1">Contact time · your timer</h2><span class="chip ${unconf ? 'y' : 'g'}">${t.ct.units} unit${t.ct.units === 1 ? '' : 's'}${unconf ? ' · to confirm' : ''}</span></div>
-    <div class="small" style="margin:2px 0 6px">Direct time ${esc(t.ct.text)}${unconf ? ` · ${open.length === 1 ? 'one block is' : open.length + ' blocks are'} not counted until you confirm` : ''}</div>
-    ${unconf && canAct ? `<div class="row w"><button class="btn p sm" data-act="confirmUnits">Confirm ${B.unitsIfConfirmed(ctx, c).units} units</button><button class="btn o sm" data-act="dropBlock">The afternoon block didn't happen</button></div>` : ''}
-    ${unconf && !canAct ? '<div class="hint">Only the person who recorded the time confirms it.</div>' : ''}${draftHint}
-    ${ctx.parts.accordion(`Blocks · ${t.ct.rows.length}`, t.ct.rows.map(r => `<div class="stamp"><div>${B.fmtT(r.from)}–${B.fmtT(r.to)}</div><div>${esc(r.what)}${r.unconfirmed ? ' <span class="chip y">unconfirmed</span>' : ''}${needsCheck({ kind: 'direct', what: r.what }) ? ' <span class="chip n" title="Idle or waiting time, transport, documentation and classroom monitoring without treatment are not reimbursable. If this was one of those, correct it in Track Time.">check</span>' : ''}</div></div>`).join(''), { id: 'dpn-blocks' })}</div>`;
-}
 function feedbackHTML(ctx, dict) {
   const st = ctx.st; const prev = (dict?.feedback || []).at(-1); const { I } = ctx;
   if (!st.fbDone && prev && !st.fbOpen) return ctx.parts.banner('n', `${prev.kind === 'good' ? 'Marked <b>Good recommendation</b>.' : `<b>Needs improvement</b> saved with this note: “${esc(prev.text)}”.`} Your supervisor sees it with the note. <a href="#" data-act="needsImp">Add more</a>`);
@@ -227,13 +214,12 @@ function dpnHTML(ctx, c) {
   const fromPhone = ds.dict && ds.dict.source !== 'panel';
   let h = '';
   if (fromPhone && !st.dropped && ds.dict.status === 'waiting') h += banner('y', `<b>1 dictation waiting</b> from the phone · ${fmtTime(ds.dict.at)}. Dropping it into the open form…`, { icon: ctx.I.mic });
-  if (st.dropped) h += banner('', `<b>${fromPhone ? 'Dictation dropped in' : 'Boxes typed'}</b> · narrative and contact-time rows typed into the open form, yellow. Confirm the units, then press Save Form Data or Process Form: Psyflo keeps what you save.`);
+  if (st.dropped) h += banner('', `<b>${fromPhone ? 'Dictation dropped in' : 'Boxes typed'}</b> · narrative typed into the open form, yellow. Press Save Form Data or Process Form: Psyflo keeps what you save.`);
   if (fromPhone) {
     h += `<div class="tile"><div class="lab row" style="gap:6px">${ctx.I.mic}Said into the phone, ${fmtTime(ds.dict.at)}</div><div style="font-size:13px;margin-top:4px;font-style:italic">“${esc(ds.input)}”</div></div>`;
     h += schoolCardsHTML(ctx, c);
     if (e) h += `<div><div class="lab" style="margin-bottom:4px">Drafted for the narrative</div><div class="par">${esc([e.narrative, ...B.schoolSentences(ctx, c, st)].filter(Boolean).join(' '))}</div></div>
       <div class="hint">Your own words, tidied. Nothing was added.</div>`;
-    h += timerCard(ctx, c, ds);
     if (e) { pg.lastChecks = e.checks; h += `<div class="row"><button class="btn p" style="flex:1" data-act="dpnFill" ${pg.filling ? 'disabled' : ''}>${st.dropped ? 'Type it again' : 'Fill the boxes'}</button></div>${feedbackHTML(ctx, ds.dict)}${guidanceQuestions(ctx, e)}${checksBlock(e.checks)}`; }
     h += `<div class="hint">Daily notes today (${esc(ctx.M.staffShort(s, c.staff || ctx.me().id))}): ${nt.done} of ${nt.total}.</div>`;
     return h;
@@ -244,21 +230,19 @@ function dpnHTML(ctx, c) {
   h += schoolCardsHTML(ctx, c);
   if (rec && !st.again) {
     h += `<div class="tile"><div class="lab row" style="gap:6px">${ctx.I.mic}${rec.input.kind === 'dictation' ? 'Said here' : 'Typed here'}${st.sample === 'dpn' ? ctx.parts.SAMPLE_CHIP() : ''}<button class="btn o sm" style="margin-left:auto" data-act="sayAgain">Say it again</button></div><div style="font-size:13px;margin-top:4px;font-style:italic">“${esc(rec.input.text)}”</div></div>`;
-    h += timerCard(ctx, c, ds);
-    h += reviewBlock(ctx, rec, { title: 'Daily note · ' + c.initials, st, client: c, sources: B.DPN_SOURCES, extra: () => ds.t.boxes });
+    h += reviewBlock(ctx, rec, { title: 'Daily note · ' + c.initials, st, client: c, sources: B.DPN_SOURCES });
     h += guidanceBlock(ctx, c, rec.input.text);
     h += `<div class="hint">Daily notes today (${esc(ctx.M.staffShort(s, c.staff || ctx.me().id))}): ${nt.done} of ${nt.total}.</div>`;
     return h;
   }
   h += sayItHTML(ctx, c, 'dpn', `One or two sentences about what you did with ${c.initials} today, in your words. What you do not say becomes a question.`);
-  h += `<div id="sg">${guidanceHTML(dailyGuidance(txt, { client: c, interventions: s.interventions, hasTimer: ds.t.blocks.length > 0 }))}</div>`;
-  h += timerCard(ctx, c, ds);
+  h += `<div id="sg">${guidanceHTML(dailyGuidance(txt, { client: c, interventions: s.interventions }))}</div>`;
   h += `<div class="hint">Daily notes today (${esc(ctx.M.staffShort(s, c.staff || ctx.me().id))}): ${nt.done} of ${nt.total}.</div>`;
   return h;
 }
 const guidanceQuestions = (ctx, e) => (e.questions || []).length ? ctx.parts.accordion(`Questions for you · ${e.questions.length}`, e.questions.map(q => `<div class="cr">${ctx.I.warn}<div><b>${esc(q.q)}</b>${q.options && q.options.length ? `<div class="hint">${q.options.map(esc).join(' · ')}</div>` : ''}</div></div>`).join(''), { id: 'dpn-q', open: true }) : '';
 function guidanceBlock(ctx, c, text) {
-  const s = ctx.S(); const g = dailyGuidance(text, { client: c, interventions: s.interventions, hasTimer: B.timerBlocks(ctx, c).length > 0 });
+  const s = ctx.S(); const g = dailyGuidance(text, { client: c, interventions: s.interventions });
   return g.items.some(i => !i.done) ? ctx.parts.accordion(`Missing · ${g.items.filter(i => !i.done).length}`, guidanceHTML(g, { title: 'Questions for you' }), { id: 'dpn-miss' }) : '';
 }
 
@@ -405,20 +389,6 @@ const acts = {
   sayDraft: (el, ctx) => sayDraft(ctx, el.dataset.k, 'typed'),
   sayAgain(el, ctx) { ctx.st.again = true; ctx.st.sample = null; ctx.draw(); },
   // the phone path of the daily note
-  // Confirm and "didn't happen" go through the time model (time.save {confirm:true} / time.discard): the entries change first, then the note's boxes are
-  // rebuilt from the entries, so the note, Track Time and the phone always show the same minutes and units.
-  confirmUnits: async (el, ctx) => {
-    const c = ctx.client(); const ids = B.unconfirmedEntries(ctx, c).map(e => e.id); if (!ids.length) return;
-    for (const id of ids) await ctx.do('time.save', { id, confirm: true });
-    const ds = dpnState(ctx, c); await ctx.fill(ds.t.boxes, { form: 'dpn', client: c, sources: B.DPN_SOURCES, animate: false });
-    ctx.flash(`${ds.t.ct.units} units confirmed (${ds.t.ct.text}, units from the direct minutes under the unit bands).`);
-  },
-  dropBlock: async (el, ctx) => {
-    const c = ctx.client(); const ids = B.unconfirmedEntries(ctx, c).map(e => e.id); if (!ids.length) return;
-    for (const id of ids) await ctx.do('time.discard', { id, reason: 'Did not happen (said in the daily note panel)' });   // kept in the record, voided, never counted
-    const ds = dpnState(ctx, c); if (ds.t.boxes.length) await ctx.fill(ds.t.boxes, { form: 'dpn', client: c, sources: B.DPN_SOURCES, animate: false });
-    ctx.flash(`Block discarded · kept in the record, not counted. ${ds.t.ct ? ds.t.ct.units + ' units (' + ds.t.ct.text + ').' : ''}`);
-  },
   dpnFill: async (el, ctx) => { const st = ctx.st; const c = ctx.client(); const ds = dpnState(ctx, c); await ctx.fill(dpnBoxes(ctx, c, ds), { form: 'dpn', client: c, sources: B.DPN_SOURCES }); st.dropped = true; ctx.draw(); },
   goodRec: async (el, ctx) => { const st = ctx.st; const c = ctx.client(); const ds = dpnState(ctx, c); await ctx.do('panel.feedback', { client: c.id, form: 'dpn', kind: 'good', dictation: ds.dict?.id, narrative: ds.e?.narrative }); st.fbDone = 'good'; st.fbOpen = false; ctx.draw(); },
   needsImp(el, ctx) { const st = ctx.st; st.fbOpen = !st.fbOpen; st.fbDone = null; ctx.draw(); },
@@ -433,7 +403,7 @@ const acts = {
     const st = ctx.st; const c = ctx.client(); const sh = B.schoolUpdates(ctx, c).find(x => x.key === el.dataset.k); if (!sh) return;
     st.schoolIn = (st.schoolIn || []).filter(k => k !== sh.key).concat([sh.key]); st.schoolOut = (st.schoolOut || []).filter(k => k !== sh.key);
     const sent = B.shareSentence(ctx, sh); const cur = narrativeNow(ctx);
-    if (cur && !cur.includes(sent)) await ctx.fill([{ label: 'Narrative', value: cur.trim() + ' ' + sent, src: [4] }], { form: 'dpn', client: c, sources: B.DPN_SOURCES, animate: false });
+    if (cur && !cur.includes(sent)) await ctx.fill([{ label: 'Narrative', value: cur.trim() + ' ' + sent, src: [3] }], { form: 'dpn', client: c, sources: B.DPN_SOURCES, animate: false });
     if (sh.id && !sh.used.daily) await ctx.do('school.shareUsed', { id: sh.id, how: 'daily' }).catch(err => ctx.flash(err.message, 'r'));
     if (!cur) ctx.flash('Added to the drafted narrative, credited to the counselor. It goes into Lauris when you press Fill.');
     ctx.draw();
@@ -492,7 +462,7 @@ const ins = {
   sayText(el, ctx) {
     const st = ctx.st; const c = ctx.client(); const form = el.dataset.k; ctx.ui.draft.set(SAID_KEY(c, form), el.value);
     clearTimeout(st.gt); st.gt = setTimeout(() => { const box = document.getElementById('sg'); if (!box) return; const s = ctx.S();
-      const g = form === 'dpn' ? dailyGuidance(el.value, { client: c, interventions: s.interventions, hasTimer: B.timerBlocks(ctx, c).length > 0 }) : SPEC[form].guidance(ctx, c, el.value);
+      const g = form === 'dpn' ? dailyGuidance(el.value, { client: c, interventions: s.interventions }) : SPEC[form].guidance(ctx, c, el.value);
       box.innerHTML = guidanceHTML(g); }, 150);
   },
   fbText(el, ctx) { ctx.st.fbText = el.value; }

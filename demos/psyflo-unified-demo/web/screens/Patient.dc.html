@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo — Patient chart</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+/* Patient chart. Prefix pt-. Tokens and the shared kit come from tokens.css and components.css. */
+.pt-page{max-width:1180px;margin:0 auto;padding:var(--sp-5) var(--gutter) 64px;display:flex;flex-direction:column;gap:var(--sp-4);min-width:0}
+.pt-head{display:flex;flex-direction:column;gap:8px}
+.pt-back{display:inline-flex;align-items:center;gap:4px;width:max-content;color:var(--teal-700);font-size:var(--fs-13);font-weight:600;text-decoration:none;min-height:32px}
+.pt-back svg{transform:rotate(180deg)}
+.pt-back:hover{text-decoration:underline}
+.pt-title{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.pt-title h1{margin:0 4px 0 0;font:600 var(--fs-28)/var(--lh-28) var(--font);letter-spacing:-.01em}
+.pt-age{color:var(--muted-700);font-size:var(--fs-14)}
+.pt-facts{display:flex;flex-wrap:wrap;gap:4px 20px;font-size:var(--fs-13)}
+.pt-fact i{font-style:normal;color:var(--muted-700);margin-right:4px}
+.pt-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line-200);overflow-x:auto;max-width:100%}
+.pt-tab{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;color:var(--muted-700);font:600 var(--fs-14)/1 var(--font);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.pt-tab:hover{color:var(--ink-900)}
+.pt-tab[aria-current=page]{color:var(--ink-900);border-bottom-color:var(--teal-600)}
+.pt-tab b{font-size:var(--fs-12);line-height:20px;min-width:20px;text-align:center;background:var(--sand-100);color:var(--ink-900);border-radius:var(--r-pill);padding:0 7px}
+.pt-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.pt-seg{display:inline-flex;border:1px solid var(--control-500);border-radius:var(--r-pill);overflow:hidden;background:var(--surface-0)}
+.pt-seg__b{min-height:36px;padding:0 14px;border:0;background:none;font:600 var(--fs-13) var(--font);color:var(--ink-900);cursor:pointer}
+.pt-seg__b+.pt-seg__b{border-left:1px solid var(--line-200)}
+.pt-seg__b[aria-pressed=true]{background:var(--teal-600);color:#fff}
+.pt-seg__b b{font-weight:600;margin-left:2px}
+.pt-sub{display:block;color:var(--muted-700);font-size:var(--fs-12);line-height:var(--lh-12);margin-top:2px}
+.pt-none{padding:8px 0}
+.pt-none-t{color:var(--muted-700)}
+.pt-auth{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:16px 20px}
+.pt-cell{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pt-cell__l{font-size:var(--fs-12);font-weight:600;color:var(--muted-700)}
+.pt-cell__v{font-size:var(--fs-14)}
+.pt-dl{display:inline-flex;align-items:center;gap:6px}
+.pt-next{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pt-auth__a{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
+@media (max-width:760px){
+  .pt-page{padding:16px 16px 40px}
+  /* documentation rows become two-line cards: document + status, then due + action */
+  .pt-page .ui-qt__table,.pt-page .ui-qt__table tbody{display:block}
+  .pt-page .ui-qt__table thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .pt-page .ui-qt__table tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:12px 14px;border-top:1px solid var(--line-200)}
+  .pt-page .ui-qt__table tbody tr:first-child{border-top:0}
+  .pt-page .ui-qt__table td{display:block;padding:0;border:0}
+  .pt-page .ui-qt__table td:nth-child(1){grid-column:1;grid-row:1}
+  .pt-page .ui-qt__table td:nth-child(3){grid-column:2;grid-row:1;justify-self:end}
+  .pt-page .ui-qt__table td:nth-child(2){grid-column:1;grid-row:2;align-self:center}
+  .pt-page .ui-qt__table td:nth-child(6){grid-column:2;grid-row:2;justify-self:end}
+  .pt-page .ui-qt__table td:nth-child(6):empty,.pt-page .ui-qt__table td.ui-hide-lt-1024{display:none}
+  .pt-page .ui-qt__table td .ui-btn{min-height:44px}
+  .pt-page .ui-qt__table td[colspan]{grid-column:1/-1}
+  .pt-auth{grid-template-columns:1fr 1fr;padding:14px}
+  .pt-auth__a .ui-btn{min-height:44px}
+}
+</style>
+</helmet>
+<main class="pt-page">
+  {{head}}
+  {{tabs}}
+  <div id="pt-body">{{body}}</div>
+  <div>{{maturity}}</div>
+</main>
+</x-dc>
+</body>
+</html>

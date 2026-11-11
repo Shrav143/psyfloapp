@@ -7,7 +7,7 @@ import { REDIRECTS_LIVE, ROUTES_LIVE } from '../web/js/shared/redirects-live.js'
 
 const T = suite('routes');
 const HISTORIC = SCREENS.filter(s => s.n <= 50).map(s => s.id);      // the 46 canvas screens: none may ever disappear
-const NEW = ['MyWork', 'Authorization', 'DenialIntelligence', 'DenialCase', 'Settings', 'UiKit'];
+const NEW = ['Authorization', 'DenialIntelligence', 'DenialCase', 'Settings', 'UiKit', 'Dashboard', 'Documentation', 'Patient'];   // MyWork is registered but now redirects (checked below)
 
 // ---------------------------------------------------------------- pure: the table itself
 await T.test('registry keeps every historic route id and pre-registers the new routes', () => {
@@ -19,10 +19,19 @@ await T.test('redirect table matches review/04-architecture.md E1 and 03-ux-audi
   const find = (from, when) => REDIRECTS.filter(r => r.from === from).find(r => !when || r.when === undefined || when(r));
   const run = (from, params, role = 'clinician') => { const saved = { ...REDIRECTS_LIVE }; Object.keys(REDIRECTS_LIVE).forEach(k => { REDIRECTS_LIVE[k] = true; }); try { return resolveRoute({ id: from, params }, { role }); } finally { Object.assign(REDIRECTS_LIVE, saved); } };
   const eq = (r, id, params) => { assert.eq(r.id, id); assert.deepEq(Object.fromEntries(Object.entries(r.params).sort()), Object.fromEntries(Object.entries(params).sort())); };
-  eq(run('DoNext', {}), 'MyWork', { section: 'todo' });
-  eq(run('ReviewQueue', {}), 'MyWork', { section: 'review' });
-  eq(run('StaffDashboard', {}, 'direct_support'), 'MyWork', { section: 'day' });
-  eq(run('StaffDashboard', { staff: 'khale' }, 'supervisor'), 'MyWork', { section: 'team', staff: 'khale' });
+  // My Work became the patient roster (Dashboard) and the documentation queue (Documentation), feedback round Nov 11
+  eq(run('DoNext', {}), 'Dashboard', {});
+  eq(run('ReviewQueue', {}), 'Documentation', { status: 'pending_review' });
+  eq(run('StaffDashboard', {}, 'direct_support'), 'Dashboard', {});
+  eq(run('StaffDashboard', { staff: 'khale' }, 'supervisor'), 'Dashboard', { staff: 'khale' });
+  eq(run('MyWork', {}), 'Dashboard', {});
+  eq(run('MyWork', { section: 'todo' }), 'Dashboard', {});
+  eq(run('MyWork', { section: 'day' }, 'direct_support'), 'Dashboard', {});
+  eq(run('MyWork', { section: 'review' }), 'Documentation', { status: 'pending_review' });
+  eq(run('MyWork', { section: 'review', id: 'n-1' }), 'Documentation', { status: 'pending_review', id: 'n-1' });
+  eq(run('MyWork', { section: 'team', staff: 'khale' }), 'Documentation', { view: 'staff', staff: 'khale' });
+  eq(run('MyWork', { section: 'referrals' }), 'Referrals', {});
+  assert.eq(run('MyWork', { section: 'review', legacy: '1' }).id, 'MyWork', 'legacy=1 still opens the old My Work');
   eq(run('Users', {}), 'Settings', { tab: 'people' });
   eq(run('Authorizations', { id: 'R-0416' }), 'Authorization', { id: 'R-0416' });
   eq(run('Authorizations', {}), 'Authorizations', {});                                // the queue itself is not redirected
@@ -68,7 +77,8 @@ await T.test('legacyFor maps a not-yet-live new route back to the old screen tha
   if (!isLive('Authorization')) { eq({ id: 'Authorization', params: { id: 'R-0416', section: 'submission' } }, 'Submission'); eq({ id: 'Authorization', params: { id: 'R-0411', section: 'evidence' } }, 'Authorizations'); }
   if (!isLive('DenialIntelligence')) eq({ id: 'DenialIntelligence', params: {} }, 'Partials');
   eq({ id: 'Analytics', params: { section: 'outcomes' } }, 'Analytics');
-  assert.eq(homeTarget('clinician').id, isLive('MyWork') ? 'MyWork' : 'DoNext'); assert.eq(homeTarget('admin').id, isLive('MyWork') ? 'MyWork' : 'Authorizations');
+  for (const role of ['supervisor', 'clinician', 'admin']) assert.eq(homeTarget(role).id, isLive('Dashboard') ? 'Dashboard' : 'MyWork', role + ' lands on the patient roster');
+  assert.eq(homeTarget('direct_support').id, 'ExtHome'); assert.eq(homeTarget('direct_support', true).id, 'MobileApp');
 });
 
 // ---------------------------------------------------------------- browser
@@ -96,7 +106,7 @@ const DEEP = [
   ['jperez', 'DoNext', {}], ['dowens', 'Users', {}], ['jperez', 'PayerPlaybook', {}], ['jperez', 'Analytics', {}], ['khale', 'MobileAssess', { client: 'AG' }], ['khale', 'MobileApp', {}], ['khale', 'MobileDictate', {}],
   [null, 'ReferralSent', {}], [null, 'ReferralForm', {}], [null, 'SchoolPortal', {}], [null, 'AppealLetter', { id: 'R-0384' }], [null, 'ParentPortal', { c: 'TW' }], [null, 'FamilyLink', { preview: '1' }], [null, 'WhereThingsLive', {}],
   // new canonical routes with their parameters: the router must pass them through to the screen
-  ['jperez', 'MyWork', { section: 'review' }], ['jperez', 'Authorization', { id: 'R-0416', section: 'submission' }], ['jperez', 'DenialIntelligence', { decision: 'partial' }],
+  ['jperez', 'MyWork', { section: 'review' }], ['jperez', 'Dashboard', {}], ['jperez', 'Documentation', { status: 'pending_review' }], ['cdiaz', 'Documentation', { view: 'staff' }], ['jperez', 'Patient', { id: 'MR' }], ['khale', 'Dashboard', {}], ['jperez', 'Authorization', { id: 'R-0416', section: 'submission' }], ['jperez', 'DenialIntelligence', { decision: 'partial' }],
   ['jperez', 'DenialCase', { id: 'R-0402', section: 'action', action: 'options' }], ['dowens', 'Settings', { tab: 'people' }], ['jperez', 'Analytics', { section: 'payer', dataset: 'illustrative' }]
 ];
 const qs = p => { const q = new URLSearchParams(p).toString(); return q ? '?' + q : ''; };
@@ -183,7 +193,7 @@ await T.test('route access follows the permission table: a clinician cannot open
 });
 await T.test('one h1 on every route this foundation owns; routes with none get a hidden h1 from the shell', async () => {
   const multi = []; const none = [];
-  for (const id of ['MyWork', 'Authorization', 'DenialIntelligence', 'DenialCase', 'Settings', 'Login']) {
+  for (const id of ['Dashboard', 'Documentation', 'Authorization', 'DenialIntelligence', 'DenialCase', 'Settings', 'Login']) {
     const page = await open(id === 'Login' ? null : (id === 'Settings' ? 'dowens' : 'jperez'), '/#/' + id); const s = await snap(page);
     if (s.h1 !== 1) none.push(id + '=' + s.h1); await page.close();
   }

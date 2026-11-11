@@ -24,7 +24,7 @@ export function suiteResults() {
   return out;
 }
 // the names in the "suite" column of 06c are plans; these are the suites that exist now
-export const SUITE_ALIAS = { 'portal-school': ['school'], 'portal-family': ['family'], auth: ['authorizations'], submission: ['authorizations'], denials: ['denials', 'denials-ui'], 'ext-composite': ['panels', 'smoke'], 'notes-types': ['scribe'], 'scribe-time-enhance': ['scribe', 'time', 'enhance'], 'continued-stay': ['enhance', 's4'], 'evidence-chips': ['ui-kit'], 'lauris-mock': ['lauris', 'bridge-contract'], 'portals-mock': ['bridge-contract', 'lauris'], presenter: ['ui-kit', 'fixtures'], 'server-core': [], orphans: [], donotport: [], 'dropped-parity': [], crosswalk: [], 'seed-integrity': [], analytics: ['analytics'] };
+export const SUITE_ALIAS = { 'portal-school': ['school'], 'portal-family': ['family'], auth: ['authorizations'], submission: ['authorizations'], denials: ['denials', 'denials-ui'], 'ext-composite': ['panels', 'smoke'], 'notes-types': ['scribe'], 'scribe-time-enhance': ['scribe', 'enhance'], 'continued-stay': ['enhance', 's4'], 'evidence-chips': ['ui-kit'], 'lauris-mock': ['lauris', 'bridge-contract'], 'portals-mock': ['bridge-contract', 'lauris'], presenter: ['ui-kit', 'fixtures'], 'server-core': [], orphans: [], donotport: [], 'dropped-parity': [], crosswalk: [], 'seed-integrity': [], analytics: ['analytics'] };
 export function resolveSuites(col) { const out = []; for (const raw of String(col || '').split(/[, ]+/).filter(Boolean)) for (const s of (SUITE_ALIAS[raw] || [raw])) if (!out.includes(s)) out.push(s); return out; }
 
 export const classify = dest => { const d = String(dest || '');
@@ -35,6 +35,7 @@ export const classify = dest => { const d = String(dest || '');
 export function reasonFor(id, dest) {
   const rec = read('review/00-unified-recommendations.md'); const f04b = read('review/04b-feature-inventory.md');
   const R = (why, where, key) => ({ why, where, inDecisions: key ? new RegExp(key, 'i').test(rec) : false });
+  if (/^(M-14[01]|V-0(55|56|57|58|85))$/.test(id)) return R('Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris', 'user feedback Nov 11 (this round); docs/deliverables/08 decision register', 'Track Time');
   if (/^V-0(37|38|93|94)$/.test(id)) return R('voice and FLO data agents are roadmap labels only (no agents, no unattended calls)', '00 decision #15 and §7 Tier 3', 'FLO and voice agents');
   if (id === 'V-054') return R('addendum on processed notes is refused: processed records are write-once; Mode B is read-only', '00 decision #1', 'No addendum');
   if (id === 'V-017' || id === 'V-031') return R('claims disputes and money exposure are Tier 3 roadmap labels', '00 §7 Tier 3', 'claims disputes');

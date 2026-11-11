@@ -42,13 +42,6 @@ a{color:#15605E}
 .pm-btn.s{width:auto;min-height:48px;padding:0 14px}
 .pm-btn[disabled],.pm-btn[aria-disabled="true"]{background:#EFE8DE;color:#5A544B;border:0;cursor:not-allowed}
 .pm-row{display:flex;gap:8px;align-items:center}.pm-row>*{flex:1}
-.pm-time{font-size:30px;font-weight:700;letter-spacing:-.01em;line-height:1.1;font-variant-numeric:tabular-nums}
-.pm-figs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pm-fig{background:#fff;border:1px solid #E5DCD0;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
-.pm-fig span{font-size:12px;color:#5A544B;font-weight:600}.pm-fig b{font-size:18px;line-height:1.2}.pm-fig i{font-style:normal;display:block;margin-top:2px}
-.pm-ent{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid #E5DCD0}
-.pm-ent:first-child{border-top:0}
-.pm-ent .t{font-weight:600}.pm-ent .w{font-size:14px;color:#5A544B}
 .pm-in{width:100%;border:2px solid #857F75;border-radius:10px;padding:10px 12px;font:inherit;font-size:16px;background:#fff;min-height:48px;color:#1B1B19}
 textarea.pm-in{min-height:96px;resize:vertical;line-height:1.5}
 label.pm-l{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
@@ -85,50 +78,6 @@ label.pm-l{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
         <div class="pm-sub">{{stuNote}}</div>
       </sc-if>
       <sc-if value="{{!hasStudents}}"><div class="pm-card"><b>No students on this phone list</b><div class="pm-sub">Direct support staff see their own caseload here. Sign in as one to try the phone.</div></div></sc-if>
-    </section>
-
-    <section aria-labelledby="pm-h-act">
-      <h2 id="pm-h-act">Current activity</h2>
-      <sc-if value="{{isStale}}"><div class="pm-card">
-        <div class="pm-warn"><b>{{staleText}}</b><br>Say when it really ended. Nothing is guessed.</div>
-        <div style="margin-top:10px"><label class="pm-l" for="pm-end">End time (24 h, like 14:30)</label><input class="pm-in" id="pm-end" inputmode="numeric" placeholder="14:30" value="{{ending}}" onInput="{{endTyped}}"></div>
-        <button type="button" class="pm-btn p" style="margin-top:10px" onClick="{{stopStale}}">Stop and record</button></div></sc-if>
-      <sc-if value="{{isRunning}}"><div class="pm-card">
-        <div class="pm-sub">With {{timerIni}} now</div><div class="pm-time"><span id="elapsed">{{elapsed}}</span></div><div class="pm-sub">{{timerSince}}</div>
-        <label class="pm-l" style="margin-top:8px" for="pm-act2">Activity</label><input class="pm-in" id="pm-act2" value="{{timerWhat}}" placeholder="What are you doing? (optional)" onChange="{{actSet}}">
-        <div class="pm-row" style="margin-top:10px"><button type="button" class="pm-btn o" onClick="{{pause}}">Pause</button><button type="button" class="pm-btn r" onClick="{{stop}}">Stop</button></div>
-        <sc-if value="{{canSwitch}}"><button type="button" class="pm-btn o" style="margin-top:8px" onClick="{{switchTo}}">{{switchLabel}}</button></sc-if>
-        <div class="pm-note" style="margin-top:8px">{{timerNote}}</div></div></sc-if>
-      <sc-if value="{{isPaused}}"><div class="pm-card">
-        <div class="pm-sub">Paused with {{timerIni}}</div><div class="pm-time"><span id="elapsed">{{elapsed}}</span></div><div class="pm-sub">{{timerSince}}</div>
-        <div class="pm-sub">{{timerWhat}}</div>
-        <div class="pm-row" style="margin-top:10px"><button type="button" class="pm-btn p" onClick="{{resume}}">Resume</button><button type="button" class="pm-btn r" onClick="{{stop}}">Stop</button></div></div></sc-if>
-      <sc-if value="{{isIdle}}"><div class="pm-card">
-        <b>Not timing</b>
-        <div class="pm-sub">Start a time entry when you are with a student.</div>
-        <label class="pm-l" style="margin-top:8px" for="pm-act">What are you doing? (optional)</label><input class="pm-in" id="pm-act" value="{{actText}}" placeholder="In your own words" onInput="{{actTyped}}">
-        <sc-if value="{{canStart}}"><button type="button" class="pm-btn p" style="margin-top:10px" onClick="{{start}}">{{startLabel}}</button></sc-if>
-        <sc-if value="{{!canStart}}"><button type="button" class="pm-btn p" style="margin-top:10px" disabled>{{startLabel}}</button></sc-if></div></sc-if>
-
-      <sc-if value="{{hasDrafts}}"><sc-for list="{{drafts}}" as="d"><div class="pm-card" style="border-color:#B9791B">
-        <div class="pm-row" style="gap:6px"><b style="flex:1">Stopped · {{d.title}}</b><span class="pm-sub" style="flex:0 0 auto">{{d.min}}</span></div>
-        <div class="pm-note">Recorded, not counted yet. Say what you did to save it.</div>
-        <label class="pm-l" style="margin-top:8px" for="pm-w-{{d.id}}">What did you do?</label>
-        <input class="pm-in" id="pm-w-{{d.id}}" value="{{d.what}}" placeholder="In your own words" onInput="{{d.typed}}">
-        <label class="pm-l" style="margin-top:8px" for="pm-k-{{d.id}}">Counts as</label>
-        <select class="pm-in" id="pm-k-{{d.id}}" onChange="{{d.kind}}"><sc-for list="{{d.kinds}}" as="k"><option value="{{k.key}}"{{k.sel}}>{{k.label}}</option></sc-for></select>
-        <div class="pm-row" style="margin-top:10px"><button type="button" class="pm-btn p" onClick="{{d.save}}">Save time</button><button type="button" class="pm-btn o" onClick="{{d.discard}}">Discard</button></div></div></sc-for></sc-if>
-
-      <sc-if value="{{hasFocus}}">
-        <div class="pm-sub" style="margin-top:4px">Today with {{focusIni}}, four separate figures</div>
-        <div class="pm-figs" role="group" aria-label="Today's time, four separate figures"><sc-for list="{{figs}}" as="f"><div class="pm-fig" title="{{f.hint}}"><span>{{f.label}}</span><b>{{f.value}}</b><i>{{f.extra}}</i></div></sc-for></div>
-        <sc-if value="{{entryCount}}"><button type="button" class="pm-btn o" aria-expanded="{{showEntries}}" onClick="{{toggle}}">{{toggleLabel}}</button></sc-if>
-        <sc-if value="{{showEntries}}"><div class="pm-card" style="padding:4px 14px"><sc-for list="{{entries}}" as="e"><div class="pm-ent"><div class="pm-row" style="gap:6px"><span class="t" style="flex:1">{{e.time}}</span><span class="pm-sub" style="flex:0 0 auto">{{e.min}}</span></div><div class="w">{{e.what}}</div><div style="display:flex;flex-wrap:wrap;gap:6px">{{e.chips}}</div>
-          <sc-if value="{{e.canConfirm}}"><button type="button" class="pm-btn p" onClick="{{e.confirm}}">Confirm as direct service</button></sc-if>
-          <sc-if value="{{e.canDiscard}}"><sc-if value="{{!e.askWhy}}"><button type="button" class="pm-btn o" onClick="{{e.askDiscard}}">Discard</button></sc-if></sc-if>
-          <sc-if value="{{e.askWhy}}"><label class="pm-l" for="pm-why">Why? It stays in the record.</label><input class="pm-in" id="pm-why" onInput="{{e.why}}"><div class="pm-row"><button type="button" class="pm-btn r" onClick="{{e.discard}}">Discard</button><button type="button" class="pm-btn o" onClick="{{e.cancelDiscard}}">Cancel</button></div></sc-if>
-        </div></sc-for></div></sc-if>
-      </sc-if>
     </section>
 
     <section aria-labelledby="pm-h-say">

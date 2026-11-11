@@ -8,10 +8,10 @@ const b = await chromium.launch(); const p = await (await b.newContext({ viewpor
 const errs = errors(p);
 // [as, path, name, must match, must not match, max panel height]
 const pages = [
-  ['jperez', '/consumers', 'home', /Scribe[\s\S]*Track Time[\s\S]*Scan & Enhance[\s\S]*Team day in Psyflo/, /Signed in as|Support staff|\(demo\)/, 1200],
-  ['khale', '/consumers', 'home-ds', /Scribe[\s\S]*Track Time[\s\S]*My day in Psyflo/, /Signed in as|Support staff|Authorizations/, 1200],
+  ['jperez', '/consumers', 'home', /Scribe[\s\S]*Scan & Enhance[\s\S]*Team day in Psyflo/, /Signed in as|Support staff|\(demo\)/, 1200],
+  ['khale', '/consumers', 'home-ds', /Scribe[\s\S]*My day in Psyflo/, /Signed in as|Support staff|Authorizations/, 1200],
   ['cdiaz', '/consumers', 'home-sup', /Team day in Psyflo[\s\S]*Scan & Enhance is for licensed clinical staff/, /Track Time|Signed in as/, 1200],
-  ['dowens', '/consumers', 'home-admin', /Not permitted/, /Scribe|Track Time|Scan & Enhance/, 600],
+  ['dowens', '/consumers', 'home-admin', /Not permitted/, /Scribe|Scan & Enhance/, 600],
   ['khale', '/consumers/3310/session/dpn', 'dpn', /Say what happened[\s\S]*Draft it/i, /Observed client|lost the game|walked off the court/, 1700],
   ['jperez', '/consumers/3310/session/weekly', 'weekly', /Weekly guardian contact[\s\S]*Draft it/i, /11 of 12/, 1700],
   ['jperez', '/consumers/3310/session/collateral', 'monthly', /Monthly collateral[\s\S]*Draft it/i, /Illustrative/, 1700],
@@ -21,7 +21,7 @@ const pages = [
   ['jperez', '/consumers/4102/session/discharge', 'discharge', /Discharge summary/, /68 daily notes|14 weekly/, 1700],
   ['jperez', '/consumers/3315/session/weekly', 'weekly-other', /Weekly guardian contact/, /M\.R\./, 1700],
   ['jperez', '/approvals', 'approvals', /Sign-off[\s\S]*forms wait for a signature/, /Signed in as/, 1700],
-  ['jperez', '/consumers/5120', 'sebs-off', /Psyflo is off for H\.B\./, /Scribe|Track Time/, 600],
+  ['jperez', '/consumers/5120', 'sebs-off', /Psyflo is off for H\.B\./, /Scribe/, 600],
   ['khale', '/consumers/3310/session/screening', 'ds-screening', /for clinicians|Not permitted/, /Fill the \d+ boxes/, 700],
   ['khale', '/consumers/4102/session/dpn', 'not-my-caseload', /Not on your caseload[\s\S]*Harvest #4102[\s\S]*Change student/, /Say what happened|Draft it|Open a student in Lauris/, 600],
   ['jperez', '/consumers/3310', 'record', /M\.R\.[\s\S]*Harvest #3310/, /Signed in as/, 1700]

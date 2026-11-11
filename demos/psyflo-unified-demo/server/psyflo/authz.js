@@ -90,9 +90,7 @@ registerAuthz({
   'request.p2pOutcome': { any: ['payer.decision'] },
   'request.p2pLog': { any: ['payer.reply'] },            // 'awaiting' is a call held; final outcomes also need payer.decision (checked in the action)
 
-  // ---------- notes, time, dictation (own caseload) ----------
-  'timer.start': { any: ['trackTime'], scope: own(), check: (s, a, actor) => { if (a.staff && a.staff !== actor.id) throw new Refusal('A timer belongs to the person who started it.', { status: 403 }); } },
-  'timer.stop': { any: ['trackTime'] },
+  // ---------- notes, dictation (own caseload) ----------
   'dictation.save': { any: ['notes.own'], scope: own() },
   'dictation.used': { any: ['notes.own'] },
   'dictation.discard': { any: ['notes.own'] },

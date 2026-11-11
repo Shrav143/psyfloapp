@@ -160,7 +160,7 @@ try {
     await p.fill('#se-why', 'Covers when the LPC is out'); await p.click('.ui-dialog [data-ui-action="1"]'); await p.waitForTimeout(700);
     assert.match(await rootText(p), /Designated access\s*1 waiting/); assert.match(await rootText(p), /Waiting for another person/);
     assert.ok(!(await state('dowens')).staff.find(x => x.id === 'cdiaz').designations.includes('approve.sra'));
-    const q = await open('jperez', '/#/MyWork'); await q.waitForSelector('[data-x="confirm"]');
+    const q = await open('jperez', '/#/Dashboard'); await q.waitForSelector('[data-x="confirm"]');
     await q.click('[data-x="confirm"]'); await q.waitForSelector('.ui-dialog'); assert.match(await q.locator('.ui-dialog').innerText(), /Carla Diaz/); assert.match(await q.locator('.ui-dialog').innerText(), /Covers when the LPC is out/);
     await q.click('.ui-dialog [data-ui-action="1"]'); await q.waitForTimeout(800);
     assert.ok((await state('dowens')).staff.find(x => x.id === 'cdiaz').designations.includes('approve.sra'), 'effective after confirmation');
@@ -175,7 +175,7 @@ try {
     await p.fill('#se-why', 'Covers Campbell ES-2'); await p.click('.ui-dialog [data-ui-action="1"]'); await p.waitForTimeout(700);
     assert.match(await rootText(p), /Waiting for a second person/); assert.eq((await state('dowens')).staff.find(x => x.id === 'jreyes').role, 'direct_support');
     assert.eq(await p.locator('tr', { hasText: 'Dana Owens' }).locator('button[disabled]').count(), 1, 'your own role cannot be changed');
-    const q = await open('jperez', '/#/MyWork'); await q.waitForSelector('[data-x="confirm"]'); await q.click('[data-x="confirm"]'); await q.waitForSelector('.ui-dialog');
+    const q = await open('jperez', '/#/Dashboard'); await q.waitForSelector('[data-x="confirm"]'); await q.click('[data-x="confirm"]'); await q.waitForSelector('.ui-dialog');
     await q.click('.ui-dialog [data-ui-action="1"]'); await q.waitForTimeout(800); assert.eq((await state('dowens')).staff.find(x => x.id === 'jreyes').role, 'supervisor');
     await p.locator('tr', { hasText: 'J. Reyes' }).locator('[data-x="role"]').click().catch(() => { });
     await p.click('[data-x="addUser"]').catch(async () => { await p.reload(); await p.waitForTimeout(600); await p.click('[data-x="addUser"]'); });

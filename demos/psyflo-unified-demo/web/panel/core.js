@@ -218,13 +218,12 @@ function viewHTML() {
   const c = clientForPage();
   const vid = activeViewId(); const v = VIEWS[vid];
   if (v.cap && !canDo(v.cap)) {
-    const why = { scanEnhance: 'Scan & Enhance is for licensed clinical staff.', trackTime: 'Track Time is for the staff who work with students.', 'drafts.clinical': 'Authorization drafts are for clinicians.', 'notes.own': 'This is for the staff who write the notes.' }[v.cap] || 'Your role does not use this part of the panel.';
+    const why = { scanEnhance: 'Scan & Enhance is for licensed clinical staff.', 'drafts.clinical': 'Authorization drafts are for clinicians.', 'notes.own': 'This is for the staff who write the notes.' }[v.cap] || 'Your role does not use this part of the panel.';
     return page(v.label, banner('n', esc(why), { icon: I.lock }) + (vid !== 'home' ? '<button class="btn o" data-act="__home">Back to home</button>' : ''), { p, c });
   }
   let body = ''; try { body = v.html(ctx) || ''; } catch (e) { console.error(e); body = `<pre style="white-space:pre-wrap;color:var(--danger-fg)">${esc(e.stack || e)}</pre>`; }
-  let mini = ''; const tv = VIEWS.time; if (tv && tv.mini && vid !== 'time' && canDo('trackTime')) { try { mini = tv.mini(ctx) || ''; } catch (e) { console.error(e); } }
   const title = v.title ? v.title(ctx) : v.label;
-  return header(title) + patientBar(p, c) + (v.legend === false ? '' : legend()) + (vid !== 'home' ? backRow() : '') + `<div class="body">${flashHTML()}${body}</div>` + (mini ? `<div class="mini">${mini}</div>` : '') + foot();
+  return header(title) + patientBar(p, c) + (v.legend === false ? '' : legend()) + (vid !== 'home' ? backRow() : '') + `<div class="body">${flashHTML()}${body}</div>` + foot();
 }
 
 // ---------------------------------------------------------------- one review card open at a time (the 400 px budget: <= 2 screens)

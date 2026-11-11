@@ -5,6 +5,7 @@ import { register, Screen, M, raw, esc, ui, modal, toast, session, api, canOpen 
 import { isLive } from '../registry.js';
 import { can } from '../shared/permissions.js';
 import { authQueue, queueOptions, normalizeParams, LEGACY_KEYS, CHIPS } from '../shared/sel/auth.js';
+import { verificationLabel } from '../shared/rules.js';
 
 // ---------- shared request helpers ----------
 export const details = (s, id) => (s.request_details && s.request_details[id]) || {};
@@ -78,12 +79,15 @@ export const caseHref = (id, section) => `#/Authorization?id=${encodeURIComponen
 
 const NOUN = 'requests';
 const COLS_HELP = 'Sorted by what is most urgent. Click a column to sort.';
+const KEYS = ['q', 'status', 'payer', 'type', 'owner', 'stage', 'site', 'school', 'units', 'due', 'ends'];
 
+// 29 · Authorizations, simplified (feedback round Nov 11): one filtered table. Units are one bar ("110 left of 150", a yellow flag from 75% used),
+// the deadline is a date with a warning icon, the next step is one button. The words live in tooltips; the case holds the detail.
 register('Authorizations', class extends Screen {
   init() {
     const f = normalizeParams(this.params, this.s.today);
-    this.state = { f: { q: f.q, status: f.status, payer: f.payer, type: f.type, owner: f.owner, stage: f.stage, site: f.site, ends: f.ends }, range: { from: f.from, to: f.to }, sort: { key: f.sort || 'priority', dir: f.dir }, limit: 25 };
-    // a v3 link (show= st= exp= range=) or an old tab link lands on the canonical names; the address says so
+    this.state = { f: Object.fromEntries(KEYS.map(k => [k, f[k] || ''])), range: { from: f.from, to: f.to }, sort: { key: f.sort || 'priority', dir: f.dir }, limit: 25 };
+    // a v3 link (show= st= exp= range= ) or an old tab link lands on the canonical names; the address says so
     if (LEGACY_KEYS.some(k => this.params[k] != null)) ui.query.writeQuery({ status: f.status, stage: f.stage, ends: f.ends, from: f.from, to: f.to, show: '', st: '', exp: '', range: '', tab: '' });
   }
   get me() { return session.actor; }
@@ -94,22 +98,28 @@ register('Authorizations', class extends Screen {
     const q = authQueue(s, this.filters(), me); const o = queueOptions(s);
     const opt = (head, list) => [['', head], ...list];
     const chips = CHIPS.map(c => ({ key: 'status', value: c.value, label: c.label, count: q.counts[c.value] })).concat([{ key: 'status', value: '', label: 'All', count: q.counts.all }]);
+    // every filter is on the page (nothing behind a "More filters" disclosure): the supervisor filters instead of reading
     const bar = ui.filterBar({
       id: 'auth-f', label: 'Authorization filters', chipsLabel: 'Status', state: st.f,
-      search: { key: 'q', placeholder: 'Search cases', label: 'Search cases' }, chips,
-      selects: [{ key: 'payer', label: 'Payer', options: opt('All payers', o.payers) }, { key: 'type', label: 'Type', options: opt('All types', o.types) }, { key: 'owner', label: 'Owner', options: opt('Anyone', o.owners) }],
-      more: [{ key: 'stage', label: 'Stage', options: opt('Any stage', o.stages) }, { key: 'site', label: 'Site', options: opt('Both sites', o.sites) }, { key: 'ends', label: 'Ends within', options: [['', 'Any time'], ['7', '7 days'], ['30', '30 days'], ['60', '60 days']] }],
+      search: { key: 'q', placeholder: 'Initials or Lauris #', label: 'Search patients' }, chips,
+      selects: [
+        { key: 'payer', label: 'Payer', options: opt('All payers', o.payers) }, { key: 'type', label: 'Request type', options: opt('All requests', o.types) },
+        { key: 'owner', label: 'Assigned clinician', options: opt('All clinicians', o.owners) }, { key: 'site', label: 'Location', options: opt('All locations', o.sites) },
+        { key: 'school', label: 'School', options: opt('All schools', o.schools) }, { key: 'stage', label: 'Stage', options: opt('Any stage', o.stages) },
+        { key: 'units', label: 'Units remaining', options: [['', 'Any'], ['25', '25% or less'], ['50', '50% or less'], ['warn', 'Flagged (75% used)']] },
+        { key: 'due', label: 'Next step due', options: [['', 'Any time'], ['overdue', 'Overdue'], ['today', 'Today'], ['7', 'In 7 days'], ['30', 'In 30 days']] }
+      ],
       shown: q.shown, total: q.total, noun: NOUN, onChange: f => this.setF(f), onClear: f => { this.state.range = { from: '', to: '' }; ui.query.writeQuery({ from: '', to: '' }); this.setF(f); }
     });
     const cols = [
-      { key: 'case', label: 'Case', sort: true, primary: true, width: '16%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.label)}</b> <span class="a-id">${esc(r.id)}</span></span><span class="a-sub">${esc(r.school || '')}</span><span class="a-sub a-s3">${esc(r.payer)} · ${esc(r.typeLabel)}</span>` },
-      { key: 'payer', label: 'Payer', sort: true, hideBelow: 1280, width: '12%', render: r => `<span class="a-nw">${esc(r.payer)}</span><span class="a-sub a-nw a-s1">${esc(r.channel)}${r.ref ? ' · ' + esc(r.ref) : ''}</span><span class="a-sub a-nw a-s2">${esc(r.typeLabel)} · ${esc(r.channel)}</span>` },
-      { key: 'type', label: 'Request type', sort: true, hideBelow: 1280, width: '10%', render: r => `${esc(r.typeLabel)}<div class="a-sub">${esc(r.service)}</div>` },
-      { key: 'status', label: 'Status', sort: true, width: '12%', render: r => ui.statusChip(r.stage) + (r.inDI ? (canOpen('DenialCase') || canOpen('Partials') ? `<div class="a-di"><a href="${esc(diHref(r.req))}">In Denial Intelligence</a></div>` : '<div class="a-sub">In Denial Intelligence · clinician only</div>') : '') },
-      { key: 'units', label: 'Units', sort: true, width: '15%', className: 'a-c-units', render: r => this.unitsCell(r) },
-      { key: 'deadline', label: 'Deadline', sort: true, width: '21%', className: 'a-c-dl', render: r => this.deadlineCell(r) },
-      { key: 'owner', label: 'Owner', sort: true, hideBelow: 1280, width: '6%', render: r => `<span class="a-nw" title="${esc(r.owner.backup ? 'Backup: ' + r.owner.backup.name : 'No backup set')}">${esc(r.owner.short)}</span>` },
-      { key: 'next', label: 'Next action', sort: true, render: r => this.nextCell(r) }
+      { key: 'case', label: 'Patient', sort: true, primary: true, width: '14%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.initials)}</b></span>${r.lauris ? `<span class="a-sub a-nw">Lauris #${esc(r.lauris)}</span>` : ''}` },
+      { key: 'payer', label: 'Payer', sort: true, width: '14%', render: r => `<span class="a-nw">${esc(r.payer)}</span>` },
+      { key: 'type', label: 'Request', sort: true, hideBelow: 1280, width: '12%', render: r => esc(r.typeLabel) },
+      { key: 'status', label: 'Status', sort: true, width: '13%', render: r => ui.statusChip(r.stage) },
+      { key: 'units', label: 'Units', sort: true, width: '18%', className: 'a-c-units', render: r => this.unitsCell(r) },
+      { key: 'deadline', label: 'Deadline', sort: true, width: '10%', className: 'a-c-dl', render: r => this.deadlineCell(r) },
+      { key: 'owner', label: 'Clinician', sort: true, hideBelow: 1280, width: '8%', render: r => `<span class="a-nw" title="${esc(r.owner.backup ? 'Backup: ' + r.owner.backup.name : 'No backup set')}">${esc(r.owner.short)}</span>` },
+      { key: 'next', label: 'Next step', sort: true, render: r => this.nextCell(r) }
     ];
     const table = ui.queueTable({
       id: 'auth', caption: 'Authorizations', columns: cols, rows: q.rows, rowId: r => r.id, href: r => caseHref(r.id),
@@ -118,27 +128,26 @@ register('Authorizations', class extends Screen {
       empty: { title: q.total ? 'No requests match' : 'No requests yet', body: q.total ? 'Clear a filter to see more.' : 'Requests appear after a packet is drafted.' }
     });
     const canDraft = !!me && can(me, 'drafts.clinical');
-    const action = canDraft ? `<a class="ui-btn ui-btn--primary" href="ExtCase.dc.html">Start continued stay</a>` : `<span class="a-why" title="Starting a request needs a clinician">Needs clinician</span>`;
-    const range = `<fieldset class="a-range"><legend class="a-range__l">Authorization period</legend><label class="a-range__f"><span class="ui-sr">From</span><input class="ui-input" type="date" id="a-from" aria-label="Period from" value="${esc(st.range.from)}"></label><span aria-hidden="true">to</span><label class="a-range__f"><span class="ui-sr">To</span><input class="ui-input" type="date" id="a-to" aria-label="Period to" value="${esc(st.range.to)}"></label>${st.range.from || st.range.to ? '<button type="button" class="ui-linkbtn" data-x="range-clear">Clear dates</button>' : ''}</fieldset>`;
-    return { bar: raw(bar), queue: raw(table), action: raw(action), range: raw(range), maturity: raw(ui.maturity('route.Authorizations')), help: raw(ui.infoPopover({ label: 'About the deadline column', title: 'Deadlines', html: `<p>${esc(COLS_HELP)}</p><p>Every deadline shows where its number comes from: Officially verified, Payer-specific, Harvest-reported or Unverified demo assumption. Day counts come from the day the request was sent.</p>` })) };
+    const action = canDraft ? `<a class="ui-btn ui-btn--primary" href="ExtCase.dc.html">Start continued stay</a>` : '';
+    const pill = d => `<button type="button" class="ui-fchip" data-x="ends" data-v="${d}" aria-pressed="${st.f.ends === d}">Ends in ${d} days</button>`;
+    const range = `<fieldset class="a-range"><legend class="a-range__l">Authorization period</legend><label class="a-range__f"><span class="ui-sr">From</span><input class="ui-input" type="date" id="a-from" aria-label="Period from" value="${esc(st.range.from)}"></label><span aria-hidden="true">to</span><label class="a-range__f"><span class="ui-sr">To</span><input class="ui-input" type="date" id="a-to" aria-label="Period to" value="${esc(st.range.to)}"></label><span class="a-range__p">${['7', '30', '60'].map(pill).join('')}</span>${st.range.from || st.range.to ? '<button type="button" class="ui-linkbtn" data-x="range-clear">Clear dates</button>' : ''}</fieldset>`;
+    return { bar: raw(bar), queue: raw(table), action: raw(action), range: raw(range), maturity: raw(ui.maturity('route.Authorizations')), help: raw(ui.infoPopover({ label: 'About the units and deadline columns', title: 'Units and deadlines', html: `<p>${esc(COLS_HELP)}</p><p>The unit bar shows what is left. It turns yellow once ${esc(String(ruleWarn(s)))}% of the units are used. A warning icon beside a date means due soon or overdue; hover it for the reason and where the number comes from (Officially verified, Payer-specific, Harvest-reported or Unverified demo assumption).</p>` })) };
   }
   unitsCell(r) {
-    const u = r.units; const warn = u.daysLeft != null && u.daysLeft < 10;
-    const bar = u.showBar ? `<span class="a-bar${warn ? ' is-warn' : ''}" role="img" aria-label="${esc(`${u.used} of ${u.total} units used`)}"><i style="width:${Math.min(100, u.pct)}%"></i></span>` : '';
-    const sub = u.showBar ? `<span class="a-sub a-ub">${bar}${esc(u.sub)}</span>` : (r.stage === 'submitted' || r.stage === 'overdue') && r.req.sent ? `<span class="a-sub">sent ${esc(M.fmtDate(r.req.sent))}</span>` : '';
-    const days = u.showBar && u.daysLeft != null && u.rate ? `<span class="a-sub a-line a-mini">about ${u.daysLeft} school days ${ui.sourceChip(u.rate.rule)}</span>` : '';   // the rate's source is the icon with its name and tooltip: the row stays two or three lines
-    return `<span class="a-units"><b class="ui-num">${esc(u.text)}</b></span>${sub}${days}`;
+    const u = r.units;
+    if (u.showBar) return ui.unitsBar({ total: u.total, used: u.used, left: u.left, warn: u.warn, warnPct: u.warnPct });
+    return `<span class="a-muted a-nw">${esc(u.text)}</span>`;
   }
   deadlineCell(r) {
-    const d = r.deadline; if (d.kind === 'none') return '<span class="ui-muted">—</span>';
-    // the Overdue / Due soon chip is the colour and an icon here (the Status column already says Overdue); the source chip stays, on the second line
-    const mark = d.sev === 'overdue' ? `<span class="a-dl__i">${ui.icon('alert', 14)}<span class="ui-sr">Overdue: </span></span>` : d.sev === 'soon' ? `<span class="a-dl__i">${ui.icon('clock', 14)}<span class="ui-sr">Due soon: </span></span>` : '';
-    const src = d.rule ? ui.sourceChip(d.rule) : '';
-    return `<div class="a-dl a-dl--${d.sev}">${mark}<span class="a-dl__t">${esc(d.text)}</span></div>${d.sub || src ? `<span class="a-sub a-line">${esc(d.short != null ? d.short : d.sub || '')} ${src}</span>` : ''}`;
+    const d = r.deadline; if (d.kind === 'none') return '<span class="ui-muted" aria-label="No deadline">—</span>';
+    const src = d.rule ? (d.rule.verification || verificationLabel(d.rule.category)) : '';
+    const why = [d.text, d.sub].filter(Boolean).join(' · ') + (src ? ` · ${src}` : '');
+    return d.date ? ui.dateFlag({ date: String(d.date).slice(0, 10), sev: d.sev, why }) : `<span class="ui-muted" title="${esc(why)}" aria-label="${esc(why)}">—</span>`;
   }
   nextCell(r) {
-    const n = r.next; const href = n.di && (canOpen('DenialCase') || canOpen('Partials')) ? diHref(r.req) : caseHref(r.id);
-    return `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(href)}">${esc(n.label)}<span class="ui-sr"> for ${esc(r.label)}, ${esc(r.id)}</span></a>${n.why ? `<div class="a-sub">${esc(n.why)}</div>` : ''}<span class="a-sub a-own">Owner ${esc(r.owner.short)}</span>`;
+    const n = r.next; const href = n.di && (canOpen('DenialCase') || canOpen('Partials')) ? diHref(r.req) : caseHref(r.id);   // a denial-stage row opens the Denial Intelligence case for every role that may open it
+    if (!n.allowed) return `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(href)}" title="${esc(n.why || 'Needs another role')}">View<span class="ui-sr"> ${esc(r.initials)}, ${esc(r.id)}. ${esc(n.label)}: ${esc(n.why || 'needs another role')}</span></a>`;
+    return `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(href)}">${esc(n.label)}<span class="ui-sr"> for ${esc(r.initials)}, ${esc(r.id)}</span></a>`;
   }
   after(root) {
     const upd = (k, v) => { this.state.range = { ...this.state.range, [k]: v }; ui.query.writeQuery({ [k]: v }); this.repaint(); };
@@ -146,5 +155,7 @@ register('Authorizations', class extends Screen {
     if (from) from.onchange = () => upd('from', from.value);
     if (to) to.onchange = () => upd('to', to.value);
     root.querySelectorAll('[data-x="range-clear"]').forEach(b => { b.onclick = () => { this.state.range = { from: '', to: '' }; ui.query.writeQuery({ from: '', to: '' }); this.repaint(); }; });
+    root.querySelectorAll('[data-x="ends"]').forEach(b => { b.onclick = () => { const on = this.state.f.ends === b.dataset.v; ui.query.writeQuery({ ends: on ? '' : b.dataset.v }); this.setF({ ends: on ? '' : b.dataset.v }); }; });
   }
 });
+const ruleWarn = s => ((s.rules || []).find(r => r.key === 'units.warn_used_pct') || {}).value || 75;

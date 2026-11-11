@@ -74,7 +74,7 @@ Other fixtures: `base-live`, `base-canvas`, `tw-link-submitted`, `tw-eligible`, 
 | Surface | Where | What it is |
 |---|---|---|
 | Platform | `http://localhost:4000` | Rail: **My Work** (logo), **Authorizations**, **Denial Intelligence**, **Analytics**, then **Referrals** and **Settings**. Case shell, denial workspace, pilot scorecard, three analytics sections, Settings (People, Roles, Units, Rules, Audit, Family link, Presenter) |
-| Lauris extension | mock Lauris on 4001, panel at 400 px | Three buttons: **Scribe**, **Track Time**, **Scan & Enhance** (clinicians and designated supervisors). Three-way draft review, evidence review (read-only), authorization path |
+| Lauris extension | mock Lauris on 4001, panel at 400 px | Two buttons: **Scribe** and **Scan & Enhance** (clinicians and designated supervisors). Three-way draft review, evidence review (read-only), authorization path |
 | Phone | `#/MobileApp` at 390 px | My students, Current activity, Say what happened, assessments |
 | Family | `/f/<token>`, `/parent/<token>/<Screen>` | Checklist home, one task per screen, English and Español, signature mode per document |
 | School | school sign-in | "Harvest needs" card, status text only, a four-section referral form |

@@ -16,10 +16,10 @@ async function run(mode) {
   const F = flow(T, `S1[${mode}]`); const L = {}; const pages = [];
   try {
     await start(mode, { scenario: 's1', fixture: 'mr-daily', preset: 'live' });
-    await F.step('first state: 4 of 6 notes in, a running timer with six blocks (the last unconfirmed), M.R. 27 of 110 units in Psyflo and in Lauris, nothing waiting', async () => {
+    await F.step('first state: 4 of 6 notes in, M.R. 27 of 110 units in Psyflo and in Lauris, nothing waiting', async () => {
       const s = await state('jperez'), l = await lsnap();
       assert.eq(done(await state('khale')), '4 of 6'); assert.eq(s.dictations.filter(d => d.client === 'MR' && d.status === 'waiting').length, 0);
-      const t = s.timers.khale; assert.ok(t && t.client === 'MR' && t.started === '2026-10-29T13:52' && t.blocks.length === 6, 'timer: ' + JSON.stringify(t));
+      assert.ok(!('timers' in s) && !('time_entries' in s), 'Psyflo no longer records time (Track Time was removed)');
       assert.eq(cli(s, 'MR').authorization.used, 83); assert.eq(cli(s, 'MR').authorization.units, 110);
       const mr = lcons(l, 3310); assert.eq(mr.auth.used, 83); assert.eq(mr.auth.available, 27); assert.eq(l.today, s.today, 'one clock for both stores');
       L.first = { done: done(await state('khale')), used: cli(s, 'MR').authorization.used, lAvail: mr.auth.available, lActive: mr.active_file.length, dictWaiting: 0, mrDaily: s.notes.filter(n => n.client === 'MR' && n.type === 'daily').length, disputes: s.disputes.map(d => d.id + ':' + d.status).sort(), lauris_tasks: s.lauris_tasks.length };
@@ -58,7 +58,7 @@ async function run(mode) {
     await F.step('3 Lauris daily note + panel: "Dictation dropped in"; the boxes are typed yellow and NOT saved (no session in Lauris, only the panel.filled event in Psyflo)', async () => {
       await panel(lp).getByText('Dictation dropped in').waitFor({ timeout: 20000 });
       const v = await formValues(lp); assert.eq(v['Narrative'].replace(/\s+/g, ' ').trim().slice(0, 40), 'Played basketball with M.R. after he got');
-      assert.ok(await yellow(lp) >= 3, 'yellow boxes typed'); assert.eq(v['Units'], '2'); assert.match(v['Direct time'], /3 h 40 min/);
+      assert.ok(await yellow(lp) >= 1, 'yellow boxes typed'); assert.eq(v['Units'], '', 'units are for the person to type in Lauris'); assert.eq(v['Direct time'], '', 'direct time is for the person to type in Lauris');
       const l = await lsnap(); assert.eq(l.sessions.length, L.l0.sessions.length, 'typed is not saved: Lauris holds no new session'); assert.eq(lcons(l, 3310).auth.available, 27);
       const s = await state('jperez'); assert.ok(evs(s, /panel|typed|filled|Dictation/i, 'MR').length > evs(L.s0, /panel|typed|filled|Dictation/i, 'MR').length || s.fills.length > L.s0.fills.length, 'the fill is recorded in Psyflo');
       assert.eq(s.notes.filter(n => n.client === 'MR' && n.type === 'daily').length, L.first.mrDaily, 'no note exists before Process Form');
@@ -67,33 +67,28 @@ async function run(mode) {
     await F.step('4 review wording and sources in the panel: the staffer\'s words, the drafted narrative ("Nothing was added"), the questions for what was not said, 3 of 5 checks', async () => {
       const t = (await panelFrame(lp).locator('#panel').innerText()).replace(/\s+/g, ' ');
       assert.match(t, /SAID INTO THE PHONE/i); assert.match(t, new RegExp('“' + SAID.slice(0, 30), 'i')); assert.match(t, /Nothing was added/); assert.match(t, /Which ISP objective did this address\?/); assert.match(t, /What did you do/);
-      assert.match(t, /3 of 5 pass/); assert.match(t, /Daily notes today \(K\. Hale\): 4 of 6/); assert.match(t, /one block is not counted until you confirm/);
+      assert.match(t, /3 of 5 pass/); assert.match(t, /Daily notes today \(K\. Hale\): 4 of 6/);
       assert.ok(!/basketball.{0,80}(minutes|recess|5 minutes)/i.test(t.replace(SAID, '')), 'no invented time or event');
     });
-    await F.step('5 Process Form (a person\'s click): the note, the units, the dictation, 3+ audit events, in BOTH stores', async () => {
+    await F.step('5 the person types the direct time and the units in Lauris, then Process Form (a person\'s click): the note, the units, the dictation, 3+ audit events, in BOTH stores', async () => {
+      await lp.getByLabel('Direct time', { exact: true }).fill('3 h 40 min'); await lp.getByLabel('Units', { exact: true }).fill('2');
       await lp.getByRole('button', { name: 'Process Form' }).click(); await lp.waitForURL(/processed=/);
       const id = (lp.url().match(/processed=(\d+)/) || [])[1]; assert.ok(id);
       const s = await waitState(x => x.notes.some(n => n.session === id), { what: 'the note from the observed event' }); L.sess = id;
-      const n = s.notes.find(x => x.session === id); assert.eq(n.client, 'MR'); assert.eq(n.type, 'daily'); assert.eq(n.staff, 'khale'); assert.eq(n.consumer, 3310); assert.eq(n.units, 2, '220 min = 2 units (official bands)'); assert.eq(n.date, s.today);
-      assert.match(n.fields.Narrative, /^Played basketball with M\.R\./); assert.ok(!/unconfirmed/i.test(n.fields.Narrative + n.fields['Direct time']), 'the unconfirmed block is not in the narrative or the direct time');
+      const n = s.notes.find(x => x.session === id); assert.eq(n.client, 'MR'); assert.eq(n.type, 'daily'); assert.eq(n.staff, 'khale'); assert.eq(n.consumer, 3310); assert.eq(n.units, 2, 'the 2 units the person typed in Lauris'); assert.eq(n.date, s.today);
+      assert.match(n.fields.Narrative, /^Played basketball with M\.R\./); assert.eq(n.fields['Units'], '2', 'the units are the person\'s own entry');
       assert.eq(cli(s, 'MR').authorization.used, 85, 'tracker 83 -> 85'); assert.eq(s.dictations.find(d => d.id === L.dictId).status, 'used');
       const ee = s.events.filter(e => e.record === 'MR' || e.record === id).slice(L.s0.events.filter(e => e.record === 'MR' || e.record === id).length);
       assert.ok(ee.length >= 2 && ee.some(e => e.actor_kind === 'bridge' && /processed/i.test(e.what) && /khale|K\. Hale/.test(e.who + e.what)), 'audit trail from the bridge event: ' + JSON.stringify(ee.map(e => [e.who, e.actor_kind, e.what])));
       const l = await lsnap(); const ls = lsess(l, id); assert.eq(ls.status, 'processed'); assert.eq(ls.values.Units, '2'); assert.eq(ls.processed_by, 'khale');
       const mr = lcons(l, 3310); assert.eq(mr.active_file.length, L.first.lActive + 1, 'Active File +1'); assert.ok(mr.active_file.some(x => x.session === Number(id) && x.form === 'dpn' && x.date === s.today), 'the new session is in the Active File'); assert.eq(mr.auth.available, 25, 'Lauris units 27 -> 25'); assert.eq(mr.auth.used, 85);
       assert.eq(mr.auth.used, cli(s, 'MR').authorization.used, 'the two stores agree on units used');
-      const listed = s.time_entries.filter(e => e.client === 'MR' && e.dpn && e.dpn.note); assert.eq(listed.length, 5, 'the five confirmed blocks are in the note'); assert.ok(!s.time_entries.find(e => e.id === 'te-6').dpn, 'the unconfirmed block is not');
       await shot(lp, `s1-${mode}-5-processed`);
     });
-    await F.step('5b the processed note\'s Contact time rows are the confirmed blocks only (the unconfirmed 1:40-3:10 pm block is neither counted NOR written into the note)', async () => {
-      const n = (await state('jperez')).notes.find(x => x.session === L.sess);
-      assert.ok(!/unconfirmed/i.test(n.fields['Contact time']), 'Contact time still lists the unconfirmed block: ' + JSON.stringify(n.fields['Contact time'].split('\n').pop()));
-    }, { soft: true, once: true });
-    await F.step('6 the phone and Track Time follow only the observed event: Processed in Lauris, 5 of 6, "In the note" 3 h 40 min = 2 units', async () => {
+    await F.step('6 the phone follows only the observed event: Processed in Lauris, 5 of 6', async () => {
       await ph.goto(BASE + '/#/MobileApp'); await ph.waitForSelector('.pm-chip');
       await waitText(ph, /5 of 6 daily notes processed today/); const t = await rootText(ph); assert.match(t, /Processed in Lauris/); assert.match(t, /Nothing waiting for Lauris/);
       await ph.locator('.pm-chip', { hasText: 'M.R.' }).click(); await ph.waitForTimeout(300);
-      const figs = await ph.locator('.pm-fig').allInnerTexts(); assert.match(figs[1], /3 h 40 min/); assert.match(figs[2], /In the note[\s\S]*3 h 40 min/); assert.match(figs[3], /2 units/);
       await shot(ph, `s1-${mode}-6-phone-processed`);
     });
 
@@ -130,7 +125,7 @@ async function run(mode) {
     await F.step('10 Denial Intelligence and Authorizations are untouched by a daily note (no dispute opened or closed, no Lauris task)', async () => {
       const s = await state('jperez'); assert.deepEq(s.disputes.map(d => d.id + ':' + d.status).sort(), L.first.disputes); assert.eq(s.lauris_tasks.length, L.first.lauris_tasks);
       assert.eq(req(s, 'R-0411').stage, req(L.s0, 'R-0411').stage, 'R-0411 stays where it was');
-      L.last = { done: done(await state('khale')), used: cli(s, 'MR').authorization.used, lAvail: lcons(await lsnap(), 3310).auth.available, lActive: lcons(await lsnap(), 3310).active_file.length, dict: s.dictations.find(d => d.id === L.dictId).status, noteUnits: s.notes.find(n => n.session === L.sess).units, pilotNotes: L.pilot.notes, listed: s.time_entries.filter(e => e.client === 'MR' && e.dpn && e.dpn.note).length };
+      L.last = { done: done(await state('khale')), used: cli(s, 'MR').authorization.used, lAvail: lcons(await lsnap(), 3310).auth.available, lActive: lcons(await lsnap(), 3310).active_file.length, dict: s.dictations.find(d => d.id === L.dictId).status, noteUnits: s.notes.find(n => n.session === L.sess).units, pilotNotes: L.pilot.notes };
     });
     await F.step('no console errors on the phone, Lauris, the panel or the platform', async () => { noErrors(pages); });
   } finally { for (const p of pages) await p.ctx.close().catch(() => { }); }

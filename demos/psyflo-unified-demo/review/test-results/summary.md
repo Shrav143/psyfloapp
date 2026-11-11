@@ -1,16 +1,12 @@
-# Test results · 2026-11-11T19-27-19Z
+# Test results · 2026-11-11T20-12-06Z
 
-5 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 78 pass, 0 fail, 0 skip · 266 s
+1 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 8 pass, 0 fail, 0 skip · 12 s
 
-Commit 2061d60 · node v22.22.0 · demo time 15:30 · workers 2 · base port 5040
+Commit 5a5a60f · node v22.22.0 · demo time 15:30 · workers 1 · base port 5520
 
 | Suite | Status | Pass | Fail | Skip | Seconds |
 |---|---|---|---|---|---|
-| [denials](denials.md) | PASS | 19 | 0 | 0 | 2.3 |
-| [denials-ui](denials-ui.md) | PASS | 8 | 0 | 0 | 31.5 |
-| [parity](parity.md) | PASS | 4 | 0 | 0 | 146.6 |
-| [s5](s5.md) | PASS | 47 | 0 | 0 | 70.7 |
-| [hosted](hosted.md) | PASS | 0 | 0 | 0 | 263.4 |
+| [patient](patient.md) | PASS | 8 | 0 | 0 | 11.5 |
 
 ## Manual checklist (not automatable)
 

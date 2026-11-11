@@ -1,6 +1,6 @@
 # authorizations · PASS
 
-Run 2026-11-11T19-10-20Z · 55727 ms · instance 0 · exit 0
+Run 2026-11-11T20-08-00Z · 45371 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -19,6 +19,7 @@ Run 2026-11-11T19-10-20Z · 55727 ms · instance 0 · exit 0
 | PASS | partial and denied: the stage follows, the appeal window comes from the rules table |  |
 | PASS | reconcile: units approved at 150 on T.N. replace the 65, and T.W. is not Active without units |  |
 | PASS | the queue: no demo buttons, chips with counts, URL state, v3 links, sort, search, Denial Intelligence links |  |
+| PASS | simple table (feedback Nov 11): units are one bar "N left of M" flagged from 75% used; a deadline is a date with a warning icon; every filter is on the page |  |
 | PASS | S3 R-0416: Review packet -> Approve (Pending clinical approval) -> Sign in Lauris -> Send -> Submitted with the Sfax receipt |  |
 | PASS | the timeline: events open What · When · Who · Document · Source · Next action; ?section= opens that section |  |
 | PASS | Record decision: approved opens the Enter units in Lauris task (card with the Lauris link); Psyflo does not write units; admin sees the task read-only |  |

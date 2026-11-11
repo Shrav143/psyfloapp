@@ -53,7 +53,7 @@
         "signed_pdf": "R-0402_D.W._continued_stay_signed.pdf"
       },
       "units_note": "payer called Oct 27",
-      "early_discharge_text": "Units were exhausted ahead of the authorization end date because the client required 3 units per school day throughout (timer log attached: 5 h 10 m average). Need is unchanged: 2 physical incidents and 1 elopement in the last 30 days."
+      "early_discharge_text": "Units were exhausted ahead of the authorization end date because the client required 3 units per school day throughout (units used read from Lauris). Need is unchanged: 2 physical incidents and 1 elopement in the last 30 days."
     },
     "R-0388": {
       "fill": {

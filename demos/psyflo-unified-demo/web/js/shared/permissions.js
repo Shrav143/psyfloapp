@@ -42,8 +42,9 @@ const ROWS = [
   ['myWork',             'Y','Y','Y','Y','N','N', 'My Work home (sections are gated by the caps above)'],
   ['denials',            'N','N','Y','Y','N','N', 'Denial queue and case (admin sees status without clinical text)'],
   ['authorizations',     'N','Y','Y','Y','N','N', 'Authorization queue, case shell, unit tracker (no evidence text for supervisor/admin)'],
+  ['documentation',      'N','Y','Y','Y','N','N', 'Documentation: notes, intake forms, CNAs and plans across patients (administrator: status only, never text)'],
+  ['patientChart',       'A','Y','Y','Y','N','N', 'Patient chart: documentation status and the authorization summary (direct support: own caseload)'],
   ['scanEnhance',        'N','D','Y','N','N','N', 'Scan & Enhance, mode A (current draft)'],
-  ['trackTime',          'A','N','Y','N','N','N', 'Track time and timer'],
   ['ext.use',            'Y','Y','Y','N','N','N', 'Lauris page panel (extension)'],
   ['notes.billing',      'N','N','Y','Y','N','N', 'Units, time rules view (no clinical text)'],
   // portal actors
@@ -67,6 +68,7 @@ export const MATRIX = Object.fromEntries(Object.keys(IDX).map(role => [role,
 export const ROUTE_CAPS = {
   Login: null, WhereThingsLive: null, UiKit: 'demo.controls',   // presenter-only gallery (a session needs presenter:true)
   // staff app
+  Dashboard: 'myWork', Documentation: 'documentation', Patient: 'patientChart',
   MyWork: 'myWork', DoNext: 'myWork', ReviewQueue: 'notes.review', StaffDashboard: 'myWork',
   Authorizations: 'authorizations', Authorization: 'authorizations', EarlyDischarge: 'authorizations',
   Submission: 'send.packet',
@@ -140,7 +142,7 @@ export function routeAllowed(role, routeId, user) {
 }
 
 // Ids the role may navigate to from the main nav (F2 lays these out); order is the suggested nav order.
-export const NAV_CANDIDATES = ['MyWork', 'Authorizations', 'DenialIntelligence', 'Referrals', 'Eligibility', 'Analytics',
+export const NAV_CANDIDATES = ['Dashboard', 'Documentation', 'Authorizations', 'DenialIntelligence', 'Referrals', 'Eligibility', 'Analytics',
   'Settings', 'ExtHome', 'MobileApp'];
 export function NAV_FOR(role, user) {
   if (!MATRIX[role]) return [];
@@ -155,5 +157,5 @@ export function capsFor(role) {
 export const isStaffRole = r => STAFF_ROLES.includes(r);
 export const isPortalRole = r => PORTAL_ACTORS.includes(r);
 export const homeRouteFor = (role, narrow) => role === 'direct_support' ? (narrow ? 'MobileApp' : 'ExtHome')
-  : role === 'supervisor' || role === 'clinician' ? 'MyWork' : role === 'admin' ? 'Authorizations' : role === 'guardian' ? 'ParentPortal' : role === 'school' ? 'SchoolPortal' : 'Login';
+  : role === 'supervisor' || role === 'clinician' || role === 'admin' ? 'Dashboard' : role === 'guardian' ? 'ParentPortal' : role === 'school' ? 'SchoolPortal' : 'Login';
 export { isGrant };

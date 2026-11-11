@@ -1,4 +1,4 @@
-// The phone (390 x 844): wrong-student protection, draft versus processed state, one time model with the panel, the four separate figures,
+// The phone (390 x 844): wrong-student protection, draft versus processed state, no timer (Track Time was removed on Nov 11),
 // microphone consent / blocked / unsupported / offline states, no locked-screen promise, 48 px targets, presenter-only example.
 import { suite, assert, api, tryApi, state, reset, lpost, bridge, playwright, login, errors, BASE, SHOTS } from './lib/index.mjs';
 
@@ -21,14 +21,14 @@ const NO_SR = `delete window.SpeechRecognition; delete window.webkitSpeechRecogn
 await reset('live');
 
 try {
-  await T.test('home: My students, Current activity, Say what happened, Review, Ready in Lauris, under a sticky student bar; no default student, no locked-screen promise', async () => {
-    await api('time.stop', {}, 'khale').then(r => api('time.discard', { id: r.id }, 'khale'));   // no timer running: nothing may pick a student
+  await T.test('home: My students, Say what happened, Review, Ready in Lauris, under a sticky student bar; no default student, no timer, no locked-screen promise', async () => {
     const { ctx, p, errs } = await phone('khale'); await go(p, '/MobileApp');
     const t = await text(p);
-    for (const h of ['My students', 'Current activity', 'Say what happened', 'Review', 'Ready in Lauris']) assert.match(t, new RegExp(h), h);
-    assert.match(t, /No student selected/, 'nothing is picked for the person'); assert.match(t, /Pick a student to start/);
+    for (const h of ['My students', 'Say what happened', 'Review', 'Ready in Lauris']) assert.match(t, new RegExp(h), h);
+    assert.noMatch(t, /Current activity|Not timing|Start with|timer|Track time/i, 'no timer on the phone');
+    assert.match(t, /No student selected/, 'nothing is picked for the person'); assert.match(t, /Pick a student first/);
     assert.eq(await p.locator('.pm-chip').count(), 6, 'six students, no one else'); assert.noMatch(t, /runs with the screen locked|Or just say the name/i, 'no promise the app does not keep');
-    assert.eq(await p.locator('.pm-bar').count(), 1); assert.ok(await p.getByRole('button', { name: 'Pick a student to start' }).isDisabled(), 'Start waits for a student');
+    assert.eq(await p.locator('.pm-bar').count(), 1);
     await p.screenshot({ path: SHOTS + '/mobile-1-home-none.png' });
     await p.locator('.pm-chip', { hasText: 'M.R.' }).click(); await p.waitForTimeout(300);
     const bar = await p.locator('.pm-bar').innerText();
@@ -36,48 +36,6 @@ try {
     assert.match(await p.locator('.pm-bar').innerText(), /Choose a student/, 'Change shows a visible change'); assert.eq(await p.locator('.pm-chip[aria-pressed="true"]').count(), 0);
     await p.locator('.pm-chip', { hasText: 'M.R.' }).click(); await p.waitForTimeout(300); assert.match(bar, /M\.R\./); assert.match(bar, /Harvest # 3310/); assert.match(bar, /Campbell ES-1/); assert.match(bar, /grade 2/);
     assert.deepEq(quiet(errs), [], quiet(errs).join(' | ')); await ctx.close();
-  });
-
-  await T.test('the four figures are separate: recorded, direct service, in the note, potentially billable (with the rule\'s source); a running timer is not billable', async () => {
-    await reset('live');
-    const { ctx, p } = await phone('khale'); await go(p, '/MobileApp');
-    const figs = await p.locator('.pm-fig').allInnerTexts(); assert.eq(figs.length, 4);
-    assert.match(figs[0], /Recorded[\s\S]*5 h 10 min \+ running/); assert.match(figs[1], /Direct service[\s\S]*3 h 40 min/); assert.match(figs[2], /In the note[\s\S]*Not yet/); assert.match(figs[3], /Potentially billable[\s\S]*2 units[\s\S]*Officially verified/);
-    assert.match(await text(p), /Recorded time only\. A running timer is not billable\./); assert.noMatch(figs.join(' '), /Billable \d|billed/i);
-    await p.screenshot({ path: SHOTS + '/mobile-2-four-figures.png' });
-    await ctx.close();
-  });
-
-  await T.test('one time model with the panel: pause, resume, stop makes a stopped entry to describe; saving it moves direct time and units by the rule; switching student keeps the first one\'s time', async () => {
-    await reset('live');
-    const { ctx, p, errs } = await phone('khale'); await go(p, '/MobileApp');
-    await p.getByRole('button', { name: 'Pause' }).click(); await p.waitForTimeout(500); assert.match(await text(p), /Paused with M\.R\./); await p.getByRole('button', { name: 'Resume' }).click(); await p.waitForTimeout(500);
-    await p.getByRole('button', { name: 'Stop' }).click(); await p.waitForTimeout(700);
-    let t = await text(p); assert.match(t, /Stopped · M\.R\. · 1:52–3:\d\d pm/); assert.match(t, /Recorded, not counted yet/); assert.match(t, /Not timing/);
-    let s = await state('khale'); const d = s.time_entries.find(e => e.status === 'draft'); assert.ok(d && d.confirmed === false && d.source === 'timer', 'it is in the same store the panel reads');
-    await p.getByRole('button', { name: 'Save time' }).click(); await p.waitForTimeout(400); assert.eq((await state('khale')).time_entries.find(e => e.id === d.id).status, 'draft', 'words are required');
-    await p.locator(`#pm-w-${d.id}`).fill('Support during afternoon classes'); await p.getByRole('button', { name: 'Save time' }).click(); await p.waitForTimeout(700);
-    s = await state('khale'); assert.eq(s.time_entries.find(e => e.id === d.id).status, 'saved');
-    await p.locator('.pm-chip', { hasText: 'M.R.' }).click(); await p.waitForTimeout(300);
-    const figs = await p.locator('.pm-fig').allInnerTexts(); assert.match(figs[1], /5 h 18 min/); assert.match(figs[3], /3 units/, '318 minutes is 3 units under the bands');
-    await p.screenshot({ path: SHOTS + '/mobile-3-after-save.png' });
-    // start with J.T., then pick M.R. and switch
-    await p.locator('.pm-chip', { hasText: 'J.T.' }).click(); await p.getByRole('button', { name: 'Start with J.T.' }).click(); await p.waitForTimeout(600);
-    assert.match(await text(p), /With J\.T\. now/); await p.locator('.pm-chip', { hasText: 'M.R.' }).click(); await p.getByRole('button', { name: 'Switch to M.R.' }).click(); await p.waitForTimeout(700);
-    s = await state('khale'); assert.eq(s.timers.khale.client, 'MR'); assert.ok(s.time_entries.some(e => e.client === 'JT' && e.status === 'draft'), 'J.T.\'s time was kept as a stopped entry, not lost');
-    assert.deepEq(quiet(errs), [], quiet(errs).join(' | ')); await ctx.close();
-  });
-
-  await T.test('a left-running timer after a day advance is not guessed: the phone asks when it really ended', async () => {
-    await reset('live');
-    await api('demo.advanceDay', {}, 'dowens+p');
-    const { ctx, p } = await phone('khale'); await go(p, '/MobileApp');
-    let t = await text(p); assert.match(t, /Left running since Thu Oct 29 1:52 pm/); assert.match(t, /Nothing is guessed/); assert.eq(await p.locator('#elapsed').count(), 0, 'no invented elapsed time');
-    await p.locator('#pm-end').fill('99:99'); await p.getByRole('button', { name: 'Stop and record' }).click(); await p.waitForTimeout(400); assert.ok((await state('khale')).timers.khale.started, 'a bad time is refused');
-    await p.locator('#pm-end').fill('14:30'); await p.getByRole('button', { name: 'Stop and record' }).click(); await p.waitForTimeout(700);
-    const e = (await state('khale')).time_entries.find(x => x.status === 'draft'); assert.eq(e.date, '2026-10-29'); assert.eq(e.end, '14:30');
-    await p.screenshot({ path: SHOTS + '/mobile-4-stale-timer.png' });
-    await ctx.close(); await reset('live');
   });
 
   await T.test('wrong student: no student, or one not on the caseload, is a hard stop; the card shows Harvest # and school; saving asks "Save to M.R. (grade 2, Campbell ES-1)?" with Change', async () => {

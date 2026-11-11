@@ -39,7 +39,7 @@ Lead-only after the foundation (do not edit; ask in your report): `web/index.htm
 | **E4 analytics** | `Analytics*`, `web/js/shared/analytics/*`, `actions/x-analytics.js`, `seed/extra/analytics.json`, `seed/notes/e4.md` |
 | **E5 extension** | `web/panel/*` (except `bridge.js` and `views/time.js`), `Ext*.dc.html` and controllers, `web/js/shared/enhance.js`, `actions/{x-enhance,x-scribe}.js`, `seed/extra/notes-corpus.json`, `seed/notes/e5.md` |
 | **E6 portals** | `Parent*`, `FamilyLink`, `SchoolPortal`, `ReferralForm`, `ReferralSent`, `AppealLetter` (guardian side), `actions/x-portal-*.js`, `seed/extra/portals.json`, `seed/notes/e6.md` |
-| **E7 capture surfaces** | `Mobile*`, `web/panel/views/time.js`, `web/js/shared/time.js`, `actions/x-time.js`, the mock Lauris (`server/lauris/*`, new pages for time and authorizations; the bridge contract in `review/04-architecture.md` §F must not change), `seed/extra/time.json`, `seed/notes/e7.md` |
+| **E7 capture surfaces** | `Mobile*`, `web/js/shared/identity.js`, `actions/x-phone.js`, the mock Lauris (`server/lauris/*`, pages for authorizations and Lauris's own Time Tracker; the bridge contract in `review/04-architecture.md` §F must not change), `seed/extra/phone.json`, `seed/notes/e7.md`. Track Time (panel view, timer, time entries) was removed on Nov 11 |
 
 After the foundation, `server/lauris/*` belongs to E7 (not lead-only). Each engineer writes the tests for their own area as `test/<name>.mjs` with the shared lib. QA, parity, interaction-audit and scenario suites are written by the lead in the integration phase.
 

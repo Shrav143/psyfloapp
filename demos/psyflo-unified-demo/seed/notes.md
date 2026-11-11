@@ -128,13 +128,13 @@ Added Nov 7: a "next step" tile at the top when the family has a call or visit t
 
 HOW THE DATA GETS IN · buttons
 
-Captured: the extension reads the Lauris page that is open (here the consumer list: names, group, 'units available'). The three buttons are Scribe (record a conversation into the form you pick), Track time (start/stop with a student) and Scan & enhance (read the note on the open page and improve it). Licensed clinical staff get a fourth, Review a service request. Admins get links to the Psyflo app instead.
+Captured: the extension reads the Lauris page that is open (here the consumer list: names, group, 'units available'). The two buttons are Scribe (record a conversation into the form you pick) and Scan & enhance (read the note on the open page and improve it). Licensed clinical staff get a third, Review a service request. Admins get links to the Psyflo app instead.
 
-Flows: what is on the page → Psyflo (read only). Timer taps → Psyflo with timestamps. Which buttons appear comes from the person's permission level (direct support / licensed clinical / admin), set by the admin in Psyflo.
+Flows: what is on the page → Psyflo (read only). Which buttons appear comes from the person's permission level (direct support / licensed clinical / admin), set by the admin in Psyflo.
 
-Populates: Track time feeds the units on the daily note (11) and the Authorizations page (10). Scribe and Scan & enhance only ever write into a form box on the open Lauris page.
+Populates: units used and left are read from Lauris, never written to it. Scribe and Scan & enhance only ever write into a form box on the open Lauris page.
 
-Engineering: Chrome extension on laurisonline.com; reads the page on load; writes nothing on this page; role comes from the Psyflo login, enforced server-side so a support-staff login cannot fetch screening, intake or request content; same timer in the phone companion app.
+Engineering: Chrome extension on laurisonline.com; reads the page on load; writes nothing on this page; role comes from the Psyflo login, enforced server-side so a support-staff login cannot fetch screening, intake or request content; the phone companion app dictates into the same notes.
 
 Updated Nov 7: The "N new referrals" tile (clinician, admin) lists Psyflo's referrals still in "needs screening" that the extension hasn't yet seen created in Lauris, with school, concerns, IEP, family-link status and eligibility from the referral form, the family link and the eligibility record. Scan & enhance was dropped. Direct support's picker is fixed: daily note, weekly guardian call, monthly collateral call, incident report; the timer is optional.
 
@@ -220,11 +220,11 @@ Engineering: Sfax API in and out; OCR + matching rules;  no unattended portal se
 
 HOW THE DATA GETS IN · app
 
-Captured: on the work iPhone (every staffer has one): pick a student or say their name, start/stop the timer, say what happened. The timer keeps counting with the screen locked. Typing is always an option when someone is within earshot.
+Captured: on the work iPhone (every staffer has one): pick a student or say their name, say what happened. Typing is always an option when someone is within earshot.
 
 Flows: taps and dictation go to Psyflo with timestamps. The dictation is turned into note language using the ISP drop-down names and waits in Psyflo; it drops into the note the moment the staffer opens that student in Lauris.
 
-Populates: the daily note in Lauris (staff read it and press save/process); contact time and units (11, 10); the staff dashboard (19).
+Populates: the daily note in Lauris (staff read it and press save/process); the staff dashboard (19).
 
 Engineering: iOS app plus a web fallback; interim path is an email/Notes capture that routes into Psyflo; on-device recording with upload when there is signal (schools often have none); nothing is written to Lauris except into an open form.
 
@@ -252,7 +252,7 @@ Populates: Analytics client progress; the quarterly.
 
 HOW THE DATA GETS IN · note
 
-Captured: the staffer writes or dictates the note in the Lauris box, then presses Scan & enhance. Psyflo reads the box, rewrites it in note language using the intervention names from the treatment plan drop-downs, and shows the stronger version in the panel. Contact time: ● Start/Stop taps during the day (Track time), ○ added later from the note.
+Captured: the staffer writes or dictates the note in the Lauris box, then presses Scan & enhance. Psyflo reads the box, rewrites it in note language using the intervention names from the treatment plan drop-downs, and shows the stronger version in the panel. Contact time: typed in the Lauris form by the staffer.
 
 Flows: the staffer edits the enhanced note in the panel → 'Use this' puts it back in the same Lauris box → Process Form. At Process Form the extension copies the finished note to Psyflo — one copy, the last thing entered in Lauris. Units = direct time under the band rule, confirmed by the staffer.
 
@@ -260,7 +260,7 @@ Populates: Psyflo's note store (feeds 12–15); units left on Authorizations (10
 
 Engineering: the word check is a list of non-billable verbs plus an AI rewrite; copy-on-Process-Form reads the page; units checked against 'units available' each time the page is open; a direct-support login sees only its own students' notes.
 
-Updated Nov 7: The note starts from what the staffer says: a dictation from the phone, or recorded or typed right in the panel. Psyflo drafts narrative, objective, mood and progress from those words, the ISP and the timer; the person presses Fill. On Save Form Data or Process Form the extension reads the boxes as saved (including edits after the fill) and Psyflo keeps that as the saved version, showing how many boxes changed. "Good recommendation" or "Needs improvement" (with a short note on how) is stored with the dictation and the processed note.
+Updated Nov 7: The note starts from what the staffer says: a dictation from the phone, or recorded or typed right in the panel. Psyflo drafts narrative, objective, mood and progress from those words and the ISP; the person presses Fill. On Save Form Data or Process Form the extension reads the boxes as saved (including edits after the fill) and Psyflo keeps that as the saved version, showing how many boxes changed. "Good recommendation" or "Needs improvement" (with a short note on how) is stored with the dictation and the processed note.
 
 Counselor updates: School counselor updates (sent from the school portal, kept in Psyflo, never read from Lauris) show as "From school today" on that student's daily note. "Add to the narrative" puts the update in as a credited quote ("Per the school counselor (R. Bell)…"), marked as the counselor's report rather than staff observation; the staffer can edit it or leave it out. Using it is logged on the update.
 
@@ -322,7 +322,7 @@ Populates: the metrics Michelle Hamilton described (note completion, care contin
 
 Engineering: role-scoped views; approval routing is a permission flag; pattern alerts are simple thresholds against site averages; nothing here is typed in.
 
-Updated Nov 7: Notes behind and on time are counted from the notes the extension reports at Process Form: daily notes within 24 h of the session (end time from the Psyflo timer, else 3:30 pm dismissal), the weekly guardian call by the end of the week, the monthly collateral by month end. Rejected forms, safety-care holds and the "(export)" on-time figures come from Harvest's Lauris export. Direct support see only their own day, a supervisor the staff at their sites, clinicians and admin everyone. Goal watch by student was dropped (Nov 7).
+Updated Nov 7: Notes behind and on time are counted from the notes the extension reports at Process Form: daily notes within 24 h of the session (sessions are taken to end at the 3:30 pm dismissal), the weekly guardian call by the end of the week, the monthly collateral by month end. Rejected forms, safety-care holds and the "(export)" on-time figures come from Harvest's Lauris export. Direct support see only their own day, a supervisor the staff at their sites, clinicians and admin everyone. Goal watch by student was dropped (Nov 7).
 
 ## 29 · Authorizations · Oct 29 (`Authorizations.dc.html`)
 

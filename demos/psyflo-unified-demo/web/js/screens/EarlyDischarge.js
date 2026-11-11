@@ -48,7 +48,7 @@ register('EarlyDischarge', class extends Screen {
       { l: 'New intake', v: fmtDate(p.intake), s: `${DAY[dow(p.intake)] || dow(p.intake)} · 2 h · guardian present` },
       { l: 'Gap in service', v: `${p.gap} day${p.gap === 1 ? '' : 's'}`, s: `new request filed ${fmtDate(p.send)} · decision by ${fmtDate(p.decision)}` }
     ];
-    const why = details(s, r.id).early_discharge_text || 'Units were exhausted ahead of the authorization end date because the client required 3 units per school day throughout (timer log attached). Need is restated from the dated notes of the last 30 days when the new initial is drafted.';
+    const why = details(s, r.id).early_discharge_text || 'Units were exhausted ahead of the authorization end date because the client required 3 units per school day throughout (units from Lauris). Need is restated from the dated notes of the last 30 days when the new initial is drafted.';
     return {
       has: true, none: false, backHref: 'Partials.dc.html?id=' + r.id, crumb: `${M.clientLabel(s, r.client, false)} · accept and use them up`,
       payerChip: `${pf} · ${r.units_requested} → ${p.units} units`,

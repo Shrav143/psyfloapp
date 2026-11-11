@@ -10,7 +10,6 @@ import { suite, assert, api, tryApi, state, reset, session, playwright, login, e
 import { draftScreening, enhanceDictation, draftInitialSRA, draft } from '../web/js/shared/draft.js';
 import { unitsFor, decisionDay } from '../web/js/shared/rules.js';
 import { buildContinuedStay, evidenceIndex } from '../web/js/shared/enhance.js';
-import { timeSummary, excludedKinds } from '../web/js/shared/time.js';
 import { AUTHZ } from '../server/psyflo/authz.js';
 
 const T = suite('safety');
@@ -87,7 +86,7 @@ await T.test('ICE-08 a quarterly draft for a client with no stored notes is blan
 const toks = s => (String(s).toLowerCase().match(/[a-z']+/g) || []);
 for (const [id, text] of [['UAR-01', 'We played basketball at recess and he got upset and mad.'], ['UAR-02', 'He ran laps and was frustrated with me.'], ['UAR-03', 'I observed her at lunch and she sat alone.']]) {
   await T.test(`${id} the drafted narrative adds nothing the staffer did not say ("${text.slice(0, 32)}…"); "observed" is flagged and the text is not rewritten`, async () => {
-    const e = enhanceDictation({ text, client: { initials: 'M.R.' }, goals: [], interventions: [], blocks: [], recent: [], today: '2026-10-29' });
+    const e = enhanceDictation({ text, client: { initials: 'M.R.' }, goals: [], interventions: [], recent: [], today: '2026-10-29' });
     const said = new Set(toks(text)); const extra = toks(e.narrative).filter(w => !said.has(w)); assert.deepEq(extra, [], 'words in the narrative that were not said: ' + extra.join(' '));
     if (id === 'UAR-03') { const ob = e.checks.find(c => /observed/i.test(c.rule)); assert.ok(ob && ob.pass === false && !ob.fixed, '"observed" is flagged, not replaced: ' + JSON.stringify(ob)); assert.match(e.narrative, /observed/); }
     if (id === 'UAR-02') assert.ok(!/basketball/i.test(JSON.stringify(e)), 'no basketball narrative');
@@ -192,11 +191,6 @@ await T.test('IIU-08 D.W.\'s early-discharge dates agree across the authorizatio
   const u = await uiText('jperez', '/Authorization?id=R-0402&section=transition'); const dis = (u.text.match(/Discharge\s+(\w{3} \d+)/) || [])[1]; assert.ok(dis, 'a transition discharge date'); await u.ctx.close();
   const t = await panelText('jperez', '/consumers/4102/session/discharge'); const dates = [...t.matchAll(/\b(Nov|Dec|Jan) \d{1,2}\b/g)].map(m => m[0]);
   assert.ok(!dates.length || dates.every(d => d === dis), `the discharge panel shows ${[...new Set(dates)].join(', ')} while the authorization transition says ${dis}`);
-});
-await T.test('IIU-10 time blocks marked not direct (lunch, transport) never count as direct time', async () => {
-  await reset('live'); const s = await state('khale'); const kinds = excludedKinds(s); assert.ok(kinds.length > 0, 'the rules table names the excluded kinds'); const before = timeSummary(s, 'MR', s.today, { staff: 'khale' }).direct;
-  await api('time.add', { client: 'MR', date: s.today, start: '06:30', end: '07:10', what: 'Bus ride to school', kind: kinds[0], reason: 'added by hand, not direct' }, 'khale');
-  const s2 = await state('khale'); assert.eq(timeSummary(s2, 'MR', s2.today, { staff: 'khale' }).direct, before, 'a not-direct block moves no direct minute');
 });
 await T.test('IIU-11 the mock Lauris warns or refuses a daily note when no units are available (T.N. 0 left) or after the authorization end date', async () => {
   const r = await lpost('/consumers/3402/session/dpn', 'jperez', { action: 'process', f2: '220 min', f3: '2', f9: 'note with no units left' });
