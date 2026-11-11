@@ -4,7 +4,7 @@
 
 **Status:** this is a plan. Nothing has been changed in the demo yet.
 
-**Revision (Nov 11):** applies the reviewer's comments on the summary. Menu, view, status and metric names now use RCM terminology (section 5.5). All seven workflow changes were agreed (section 7). The three Harvest workflow stages the demo does not show are left out (section 9).
+**Revision (Nov 11):** applies the reviewer's comments on the summary, plus three label changes from the research pass (Note timeliness, Pending clinical approval, Overdue). Menu, view, status and metric names now use RCM terminology (section 5.5). All seven workflow changes were agreed (section 7). The three Harvest workflow stages the demo does not show are left out (section 9).
 
 ---
 
@@ -152,7 +152,7 @@ Meaning of color, used the same everywhere: teal = done or on track; marigold/wa
 |---|---|---|
 | Worklist | What needs action now (was Do next) | clinician, supervisor, admin |
 | Authorizations | Intake (referral through intake) and Prior auth & UR (request through decision) | clinician, admin |
-| Documentation | Compliance (was Staff dashboard) and Chart review (was Review queue) | everyone; direct support sees only their own row |
+| Documentation | Note timeliness (was Staff dashboard) and Chart review (was Review queue) | everyone; direct support sees only their own row |
 | Analytics | KPIs and Outcomes | clinician, admin |
 
 The names come from the RCM glossary in section 5.5.
@@ -169,13 +169,13 @@ For a supervisor, the Worklist lists the notes awaiting their review instead of 
 |---|---|
 | **Navigation** Today / Team / Reports | **Worklist** / **Documentation** / **Analytics** (Authorizations is unchanged) |
 | **Views** New students / Requests | **Intake** / **Prior auth & UR** |
-| Notes / Review (Team) | **Compliance** / **Chart review** |
+| Notes / Review (Team) | **Note timeliness** / **Chart review** |
 | Pilot / Student progress (Reports) | **KPIs** / **Outcomes** |
 | **Filters** Needs me / Waiting on others / Funding | **Assigned to me** / **Awaiting response** / **Funding source** |
 | **Request types** Initial / Continued stay / More info / Peer-to-peer | **Initial auth** / **Reauth** / **Additional info** / **P2P** (Appeal is unchanged) |
-| **Statuses** Draft ready / Needs approval / Awaiting signature / Signed | **Ready for review** / **Pending approval** / **Pending signature** / **Ready to submit** |
+| **Statuses** Draft ready / Needs approval / Awaiting signature / Signed | **Ready for review** / **Pending clinical approval** / **Pending signature** / **Ready to submit** |
 | Info requested / Partial / Active / Renewal due | **Pended** / **Partial approval** / **Authorized** / **Reauth due** |
-| Late / `Day 10 · call` | **Past due** / `Day 10 · follow-up` |
+| Late / `Day 10 · call` | **Overdue** / `Day 10 · follow-up` |
 | **Metrics and parts** On time / Behind / Approval (Every note, Spot check) | **Timely %** / **Backlog** / **Review** (100% review, Sampled) |
 | Awarded / Weekly eligibility checks / Run check | **Authorized** / **Eligibility re-verification** / **Verify** |
 | Checks (on a request) / Checks (on a note) | **Pre-submission checks** / **Documentation checks** |
@@ -251,7 +251,7 @@ Attachments   [Signed PDF]  [Fax receipt]  [Eligibility Oct 22]
 ```
 
 - The Intake view uses the same row grammar: Student, School, Funding source (TDT, SEBS or Outpatient), Stage (Referral, Screening, Intake, Plan), Status and clock, one button. T.W.'s family link, eligibility and screening are shown in the drawer as a checklist (6.3), not as separate cards.
-- Requests awaiting approval (section 7.2) show `Pending approval` in Status and an `[Approve]` button for the clinical lead.
+- Requests awaiting approval (section 7.2) show `Pending clinical approval` in Status and an `[Approve]` button for the clinical lead.
 
 ### 6.3 Referral (screens 7, 9; `Referral`, `Eligibility`) · stages 1–3
 
@@ -309,10 +309,10 @@ Last time with Sentara    150 → 120 → 140 → 110
 
 ### 6.5 Documentation (screens 27 and 28, `StaffDashboard`, `ReviewQueue`) · stages 15, 25
 
-Two views: **Compliance** (default) and **Chart review** (supervisor and up). Direct support see only their own row, framed as "mine".
+Two views: **Note timeliness** (default) and **Chart review** (supervisor and up). Direct support see only their own row, framed as "mine".
 
 ```
-Documentation   [Compliance | Chart review]                     All sites ▾
+Documentation   [Note timeliness | Chart review]                     All sites ▾
 
 Staff       Backlog  Timely %  Review          Flags
 K. Hale     2        89%       Sampled         Goal 3 untouched 6 weeks
@@ -361,7 +361,7 @@ Rules for every panel view:
 
 **CNA (15) and plan (16).** Same frame. CNA: `Fill 31 boxes`, a `Still to ask` list (developmental history before trauma). Plan: three goals as rows with intervention chips from Harvest's list; `Fill the 3 goals`. Show the 24-hour plan clock as a header chip (section 7.4).
 
-**Request, sign-off (17, 18).** Draft panel: 7 boxes, criterion text editable inline, `Pre-submission checks 9 of 9 ✓`, `[Fill 7 boxes]`. After Process Form in Lauris, the same panel becomes a status line: `Processed · pending approval`, then `Pending signature`, then `Signed · ready to submit`, then `Open Send` (opens the Authorizations drawer). Sign-off is a state of this view, not a separate page. The person still presses Process Form and Get Signature in Lauris.
+**Request, sign-off (17, 18).** Draft panel: 7 boxes, criterion text editable inline, `Pre-submission checks 9 of 9 ✓`, `[Fill 7 boxes]`. After Process Form in Lauris, the same panel becomes a status line: `Processed · pending clinical approval`, then `Pending signature`, then `Signed · ready to submit`, then `Open Send` (opens the Authorizations drawer). Sign-off is a state of this view, not a separate page. The person still presses Process Form and Get Signature in Lauris.
 
 **Daily note (23).** As in the frame above. `Say what happened` is the whole top card: `Record` and `Type` (a textarea with placeholder `What happened?`). After dictation the narrative drops in yellow with source chips (intervention from the plan, duration from the timer, objective from the plan). The units chip has a `?` (7.3). "The afternoon block didn't happen" becomes a `⋯` menu on that contact-time row.
 
@@ -438,7 +438,7 @@ What the demo does: due date = sent + 7, "decision overdue 3 days", an "Overdue 
 
 Change:
 - Add `clocks: { call_day: 10, decision_days: 14, public_standard_days: 7 }`.
-- The status chip on a submitted request shows `Day N`, becomes `Day 10 · follow-up` at day 10, and goes red (`Past due`) only after `decision_days`.
+- The status chip on a submitted request shows `Day N`, becomes `Day 10 · follow-up` at day 10, and goes red (`Overdue`) only after `decision_days`.
 - The `?` on that chip: `Harvest calls at day 10. Public rule: 7 days. Many payers take 14.`
 - The overdue notice is still available, but as a secondary action once the 7-day standard has passed, not the default.
 - Stop using the invented per-payer `decides_in_days` (4 to 7) to drive clocks. Leave the field in the seed; do not read it.
@@ -449,7 +449,7 @@ What Harvest does: the clinical lead approves every SRA, then the clinician atte
 
 What the demo does: draft → Process Form → Get Signature → Send, with no approval step.
 
-Change: add request stage `needs_approval` between `draft_ready` and `awaiting_signature`. It appears as `Pending approval` in the Authorizations list with an `[Approve]` button for the clinical lead role, and in the panel status line. Approving writes an event (`Approved by <name>`) and changes nothing in Lauris. A person still presses Process Form, Get Signature and Send.
+Change: add request stage `needs_approval` between `draft_ready` and `awaiting_signature`. It appears as `Pending clinical approval` in the Authorizations list with an `[Approve]` button for the clinical lead role, and in the panel status line. Approving writes an event (`Approved by <name>`) and changes nothing in Lauris. A person still presses Process Form, Get Signature and Send.
 
 ### 7.3 Units bands
 
@@ -515,7 +515,7 @@ Change: replace it with a required Yes/No field `Guardian agrees to the referral
 4. Units chip: `1 unit 2–2.99 h · 2 units 3–4.99 h · 3 units 5 h or more.`
 5. Pre-submission and documentation checks line: `Rules every draft must pass before you process it.`
 6. Household detail (continued stay): `Family details stay out of payer text unless you include them.`
-7. `Pending approval` chip: `The clinical lead approves before the clinician signs.`
+7. `Pending clinical approval` chip: `The clinical lead approves before the clinician signs.`
 8. Eligibility proof: `Dated screenshot kept in Psyflo, not in Lauris.`
 9. Documentation "Timely %": `Processed in Lauris within 24 hours of the session.`
 10. School referral attachments: `The authorization request needs all three.`
