@@ -1,7 +1,7 @@
 id,feature,destination,status,evidence,notes
-M-001,Sign in (n0),Login (kept); role switching moves to presenter toolbar,MOVED,"route /Login as anonymous · suite roles FAIL, settings PASS",lands on #/Login
+M-001,Sign in (n0),Login (kept); role switching moves to presenter toolbar,MOVED,"route /Login as anonymous · suite roles PASS, settings PASS",lands on #/Login
 M-002,Where things live (n1),Presenter drawer,MOVED,"route /WhereThingsLive as jperez · suite ui-kit PASS, fixtures PASS",lands on #/WhereThingsLive?full=1
-M-003,Do next (n2),My Work › To do,MOVED,route /DoNext as jperez · suite mywork PASS,lands on #/Dashboard
+M-003,Do next (n2),Dashboard (patient roster),MOVED,route /DoNext as jperez · suite mywork PASS,lands on #/Dashboard
 M-004,School portal home (n3),School Portal,MOVED,route /SchoolPortal as school · suite school PASS,lands on #/SchoolPortal
 M-005,Referral form (n4),School Portal,MOVED,route /ReferralForm as school · suite school PASS,lands on #/ReferralForm
 M-006,Referral sent (n5),School Portal,MOVED,route /ReferralSent as school · suite school PASS,lands on #/ReferralSent
@@ -25,8 +25,8 @@ M-023,Daily note (n23),Extension › Scribe,MOVED,"route /ExtDPN as khale · sui
 M-024,Weekly guardian call (n24),Extension › Scribe,MOVED,"route /ExtWeekly as jperez · suite panels PASS, smoke PASS",lands on #/ExtWeekly?client=MR
 M-025,Monthly collateral (n25),Extension › Scribe,MOVED,"route /ExtMonthly as jperez · suite panels PASS, smoke PASS",lands on #/ExtMonthly?client=MR
 M-026,Incident report (n26),Extension › Additional actions,MOVED,"route /ExtIncident as jperez · suite panels PASS, smoke PASS",lands on #/ExtIncident
-M-027,Supervisor review queue (n27),My Work › Review,MOVED,route /ReviewQueue as cdiaz · suite mywork PASS,lands on #/Documentation?status=pending_review
-M-028,Staff dashboard (n28),My Work › Team,MOVED,route /StaffDashboard as cdiaz · suite mywork PASS,lands on #/Dashboard
+M-027,Supervisor review queue (n27),Documentation › Needs review,MOVED,route /ReviewQueue as cdiaz · suite mywork PASS,lands on #/Documentation?status=pending_review
+M-028,Staff dashboard (n28),Dashboard (staff filter) · Documentation › By staff,MOVED,route /StaffDashboard as cdiaz · suite mywork PASS,lands on #/Dashboard
 M-029,Authorizations (n29),Authorizations (queue),MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
 M-030,Parent survey (n31),Family Portal,MOVED,"route /ParentSurvey as guardian · suite family PASS, flowD PASS",lands on #/ParentSurvey
 M-031,Quarterly report (n32),Extension › Clinical documents,MOVED,"route /ExtQuarterly as jperez · suite panels PASS, smoke PASS",lands on #/ExtQuarterly?client=MR
@@ -39,7 +39,7 @@ M-037,Peer-to-peer call notes (n38),Denial Intelligence › action,MOVED,"route 
 M-038,Appeal letter (n39),Denial Intelligence + Family Portal,MOVED,"route /AppealLetter as guardian · route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/AppealLetter?id=R-0384; lands on #/DenialCase?id=R-0384&section=action&action=appeal
 M-039,Payer playbook (n40),Payer guidance (Analytics › Payer),MOVED,"route /PayerPlaybook as jperez · code: payer guidance module · suite denials PASS, denials-ui PASS, rules PASS",lands on #/Analytics?section=payer&panel=guidance; web/js/screens/Analytics.js web/js/screens/DenialCase.js
 M-040,Analytics (n42),"Analytics (three sections, provenance-tagged)",MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
-M-041,Users and roles (n43),Settings › Users,MOVED,"route /Users as dowens · suite roles FAIL, settings PASS",lands on #/Settings?tab=people
+M-041,Users and roles (n43),Settings › Users,MOVED,"route /Users as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=people
 M-042,Enrollment packet (n46),Family Portal,MOVED,"route /ParentEnroll as guardian · suite family PASS, flowD PASS",lands on #/ParentEnroll
 M-043,"Progress, family view (n47)",Family Portal,MOVED,"route /ParentProgress as guardian · suite family PASS, flowD PASS",lands on #/ParentProgress?c=TW
 M-044,"Quarterly, guardian signs (n48)",Family Portal,MOVED,"route /ParentQuarterly as guardian · suite family PASS, flowD PASS",lands on #/ParentQuarterly
@@ -145,20 +145,20 @@ M-143,`dictation.used`*,Remove,PRESERVED,action dictation.used,kept registered (
 M-144,`dictation.discard`,Mobile,MOVED,"action dictation.discard · suite flowA PASS, flowB PASS, scribe PASS",
 M-145,`assessment.save`,Mobile,MOVED,action assessment.save · suite mobile PASS,
 M-146,`assessment.used`,Keep,PRESERVED,action assessment.used · suite mobile PASS,
-M-147,`note.processed`,My Work › Review,MOVED,action note.processed · suite mywork PASS,
-M-148,`note.review`,My Work › Review,MOVED,action note.review · suite mywork PASS,
+M-147,`note.processed`,Documentation › Needs review,MOVED,action note.processed · suite mywork PASS,
+M-148,`note.review`,Documentation › Review drawer,MOVED,action note.review · suite mywork PASS,
 M-149,`screening.done`*,Remove,PRESERVED,action screening.done,kept registered (internal or still used); still registered (internal or kept)
 M-150,`draft.save`*,Remove,PRESERVED,action draft.save,kept registered (internal or still used); still registered (internal or kept)
 M-151,`client.update`*,Remove,PRESERVED,action client.update,kept registered (internal or still used); still registered (internal or kept)
 M-152,`lauris.event`*,Remove,PRESERVED,action lauris.event,kept registered (internal or still used); still registered (internal or kept)
 M-153,`incident.filePortal`,Extension › Additional actions,MOVED,"action incident.filePortal · suite flowA PASS, flowB PASS, scribe PASS",
 M-154,`incident.save`*,Remove,PRESERVED,action incident.save,kept registered (internal or still used); still registered (internal or kept)
-M-155,`user.add`,Settings › Users,MOVED,"action user.add · suite roles FAIL, settings PASS",
-M-156,`user.update`,Settings › Users,MOVED,"action user.update · suite roles FAIL, settings PASS",
+M-155,`user.add`,Settings › Users,MOVED,"action user.add · suite roles PASS, settings PASS",
+M-156,`user.update`,Settings › Users,MOVED,"action user.update · suite roles PASS, settings PASS",
 M-157,`settings.set`*,Settings,MOVED,action settings.set,
 M-158,`library.add`*,Roadmap,PRESERVED,action library.add,kept registered (internal or still used); still registered (internal or kept)
 M-159,`migration.rerun`*,Roadmap,PRESERVED,action migration.rerun,kept registered (internal or still used); still registered (internal or kept)
-M-160,`reminder.done`*,My Work,MOVED,action reminder.done,
+M-160,`reminder.done`*,Dashboard,MOVED,action reminder.done,
 M-161,`file.pdf`,Analytics export,MOVED,code: file.pdf (Analytics export / documents) · suite analytics PASS,web/js/screens/DenialCase.js web/js/screens/PeerBrief.js
 M-162,`lauris.observed`,Keep (lead-only),PRESERVED,"action lauris.observed registered with a capability entry · suite bridge-contract PASS, lauris PASS",
 M-163,`portal.observed`,Keep,PRESERVED,"action portal.observed registered with a capability entry · suite bridge-contract PASS, lauris PASS",
@@ -188,7 +188,7 @@ M-186,`request.p2pOutcome`*,Remove,DROPPED-WITH-REASON,,"orphan action with no c
 M-187,`request.p2pRecording`,Denial Intelligence,MOVED,"suite denials PASS, denials-ui PASS, rules PASS",proved by the suite(s) only
 M-188,`request.pdfCopy`,Authorizations,MOVED,"action request.pdfCopy · suite authorizations PASS, flowC PASS",
 M-189,`school.share` / `school.shareUsed`,School Portal + Extension,MOVED,action school.share / school.shareUsed · suite school PASS,
-M-190,`staff.reviewMode`,My Work › Review,MOVED,action staff.reviewMode · suite mywork PASS,
+M-190,`staff.reviewMode`,Documentation › By staff,MOVED,action staff.reviewMode · suite mywork PASS,
 M-191,`compliance.qiCheck`*,Roadmap,PRESERVED,action compliance.qiCheck,kept registered (internal or still used); still registered (internal or kept)
 V-001,Referral form (public),Drop (master M-005),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-002,Family link (public),Drop (master M-009),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
@@ -216,15 +216,15 @@ V-023,Ask FLO (suggested questions),"PORT as ""Ask"" (rename; unsupported → li
 V-024,Export Report,PORT,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
 V-025,Simulated cohort,PORT as `illustrative` dataset,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?section=population&dataset=illustrative
 V-026,Case-derived metrics,PORT → `case_backed` dataset,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?dataset=case
-V-027,Settings,PORT → Settings,MOVED,"route /Settings as dowens · suite roles FAIL, settings PASS",lands on #/Settings
-V-028,Help,Drop or Settings › Help,DROPPED-WITH-REASON,"code: Help in the shell · suite roles FAIL, settings PASS",Help is a rail foot link in the unified shell [docs/UI-KIT.md §4]; not itemised in 00-unified-recommendations decisions
-V-029,Roles permission editor,PORT (permission matrix),MOVED,"route /Settings as dowens · suite roles FAIL, settings PASS",lands on #/Settings?tab=roles
-V-030,Unit rules editor,PORT,MOVED,"route /Settings as dowens · suite roles FAIL, settings PASS",lands on #/Settings?tab=units
-V-031,Reimbursement rates / money exposure,Defer (Tier 3),DROPPED-WITH-REASON,"suite roles FAIL, settings PASS",claims disputes and money exposure are Tier 3 roadmap labels [00 §7 Tier 3]
-V-032,Audit trail,PORT (map to master `events`),MOVED,"route /Settings as dowens · suite roles FAIL, settings PASS",lands on #/Settings?tab=audit
+V-027,Settings,PORT → Settings,MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings
+V-028,Help,Drop or Settings › Help,DROPPED-WITH-REASON,"code: Help in the shell · suite roles PASS, settings PASS",Help is a rail foot link in the unified shell [docs/UI-KIT.md §4]; not itemised in 00-unified-recommendations decisions
+V-029,Roles permission editor,PORT (permission matrix),MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=roles
+V-030,Unit rules editor,PORT,MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=units
+V-031,Reimbursement rates / money exposure,Defer (Tier 3),DROPPED-WITH-REASON,"suite roles PASS, settings PASS",claims disputes and money exposure are Tier 3 roadmap labels [00 §7 Tier 3]
+V-032,Audit trail,PORT (map to master `events`),MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=audit
 V-033,Payer requirement registry,PORT → rules (spec 4.6),MOVED,"state key rules · rules table · suite denials PASS, denials-ui PASS, rules PASS",73 rules
 V-034,Eligibility vs benefits,PORT (Eligibility enhancement),MOVED,"route /Referral as jperez · suite referrals PASS, flowD PASS",lands on #/Referral?id=REF-118&panel=eligibility
-V-035,Alerts,REPLACE with My Work,REPLACED-BY,route /Dashboard as jperez · suite mywork PASS,lands on #/Dashboard
+V-035,Alerts,REPLACE with Dashboard alerts,REPLACED-BY,route /Dashboard as jperez · suite mywork PASS,lands on #/Dashboard
 V-036,History dropdown,REFACTOR (drop voice/agent actors),MOVED,"code: history component · suite authorizations PASS, flowC PASS",web/js/screens/DenialCaseViews.js web/js/screens/UiKit.js
 V-037,Voice agent,Roadmap only,DROPPED-WITH-REASON,,"voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
 V-038,FLO data agent,Roadmap only (conflicts with 9.6),DROPPED-WITH-REASON,,"voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"

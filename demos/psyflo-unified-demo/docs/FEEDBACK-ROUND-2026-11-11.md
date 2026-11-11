@@ -14,6 +14,16 @@ Source: the product owner's walkthrough notes on the direct support and site sup
 | 6 | Deadlines simpler: the date and a yellow warning icon. | Site supervisor | The deadline cell is a date. A yellow icon means due soon, a red one overdue. The reason and its source (officially verified, payer-specific, Harvest-reported, unverified demo assumption) are in the tooltip, not in visible text. |
 | 7 | The supervisor's real job is documentation: daily and initial notes, intake forms, CNAs, squared up with the EHR, checking that staff submit on time, enhancing and approving notes. That holds with or without a prior authorization. The authorization is another part of the patient record. | Site supervisor | **Documentation** is its own tab (notes, intake forms, CNAs, treatment plans, quarterly reports) with filters, an on-time figure and the review drawer. The **patient chart** holds Documentation first and the Authorization as one section. A patient with no authorization is a normal chart. |
 
+## What it looks like now (1440 px, synthetic data)
+
+| Screen | Capture |
+|---|---|
+| Dashboard, direct support (own patients, outstanding items under each, alert icons) | ![Dashboard, direct support](deliverables/img/feedback-dashboard-direct-support.png) |
+| Dashboard, site supervisor (roster, filters, authorization column) | ![Dashboard, supervisor](deliverables/img/feedback-dashboard-supervisor.png) |
+| Documentation, site supervisor (notes and forms, needs review) | ![Documentation](deliverables/img/feedback-documentation-supervisor.png) |
+| Patient chart (Documentation first, Authorization as a section) | ![Patient chart](deliverables/img/feedback-patient-chart.png) |
+| Authorizations, site supervisor (unit bar, deadline date with icon, all filters) | ![Authorizations](deliverables/img/feedback-authorizations-supervisor.png) |
+
 ## The structure decision (the question the owner asked)
 
 Authorizations are not the SRA, and the SRA is not the immediate problem; the patient record is. The rail is now patient-first:
@@ -25,6 +35,10 @@ Authorizations are not the SRA, and the SRA is not the immediate problem; the pa
 - **Patient chart** (reached from the roster): Documentation, then Authorization as a section. Authorization is not required for a chart to exist.
 
 The old My Work sections land on the new screens (`?legacy=1` still opens the old screen): todo and day go to Dashboard, review and team to Documentation, referrals to Referrals.
+
+## Tests
+
+46 of 46 suites pass on the final run (1,518 tests, 1 skipped); see `docs/deliverables/07-test-results.md`. Not yet done: showing these screens to the direct support and site supervisor staff who asked for them.
 
 ## Open questions (also in the decision register)
 

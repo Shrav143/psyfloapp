@@ -1,6 +1,6 @@
 # Safety results · review/05b-safety-test-plan.md
 
-Generated from the run logs in `../../../../../tmp/claude-0/-home-user-psyfloapp/ddfab95c-9126-5a65-8f50-92eb52af205b/scratchpad/results-qa2` by `test/lib/safety-report.mjs`. 100 case ids. PASS 87 · FAIL 11 · NOT-RUNNABLE 2.
+Generated from the run logs in `review/test-results` by `test/lib/safety-report.mjs`. 100 case ids. PASS 97 · FAIL 0 · NOT-RUNNABLE 3.
 
 The "proof" column names the suite and the test title that proves the id; `safety` is test/safety.mjs (QA2), `gates` and `roles` are the existing suites. A FAIL is a product defect against the 05b "Expected" column (see qa2-findings.md for owner and reproduction). The release-blocking set of review/06 §d3 is marked **RB**.
 
@@ -10,15 +10,15 @@ The "proof" column names the suite and the test title that proves the id; `safet
 | WPS-02 | **RB** | PASS | gates › WPS-02 the right Harvest # with the wrong initials on the page is a hard stop (audited), nothing applied [PASS] |  |
 | WPS-03 |  | PASS | safety › WPS-03 a clinician opening the phone app acts as the clinician (own caseload), never as another person [PASS] |  |
 | WPS-04 |  | PASS | safety › WPS-04 a student off the caseload cannot be opened on the phone: "not on your list. Nothing was opened." [PASS] |  |
-| WPS-05 |  | PASS | gates › WPS-05 a timer or dictation for a student off the caseload is refused [PASS] |  |
-| WPS-06 |  | FAIL | safety › WPS-06 direct support opens another staffer's student in Lauris: the panel says the student is not on the case [FAIL] | the panel prints why nothing is offered; it printed: Scribe · Daily progress note Lauris connected Direct support D.W. Harvest #4102 TDT · Daily progress note Draft · not saved green · already in Lauris yellow · Psyflo typed, check it Home NOTE Daily progress  |
+| WPS-05 |  | PASS | gates › WPS-05 a dictation for a student off the caseload is refused [PASS] |  |
+| WPS-06 |  | PASS | safety › WPS-06 direct support opens another staffer's student in Lauris: the panel says the student is not on the case [PASS] |  |
 | WPS-07 |  | PASS | safety › WPS-07 the panel always shows an identity card (initials, Harvest #, school) before it offers anything; a page [PASS] |  |
 | WPS-08 | **RB** | PASS | gates › WPS-08 a portal confirmation needs its request, and an issued reference [PASS] |  |
 | WPS-09 |  | PASS | safety › WPS-09 / DSL-01 the panel is off for an outpatient (#4300) and a SEBS (#5120) record: nothing read, nothing ty [PASS] |  |
 | ICE-01 |  | PASS | safety › ICE-01 a non-scripted screening transcript drafts nothing it was not told; the missing boxes are listed as que [PASS] |  |
 | ICE-02 |  | PASS | unit › Flow A · an empty prior-service outcome blocks and asks [PASS] |  |
 | ICE-03 | **RB** | PASS | safety › ICE-03 M.R. continued stay: every count equals the stored rows (40 daily notes), the constants 21 and 61 do no [PASS]; enhance › counts are computed from rows and open their rows; the "61 notes" figure does not exist [PASS] |  |
-| ICE-04 |  | FAIL | safety › ICE-04 an initial SRA drafted without the school's numbers or the screening facts does not draft criterion 1 ( [FAIL] | criterion 1 was drafted as: "In the last 30 days X.Y. was physically aggressive toward peers on repeated occasions, , lasting ?, moderate intensity; 2 office referrals and 1 day of in-school suspension followed." |
+| ICE-04 |  | PASS | safety › ICE-04 an initial SRA drafted without the school's numbers or the screening facts does not draft criterion 1 ( [PASS] |  |
 | ICE-05 |  | PASS | safety › ICE-05 a discharge draft with no stored plan writes no event as done (no date after today) [PASS] |  |
 | ICE-06 |  | PASS | safety › ICE-06 a dictation that names no objective, time or intervention gets questions, and no objective is inserted [PASS] |  |
 | ICE-07 |  | PASS | unit › Flow C · initial SRA leaves criterion 3 blank when 1 and 2 are met, and never drafts trauma-informed care [PASS] |  |
@@ -54,14 +54,14 @@ The "proof" column names the suite and the test title that proves the id; `safet
 | URA-02 | **RB** | PASS | roles › anonymous: /api/state, /api/do (admin and plain actions), /files and the roster [PASS] |  |
 | URA-03 |  | PASS | safety › URA-03 the administrator opening a continued-stay form in Lauris: "Not permitted. The administrator role has n [PASS] |  |
 | URA-04 |  | PASS | safety › URA-04 the administrator is denied Referrals and Eligibility; Analytics for the administrator is aggregates on [PASS] |  |
-| URA-05 | **RB** | FAIL | safety › URA-05 a role cannot be taken by writing localStorage: with direct support signed in, setting psyflo_user=dowe [FAIL] | localStorage.psyflo_user='dowens' signed the khale page in as dowens (admin): the client mints a session for any roster id with no credential (web/js/api.js _legacyChanged) expected "khale" but got "dowens" |
-| URA-06 | **RB** | FAIL | safety › URA-06 a direct-support user cannot promote themselves: user.update {role:admin} needs the administrator capab [FAIL]; roles › user.update: a role change is presenter-only; designations go through two people [PASS] | user.update by a direct-support presenter session answered 200; khale's role afterwards: admin |
+| URA-05 | **RB** | PASS | safety › URA-05 a role cannot be taken by writing localStorage: with direct support signed in, setting psyflo_user=dowe [PASS] |  |
+| URA-06 | **RB** | PASS | safety › URA-06 a direct-support user cannot promote themselves: user.update {role:admin} needs the administrator capab [PASS]; roles › user.update: a role change is presenter-only; designations go through two people [PASS] |  |
 | URA-07 | **RB** | PASS | roles › cross-origin: JSON only and an origin allow-list on state-changing calls [PASS] |  |
 | URA-08 | **RB** | PASS | roles › anonymous: /api/state, /api/do (admin and plain actions), /files and the roster [PASS] |  |
 | URA-09 |  | PASS | gates › URA note review: not your own note; a decision is write-once; only the assigned reviewer or a supervisor [PASS] |  |
-| URA-10 | **RB** | FAIL | safety › URA-10 / SVR-09 a direct-support browser session is never a presenter: after a page reload it holds no demo co [FAIL]; gates › presenter actions are refused without presenter mode; the demo reply is recorded as simulated with a demo refe [PASS] | after one reload the direct-support session was presenter=true / demo.advanceDay answered 200 in 3 of 3 attempts [{"pres":true,"adv":200,"reply":200},{"pres":true,"adv":200,"reply":200},{"pres":true,"adv":200,"reply":200}] (web/js/api.js init re-signs every st |
-| URA-11 |  | FAIL | safety › URA-11 a guardian page needs its link: with no session and no token, #/ParentProgress?c=DW shows no child — a  [FAIL] | a child's progress is served to a browser that holds no link: "Harvest Outreach Center English Español Checklist How M.R. is doing With Harvest since Feb 9 · plain words, no scores Good days at school Going up M.R.'s daily " |
-| URA-12 |  | PASS | gates › WPS-05 a timer or dictation for a student off the caseload is refused [PASS] |  |
+| URA-10 | **RB** | PASS | safety › URA-10 / SVR-09 a direct-support browser session is never a presenter: after a page reload it holds no demo co [PASS]; gates › presenter actions are refused without presenter mode; the demo reply is recorded as simulated with a demo refe [PASS] |  |
+| URA-11 |  | PASS | safety › URA-11 a guardian page needs its link: with no session and no token, #/ParentProgress?c=DW shows no child [PASS] |  |
+| URA-12 |  | PASS | gates › WPS-05 a dictation for a student off the caseload is refused [PASS] |  |
 | URA-13 |  | PASS | roles › routes: every registry route has a capability entry; each role opens exactly what the matrix allows [PASS] |  |
 | PDU-01 |  | PASS | gates › PDU-01 the decision clock is "Day N" with the configured window and a source; the date comes from the rules ta [PASS]; clock › PDU-01/06 decision clock: "Day N", follow-up on day 10, overdue only after the configured window; each number  [PASS] |  |
 | PDU-02 |  | PASS | clock › PDU-02 an information request that is not answered becomes "missed" (no 08:40 fudge); the reply-due time is sh [PASS] |  |
@@ -76,16 +76,16 @@ The "proof" column names the suite and the test title that proves the id; `safet
 | IIU-04 |  | PASS | gates › IIU-03/04/05/06 invalid units, dates and results are refused [PASS] |  |
 | IIU-05 |  | PASS | gates › IIU-03/04/05/06 invalid units, dates and results are refused [PASS] |  |
 | IIU-06 |  | PASS | gates › IIU-03/04/05/06 invalid units, dates and results are refused [PASS] |  |
-| IIU-07 |  | FAIL | safety › IIU-07 an authorization that is used up (65 of 65) carries ONE exhaustion date that is not in the future — T.N [FAIL] | T.N. has used 65 of 65 units today (2026-10-29) but the authorization says it is exhausted on 2026-11-24 |
+| IIU-07 |  | PASS | safety › IIU-07 an authorization that is used up (65 of 65) carries ONE exhaustion date that is not in the future [PASS] |  |
 | IIU-08 |  | PASS | safety › IIU-08 D.W.'s early-discharge dates agree across the authorization transition, the drafted discharge and the L [PASS] |  |
 | IIU-09 |  | PASS | gates › IIU-09 units must follow the recorded direct time: a note with 3 units on 100 minutes is flagged for review [PASS] |  |
-| IIU-10 |  | PASS | safety › IIU-10 time blocks marked not direct (lunch, transport) never count as direct time [PASS] |  |
-| IIU-11 |  | FAIL | safety › IIU-11 the mock Lauris warns or refuses a daily note when no units are available (T.N. 0 left) or after the au [FAIL] | Lauris processed a note with 0 units available: /consumers/3402?tab=active&processed=7052 |
+| IIU-10 |  | NOT-RUNNABLE | removed by feedback (Nov 11): Psyflo no longer times sessions or records time blocks, so there is no non-direct time to exclude |  |
+| IIU-11 |  | PASS | safety › IIU-11 the mock Lauris warns or refuses a daily note when no units are available (T.N. 0 left) or after the au [PASS] |  |
 | EXA-01 |  | PASS | s4 › S4[scenario] · 5 missing evidence is a list, not a sentence: every gap that lacks a stored record prints "Evid [PASS] |  |
-| EXA-02 |  | FAIL | safety › EXA-02 the renewal due date follows the rule (end date minus 14 business days), not the end date itself — the  [FAIL] | the renewal is "Renew by Nov 13" but the rule (14 business days before Nov 13) gives Oct 26 |
+| EXA-02 |  | PASS | safety › EXA-02 the renewal due date follows the rule (end date minus 14 business days), not the end date itself [PASS] |  |
 | EXA-03 |  | PASS | safety › EXA-03 an exhausted authorization (T.N.) says service continues unpaid or that no units are left, with a date  [PASS] |  |
 | EXA-04 |  | PASS | clock › EXA-04 appeal window: computed from the notice date (60 days, unverified, confirm on the letter); closed after [PASS] |  |
-| EXA-05 |  | PASS | safety › EXA-05 an eligibility re-check that is due appears in My Work (Do next) once the recheck interval has passed [PASS] |  |
+| EXA-05 |  | PASS | safety › EXA-05 an eligibility re-check that is due appears on the patient row of the Dashboard once the recheck interv [PASS] |  |
 | EXA-06 |  | NOT-RUNNABLE | safety › EXA-06 services after a lapse of more than 31 days are flagged for discharge review — NOT-RUNNABLE: the 31-day [NOT-RUNNABLE] |  |
 | DSL-01 |  | PASS | safety › WPS-09 / DSL-01 the panel is off for an outpatient (#4300) and a SEBS (#5120) record: nothing read, nothing ty [PASS] |  |
 | DSL-02 |  | PASS | roles › service line: outpatient (P.G., R-0377) never appears in the staff state [PASS] |  |
@@ -100,11 +100,11 @@ The "proof" column names the suite and the test title that proves the id; `safet
 | SVR-02 | **RB** | PASS | safety › SVR-02 no "faxed" or "sent" event exists unless the Send stub ran and returned a reference: overdue notice, in [PASS] |  |
 | SVR-03 |  | PASS | safety › SVR-03 the DMAS lookup page says it is a mock; the portals (Availity, state incident portal) are labelled as m [PASS] |  |
 | SVR-04 |  | PASS | safety › SVR-04 the "How the data gets in" text actually served claims no AI rewrite, OCR read-back, Sfax API or Availi [PASS] |  |
-| SVR-05 |  | FAIL | safety › SVR-05 the speech-to-text control says where the audio goes and that the data is synthetic, before any microph [FAIL] | a synthetic-data warning is missing on the microphone prompt and on the phone screen: "Kayla · ES-1 MR M.R. Harvest # 3310 · Campbell ES-1 · grade 2 Change Say what happened What happened Use the microphone? Your browser turns speech into text. In some browser |
+| SVR-05 |  | PASS | safety › SVR-05 the speech-to-text control says where the audio goes and that the data is synthetic, before any microph [PASS] |  |
 | SVR-06 | **RB** | PASS | analytics › every selector result and panel carries one provenance tag, and the baseline is labelled "Sample data, illustr [PASS]; s6 › S6[scenario] · 4b earlier views: the seeded baseline is labelled "Sample data, illustrative" (never "Harvest's [PASS] |  |
 | SVR-07 |  | PASS | safety › SVR-07 no stored credentials, tokens or unattended payer or Lauris sessions: no secret literals, no browser au [PASS] |  |
 | SVR-08 |  | PASS | bridge-contract › the bridge source: message shapes, origin checks, no clicks, no background fetch to Lauris, same copy in exten [PASS] |  |
-| SVR-09 |  | FAIL | safety › SVR-09 demo controls (reply, advance, reset) are hidden from direct support in the UI and refused by the serve [FAIL]; roles › presenter controls need presenter mode, not only a role [PASS] | no demo controls on the page expected 0 but got 6 |
+| SVR-09 |  | PASS | safety › SVR-09 demo controls (reply, advance, reset) are hidden from direct support in the UI and refused by the serve [PASS]; roles › presenter controls need presenter mode, not only a role [PASS] |  |
 | SVR-10 |  | NOT-RUNNABLE | v3 only (PSY.submit5): the unified build has no such entry point; the equivalent MCS-05 (Send refused while unsigned) is proved by gates |  |
 
-Release-blocking failures: URA-05, URA-06, URA-10.
+Release-blocking failures: none.

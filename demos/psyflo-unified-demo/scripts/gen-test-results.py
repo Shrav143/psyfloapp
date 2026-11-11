@@ -24,7 +24,7 @@ for x in sorted(suites, key=lambda x: x['name']):
     c = x['counts']; a(f"| {x['name']} | {x['status']} | {c['pass']} | {c['fail']} | {c['skip']} | {secs(x['durationMs'])} |")
 a('')
 a('## 2. Safety cases\n')
-if m: a(f"`review/qa/safety-results.md`: **{m.group(1)} case ids** from `review/05b-safety-test-plan.md`: PASS {m.group(2)}, FAIL {m.group(3)}, NOT-RUNNABLE {m.group(4)}. NOT-RUNNABLE cases name the reason (a Track Time case was removed by the Nov 11 feedback; the others need a real device or a real payer).\n")
+if m: a(f"`review/qa/safety-results.md`: **{m.group(1)} case ids** from `review/05b-safety-test-plan.md`: PASS {m.group(2)}, FAIL {m.group(3)}, NOT-RUNNABLE {m.group(4)}. The three NOT-RUNNABLE cases each name the reason: IIU-10 was removed with Track Time (Nov 11 feedback); EXA-06 is a rule that is displayed text only; SVR-10 is a v3-only entry point whose equivalent is proved elsewhere.\n")
 a('## 3. Parity (nothing silently dropped)\n')
 a('`review/qa/parity-results.csv` has one row per feature of the master demo and the v3 reference: ' + ', '.join(f"{k} {v}" for k, v in sorted(pc.items())) + f" (total {len(parity)}). `docs/deliverables/02-feature-preservation-matrix.md` is generated from it. Rows for Track Time are DROPPED-WITH-REASON (feedback Nov 11); the My Work rows are MOVED to Dashboard and Documentation.\n")
 a('## 4. What this round changed in the tests (Nov 11 feedback)\n')

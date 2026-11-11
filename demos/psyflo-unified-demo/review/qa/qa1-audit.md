@@ -1,6 +1,6 @@
 # Interaction audit (QA1)
 
-Controls swept: 1427 on 175 targets. NAVIGATED 586 · VANISHED 313 · DOM 273 · DETAIL 99 · CLOSE 77 · NO-EFFECT-ALLOWED 23 · POPUP 21 · STATE 12 · TYPED 6 · FILE-CHOOSER 5 · SKIPPED 5 · DISABLED-EXPLAINED 4 · TOAST-ONLY 1 · FOCUS-ONLY 1 · SCROLL 1
+Controls swept: 1427 on 175 targets. NAVIGATED 587 · VANISHED 313 · DOM 273 · DETAIL 99 · CLOSE 77 · NO-EFFECT-ALLOWED 23 · POPUP 21 · STATE 11 · TYPED 6 · FILE-CHOOSER 5 · SKIPPED 5 · DISABLED-EXPLAINED 4 · TOAST-ONLY 1 · FOCUS-ONLY 1 · SCROLL 1
 
 ## Per role
 
@@ -157,7 +157,7 @@ Controls swept: 1427 on 175 targets. NAVIGATED 586 · VANISHED 313 · DOM 273 ·
 | school · ReferralSent (390) | school | 4 |  |  |  |  | 1 |  | 2 |  |  |  | 1 |  |  |  |  |
 | signed out · Login | signed-out | 5 |  |  |  | 1 |  |  | 4 |  |  |  |  |  |  |  |  |
 | signed out · WhereThingsLive | signed-out | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| panel jperez · home (400) | jperez | 7 |  |  |  | 4 |  |  | 1 |  | 1 |  |  |  |  | 1 |  |
+| panel jperez · home (400) | jperez | 7 |  |  |  | 4 |  |  | 2 |  | 1 |  |  |  |  |  |  |
 | panel jperez · home (400) [sections open] | jperez | 26 |  |  |  |  |  |  | 24 |  | 2 |  |  |  |  |  |  |
 | panel khale · home (direct support) (400) | khale | 4 |  |  |  | 2 |  |  | 1 |  | 1 |  |  |  |  |  |  |
 | panel khale · home (direct support) (400) [sections open] | khale | 6 |  |  |  |  |  |  | 6 |  |  |  |  |  |  |  |  |
@@ -186,7 +186,7 @@ Controls swept: 1427 on 175 targets. NAVIGATED 586 · VANISHED 313 · DOM 273 ·
 | panel jperez · authorizations (400) | jperez | 6 |  |  |  | 3 |  |  | 2 |  | 1 |  |  |  |  |  |  |
 | panel jperez · authorizations (400) [sections open] | jperez | 6 |  |  |  |  |  |  | 4 |  | 2 |  |  |  |  |  |  |
 | panel khale · screening (direct support: not offered) (400) | khale | 1 |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |  |
-| panel jperez · T.W. screening (400) | jperez | 7 |  |  |  | 1 |  |  |  |  |  |  |  | 3 |  | 2 | 1 |
+| panel jperez · T.W. screening (400) | jperez | 7 |  |  |  | 1 |  |  |  |  |  |  |  | 2 |  | 3 | 1 |
 | panel jperez · T.W. screening (400) [sections open] | jperez | 5 |  | 4 |  |  |  |  | 1 |  |  |  |  |  |  |  |  |
 | panel jperez · T.W. CNA (400) | jperez | 8 |  |  |  | 7 |  |  |  |  |  |  |  |  |  | 1 |  |
 | panel jperez · T.W. CNA (400) [sections open] | jperez | 1 |  |  |  |  |  |  | 1 |  |  |  |  |  |  |  |  |
