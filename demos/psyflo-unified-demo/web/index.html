@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Psyflo × Harvest</title>
+<meta name="theme-color" content="#151B24">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<style>
+/* Demo shell: a thin navy bar over product screens that keep their own look. */
+html,body{min-height:100%}
+body{background:#F8F6F2;color:#151B24;margin:0;font-family:'DM Sans',system-ui,sans-serif}
+#bar{position:sticky;top:0;z-index:50;background:#151B24;color:#F8F6F2;display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:13px;flex-wrap:wrap}
+#bar b{font-weight:600}
+#bar .hint{color:#8E99A6;font-size:12px}
+#bar button,#bar select,#bar .bb{font:inherit;font-size:13px;min-height:34px;border-radius:8px;border:1px solid #3C4756;background:#222A35;color:#F8F6F2;padding:0 11px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+#bar button:hover,#bar .bb:hover{background:#2C3644;color:#fff}
+#bar select{max-width:34vw}
+#bar .sp{flex:1}
+#bar .who{color:#C9D1D6;font-size:12px}
+#bar :focus-visible{outline:2px solid #5FC0BE;outline-offset:2px}
+.sr{position:absolute;left:-9999px}
+#stage{min-height:calc(100vh - 48px)}
+#stage.phone{background:#DEDAD3;padding:24px 0 40px;display:flex;justify-content:center}
+#stage.phone #root{width:390px;border-radius:36px;border:10px solid #151B24;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.18);background:#F8F6F2;align-self:flex-start}
+#stage.msg{display:flex;justify-content:center;padding:60px 16px}
+.denied{max-width:520px;background:#fff;border:1px solid #E6E1D9;border-radius:12px;padding:24px 28px}
+.denied h1{font-size:22px;margin:0 0 8px}
+#drawer{position:fixed;right:0;top:0;bottom:0;width:min(440px,100vw);background:#fff;color:#151B24;z-index:70;box-shadow:-8px 0 30px rgba(0,0,0,.2);padding:52px 24px 24px;overflow:auto;white-space:pre-line;font-size:14px;line-height:1.55}
+#drawer h2{margin:0 0 12px;font-size:16px}
+#drawer .x{position:absolute;top:12px;right:16px;font:inherit;border:1px solid #D9D4CC;background:#fff;border-radius:8px;min-height:36px;padding:0 12px;cursor:pointer}
+#drawer[hidden],#modal[hidden]{display:none}
+#modal{position:fixed;inset:0;background:rgba(21,27,36,.45);z-index:80;display:flex;align-items:center;justify-content:center;padding:16px}
+#modal .mbox{background:#fff;border-radius:14px;max-width:560px;width:100%;padding:22px 24px;max-height:90vh;overflow:auto;font-size:14px;line-height:1.5}
+#modal h2{margin:0 0 8px;font-size:18px}
+.mbtn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:8px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;border:1px solid #D9D4CC;background:#fff;color:#151B24;text-align:left}
+.mbtn.p{background:#217A78;color:#fff;border-color:#217A78}
+#toasts{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:#151B24;color:#fff;border-radius:10px;padding:10px 16px;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.25);max-width:min(560px,92vw)}
+.toast.err{background:#8A2E1C}
+pre.err{padding:20px;color:#8A2E1C;white-space:pre-wrap}
+@media (max-width:1560px){#bar .hint{display:none}}
+@media (max-width:700px){#bar .hint,#bar .who{display:none}#stage.phone{padding:0;background:#F8F6F2}#stage.phone #root{width:100%;border:0;border-radius:0;box-shadow:none}}
+@media (prefers-reduced-motion:no-preference){#root{animation:fade .16s ease}}
+@keyframes fade{from{opacity:.5}to{opacity:1}}
+</style>
+<style id="scrcss"></style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="stage"><div id="root"><div style="padding:40px;color:#525B66">Loading the demo…</div></div></div>
+<aside id="drawer" hidden><button class="x" id="close">Close</button><h2 id="dtitle"></h2><div id="dtext"></div></aside>
+<div id="modal" hidden></div>
+<div id="toasts" aria-live="polite"></div>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

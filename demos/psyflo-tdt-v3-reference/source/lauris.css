@@ -1,0 +1,273 @@
+/* ===== Lauris Online (the EHR) + the Psyflo extension panel. Injected into every Lauris screen. ===== */
+.psy-root{margin:0;background:#fff;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45;height:100%}
+.psy-root *{box-sizing:border-box}
+.psy-root [data-go],.psy-root [data-act]{cursor:pointer}
+/* ---- Lauris chrome ---- */
+.lz{display:flex;flex-direction:column;height:100%;background:#fff;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#222}
+.lz-top{flex:0 0 auto;background:#2F3A4A;color:#fff;padding:9px 16px;display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px}
+.lz-top .mk{color:#E0A030}
+.lz-top .rt{margin-left:auto;font-weight:400;font-size:11px;color:#C8CFD8;display:flex;gap:14px;align-items:center}
+.lz-top .rt b{font-weight:600;color:#fff}
+.lz-body{flex:1;display:flex;min-height:0}
+.lz-nav{flex:0 0 170px;background:#2F3A4A;padding:6px 0;overflow:auto;display:flex;flex-direction:column}
+.lnav{display:flex;align-items:center;gap:9px;padding:9px 14px;font-size:12.5px;color:#C8CFD8;text-decoration:none;cursor:pointer;line-height:1.25}
+.lnav:hover{background:#38455A;color:#fff}
+.lnav.on{background:#3C4756;color:#fff;border-left:3px solid #E0A030;padding-left:11px}
+.lnav .b{margin-left:auto;background:#C2410C;color:#fff;border-radius:999px;font-size:10px;padding:1px 6px;font-weight:700}
+.lnav-sep{border-top:1px solid #46525F;margin:8px 0}
+.lz-main{flex:1;min-width:0;overflow:auto;padding:14px 20px 28px;background:#EEF0F3}
+.ef{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#222}
+.ef label,.lz-main label{display:block;font-size:11px;color:#666;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.ef .in,.lz-main .in{border:1px solid #C9CDD3;background:#fff;padding:6px 8px;border-radius:3px;min-height:30px}
+.in.g{background:#E6F4EA}
+.in.a{background:#FFF8E6;border-color:#E8C56A}
+.lcard{background:#fff;border:1px solid #D5D9DF;border-radius:4px}
+.ltabs{display:flex;gap:18px;margin:8px 0 12px;border-bottom:1px solid #D5D9DF}
+.ltab{font-size:12.5px;color:#555;padding:8px 0;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;text-decoration:none}
+.ltab:hover{color:#111}
+.ltab.on{color:#222;font-weight:700;border-bottom-color:#E0A030}
+.lt{width:100%;border-collapse:collapse;background:#fff;font-size:13px}
+.lt th{background:#E9ECF0;text-align:left;font-weight:700;font-size:12px;padding:9px 12px;border-bottom:1px solid #D5D9DF;color:#333}
+.lt td{padding:10px 12px;border-bottom:1px solid #E7E9ED;vertical-align:top}
+.lt tr:last-child td{border-bottom:0}
+.lt tr.hov:hover td{background:#F6F8FB}
+.lk{color:#1F64BE;font-weight:700;cursor:pointer;text-decoration:none}
+.lk:hover{text-decoration:underline}
+.lk.warn{color:#C2410C}
+.lb{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #B8BEC7;border-radius:3px;padding:7px 14px;font:inherit;font-size:13px;font-weight:700;color:#1F2A3A;cursor:pointer}
+.lb:hover{background:#F2F4F7}
+.lb.pri{background:#1F4E8C;border-color:#1F4E8C;color:#fff}.lb.pri:hover{background:#19407A}
+.lb[disabled]{opacity:.55;cursor:default}
+.lh1{font-size:15px;font-weight:700;color:#1F3B6B;margin:0 0 10px}
+.lmuted{color:#6B7280;font-size:12px}
+.lsel{border:1px solid #C9CDD3;background:#fff;padding:6px 8px;border-radius:3px;font:inherit;min-height:30px;color:#222;width:100%}
+/* ---- extension panel (Psyflo) ---- */
+.xp{flex:0 0 400px;width:400px;overflow:hidden;border-left:1px solid #D9D4CC;background:#fff;min-width:0;transition:flex-basis .4s cubic-bezier(.2,.8,.2,1),opacity .25s;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;color:#151B24}
+.xp-in{width:400px;height:100%;display:flex;flex-direction:column;min-height:0}
+.xp-h{flex:0 0 auto;background:#151B24;color:#fff;padding:12px 14px 12px 16px;display:flex;align-items:center;gap:12px}
+.xp-h svg{flex:0 0 78px;width:78px;height:26px}
+.xp-ctx{flex:1;min-width:0;font-size:12px;color:#C9D1D6;line-height:1.3}
+.xp-x{flex:0 0 28px;width:28px;height:28px;border:0;border-radius:7px;background:transparent;color:#C9D1D6;font-size:18px;line-height:1;cursor:pointer;padding:0}
+.xp-x:hover{background:#222A35;color:#fff}
+.xp-tabs{flex:0 0 auto;display:flex;border-bottom:1px solid #E6E1D9;background:#fff}
+.xp-tabs button{flex:1;border:0;background:transparent;font:inherit;font-size:13px;font-weight:600;color:#525B66;padding:11px 6px 10px;border-bottom:2px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.xp-tabs button:hover{color:#151B24;background:#FAF8F4}
+.xp-tabs button.on{color:#151B24;border-bottom-color:#217A78}
+.xp-tabs .n{background:#F0B44C;color:#151B24;border-radius:999px;font-size:11px;font-weight:700;min-width:18px;height:18px;padding:0 5px;display:inline-flex;align-items:center;justify-content:center}
+.xp-body{flex:1;min-height:0;overflow:auto;padding:12px 16px;display:flex;flex-direction:column;gap:12px}
+.xp-body[hidden]{display:none}
+.xp-foot{flex:0 0 auto;border-top:1px solid #E6E1D9;background:#F8F6F2;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.xp-foot .live{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#525B66;font-weight:600;white-space:nowrap}
+.xp-foot .live:before{content:"";width:8px;height:8px;border-radius:50%;background:#2F8F5B;animation:xplive 1.6s infinite}
+.xp-foot .live.off:before{background:#B8B2A7;animation:none}
+@keyframes xplive{0%{box-shadow:0 0 0 0 rgba(47,143,91,.55)}100%{box-shadow:0 0 0 7px rgba(47,143,91,0)}}
+.xp-open{margin-left:auto;display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 14px;border-radius:8px;border:1px solid #217A78;background:#fff;color:#15605E;font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.xp-open:hover{background:#217A78;color:#fff}
+/* panel building blocks (use these inside the Notes / Time / Review bodies) */
+.xp .cap,.xcap{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600}
+.xp .xcard{border:1px solid #E6E1D9;border-radius:10px;padding:10px 12px;background:#F8F6F2}
+.xp .xcard.w{background:#fff}
+.xp .xcard.t{border-color:#217A78;background:#F2F9F8}
+.xp .xcard.a{border-color:#F0B44C;background:#FFFDF7}
+.xp .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:0 14px;border-radius:8px;font:inherit;font-weight:600;font-size:13px;cursor:pointer;text-decoration:none;border:1px solid transparent;white-space:nowrap}
+.xp .btn.p{background:#217A78;color:#fff}.xp .btn.p:hover{background:#15605E}
+.xp .btn.o{background:#fff;color:#151B24;border-color:#D9D4CC}.xp .btn.o:hover{background:#F3F0EA}
+.xp .btn.s{min-height:32px;padding:0 11px;font-size:12px}
+.xp .btn[disabled]{opacity:.55;cursor:default}
+.xp .chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+.xp .chip.r{background:#FBE9E4;color:#8A2E1C}.xp .chip.y{background:#FCEFD0;color:#6F4A05}.xp .chip.g{background:#DDF1EF;color:#15605E}.xp .chip.n{background:#EEEBE5;color:#3E4652}
+.xp .tog{border:1px solid #D9D4CC;background:#fff;border-radius:8px;padding:0 10px;min-height:34px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;color:#151B24}
+.xp .tog.on{background:#151B24;color:#fff;border-color:#151B24}
+.xp .ck{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;padding:5px 0}
+.xp .ck svg{flex:0 0 16px;margin-top:1px}
+.xp .mark{background:#FBE9E4;color:#8A2E1C;border-radius:3px;padding:0 3px;font-weight:600}
+.xp .stamp{display:grid;grid-template-columns:104px minmax(0,1fr) 44px;gap:8px;font-size:12px;padding:5px 0;border-top:1px solid #EFEBE4;align-items:start}
+.xp .stamp>div{min-width:0}
+.xp .sec{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #EFEBE4;font-size:12.5px}
+.xp .sec b{font-weight:600;flex:1}
+.xp .sec .chip{white-space:normal;text-align:right;max-width:60%}
+.xp .fld{width:100%;font:inherit;font-size:13px;border:1px solid #C9CDD3;border-radius:8px;padding:8px 10px;background:#fff;color:#151B24;min-height:36px}
+.xp textarea.fld{min-height:76px;resize:vertical}
+.xp .tx{font-size:13px;line-height:1.55}
+.xp .tx .mic{display:inline-block;width:8px;height:8px;border-radius:50%;background:#C2410C;margin-right:6px}
+
+/* ---- the two big buttons (Scribe, Track time) ---- */
+.xq{flex:0 0 auto;display:flex;gap:10px;padding:12px 14px;background:#F8F6F2;border-bottom:1px solid #E6E1D9}
+.xq-b{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:10px;min-height:66px;padding:9px 12px;border-radius:14px;border:2px solid #217A78;background:#fff;color:#151B24;text-align:left;cursor:pointer;font:inherit}
+.xq-b:hover{background:#F2F9F8}
+.xq-b .ic{flex:0 0 38px;height:38px;border-radius:50%;background:#217A78;color:#fff;display:inline-flex;align-items:center;justify-content:center}
+.xq-b .tx{min-width:0}
+.xq-b b{display:block;font-size:15px;line-height:1.2}
+.xq-b small{display:block;font-size:12px;color:#525B66;line-height:1.3;margin-top:2px}
+.xq-b.rec{border-color:#C2410C;background:#FFF5F1}.xq-b.rec .ic{background:#C2410C;animation:xqpulse 1.4s infinite}
+.xq-b.done{background:#F2F9F8}
+.xq-b.time{border-color:#B9541F}.xq-b.time .ic{background:#B9541F}.xq-b.time:hover{background:#FFF8F2}
+.xq-b.time.run{border-color:#B9541F;background:#FFF1E6}.xq-b.time.run .ic{animation:xqpulse 1.4s infinite}
+@keyframes xqpulse{0%{box-shadow:0 0 0 0 rgba(194,65,12,.45)}100%{box-shadow:0 0 0 9px rgba(194,65,12,0)}}
+/* ---- Scribe box (top of the Notes tab) ---- */
+.xs{border:1px solid #E6E1D9;border-radius:12px;padding:12px 14px;background:#fff;flex:0 0 auto}
+.xs.live{border-color:#C2410C;background:#FFFCFA}
+.xs.done{border-color:#217A78;background:#F2F9F8}
+.xs-top{display:flex;align-items:center;gap:9px;font-size:14px}
+.xs-top b{flex:1}
+.xs-t{font-variant-numeric:tabular-nums;color:#C2410C;font-weight:700}
+.xs-dot{width:10px;height:10px;border-radius:50%;background:#C2410C;animation:xqpulse 1.2s infinite}
+.xs-mic{color:#217A78;display:inline-flex}
+.xs-ok{width:22px;height:22px;border-radius:50%;background:#217A78;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.xs-spin{width:16px;height:16px;border-radius:50%;border:2px solid #CFE3E2;border-top-color:#217A78;animation:xsspin .8s linear infinite}
+@keyframes xsspin{to{transform:rotate(360deg)}}
+.xs-foot{font-size:12.5px;color:#525B66;line-height:1.5}
+.xs-hint{margin:8px 0 0;padding:0 0 0 18px;font-size:12.5px;color:#525B66;line-height:1.55}
+.xs-left{margin-top:8px;font-size:12.5px;color:#6F4A05;background:#FCEFD0;border-radius:8px;padding:7px 10px}
+.xs-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.xs-tx{max-height:230px;overflow:auto;margin-top:10px;border-top:1px solid #EFEBE4;padding-top:6px}
+.xs-l{padding:6px 0;border-bottom:1px solid #F4F1EC}
+.xs-l:last-child{border-bottom:0}
+.xs-h{display:flex;gap:8px;align-items:baseline;font-size:11px}
+.xs-h b{text-transform:uppercase;letter-spacing:.04em;font-weight:700;color:#217A78}
+.xs-h b.g{color:#B9541F}.xs-h b.y{color:#525B66}
+.xs-h span{color:#8E99A6}
+.xs-l p{margin:2px 0 0;font-size:13px;line-height:1.5}
+.xp-foot .live.ready:before{background:#B8B2A7;animation:none}
+/* ---- Lauris form kit (Online Forms Entry look) ---- */
+.lf-who{font-size:13px;margin:0 0 10px;color:#333}
+.lf-who b{color:#1F3B6B;font-size:15px}
+.lf-chip{display:inline-block;background:#FCEFD0;color:#6F4A05;border-radius:999px;padding:1px 9px;font-size:11.5px;font-weight:700;margin-left:6px}
+.lf{background:#fff;border:1px solid #D5D9DF;border-radius:4px;padding:16px 22px 22px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#222;max-width:1000px}
+.lf-top{display:flex;align-items:flex-start}
+.lf-crumb{font-size:12px;color:#666}
+.lf-logo{margin-left:auto;font:700 21px Georgia,'Times New Roman',serif;color:#1F3B6B;letter-spacing:.03em;line-height:1;text-align:right;border-bottom:3px solid #B3262E;padding-bottom:3px}
+.lf-logo small{display:block;font:400 10.5px Arial,sans-serif;letter-spacing:0;color:#777;margin-top:3px}
+.lf-title{font-size:17px;font-weight:700;margin:4px 0 8px;color:#111}
+.lf-lead{display:flex;align-items:center;font-weight:700;font-size:13.5px}
+.lf-jump{margin-left:auto;font-weight:400;font-size:11px;color:#444;border:1px solid #C9CDD3;border-radius:5px;padding:3px 8px;background:#F4F5F7}
+.lf-hr{border:0;border-top:2px solid #3B3F46;margin:10px 0 6px}
+.lf-r{display:grid;grid-template-columns:200px minmax(0,1fr);gap:10px;align-items:start;padding:4px 0}
+.lf-r>label{display:flex;gap:6px;align-items:flex-start;margin:0;font-size:13.5px;line-height:1.25;color:#222;text-transform:none;letter-spacing:0}
+.lf-r>label i,.lf-tl i{flex:0 0 13px;width:13px;height:13px;margin-top:2px;background:linear-gradient(#6C98CC,#3F6EA8);border-radius:2px;display:inline-block}
+.lf-req{color:#B3262E;font-style:normal;font-weight:700}
+.lf-in{width:100%;border:1px solid #B9BEC6;border-radius:6px;background:#fff;padding:6px 8px;font:inherit;min-height:30px;color:#222}
+textarea.lf-in{resize:vertical;line-height:1.45;display:block}
+.lf-in.g{background:#E6F4EA}.lf-in.a{background:#FFF8E6;border-color:#E8C56A}.lf-in.u{background:#fff}
+.lf-in:focus{outline:2px solid #4B7BB5;outline-offset:0}
+.lf-hdin{max-width:300px}
+.lf-dx{display:flex;flex-direction:column;gap:5px}
+.lf-h{text-align:center;font-weight:700;font-size:16px;margin:16px 0 4px;cursor:pointer;color:#111;user-select:none}
+.lf-chev{color:#3F6EA8;font-size:12px}
+.lf-sec[hidden]{display:none}
+.lf-c{min-width:0}
+.lf-ck{display:inline-flex;gap:6px;align-items:center;margin:2px 16px 2px 0;font-size:13px;color:#222;text-transform:none;letter-spacing:0;border-radius:4px;padding:1px 3px}
+.lf-ck.a{background:#FFF8E6;box-shadow:0 0 0 1px #E8C56A}
+.lf-note{font-size:12.5px;color:#555;margin:6px 0 2px;line-height:1.45}
+.lf-tb{margin:10px 0 6px}
+.lf-tl{display:flex;gap:6px;align-items:flex-start;font-weight:700;font-size:13.5px;margin-bottom:5px}
+.lf-tw{overflow-x:auto}
+.lf-t{border-collapse:collapse;width:100%;font-size:12.5px}
+.lf-t th{border:1px solid #444;background:#F1F2F4;padding:5px 8px;text-align:left;font-weight:700}
+.lf-t td{border:1px solid #444;padding:0}
+.lf-t td.lf-rl{padding:5px 8px;font-weight:700;width:190px;background:#FAFAFB}
+.lf-cell{border:0;border-radius:0;min-height:30px}
+.lf-sig{margin:8px 0}
+.lf-sh{font-weight:700;font-size:14px;margin:8px 0 2px;color:#111;border-top:1px solid #D5D9DF;padding-top:8px}
+.lf-getsig{color:#B77B12;font-weight:700;text-decoration:underline;cursor:pointer}
+.lf-muted{color:#777;font-size:12px;margin-left:6px}
+.lf-chk{display:flex;flex-direction:column;gap:4px;margin:14px 0 4px;font-size:13px}
+.lf-chk label{display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0;font-size:13px;color:#222;margin:0}
+.lf-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.lf-banner{margin-top:12px;border:1px solid #E7B4A8;background:#FBE9E4;color:#8A2E1C;border-radius:4px;padding:9px 12px;font-size:13px}
+.lf-banner[hidden]{display:none}
+.lf-meter{height:8px;border-radius:99px;background:#EFEBE4;margin-top:8px;overflow:hidden}.lf-meter i{display:block;height:100%;background:#217A78;border-radius:99px}
+.lf-why{margin:8px 0 0;padding:0 0 0 18px;font-size:12.5px;color:#3E4652;line-height:1.5}
+.lf-imp{margin-top:7px;font-size:12px;color:#15605E;background:#F2F9F8;border-radius:6px;padding:5px 8px}
+.lf-ra{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+@media (max-width:1300px){.lf-r{grid-template-columns:150px minmax(0,1fr)}.lf-t td.lf-rl{width:140px}}
+.lf label{text-transform:none;letter-spacing:0;font-size:13.5px;color:#222;margin:0}
+.lf .lf-ck,.lf .lf-chk label{font-size:13px}
+.lf .lf-ck{display:inline-flex;align-items:center;margin:2px 16px 2px 0}
+.lf .lf-chk label{display:flex}
+.lf .lf-r>label{display:flex}
+
+/* ---- round 5: extension states (collapsed pill, sidebar header, focused review) and the Status tab ---- */
+.lz-body{position:relative}
+.xp-ctx{display:flex;flex-direction:column;gap:2px}
+.xp-conn{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#C9D1D6;font-weight:600}
+.xp-conn i{width:7px;height:7px;border-radius:50%;background:#5FC08A;display:inline-block}
+.xp-sub{font-size:12px;color:#fff;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.xp-x{font-size:20px;font-weight:600}
+.xpc{position:absolute;right:16px;bottom:16px;z-index:30;display:flex;flex-direction:column;align-items:flex-start;gap:5px;border:1px solid #2A3340;background:#151B24;color:#fff;border-radius:12px;padding:8px 12px 8px 12px;font-family:'DM Sans',system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 22px rgba(21,27,36,.28);max-width:260px}
+.xpc[hidden]{display:none}
+.xpc:hover{background:#222A35}
+.xpc-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.xpc-row svg{width:58px;height:20px;flex:0 0 58px}
+.xpc-ok{width:18px;height:18px;border-radius:50%;background:#2F8F5B;color:#fff;font-size:11px;display:inline-flex;align-items:center;justify-content:center}
+.xpc-sep{width:1px;height:16px;background:#4A5462}
+.xpc-n{white-space:nowrap;background:#F0B44C;color:#151B24;border-radius:999px;padding:1px 8px;font-size:12px}
+.xpc-n.z{background:transparent;color:#C9D1D6;padding:0}
+.xpc-st{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#C9D1D6;font-weight:600}
+.xpc-st i{width:8px;height:8px;border-radius:50%;background:#9A9388}
+.xpc-st.t-green i{background:#5FC08A}.xpc-st.t-amber i{background:#F0B44C}.xpc-st.t-red i{background:#E26A4F}.xpc-st.t-blue i{background:#7FA6D6}
+/* focused review: covers the Lauris page (not the Lauris menu), with a way back */
+.xf{position:absolute;left:170px;right:0;top:0;bottom:0;z-index:40;background:#FAF8F4;display:flex;flex-direction:column;border-left:1px solid #2A3340;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;color:#151B24;box-shadow:-8px 0 28px rgba(21,27,36,.18)}
+.xf-h{flex:0 0 auto;background:#151B24;color:#fff;display:flex;align-items:center;gap:14px;padding:10px 16px}
+.xf-h svg{flex:0 0 78px;width:78px;height:26px}
+.xf-t{flex:1;min-width:0;display:flex;flex-direction:column}.xf-t b{font-size:15px}.xf-t span{font-size:12px;color:#C9D1D6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xf-back{border:1px solid #4A5462;background:transparent;color:#fff;border-radius:8px;min-height:36px;padding:0 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.xf-back:hover{background:#222A35}
+.xf-b{flex:1;min-height:0;overflow:auto;padding:18px 22px 40px}
+.xf-empty{padding:30px;color:#525B66}
+.xf .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:0 14px;border-radius:8px;font:inherit;font-weight:600;font-size:13px;cursor:pointer;border:1px solid transparent;white-space:nowrap}
+.xf .btn.p{background:#217A78;color:#fff}.xf .btn.p:hover{background:#15605E}
+.xf .btn.o{background:#fff;color:#151B24;border-color:#D9D4CC}.xf .btn.o:hover{background:#F3F0EA}
+.xf .btn.s{min-height:32px;padding:0 11px;font-size:12px}
+.xf .btn[disabled]{opacity:.55;cursor:default}
+.xf textarea,.xf input[type=text]{font:inherit;font-size:13.5px;border:1px solid #C9CDD3;border-radius:8px;padding:8px 10px;background:#fff;color:#151B24;width:100%}
+.xf textarea{min-height:90px;resize:vertical;line-height:1.5}
+/* status tab */
+.sp5{display:flex;flex-direction:column;gap:10px}
+.sp5-line{font-size:12.5px;color:#525B66;line-height:1.45}
+.sp5-hd{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:2px}.sp5-hd b{font-size:13.5px}.sp5-hd span{font-size:11.5px;color:#6B665E}
+.sp5-p{border:1px solid #E6E1D9;border-radius:10px;background:#fff;padding:10px 12px}
+.sp5-pt{display:flex;align-items:baseline;justify-content:space-between}.sp5-pt b{font-size:16px}.sp5-pt span{font-size:11.5px;color:#6B665E}
+.sp5-dl{display:grid;grid-template-columns:88px minmax(0,1fr);gap:4px 10px;margin:8px 0 0;font-size:12.5px;align-items:center}.sp5-dl dt{color:#6B665E}.sp5-dl dd{margin:0;min-width:0}
+.sp5-ar{font-size:11.5px;font-weight:700;color:#8A2E1C;white-space:nowrap}
+.sp5-t{width:100%;border-collapse:collapse;font-size:12.5px}
+.sp5-t th{text-align:left;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#6B665E;font-weight:700;padding:0 0 5px;border-bottom:1px solid #E6E1D9}
+.sp5-t td{padding:5px 0;border-bottom:1px solid #F0ECE5;vertical-align:top}.sp5-t td:first-child{padding-right:8px}
+.sp5-s{display:inline-flex;align-items:center;gap:5px;font-weight:600}
+.sp5-s i{font-style:normal;width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff;background:#9A9388;flex:0 0 16px}
+.sp5-s.t-green{color:#1E5C3C}.sp5-s.t-green i{background:#2F8F5B}.sp5-s.t-amber{color:#6F4A05}.sp5-s.t-amber i{background:#C98A12}.sp5-s.t-red{color:#8A2E1C}.sp5-s.t-red i{background:#B23A22}
+.sp5-s.t-blue{color:#24476E}.sp5-s.t-blue i{background:#3D6EA8}.sp5-s.t-gray{color:#6B665E}
+.sp5-pri{width:100%;min-height:44px!important;font-size:14px!important}
+.sp5-note{font-size:12px;color:#525B66;margin-top:-4px}
+.sp5-sec{display:flex;gap:6px;flex-wrap:wrap}.sp5-sec .btn{flex:1 1 auto;padding:0 8px}
+.sp5-ok{display:flex;gap:8px;align-items:center;font-size:12.5px;color:#1E5C3C;background:#E3F1EA;border-radius:8px;padding:8px 10px}.sp5-ok i{font-style:normal;font-weight:700}
+.sp5-bg{font-size:12.5px;color:#525B66}.sp5-bg summary{cursor:pointer;font-weight:600}.sp5-bgr{padding:4px 0 0 14px}
+/* round 8: role chip in the header, the view dropdown that replaces the tabs, the work area, three buttons */
+.xp-role{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:999px;border:1px solid #3A4A42;background:#222A35;color:#fff;font:inherit;font-size:12px;font-weight:700;letter-spacing:.02em;cursor:pointer}
+.xp-role span{font-size:10px;color:#C9D1D6}
+.xp-role:hover{background:#2B3A33}
+.xp-list{flex:1;min-height:0;display:flex;flex-direction:column}
+.xp-list[hidden]{display:none}
+.xp-vbar{flex:0 0 auto;padding:10px 16px 0;background:#fff}
+.xp-vsel{width:100%;height:38px;border:1px solid #D9D4CC;border-radius:10px;background:#fff;font:inherit;font-size:14px;font-weight:600;color:#151B24;padding:0 10px;cursor:pointer}
+.xp-vsel:focus-visible{outline:2px solid #217A78;outline-offset:1px}
+.xp-work{border-top:0}
+.xq.n3{gap:8px;padding:12px 12px}
+.xq.n3 .xq-b{flex-direction:column;justify-content:center;text-align:center;gap:6px;min-height:84px;padding:10px 6px}
+.xq.n3 .xq-b .ic{flex:0 0 34px;width:34px;height:34px}
+.xq.n3 .xq-b b{font-size:13.5px}
+.xq.n3 .xq-b small{font-size:11.5px}
+.xq-b.enhance{border-color:#3B4FA0}.xq-b.enhance .ic{background:#3B4FA0}.xq-b.enhance:hover{background:#F3F5FC}
+.xq-b.enhance.on{background:#EEF1FB}
+/* round 9: header line for the consumer in context */
+.xp-pt{font-size:13px;color:#fff;font-weight:500;line-height:1.3}
+.xp-pt b{font-weight:700}
+/* round 10: small Track Time control in the footer (left of "Open Psyflo platform") */
+.xp-time{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid #D9D4CC;border-radius:999px;background:#fff;color:#151B24;font:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.xp-time:hover{background:#FFF8F2;border-color:#B9541F}
+.xp-time svg{color:#B9541F}
+.xp-foot .xp-open{margin-left:auto}
+/* round 10: two big buttons (Scribe · Scan & Enhance): keep each label on one line */
+.xq.n2 .xq-b{padding:9px 10px;gap:9px}
+.xq.n2 .xq-b b{white-space:nowrap;font-size:14.5px}
+.xq.n1 .xq-b{justify-content:center}
