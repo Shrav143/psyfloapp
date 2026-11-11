@@ -1,6 +1,6 @@
 # family · PASS
 
-Run 2026-11-11T16-10-48Z · 42806 ms · instance 0 · exit 0
+Run 2026-11-11T18-24-51Z · 56445 ms · instance 2 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -8,6 +8,18 @@ Run 2026-11-11T16-10-48Z · 42806 ms · instance 0 · exit 0
 | PASS | a link for another family sees nothing of T.W. and cannot act on T.W.'s records |  |
 | PASS | a guardian cannot do staff work: send, approve, decide, send a family link, sign for another child |  |
 | PASS | the presenter view of one child is that child: E.C.s guardian sees E.C.s denial and the letter status, never who prepared it |  |
+| PASS | ParentPortal without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child |  |
+| PASS | ParentSign without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child |  |
+| PASS | ParentEnroll without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child |  |
+| PASS | ParentLetters without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child |  |
+| PASS | ParentProgress without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child |  |
+| PASS | ParentQuarterly without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child |  |
+| PASS | ParentSchedule without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child |  |
+| PASS | ParentSurvey without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child |  |
+| PASS | FamilyLink without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child |  |
+| PASS | AppealLetter without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child |  |
+| PASS | a made-up or foreign token is not a page either, and a token never opens another family's child |  |
+| PASS | the presenter's view of a child still works when it is deliberate: dock open, or a staff member signed in in this browser |  |
 | PASS | the checklist home: one h1, landmarks, "N of M done" equals the selector, next step first, no horizontal scroll |  |
 | PASS | language toggle: two buttons of 44 px or more, Español switches the page and marks it lang=es, English switches back |  |
 | PASS | "Call us instead" opens an accessible dialog with the demo number and Escape closes it, focus returns to the button |  |

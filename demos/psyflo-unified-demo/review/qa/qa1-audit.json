@@ -1,0 +1,2733 @@
+{
+ "at": "2026-11-11T18:36:04.336Z",
+ "total": 2891,
+ "outcomes": {
+  "NAVIGATED": 1133,
+  "DOM": 653,
+  "DETAIL": 571,
+  "CLOSE": 319,
+  "SKIPPED": 31,
+  "NO-EFFECT-ALLOWED": 45,
+  "DISABLED-EXPLAINED": 4,
+  "DOWNLOAD": 1,
+  "STATE": 51,
+  "DISABLED-UNEXPLAINED": 3,
+  "POPUP": 52,
+  "TOAST-ONLY": 10,
+  "VANISHED": 2,
+  "FOCUS-ONLY": 1,
+  "SCROLL": 1,
+  "FILE-CHOOSER": 5,
+  "TYPED": 4,
+  "NO-EFFECT": 5
+ },
+ "targets": {
+  "admin · Authorizations": {
+   "role": "admin",
+   "kind": "app",
+   "total": 52,
+   "unique": 52,
+   "counts": {
+    "NAVIGATED": 46,
+    "DOM": 2,
+    "DETAIL": 2,
+    "CLOSE": 1,
+    "SKIPPED": 1,
+    "NO-EFFECT-ALLOWED": 1
+   },
+   "rows": 53,
+   "skipped": ""
+  },
+  "admin · Authorizations [sections open]": {
+   "role": "admin",
+   "kind": "app",
+   "total": 55,
+   "unique": 3,
+   "counts": {
+    "NAVIGATED": 3
+   },
+   "rows": 3,
+   "skipped": ""
+  },
+  "admin · Analytics?section=outcomes": {
+   "role": "admin",
+   "kind": "app",
+   "total": 25,
+   "unique": 25,
+   "counts": {
+    "NAVIGATED": 8,
+    "DETAIL": 20,
+    "CLOSE": 2,
+    "DOM": 9
+   },
+   "rows": 39,
+   "skipped": ""
+  },
+  "admin · Analytics?section=payer": {
+   "role": "admin",
+   "kind": "app",
+   "total": 37,
+   "unique": 37,
+   "counts": {
+    "NAVIGATED": 18,
+    "DETAIL": 20,
+    "CLOSE": 2,
+    "DOM": 11
+   },
+   "rows": 51,
+   "skipped": ""
+  },
+  "admin · Analytics?section=payer [sections open]": {
+   "role": "admin",
+   "kind": "app",
+   "total": 41,
+   "unique": 4,
+   "counts": {
+    "DETAIL": 4
+   },
+   "rows": 4,
+   "skipped": ""
+  },
+  "admin · Analytics?section=population&dataset=illustrative": {
+   "role": "admin",
+   "kind": "app",
+   "total": 25,
+   "unique": 25,
+   "counts": {
+    "NAVIGATED": 11,
+    "DETAIL": 17,
+    "CLOSE": 2,
+    "DOM": 9
+   },
+   "rows": 39,
+   "skipped": ""
+  },
+  "admin · MyWork?section=todo": {
+   "role": "admin",
+   "kind": "app",
+   "total": 7,
+   "unique": 7,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "NAVIGATED": 4,
+    "DOM": 2
+   },
+   "rows": 7,
+   "skipped": ""
+  },
+  "admin · MyWork?section=team": {
+   "role": "admin",
+   "kind": "app",
+   "total": 8,
+   "unique": 8,
+   "counts": {
+    "NAVIGATED": 5,
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 2
+   },
+   "rows": 8,
+   "skipped": ""
+  },
+  "admin · Authorization?id=R-0411": {
+   "role": "admin",
+   "kind": "app",
+   "total": 13,
+   "unique": 13,
+   "counts": {
+    "NAVIGATED": 8,
+    "DETAIL": 3,
+    "CLOSE": 4,
+    "DOM": 3,
+    "DISABLED-EXPLAINED": 1
+   },
+   "rows": 19,
+   "skipped": ""
+  },
+  "admin · Authorization?id=R-0411 [sections open]": {
+   "role": "admin",
+   "kind": "app",
+   "total": 16,
+   "unique": 3,
+   "counts": {
+    "DETAIL": 3
+   },
+   "rows": 3,
+   "skipped": ""
+  },
+  "admin · Authorization?id=R-0402": {
+   "role": "admin",
+   "kind": "app",
+   "total": 19,
+   "unique": 19,
+   "counts": {
+    "NAVIGATED": 10,
+    "DETAIL": 8,
+    "CLOSE": 4,
+    "DOM": 3
+   },
+   "rows": 25,
+   "skipped": ""
+  },
+  "admin · Authorization?id=R-0402 [sections open]": {
+   "role": "admin",
+   "kind": "app",
+   "total": 23,
+   "unique": 4,
+   "counts": {
+    "DETAIL": 3,
+    "NAVIGATED": 1
+   },
+   "rows": 4,
+   "skipped": ""
+  },
+  "admin · DenialIntelligence": {
+   "role": "admin",
+   "kind": "app",
+   "total": 22,
+   "unique": 22,
+   "counts": {
+    "NAVIGATED": 12,
+    "DOM": 10
+   },
+   "rows": 22,
+   "skipped": ""
+  },
+  "admin · DenialIntelligence [sections open]": {
+   "role": "admin",
+   "kind": "app",
+   "total": 24,
+   "unique": 2,
+   "counts": {
+    "NAVIGATED": 2
+   },
+   "rows": 2,
+   "skipped": ""
+  },
+  "admin · DenialCase?id=R-0402&section=decision": {
+   "role": "admin",
+   "kind": "app",
+   "total": 11,
+   "unique": 11,
+   "counts": {
+    "NAVIGATED": 7,
+    "DETAIL": 3,
+    "CLOSE": 4,
+    "SKIPPED": 1,
+    "DOM": 2
+   },
+   "rows": 17,
+   "skipped": ""
+  },
+  "admin · Settings?tab=people": {
+   "role": "admin",
+   "kind": "app",
+   "total": 18,
+   "unique": 13,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "NAVIGATED": 6,
+    "DETAIL": 3,
+    "CLOSE": 3,
+    "DOM": 14
+   },
+   "rows": 27,
+   "skipped": ""
+  },
+  "admin · Settings?tab=roles": {
+   "role": "admin",
+   "kind": "app",
+   "total": 17,
+   "unique": 14,
+   "counts": {
+    "NAVIGATED": 6,
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 7,
+    "DETAIL": 6,
+    "CLOSE": 7,
+    "SKIPPED": 1
+   },
+   "rows": 28,
+   "skipped": ""
+  },
+  "admin · Settings?tab=units": {
+   "role": "admin",
+   "kind": "app",
+   "total": 24,
+   "unique": 12,
+   "counts": {
+    "NAVIGATED": 6,
+    "NO-EFFECT-ALLOWED": 2,
+    "DOM": 10,
+    "DETAIL": 4,
+    "CLOSE": 4
+   },
+   "rows": 26,
+   "skipped": ""
+  },
+  "admin · Settings?tab=rules": {
+   "role": "admin",
+   "kind": "app",
+   "total": 87,
+   "unique": 17,
+   "counts": {
+    "NAVIGATED": 12,
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 12,
+    "DETAIL": 2,
+    "CLOSE": 2
+   },
+   "rows": 29,
+   "skipped": ""
+  },
+  "admin · Settings?tab=audit": {
+   "role": "admin",
+   "kind": "app",
+   "total": 34,
+   "unique": 30,
+   "counts": {
+    "NAVIGATED": 28,
+    "NO-EFFECT-ALLOWED": 1,
+    "DOWNLOAD": 1
+   },
+   "rows": 30,
+   "skipped": ""
+  },
+  "admin · Settings?tab=family": {
+   "role": "admin",
+   "kind": "app",
+   "total": 40,
+   "unique": 34,
+   "counts": {
+    "NAVIGATED": 6,
+    "NO-EFFECT-ALLOWED": 3,
+    "DETAIL": 5,
+    "CLOSE": 5,
+    "DOM": 9,
+    "STATE": 16,
+    "DISABLED-UNEXPLAINED": 3,
+    "DISABLED-EXPLAINED": 1
+   },
+   "rows": 48,
+   "skipped": ""
+  },
+  "admin · Settings?tab=presenter": {
+   "role": "admin",
+   "kind": "app",
+   "total": 19,
+   "unique": 19,
+   "counts": {
+    "NAVIGATED": 16,
+    "NO-EFFECT-ALLOWED": 1,
+    "DETAIL": 1,
+    "CLOSE": 1,
+    "DOM": 1
+   },
+   "rows": 20,
+   "skipped": ""
+  },
+  "admin@analytics-case · Analytics?section=outcomes&dataset=case": {
+   "role": "admin@analytics-case",
+   "kind": "app",
+   "total": 32,
+   "unique": 32,
+   "counts": {
+    "NAVIGATED": 12,
+    "DETAIL": 21,
+    "CLOSE": 3,
+    "SKIPPED": 1,
+    "DOM": 9
+   },
+   "rows": 46,
+   "skipped": ""
+  },
+  "clinician · Referrals": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 28,
+   "unique": 28,
+   "counts": {
+    "NAVIGATED": 21,
+    "DOM": 5,
+    "DETAIL": 1,
+    "CLOSE": 1,
+    "SKIPPED": 1
+   },
+   "rows": 29,
+   "skipped": ""
+  },
+  "clinician · Referrals [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 28,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "clinician · Referral?id=REF-118": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 10,
+   "unique": 10,
+   "counts": {
+    "NAVIGATED": 6,
+    "STATE": 1,
+    "DETAIL": 2,
+    "CLOSE": 6,
+    "SKIPPED": 1,
+    "DOM": 6
+   },
+   "rows": 22,
+   "skipped": ""
+  },
+  "clinician · Referral?id=REF-118 [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 14,
+   "unique": 4,
+   "counts": {
+    "DETAIL": 4
+   },
+   "rows": 4,
+   "skipped": ""
+  },
+  "clinician · Referral?id=REF-121": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 10,
+   "unique": 10,
+   "counts": {
+    "NAVIGATED": 6,
+    "DETAIL": 3,
+    "CLOSE": 6,
+    "SKIPPED": 1,
+    "DOM": 6
+   },
+   "rows": 22,
+   "skipped": ""
+  },
+  "clinician · Referral?id=REF-121 [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 13,
+   "unique": 3,
+   "counts": {
+    "STATE": 1,
+    "NAVIGATED": 2
+   },
+   "rows": 3,
+   "skipped": ""
+  },
+  "clinician · Referral?id=REF-119": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 10,
+   "unique": 10,
+   "counts": {
+    "NAVIGATED": 6,
+    "STATE": 1,
+    "DETAIL": 2,
+    "CLOSE": 6,
+    "SKIPPED": 1,
+    "DOM": 6
+   },
+   "rows": 22,
+   "skipped": ""
+  },
+  "clinician · Referral?id=REF-119 [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 12,
+   "unique": 2,
+   "counts": {
+    "DETAIL": 2
+   },
+   "rows": 2,
+   "skipped": ""
+  },
+  "clinician · Referral?id=REF-117": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 11,
+   "unique": 11,
+   "counts": {
+    "NAVIGATED": 6,
+    "DETAIL": 4,
+    "CLOSE": 6,
+    "SKIPPED": 1,
+    "DOM": 6
+   },
+   "rows": 23,
+   "skipped": ""
+  },
+  "clinician · Referral?id=REF-117 [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 12,
+   "unique": 1,
+   "counts": {
+    "NAVIGATED": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · Referral?id=REF-118&panel=eligibility": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 9,
+   "unique": 9,
+   "counts": {
+    "NAVIGATED": 5,
+    "STATE": 1,
+    "DETAIL": 2,
+    "CLOSE": 6,
+    "SKIPPED": 1,
+    "DOM": 6
+   },
+   "rows": 21,
+   "skipped": ""
+  },
+  "clinician · Referral?id=REF-118&panel=eligibility [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 14,
+   "unique": 5,
+   "counts": {
+    "DETAIL": 4,
+    "NAVIGATED": 1
+   },
+   "rows": 5,
+   "skipped": ""
+  },
+  "clinician · ExtHome": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtScreening": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtCNA": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtISP": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtSRA": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtSignOff": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtDPN": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtWeekly": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtMonthly": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtIncident": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · Authorizations": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 46,
+   "unique": 46,
+   "counts": {
+    "DETAIL": 1,
+    "NAVIGATED": 42,
+    "DOM": 2,
+    "NO-EFFECT-ALLOWED": 1
+   },
+   "rows": 46,
+   "skipped": ""
+  },
+  "clinician · Authorizations [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 49,
+   "unique": 3,
+   "counts": {
+    "NAVIGATED": 3
+   },
+   "rows": 3,
+   "skipped": ""
+  },
+  "clinician · ExtQuarterly": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtCase": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · ExtDischarge": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "clinician · Analytics?section=outcomes&dataset=case": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 29,
+   "unique": 29,
+   "counts": {
+    "NAVIGATED": 7,
+    "DETAIL": 25,
+    "CLOSE": 2,
+    "DOM": 9
+   },
+   "rows": 43,
+   "skipped": ""
+  },
+  "clinician · Analytics?section=outcomes&dataset=illustrative": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 20,
+   "unique": 20,
+   "counts": {
+    "NAVIGATED": 10,
+    "DETAIL": 13,
+    "CLOSE": 2,
+    "DOM": 9
+   },
+   "rows": 34,
+   "skipped": ""
+  },
+  "clinician · Analytics?section=payer&dataset=case": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 36,
+   "unique": 36,
+   "counts": {
+    "NAVIGATED": 17,
+    "DETAIL": 20,
+    "CLOSE": 2,
+    "DOM": 11
+   },
+   "rows": 50,
+   "skipped": ""
+  },
+  "clinician · Analytics?section=payer&dataset=case [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 40,
+   "unique": 4,
+   "counts": {
+    "DETAIL": 4
+   },
+   "rows": 4,
+   "skipped": ""
+  },
+  "clinician · Analytics?section=payer&panel=guidance": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 0,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "clinician · Analytics?section=payer&panel=guidance [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 0,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "clinician · Analytics?section=population&dataset=illustrative": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 24,
+   "unique": 24,
+   "counts": {
+    "NAVIGATED": 10,
+    "DETAIL": 17,
+    "CLOSE": 2,
+    "DOM": 9
+   },
+   "rows": 38,
+   "skipped": ""
+  },
+  "clinician · MyWork?section=todo": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 10,
+   "unique": 10,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "NAVIGATED": 6,
+    "DOM": 3
+   },
+   "rows": 10,
+   "skipped": ""
+  },
+  "clinician · MyWork?section=review": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 13,
+   "unique": 13,
+   "counts": {
+    "NAVIGATED": 3,
+    "NO-EFFECT-ALLOWED": 2,
+    "DOM": 8,
+    "STATE": 1,
+    "DETAIL": 3,
+    "CLOSE": 4
+   },
+   "rows": 21,
+   "skipped": ""
+  },
+  "clinician · MyWork?section=team": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 15,
+   "unique": 15,
+   "counts": {
+    "NAVIGATED": 7,
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 7,
+    "DETAIL": 4,
+    "CLOSE": 10
+   },
+   "rows": 29,
+   "skipped": ""
+  },
+  "clinician · MyWork?section=team [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 15,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "clinician · MyWork?section=referrals": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 9,
+   "unique": 9,
+   "counts": {
+    "NAVIGATED": 6,
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 2
+   },
+   "rows": 9,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0411": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 13,
+   "unique": 13,
+   "counts": {
+    "NAVIGATED": 8,
+    "DETAIL": 3,
+    "CLOSE": 4,
+    "DOM": 3,
+    "POPUP": 1
+   },
+   "rows": 19,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0411 [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 17,
+   "unique": 4,
+   "counts": {
+    "POPUP": 1,
+    "DETAIL": 3
+   },
+   "rows": 4,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0402": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 18,
+   "unique": 18,
+   "counts": {
+    "NAVIGATED": 10,
+    "DETAIL": 7,
+    "CLOSE": 4,
+    "DOM": 3
+   },
+   "rows": 24,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0402 [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 27,
+   "unique": 9,
+   "counts": {
+    "POPUP": 1,
+    "DETAIL": 3,
+    "DOM": 3,
+    "TOAST-ONLY": 1,
+    "NAVIGATED": 1
+   },
+   "rows": 9,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0399": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 20,
+   "unique": 20,
+   "counts": {
+    "NAVIGATED": 8,
+    "DETAIL": 11,
+    "CLOSE": 8,
+    "DOM": 7
+   },
+   "rows": 34,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0399 [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 25,
+   "unique": 5,
+   "counts": {
+    "DETAIL": 5,
+    "CLOSE": 9,
+    "DOM": 4,
+    "TOAST-ONLY": 1
+   },
+   "rows": 19,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0391": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 17,
+   "unique": 17,
+   "counts": {
+    "NAVIGATED": 8,
+    "DETAIL": 8,
+    "CLOSE": 6,
+    "DOM": 8,
+    "TOAST-ONLY": 1
+   },
+   "rows": 31,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0391 [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 27,
+   "unique": 10,
+   "counts": {
+    "POPUP": 1,
+    "DETAIL": 9,
+    "CLOSE": 9,
+    "DOM": 4,
+    "TOAST-ONLY": 1
+   },
+   "rows": 24,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0388": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 15,
+   "unique": 15,
+   "counts": {
+    "NAVIGATED": 10,
+    "DETAIL": 4,
+    "CLOSE": 4,
+    "DOM": 3
+   },
+   "rows": 21,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0388 [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 24,
+   "unique": 9,
+   "counts": {
+    "POPUP": 1,
+    "DETAIL": 3,
+    "DOM": 3,
+    "STATE": 1,
+    "NAVIGATED": 1
+   },
+   "rows": 9,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0384": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 17,
+   "unique": 17,
+   "counts": {
+    "NAVIGATED": 10,
+    "DETAIL": 6,
+    "CLOSE": 4,
+    "DOM": 3
+   },
+   "rows": 23,
+   "skipped": ""
+  },
+  "clinician · Authorization?id=R-0384 [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 23,
+   "unique": 6,
+   "counts": {
+    "POPUP": 1,
+    "DETAIL": 5
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "clinician · DenialIntelligence": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 22,
+   "unique": 22,
+   "counts": {
+    "NAVIGATED": 11,
+    "DOM": 11
+   },
+   "rows": 22,
+   "skipped": ""
+  },
+  "clinician · DenialIntelligence [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 24,
+   "unique": 2,
+   "counts": {
+    "NAVIGATED": 2
+   },
+   "rows": 2,
+   "skipped": ""
+  },
+  "clinician · DenialIntelligence?decision=partial": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 21,
+   "unique": 21,
+   "counts": {
+    "NAVIGATED": 10,
+    "DOM": 11
+   },
+   "rows": 21,
+   "skipped": ""
+  },
+  "clinician · DenialIntelligence?decision=partial [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 23,
+   "unique": 2,
+   "counts": {
+    "NAVIGATED": 2
+   },
+   "rows": 2,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0402&section=decision": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 12,
+   "unique": 12,
+   "counts": {
+    "NAVIGATED": 7,
+    "DETAIL": 4,
+    "CLOSE": 6,
+    "SKIPPED": 1,
+    "DOM": 3,
+    "TOAST-ONLY": 1
+   },
+   "rows": 22,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0402&section=evidence": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 24,
+   "unique": 22,
+   "counts": {
+    "NAVIGATED": 7,
+    "DETAIL": 11,
+    "CLOSE": 4,
+    "SKIPPED": 1,
+    "DOM": 2,
+    "STATE": 3
+   },
+   "rows": 28,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0402&section=options": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 15,
+   "unique": 14,
+   "counts": {
+    "NAVIGATED": 9,
+    "DETAIL": 2,
+    "CLOSE": 4,
+    "SKIPPED": 1,
+    "DOM": 4
+   },
+   "rows": 20,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0402&section=options [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 15,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0402&section=action&action=options": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 18,
+   "unique": 18,
+   "counts": {
+    "NAVIGATED": 12,
+    "DETAIL": 3,
+    "CLOSE": 6,
+    "SKIPPED": 1,
+    "DOM": 4,
+    "NO-EFFECT-ALLOWED": 1
+   },
+   "rows": 27,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0402&section=history": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 13,
+   "unique": 13,
+   "counts": {
+    "NAVIGATED": 7,
+    "DETAIL": 5,
+    "CLOSE": 5,
+    "SKIPPED": 1,
+    "DOM": 2
+   },
+   "rows": 20,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0408&section=action&action=info": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 11,
+   "unique": 11,
+   "counts": {
+    "NAVIGATED": 7,
+    "DETAIL": 2,
+    "CLOSE": 4,
+    "SKIPPED": 1,
+    "DOM": 2,
+    "STATE": 1
+   },
+   "rows": 17,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0388&section=action&action=p2p": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 20,
+   "unique": 20,
+   "counts": {
+    "NAVIGATED": 7,
+    "DETAIL": 6,
+    "CLOSE": 8,
+    "SKIPPED": 1,
+    "DOM": 8,
+    "NO-EFFECT-ALLOWED": 1,
+    "STATE": 1,
+    "TOAST-ONLY": 2
+   },
+   "rows": 34,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0388&section=action&action=p2p [sections open]": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 20,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0384&section=action&action=appeal": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 16,
+   "unique": 16,
+   "counts": {
+    "NAVIGATED": 9,
+    "DETAIL": 2,
+    "CLOSE": 4,
+    "SKIPPED": 1,
+    "DOM": 4,
+    "DISABLED-EXPLAINED": 1,
+    "STATE": 1
+   },
+   "rows": 22,
+   "skipped": ""
+  },
+  "clinician · DenialCase?id=R-0384&section=action&action=reconsider": {
+   "role": "clinician",
+   "kind": "app",
+   "total": 14,
+   "unique": 14,
+   "counts": {
+    "NAVIGATED": 10,
+    "DETAIL": 2,
+    "CLOSE": 4,
+    "SKIPPED": 1,
+    "DOM": 2,
+    "STATE": 1
+   },
+   "rows": 20,
+   "skipped": ""
+  },
+  "clinician@tw-isp-ready · Authorization?id=R-0416&section=submission": {
+   "role": "clinician@tw-isp-ready",
+   "kind": "app",
+   "total": 19,
+   "unique": 19,
+   "counts": {
+    "NAVIGATED": 13,
+    "DETAIL": 3,
+    "CLOSE": 4,
+    "SKIPPED": 1,
+    "DOM": 3,
+    "POPUP": 1
+   },
+   "rows": 25,
+   "skipped": ""
+  },
+  "clinician@tw-isp-ready · Authorization?id=R-0416&section=submission [sections open]": {
+   "role": "clinician@tw-isp-ready",
+   "kind": "app",
+   "total": 26,
+   "unique": 7,
+   "counts": {
+    "POPUP": 1,
+    "DETAIL": 6,
+    "CLOSE": 1
+   },
+   "rows": 8,
+   "skipped": ""
+  },
+  "clinician@tw-isp-ready · Authorizations": {
+   "role": "clinician@tw-isp-ready",
+   "kind": "app",
+   "total": 48,
+   "unique": 48,
+   "counts": {
+    "DETAIL": 1,
+    "NAVIGATED": 44,
+    "DOM": 2,
+    "NO-EFFECT-ALLOWED": 1
+   },
+   "rows": 48,
+   "skipped": ""
+  },
+  "clinician@tw-isp-ready · Authorizations [sections open]": {
+   "role": "clinician@tw-isp-ready",
+   "kind": "app",
+   "total": 51,
+   "unique": 3,
+   "counts": {
+    "NAVIGATED": 3
+   },
+   "rows": 3,
+   "skipped": ""
+  },
+  "clinician@tw-isp-ready · Referral?id=REF-118": {
+   "role": "clinician@tw-isp-ready",
+   "kind": "app",
+   "total": 10,
+   "unique": 10,
+   "counts": {
+    "NAVIGATED": 6,
+    "STATE": 1,
+    "DOM": 1,
+    "DETAIL": 2
+   },
+   "rows": 10,
+   "skipped": ""
+  },
+  "clinician@tw-isp-ready · Referral?id=REF-118 [sections open]": {
+   "role": "clinician@tw-isp-ready",
+   "kind": "app",
+   "total": 17,
+   "unique": 7,
+   "counts": {
+    "POPUP": 1,
+    "NAVIGATED": 2,
+    "DETAIL": 3,
+    "CLOSE": 5,
+    "DOM": 2
+   },
+   "rows": 13,
+   "skipped": ""
+  },
+  "clinician@tw-signed · Authorization?id=R-0416&section=submission": {
+   "role": "clinician@tw-signed",
+   "kind": "app",
+   "total": 19,
+   "unique": 19,
+   "counts": {
+    "NAVIGATED": 13,
+    "DETAIL": 4,
+    "CLOSE": 7,
+    "SKIPPED": 1,
+    "DOM": 3
+   },
+   "rows": 28,
+   "skipped": ""
+  },
+  "clinician@tw-signed · Authorization?id=R-0416&section=submission [sections open]": {
+   "role": "clinician@tw-signed",
+   "kind": "app",
+   "total": 31,
+   "unique": 12,
+   "counts": {
+    "POPUP": 2,
+    "DETAIL": 10,
+    "CLOSE": 1
+   },
+   "rows": 13,
+   "skipped": ""
+  },
+  "clinician@tw-signed · Authorizations": {
+   "role": "clinician@tw-signed",
+   "kind": "app",
+   "total": 48,
+   "unique": 48,
+   "counts": {
+    "DETAIL": 1,
+    "NAVIGATED": 44,
+    "DOM": 2,
+    "NO-EFFECT-ALLOWED": 1
+   },
+   "rows": 48,
+   "skipped": ""
+  },
+  "clinician@tw-signed · Authorizations [sections open]": {
+   "role": "clinician@tw-signed",
+   "kind": "app",
+   "total": 51,
+   "unique": 3,
+   "counts": {
+    "NAVIGATED": 3
+   },
+   "rows": 3,
+   "skipped": ""
+  },
+  "clinician@tw-signed · Referral?id=REF-118": {
+   "role": "clinician@tw-signed",
+   "kind": "app",
+   "total": 10,
+   "unique": 10,
+   "counts": {
+    "NAVIGATED": 6,
+    "STATE": 1,
+    "DOM": 1,
+    "DETAIL": 2
+   },
+   "rows": 10,
+   "skipped": ""
+  },
+  "clinician@tw-signed · Referral?id=REF-118 [sections open]": {
+   "role": "clinician@tw-signed",
+   "kind": "app",
+   "total": 17,
+   "unique": 7,
+   "counts": {
+    "POPUP": 1,
+    "NAVIGATED": 2,
+    "DETAIL": 3,
+    "CLOSE": 5,
+    "DOM": 2
+   },
+   "rows": 13,
+   "skipped": ""
+  },
+  "clinician@tw-sent · Authorization?id=R-0416&section=submission": {
+   "role": "clinician@tw-sent",
+   "kind": "app",
+   "total": 23,
+   "unique": 23,
+   "counts": {
+    "NAVIGATED": 13,
+    "DETAIL": 7,
+    "CLOSE": 7,
+    "SKIPPED": 1,
+    "DOM": 7,
+    "TOAST-ONLY": 1,
+    "VANISHED": 1
+   },
+   "rows": 37,
+   "skipped": ""
+  },
+  "clinician@tw-sent · Authorization?id=R-0416&section=submission [sections open]": {
+   "role": "clinician@tw-sent",
+   "kind": "app",
+   "total": 42,
+   "unique": 20,
+   "counts": {
+    "POPUP": 4,
+    "DETAIL": 15,
+    "CLOSE": 6,
+    "DOM": 8,
+    "TOAST-ONLY": 1
+   },
+   "rows": 34,
+   "skipped": ""
+  },
+  "clinician@tw-sent · Authorizations": {
+   "role": "clinician@tw-sent",
+   "kind": "app",
+   "total": 48,
+   "unique": 48,
+   "counts": {
+    "DETAIL": 1,
+    "NAVIGATED": 44,
+    "DOM": 2,
+    "NO-EFFECT-ALLOWED": 1
+   },
+   "rows": 48,
+   "skipped": ""
+  },
+  "clinician@tw-sent · Authorizations [sections open]": {
+   "role": "clinician@tw-sent",
+   "kind": "app",
+   "total": 51,
+   "unique": 3,
+   "counts": {
+    "NAVIGATED": 3
+   },
+   "rows": 3,
+   "skipped": ""
+  },
+  "clinician@tw-sent · Referral?id=REF-118": {
+   "role": "clinician@tw-sent",
+   "kind": "app",
+   "total": 10,
+   "unique": 10,
+   "counts": {
+    "NAVIGATED": 6,
+    "STATE": 1,
+    "DOM": 1,
+    "DETAIL": 2
+   },
+   "rows": 10,
+   "skipped": ""
+  },
+  "clinician@tw-sent · Referral?id=REF-118 [sections open]": {
+   "role": "clinician@tw-sent",
+   "kind": "app",
+   "total": 17,
+   "unique": 7,
+   "counts": {
+    "POPUP": 1,
+    "NAVIGATED": 2,
+    "DETAIL": 3,
+    "CLOSE": 5,
+    "DOM": 2
+   },
+   "rows": 13,
+   "skipped": ""
+  },
+  "clinician@analytics-case · Analytics?section=outcomes&dataset=case": {
+   "role": "clinician@analytics-case",
+   "kind": "app",
+   "total": 36,
+   "unique": 36,
+   "counts": {
+    "NAVIGATED": 12,
+    "DETAIL": 25,
+    "CLOSE": 3,
+    "SKIPPED": 1,
+    "DOM": 9
+   },
+   "rows": 50,
+   "skipped": ""
+  },
+  "clinician@analytics-case · Analytics?section=payer&dataset=case": {
+   "role": "clinician@analytics-case",
+   "kind": "app",
+   "total": 36,
+   "unique": 36,
+   "counts": {
+    "NAVIGATED": 17,
+    "DETAIL": 20,
+    "CLOSE": 2,
+    "DOM": 11
+   },
+   "rows": 50,
+   "skipped": ""
+  },
+  "clinician@analytics-case · Analytics?section=payer&dataset=case [sections open]": {
+   "role": "clinician@analytics-case",
+   "kind": "app",
+   "total": 40,
+   "unique": 4,
+   "counts": {
+    "DETAIL": 4
+   },
+   "rows": 4,
+   "skipped": ""
+  },
+  "clinician@analytics-case · Analytics?section=population&dataset=case": {
+   "role": "clinician@analytics-case",
+   "kind": "app",
+   "total": 30,
+   "unique": 30,
+   "counts": {
+    "NAVIGATED": 7,
+    "DETAIL": 26,
+    "CLOSE": 2,
+    "DOM": 9
+   },
+   "rows": 44,
+   "skipped": ""
+  },
+  "clinician@canvas · MyWork?section=todo": {
+   "role": "clinician@canvas",
+   "kind": "app",
+   "total": 17,
+   "unique": 17,
+   "counts": {
+    "NAVIGATED": 11,
+    "DETAIL": 1,
+    "CLOSE": 1,
+    "SKIPPED": 1,
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 3
+   },
+   "rows": 18,
+   "skipped": ""
+  },
+  "clinician@canvas · Authorizations": {
+   "role": "clinician@canvas",
+   "kind": "app",
+   "total": 48,
+   "unique": 48,
+   "counts": {
+    "DETAIL": 1,
+    "NAVIGATED": 44,
+    "DOM": 2,
+    "NO-EFFECT-ALLOWED": 1
+   },
+   "rows": 48,
+   "skipped": ""
+  },
+  "clinician@canvas · Authorizations [sections open]": {
+   "role": "clinician@canvas",
+   "kind": "app",
+   "total": 51,
+   "unique": 3,
+   "counts": {
+    "NAVIGATED": 3
+   },
+   "rows": 3,
+   "skipped": ""
+  },
+  "clinician@canvas · DenialIntelligence": {
+   "role": "clinician@canvas",
+   "kind": "app",
+   "total": 22,
+   "unique": 22,
+   "counts": {
+    "NAVIGATED": 11,
+    "DOM": 11
+   },
+   "rows": 22,
+   "skipped": ""
+  },
+  "clinician@canvas · DenialIntelligence [sections open]": {
+   "role": "clinician@canvas",
+   "kind": "app",
+   "total": 24,
+   "unique": 2,
+   "counts": {
+    "NAVIGATED": 2
+   },
+   "rows": 2,
+   "skipped": ""
+  },
+  "clinician@canvas · Referrals": {
+   "role": "clinician@canvas",
+   "kind": "app",
+   "total": 19,
+   "unique": 19,
+   "counts": {
+    "DOM": 4,
+    "NAVIGATED": 15
+   },
+   "rows": 19,
+   "skipped": ""
+  },
+  "clinician@canvas · Referrals [sections open]": {
+   "role": "clinician@canvas",
+   "kind": "app",
+   "total": 19,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "direct_support · ExtHome": {
+   "role": "direct_support",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "direct_support · ExtDPN": {
+   "role": "direct_support",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "direct_support · ExtWeekly": {
+   "role": "direct_support",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "direct_support · ExtMonthly": {
+   "role": "direct_support",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "direct_support · ExtIncident": {
+   "role": "direct_support",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "direct_support · MyWork?section=day": {
+   "role": "direct_support",
+   "kind": "app",
+   "total": 13,
+   "unique": 13,
+   "counts": {
+    "NAVIGATED": 10,
+    "DOM": 3
+   },
+   "rows": 13,
+   "skipped": ""
+  },
+  "direct_support · MyWork?section=day [sections open]": {
+   "role": "direct_support",
+   "kind": "app",
+   "total": 13,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "direct_support@mr-daily · MyWork?section=day": {
+   "role": "direct_support@mr-daily",
+   "kind": "app",
+   "total": 17,
+   "unique": 17,
+   "counts": {
+    "NAVIGATED": 12,
+    "DETAIL": 1,
+    "CLOSE": 1,
+    "SKIPPED": 1,
+    "DOM": 3
+   },
+   "rows": 18,
+   "skipped": ""
+  },
+  "direct_support@mr-daily · MyWork?section=day [sections open]": {
+   "role": "direct_support@mr-daily",
+   "kind": "app",
+   "total": 17,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "direct_support · MobileApp (390)": {
+   "role": "direct_support",
+   "kind": "phone",
+   "total": 16,
+   "unique": 16,
+   "counts": {
+    "FOCUS-ONLY": 1,
+    "DOM": 8,
+    "STATE": 2,
+    "NAVIGATED": 4,
+    "NO-EFFECT-ALLOWED": 1
+   },
+   "rows": 16,
+   "skipped": ""
+  },
+  "direct_support · MobileDictate (390)": {
+   "role": "direct_support",
+   "kind": "phone",
+   "total": 9,
+   "unique": 9,
+   "counts": {
+    "DOM": 6,
+    "NAVIGATED": 3
+   },
+   "rows": 9,
+   "skipped": ""
+  },
+  "direct_support · MobileAssess (390)": {
+   "role": "direct_support",
+   "kind": "phone",
+   "total": 4,
+   "unique": 4,
+   "counts": {
+    "DOM": 2,
+    "NAVIGATED": 1,
+    "NO-EFFECT-ALLOWED": 1
+   },
+   "rows": 4,
+   "skipped": ""
+  },
+  "guardian · ParentPortal (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 12,
+   "unique": 12,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 1,
+    "NAVIGATED": 9,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 14,
+   "skipped": ""
+  },
+  "guardian · ParentEnroll (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 18,
+   "unique": 18,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 14,
+    "NAVIGATED": 1,
+    "STATE": 1,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 20,
+   "skipped": ""
+  },
+  "guardian · ParentSign (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 9,
+   "unique": 9,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 2,
+    "DOM": 4,
+    "NAVIGATED": 1,
+    "STATE": 1,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 11,
+   "skipped": ""
+  },
+  "guardian · ParentSign (390) [sections open]": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 9,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "guardian · ParentProgress (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 5,
+   "unique": 5,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 1,
+    "NAVIGATED": 2,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 7,
+   "skipped": ""
+  },
+  "guardian · ParentQuarterly (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 4,
+   "unique": 4,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 1,
+    "NAVIGATED": 1,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "guardian · ParentLetters (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 10,
+   "unique": 10,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 7,
+    "NAVIGATED": 1,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 12,
+   "skipped": ""
+  },
+  "guardian · ParentLetters (390) [sections open]": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 10,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "guardian · ParentSchedule (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 4,
+   "unique": 4,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 1,
+    "NAVIGATED": 1,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "guardian · ParentSurvey (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 15,
+   "unique": 12,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 9,
+    "NAVIGATED": 1,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 14,
+   "skipped": ""
+  },
+  "guardian · FamilyLink (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 3,
+   "unique": 3,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 1,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 5,
+   "skipped": ""
+  },
+  "guardian · AppealLetter?c=EC (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 9,
+   "unique": 9,
+   "counts": {
+    "SCROLL": 1,
+    "DOM": 4,
+    "NAVIGATED": 1,
+    "NO-EFFECT-ALLOWED": 1,
+    "STATE": 1,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 11,
+   "skipped": ""
+  },
+  "guardian (link ar-demo) · ParentPortal (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 12,
+   "unique": 12,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 1,
+    "NAVIGATED": 9,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 14,
+   "skipped": ""
+  },
+  "guardian (link ar-demo) · FamilyLink (390)": {
+   "role": "guardian",
+   "kind": "phone",
+   "total": 9,
+   "unique": 9,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 6,
+    "FILE-CHOOSER": 1,
+    "DETAIL": 1,
+    "CLOSE": 2
+   },
+   "rows": 11,
+   "skipped": ""
+  },
+  "school · SchoolPortal (390)": {
+   "role": "school",
+   "kind": "phone",
+   "total": 25,
+   "unique": 25,
+   "counts": {
+    "SKIPPED": 1,
+    "NAVIGATED": 19,
+    "FILE-CHOOSER": 1,
+    "DOM": 4
+   },
+   "rows": 25,
+   "skipped": ""
+  },
+  "school · ReferralForm (390)": {
+   "role": "school",
+   "kind": "phone",
+   "total": 13,
+   "unique": 13,
+   "counts": {
+    "SKIPPED": 1,
+    "DOM": 10,
+    "STATE": 1,
+    "NAVIGATED": 1
+   },
+   "rows": 13,
+   "skipped": ""
+  },
+  "school · ReferralForm (390) [sections open]": {
+   "role": "school",
+   "kind": "phone",
+   "total": 56,
+   "unique": 40,
+   "counts": {
+    "DOM": 38,
+    "FILE-CHOOSER": 2
+   },
+   "rows": 40,
+   "skipped": ""
+  },
+  "school · ReferralSent (390)": {
+   "role": "school",
+   "kind": "phone",
+   "total": 4,
+   "unique": 4,
+   "counts": {
+    "SKIPPED": 1,
+    "FILE-CHOOSER": 1,
+    "NAVIGATED": 2
+   },
+   "rows": 4,
+   "skipped": ""
+  },
+  "signed out · Login": {
+   "role": "signed-out",
+   "kind": "app",
+   "total": 7,
+   "unique": 5,
+   "counts": {
+    "DOM": 1,
+    "NAVIGATED": 4
+   },
+   "rows": 5,
+   "skipped": ""
+  },
+  "signed out · WhereThingsLive": {
+   "role": "signed-out",
+   "kind": "app",
+   "total": 0,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "panel jperez · home (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 8,
+   "unique": 8,
+   "counts": {
+    "NAVIGATED": 1,
+    "DOM": 5,
+    "POPUP": 1,
+    "TYPED": 1
+   },
+   "rows": 8,
+   "skipped": ""
+  },
+  "panel jperez · home (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 36,
+   "unique": 26,
+   "counts": {
+    "NAVIGATED": 24,
+    "POPUP": 2
+   },
+   "rows": 26,
+   "skipped": ""
+  },
+  "panel khale · home (direct support) (400)": {
+   "role": "khale",
+   "kind": "panel",
+   "total": 6,
+   "unique": 6,
+   "counts": {
+    "DOM": 4,
+    "POPUP": 1,
+    "NAVIGATED": 1
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "panel khale · home (direct support) (400) [sections open]": {
+   "role": "khale",
+   "kind": "panel",
+   "total": 12,
+   "unique": 6,
+   "counts": {
+    "NAVIGATED": 6
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "panel cdiaz · home (supervisor) (400)": {
+   "role": "cdiaz",
+   "kind": "panel",
+   "total": 4,
+   "unique": 4,
+   "counts": {
+    "NAVIGATED": 1,
+    "POPUP": 2,
+    "DOM": 1
+   },
+   "rows": 4,
+   "skipped": ""
+  },
+  "panel cdiaz · home (supervisor) (400) [sections open]": {
+   "role": "cdiaz",
+   "kind": "panel",
+   "total": 24,
+   "unique": 20,
+   "counts": {
+    "NAVIGATED": 20
+   },
+   "rows": 20,
+   "skipped": ""
+  },
+  "panel dowens · home (admin) (400)": {
+   "role": "dowens",
+   "kind": "panel",
+   "total": 0,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "panel jperez · record (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 11,
+   "unique": 11,
+   "counts": {
+    "NAVIGATED": 2,
+    "DOM": 8,
+    "POPUP": 1
+   },
+   "rows": 11,
+   "skipped": ""
+  },
+  "panel jperez · record (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 19,
+   "unique": 6,
+   "counts": {
+    "NAVIGATED": 4,
+    "POPUP": 2
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "panel khale · daily note (400)": {
+   "role": "khale",
+   "kind": "panel",
+   "total": 11,
+   "unique": 11,
+   "counts": {
+    "DOM": 8,
+    "NO-EFFECT": 1,
+    "STATE": 2
+   },
+   "rows": 11,
+   "skipped": ""
+  },
+  "panel khale · daily note (400) [sections open]": {
+   "role": "khale",
+   "kind": "panel",
+   "total": 12,
+   "unique": 1,
+   "counts": {
+    "NAVIGATED": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "panel jperez · daily note (clinician) (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 6,
+   "unique": 6,
+   "counts": {
+    "DOM": 5,
+    "NO-EFFECT": 1
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "panel jperez · daily note (clinician) (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 7,
+   "unique": 1,
+   "counts": {
+    "NAVIGATED": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "panel jperez · weekly (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 6,
+   "unique": 6,
+   "counts": {
+    "DOM": 5,
+    "NO-EFFECT": 1
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "panel jperez · weekly (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 7,
+   "unique": 1,
+   "counts": {
+    "NAVIGATED": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "panel jperez · monthly (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 6,
+   "unique": 6,
+   "counts": {
+    "DOM": 5,
+    "NO-EFFECT": 1
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "panel jperez · monthly (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 7,
+   "unique": 1,
+   "counts": {
+    "NAVIGATED": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "panel jperez · incident (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 5,
+   "unique": 5,
+   "counts": {
+    "DOM": 3,
+    "POPUP": 1,
+    "TYPED": 1
+   },
+   "rows": 5,
+   "skipped": ""
+  },
+  "panel jperez · quarterly (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 6,
+   "unique": 6,
+   "counts": {
+    "DOM": 4,
+    "STATE": 1,
+    "SKIPPED": 1
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "panel jperez · quarterly (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 11,
+   "unique": 5,
+   "counts": {
+    "DOM": 5
+   },
+   "rows": 5,
+   "skipped": ""
+  },
+  "panel jperez · continued stay (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 11,
+   "unique": 11,
+   "counts": {
+    "DOM": 9,
+    "STATE": 2
+   },
+   "rows": 11,
+   "skipped": ""
+  },
+  "panel jperez · continued stay (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 11,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "panel jperez · discharge (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 5,
+   "unique": 5,
+   "counts": {
+    "DOM": 3,
+    "STATE": 1,
+    "POPUP": 1
+   },
+   "rows": 5,
+   "skipped": ""
+  },
+  "panel jperez · discharge (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 5,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "panel jperez · forms to approve (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 7,
+   "unique": 7,
+   "counts": {
+    "DOM": 1,
+    "NAVIGATED": 6
+   },
+   "rows": 7,
+   "skipped": ""
+  },
+  "panel khale · time tracker (400)": {
+   "role": "khale",
+   "kind": "panel",
+   "total": 5,
+   "unique": 5,
+   "counts": {
+    "DOM": 3,
+    "POPUP": 1,
+    "NAVIGATED": 1
+   },
+   "rows": 5,
+   "skipped": ""
+  },
+  "panel jperez · authorizations (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 7,
+   "unique": 7,
+   "counts": {
+    "NAVIGATED": 2,
+    "DOM": 4,
+    "POPUP": 1
+   },
+   "rows": 7,
+   "skipped": ""
+  },
+  "panel jperez · authorizations (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 15,
+   "unique": 6,
+   "counts": {
+    "NAVIGATED": 4,
+    "POPUP": 2
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "panel khale · screening (direct support: not offered) (400)": {
+   "role": "khale",
+   "kind": "panel",
+   "total": 2,
+   "unique": 2,
+   "counts": {
+    "DOM": 2
+   },
+   "rows": 2,
+   "skipped": ""
+  },
+  "panel jperez · T.W. screening (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 7,
+   "unique": 7,
+   "counts": {
+    "DOM": 1,
+    "STATE": 5,
+    "VANISHED": 1
+   },
+   "rows": 7,
+   "skipped": ""
+  },
+  "panel jperez · T.W. screening (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 14,
+   "unique": 5,
+   "counts": {
+    "DETAIL": 4,
+    "NAVIGATED": 1
+   },
+   "rows": 5,
+   "skipped": ""
+  },
+  "panel jperez · T.W. CNA (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 8,
+   "unique": 8,
+   "counts": {
+    "DOM": 6,
+    "NO-EFFECT": 1,
+    "TYPED": 1
+   },
+   "rows": 8,
+   "skipped": ""
+  },
+  "panel jperez · T.W. CNA (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 9,
+   "unique": 1,
+   "counts": {
+    "NAVIGATED": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "panel jperez · T.W. ISP (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 6,
+   "unique": 6,
+   "counts": {
+    "DOM": 4,
+    "TYPED": 1,
+    "SKIPPED": 1
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "panel jperez · T.W. ISP (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 22,
+   "unique": 6,
+   "counts": {
+    "DETAIL": 6
+   },
+   "rows": 6,
+   "skipped": ""
+  },
+  "panel jperez · T.W. initial SRA (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 4,
+   "unique": 4,
+   "counts": {
+    "DOM": 3,
+    "STATE": 1
+   },
+   "rows": 4,
+   "skipped": ""
+  },
+  "panel jperez · T.W. initial SRA (400) [sections open]": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 4,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "panel jperez · forms to approve (signed) (400)": {
+   "role": "jperez",
+   "kind": "panel",
+   "total": 8,
+   "unique": 8,
+   "counts": {
+    "DOM": 1,
+    "NAVIGATED": 7
+   },
+   "rows": 8,
+   "skipped": ""
+  },
+  "supervisor · ExtHome": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 1,
+   "unique": 1,
+   "counts": {
+    "POPUP": 1
+   },
+   "rows": 1,
+   "skipped": ""
+  },
+  "supervisor · Authorizations": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 41,
+   "unique": 41,
+   "counts": {
+    "DETAIL": 1,
+    "NAVIGATED": 38,
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 1
+   },
+   "rows": 41,
+   "skipped": ""
+  },
+  "supervisor · Authorizations [sections open]": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 44,
+   "unique": 3,
+   "counts": {
+    "NAVIGATED": 3
+   },
+   "rows": 3,
+   "skipped": ""
+  },
+  "supervisor · Analytics?section=outcomes": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 25,
+   "unique": 25,
+   "counts": {
+    "NAVIGATED": 8,
+    "DETAIL": 20,
+    "CLOSE": 2,
+    "DOM": 9
+   },
+   "rows": 39,
+   "skipped": ""
+  },
+  "supervisor · MyWork?section=review": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 12,
+   "unique": 12,
+   "counts": {
+    "NO-EFFECT-ALLOWED": 2,
+    "NAVIGATED": 2,
+    "DOM": 8,
+    "STATE": 1,
+    "DETAIL": 3,
+    "CLOSE": 4
+   },
+   "rows": 20,
+   "skipped": ""
+  },
+  "supervisor · MyWork?section=team": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 14,
+   "unique": 14,
+   "counts": {
+    "NAVIGATED": 6,
+    "NO-EFFECT-ALLOWED": 1,
+    "DOM": 7,
+    "DETAIL": 4,
+    "CLOSE": 10
+   },
+   "rows": 28,
+   "skipped": ""
+  },
+  "supervisor · MyWork?section=team [sections open]": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 14,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "supervisor · MyWork?section=day": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 14,
+   "unique": 14,
+   "counts": {
+    "NAVIGATED": 7,
+    "DOM": 7,
+    "DETAIL": 4,
+    "CLOSE": 10
+   },
+   "rows": 28,
+   "skipped": ""
+  },
+  "supervisor · MyWork?section=day [sections open]": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 14,
+   "unique": 0,
+   "counts": {},
+   "rows": 0,
+   "skipped": ""
+  },
+  "supervisor · Authorization?id=R-0411": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 13,
+   "unique": 13,
+   "counts": {
+    "NAVIGATED": 8,
+    "DETAIL": 3,
+    "CLOSE": 4,
+    "DOM": 3,
+    "DISABLED-EXPLAINED": 1
+   },
+   "rows": 19,
+   "skipped": ""
+  },
+  "supervisor · Authorization?id=R-0411 [sections open]": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 16,
+   "unique": 3,
+   "counts": {
+    "DETAIL": 3
+   },
+   "rows": 3,
+   "skipped": ""
+  },
+  "supervisor · Authorization?id=R-0399": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 20,
+   "unique": 20,
+   "counts": {
+    "NAVIGATED": 8,
+    "DETAIL": 11,
+    "CLOSE": 8,
+    "DOM": 7
+   },
+   "rows": 34,
+   "skipped": ""
+  },
+  "supervisor · Authorization?id=R-0399 [sections open]": {
+   "role": "supervisor",
+   "kind": "app",
+   "total": 25,
+   "unique": 5,
+   "counts": {
+    "DETAIL": 5,
+    "CLOSE": 9,
+    "DOM": 4,
+    "TOAST-ONLY": 1
+   },
+   "rows": 19,
+   "skipped": ""
+  },
+  "supervisor@tw-signed · Authorization?id=R-0416&section=submission": {
+   "role": "supervisor@tw-signed",
+   "kind": "app",
+   "total": 17,
+   "unique": 17,
+   "counts": {
+    "NAVIGATED": 11,
+    "DETAIL": 4,
+    "CLOSE": 7,
+    "SKIPPED": 1,
+    "DOM": 3
+   },
+   "rows": 26,
+   "skipped": ""
+  },
+  "supervisor@tw-signed · Authorization?id=R-0416&section=submission [sections open]": {
+   "role": "supervisor@tw-signed",
+   "kind": "app",
+   "total": 28,
+   "unique": 11,
+   "counts": {
+    "POPUP": 1,
+    "DETAIL": 10,
+    "CLOSE": 1
+   },
+   "rows": 12,
+   "skipped": ""
+  }
+ },
+ "findings": [
+  {
+   "target": "admin · Settings?tab=audit",
+   "ctl": "link",
+   "name": "REF-118",
+   "where": "table",
+   "outcome": "NAVIGATED",
+   "detail": "#/Settings?tab=audit -> #/Referral?id=REF-118",
+   "flags": [
+    "role-dead-end"
+   ]
+  },
+  {
+   "target": "admin · Settings?tab=family",
+   "ctl": "button",
+   "name": "Ask: Child's insurance and Medicaid ID",
+   "where": "table",
+   "outcome": "DISABLED-UNEXPLAINED",
+   "detail": "",
+   "flags": []
+  },
+  {
+   "target": "admin · Settings?tab=family",
+   "ctl": "button",
+   "name": "Required: Child's insurance and Medicaid ID",
+   "where": "table",
+   "outcome": "DISABLED-UNEXPLAINED",
+   "detail": "",
+   "flags": []
+  },
+  {
+   "target": "admin · Settings?tab=family",
+   "ctl": "button",
+   "name": "Required: Who else lives in the home",
+   "where": "table",
+   "outcome": "DISABLED-UNEXPLAINED",
+   "detail": "",
+   "flags": []
+  },
+  {
+   "target": "panel khale · daily note (400)",
+   "ctl": "select",
+   "name": "NOTE",
+   "where": "body",
+   "outcome": "NO-EFFECT",
+   "detail": "",
+   "flags": []
+  },
+  {
+   "target": "panel jperez · daily note (clinician) (400)",
+   "ctl": "select",
+   "name": "NOTE",
+   "where": "body",
+   "outcome": "NO-EFFECT",
+   "detail": "",
+   "flags": []
+  },
+  {
+   "target": "panel jperez · weekly (400)",
+   "ctl": "select",
+   "name": "NOTE",
+   "where": "body",
+   "outcome": "NO-EFFECT",
+   "detail": "",
+   "flags": []
+  },
+  {
+   "target": "panel jperez · monthly (400)",
+   "ctl": "select",
+   "name": "NOTE",
+   "where": "body",
+   "outcome": "NO-EFFECT",
+   "detail": "",
+   "flags": []
+  },
+  {
+   "target": "panel jperez · T.W. CNA (400)",
+   "ctl": "select",
+   "name": "NOTE",
+   "where": "body",
+   "outcome": "NO-EFFECT",
+   "detail": "",
+   "flags": []
+  }
+ ]
+}

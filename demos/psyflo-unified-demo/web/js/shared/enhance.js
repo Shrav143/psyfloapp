@@ -9,6 +9,14 @@
 import { fmtDate, daysBetween, addDays, isSchoolDay, parse } from './dates.js';
 import { ruleValue, unitsFor } from './rules.js';
 
+// Every source a chip prints carries a day: `date` is yyyy-mm-dd or 'undated' (truly unknown) and `date_label` is the text the chip prints
+// ("Oct 16", or "Evidence missing — date unknown"). Same convention as shared/draft.js, so one chip shows every draft's sources alike.
+export const UNDATED = 'undated';
+export const DATE_MISSING = 'Evidence missing \u2014 date unknown';
+const isoDay = d => { const m = String(d || '').match(/^\d{4}-\d{2}-\d{2}/); return m ? m[0] : null; };
+export const dateFields = date => { const d = isoDay(date); return { date: d || UNDATED, date_label: d ? fmtDate(d) : DATE_MISSING }; };
+export const dateLabel = src => { if (!src) return ''; if (src.date_label) return src.date_label; const d = isoDay(src.date); return d ? fmtDate(d) : src.date === UNDATED ? DATE_MISSING : ''; };
+
 export const MISSING = what => `Evidence missing — verify ${what}.`;
 export const isMissingText = v => /^Evidence missing/.test(String(v || ''));
 export const KIND_OF = { daily: 'daily', weekly_guardian: 'weekly', monthly_collateral: 'monthly' };
@@ -287,11 +295,12 @@ export function buildContinuedStay(s, clientId, period, { household = false, req
   const inc = idx.rows.filter(r => !r.excluded); const daily = inc.filter(r => r.kind === 'daily'), weekly = inc.filter(r => r.kind === 'weekly'), monthly = inc.filter(r => r.kind === 'monthly');
   const dts = arr => arr.map(r => fmtDate(r.date)).join(', ');
   const span = arr => arr.length ? `${fmtDate(arr[0].date)} – ${fmtDate(arr.at(-1).date)}` : '';
+  const reqDay = request && (request.drafted_at || request.created || request.sent);   // same day the other drafts use for a request record
   const S = [
-    { n: 1, kind: 'notes', label: `Daily notes (${daily.length})`, date: daily.at(-1)?.date, rows: daily.map(r => r.ref), source: `${daily.length} stored daily notes ${span(daily)}` },
-    { n: 2, kind: 'call', label: `Weekly guardian calls (${weekly.length})`, date: weekly.at(-1)?.date, rows: weekly.map(r => r.ref), source: `${weekly.length} stored weekly guardian calls` },
-    { n: 3, kind: 'call', label: `Monthly collateral (${monthly.length})`, date: monthly.at(-1)?.date, rows: monthly.map(r => r.ref), source: `${monthly.length} stored monthly collateral contacts` },
-    { n: 4, kind: 'plan', label: 'Request record', rows: [], source: request ? `Request ${request.id}` : 'No request record' }
+    { n: 1, kind: 'notes', label: `Daily notes (${daily.length})`, ...dateFields(daily.at(-1)?.date), rows: daily.map(r => r.ref), source: `${daily.length} stored daily notes ${span(daily)}` },
+    { n: 2, kind: 'call', label: `Weekly guardian calls (${weekly.length})`, ...dateFields(weekly.at(-1)?.date), rows: weekly.map(r => r.ref), source: `${weekly.length} stored weekly guardian calls` },
+    { n: 3, kind: 'call', label: `Monthly collateral (${monthly.length})`, ...dateFields(monthly.at(-1)?.date), rows: monthly.map(r => r.ref), source: `${monthly.length} stored monthly collateral contacts` },
+    { n: 4, kind: 'plan', label: 'Request record', ...dateFields(reqDay), rows: [], source: request ? `Request ${request.id}` : 'No request record' }
   ];
   const goalsLine = idx.byGoal.map(g => `Goal ${g.n}: ${g.count}`).join('; ');
   const ivLine = idx.interventions.slice(0, 4).map(i => `${i.label} ×${i.count}`).join(', ');

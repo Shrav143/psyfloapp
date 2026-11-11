@@ -94,7 +94,7 @@ export const api = {
   // A session that exists is never replaced by a localStorage write, and nothing here asks for presenter mode.
   async _legacyChanged(id) {
     try {
-      if (id && !this.actor) await this.signIn(id, { presenter: hostedPresenter(), quiet: true, lazy: true });
+      if (id && !this.actor && !(load() && load().token)) await this.signIn(id, { presenter: hostedPresenter(), quiet: true, lazy: true });   // a stored session (a test or another tab wrote one) is never overwritten by a plain sign-in
       else if (!id && this.actor && this.actor.kind === 'staff') await this.signOut({ quiet: true });
     } catch { }
   },

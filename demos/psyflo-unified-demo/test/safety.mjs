@@ -264,7 +264,7 @@ await T.test('SVR-07 no stored credentials, tokens or unattended payer or Lauris
   assert.deepEq(bad, [], bad.join(' | '));
 });
 await T.test('SVR-09 demo controls (reply, advance, reset) are hidden from direct support in the UI and refused by the server', async () => {
-  const u = await uiText('khale', '/MyWork?present=1', { presenter: false }); assert.eq(await u.page.locator('#dock .ui-dock, #dock [data-dock]').count() + (await u.page.getByText(/Advance the clock|Receive a reply|Reset/).count()), 0, 'no demo controls on the page'); await u.ctx.close();
+  const u = await uiText('khale', '/MyWork?present=1', { presenter: false }); assert.eq(await u.page.locator('#dock [data-dock]:not([data-dock="unlock"]):not([data-dock="hide"]):not([data-dock="mode"]):not([data-dock="toggle"]):not([data-dock="notes"]):not([data-dock="maturity"])').count() + (await u.page.getByText(/Advance the clock|Receive a reply|Reset/).count()), 0, 'no demo controls on the page'); await u.ctx.close();
   for (const a of ['demo.reset', 'demo.advanceDay', 'request.demoReply', 'demo.scenario']) assert.ok([401, 403].includes((await tryApi(a, { preset: 'live', id: 'R-0402', kind: 'approved' }, 'khale')).status), a);
 });
 

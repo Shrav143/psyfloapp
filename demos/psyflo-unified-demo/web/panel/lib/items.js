@@ -7,7 +7,7 @@ export const slug = t => String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').rep
 export function itemsFromDraft(ctx, draft, client, { staff = {}, refs = {}, request = null } = {}) {
   const src = n => {
     const s = (draft.sources || []).find(x => x.n === n) || { n, label: 'source' };
-    const kind = KIND[s.kind] || 'client'; const base = { n, kind, label: s.label, date: s.date || null, quote: s.quote || s.source || '' };
+    const kind = KIND[s.kind] || 'client'; const base = { n, kind, label: s.label, date: s.date || null, date_label: s.date_label || null, quote: s.quote || s.source || '' };
     if (kind === 'referral') base.ref = client.referral || null;
     if (kind === 'request') base.ref = request && request.id;
     if (kind === 'notes') { const r = /weekly/i.test(s.label) ? refs.weekly : /collateral|monthly/i.test(s.label) ? refs.monthly : refs.notes; base.refs = (r || []).slice(0, 80); }

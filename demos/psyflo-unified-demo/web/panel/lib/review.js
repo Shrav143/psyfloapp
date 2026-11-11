@@ -3,6 +3,7 @@
 // accept-all; Approve and fill stays disabled until every box has a decision; a box with no stored evidence cannot be accepted as it stands.
 import { esc } from '../../js/runtime.js';
 import { fmtDate } from '../../js/shared/dates.js';
+import { dateLabel } from '../../js/shared/enhance.js';
 
 const LADDER = ['Original', 'PsyFlo draft', 'Clinician edited', 'Approved', 'Synchronized'];
 const RANK = { original: 0, draft: 1, edited: 2, approved: 3, filled: 3, saved: 3, processed: 4 };
@@ -13,7 +14,7 @@ export function recFor(ctx, client, form) {
   const s = ctx.S(); const me = ctx.me(); const today = (s.clock && s.clock.date) || s.today;
   return (s.doc_versions || []).filter(d => d.mode === 'current' && d.client === client.id && d.form === form && d.by === me.id && d.date === today && (d.items || []).length).at(-1) || null;
 }
-const evidence = src => ({ n: src.n, label: src.label, date: src.date ? fmtDate(src.date) : '', quote: src.quote || '', source: src.source || src.label });
+const evidence = src => ({ n: src.n, label: src.label, date: dateLabel(src), quote: src.quote || '', source: src.source || src.label });
 
 // reviewBlock(ctx, rec, { title, st, fillExtra, client, sources }) -> html. `st` is the view's scratch object (holds which box is being edited).
 export function reviewBlock(ctx, rec, o = {}) {

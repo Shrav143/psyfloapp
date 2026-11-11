@@ -1,6 +1,6 @@
 # panels · PASS
 
-Run 2026-11-11T16-38-58Z · 31996 ms · instance 0 · exit 0
+Run 2026-11-11T18-24-51Z · 35641 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -19,4 +19,5 @@ Run 2026-11-11T16-38-58Z · 31996 ms · instance 0 · exit 0
 | PASS | approvals (jperez) |  |
 | PASS | sebs-off (jperez) |  |
 | PASS | ds-screening (khale) |  |
+| PASS | not-my-caseload (khale) |  |
 | PASS | record (jperez) |  |

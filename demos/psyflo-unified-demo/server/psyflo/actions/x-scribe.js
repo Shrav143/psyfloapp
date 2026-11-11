@@ -11,7 +11,7 @@
 import { refuse } from '../gates.js';
 import { ruleValue } from '../../../web/js/shared/rules.js';
 import { today as clockToday } from '../../../web/js/shared/clock.js';
-import { MISSING } from '../../../web/js/shared/enhance.js';
+import { MISSING, dateFields } from '../../../web/js/shared/enhance.js';
 
 const byId = (arr, id) => (arr || []).find(x => x.id === id);
 export const CLINICAL_FORMS = ['screening', 'cna', 'isp', 'sra-initial', 'sra-continued', 'quarterly', 'discharge'];
@@ -102,7 +102,7 @@ export default {
     d.input = { kind, text: String(input.text || '').slice(0, 6000) }; d.session = session || d.session;
     const prev = new Map(d.items.map(i => [i.id, i]));
     d.items = items.slice(0, 40).map(i => {
-      const sources = (i.sources || []).filter(src => resolves(s, src, d)).map(src => ({ n: src.n, kind: src.kind, ref: src.ref || null, refs: src.refs || null, label: String(src.label || '').slice(0, 120), date: src.date || null, quote: String(src.quote || '').slice(0, 400) }));
+      const sources = (i.sources || []).filter(src => resolves(s, src, d)).map(src => ({ n: src.n, kind: src.kind, ref: src.ref || null, refs: src.refs || null, label: String(src.label || '').slice(0, 120), ...dateFields(/^\d{4}-\d{2}-\d{2}/.test(String(src.date || '')) ? src.date : (['input', 'self', 'timer'].includes(src.kind) ? today(s) : null)), quote: String(src.quote || '').slice(0, 400) }));
       const missing = !!i.missing || !sources.length || /^Evidence missing/.test(String(i.psyflo || ''));
       const psyflo = missing && !/^Evidence missing/.test(String(i.psyflo || '')) && !sources.length ? MISSING(String(i.label || 'this box').toLowerCase()) : String(i.psyflo || '');
       const old = prev.get(String(i.id));

@@ -1,6 +1,6 @@
 # authorizations · PASS
 
-Run 2026-11-11T17-28-23Z · 49213 ms · instance 1 · exit 0
+Run 2026-11-11T18-24-51Z · 44033 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -8,6 +8,8 @@ Run 2026-11-11T17-28-23Z · 49213 ms · instance 1 · exit 0
 | PASS | the queue: chips overlap, counts follow the other filters, a draft is also a renewal, an overdue request is also submitted |  |
 | PASS | v3 deep-link names (show=, st=, exp=, range=) become the canonical filters |  |
 | PASS | deadlines carry a source: day counts from the rules table, Harvest-reported, never a bare 7 or 14 |  |
+| PASS | QA2 D6: the case Evidence section reads the same gaps as the Scan & Enhance panel (evidenceIndex), never a fixed "Nothing missing" |  |
+| PASS | QA2 D10: Reauth due is the end date minus the lead time from the rules table, with its source; the end date is not the due date |  |
 | PASS | roles: admin sees status, units and the queue but no evidence text; direct support has no queue |  |
 | PASS | owner and backup: set by anyone who opens the queue, visible to admin, the backup must be a different clinician or supervisor |  |
 | PASS | the follow-up call log is append-only, needs the send capability, and a confirmed receipt is kept once |  |

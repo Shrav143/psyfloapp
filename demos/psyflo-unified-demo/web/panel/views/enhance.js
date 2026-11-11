@@ -7,7 +7,7 @@
 //                              no addendum and no late entry: the server refuses any write to a processed record.
 import { esc } from '../../js/runtime.js';
 import { fmtDate } from '../../js/shared/dates.js';
-import { evidenceIndex, periodPresets, applyFindings, KIND_LABEL, KIND_ONE, interventionLabel } from '../../js/shared/enhance.js';
+import { evidenceIndex, periodPresets, applyFindings, KIND_LABEL, KIND_ONE, interventionLabel, DATE_MISSING } from '../../js/shared/enhance.js';
 import { ladderIndex } from '../lib/review.js';
 
 const LADDER = ['Original', 'PsyFlo draft', 'Clinician edited', 'Approved', 'Synchronized'];
@@ -54,7 +54,7 @@ function htmlA(ctx, c) {
 function card(ctx, rec, f, i, n) {
   const st = ctx.st; const cat = CAT[f.category] || ['Check', 'neutral']; const ans = st.ans && st.ans[f.id] != null ? st.ans[f.id] : (f.answer || '');
   const rule = f.rule ? ctx.ui.sourceChip({ category: f.rule.verification, source: f.rule.source }, {}) : '';
-  const ev = (f.evidence || []).map(e => ctx.ui.evidenceChip({ label: e.label || 'Form', date: e.date ? fmtDate(e.date) : '', quote: e.quote, source: e.ref })).join('');
+  const ev = (f.evidence || []).map(e => ctx.ui.evidenceChip({ label: e.label || 'Form', date: e.date ? fmtDate(e.date) : /^form:/.test(e.ref || '') ? fmtDate(ctx.M.today(ctx.S())) : DATE_MISSING, quote: e.quote, source: e.ref })).join('');
   return `<div class="fcard open"><div class="row w" style="justify-content:space-between"><span class="lab">Finding ${i + 1} of ${n}</span>${ctx.ui.chip(cat[0], { tone: cat[1], size: 'sm' })}</div>
     <h3 style="margin:6px 0 2px">${esc(f.issue)}</h3>${f.why ? `<div class="hint">${esc(f.why)}</div>` : ''}
     <div class="row w" style="margin:6px 0 2px">${rule}${f.rule ? `<span class="hint">${esc(f.rule.label)}</span>` : ''}</div>

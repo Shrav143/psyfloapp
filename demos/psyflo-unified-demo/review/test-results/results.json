@@ -1,6 +1,6 @@
 {
- "runId": "2026-11-11T18-19-51Z",
- "commit": "63e6bd0",
+ "runId": "2026-11-11T18-34-44Z",
+ "commit": "7d81f4f",
  "release": false,
  "releaseReady": false,
  "env": {
@@ -9,607 +9,33 @@
   "preset": "live",
   "workers": 3,
   "repeat": 1,
-  "basePort": 4800
+  "basePort": 4990
  },
  "summary": {
-  "pass": 12,
-  "fail": 5,
+  "pass": 2,
+  "fail": 2,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 243114,
+  "durationMs": 142615,
   "tests": {
-   "pass": 320,
-   "fail": 12,
-   "skip": 52
+   "pass": 129,
+   "fail": 5,
+   "skip": 1
   }
  },
  "suites": [
-  {
-   "name": "unit",
-   "tags": [
-    "unit"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 464,
-   "counts": {
-    "pass": 11,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "Flow A · screening transcript drafts the expected boxes",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Flow A · prompts tick as answers are heard",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Flow A · an empty prior-service outcome blocks and asks",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Flow B · dictation stays the staffer's own facts: no template, no invented times, events or outcomes",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Flow B · a named objective is used; an unnamed one is a question",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Flow B · negative case: \"observed\" is flagged and a question is raised; the words are not changed",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Units · official bands: 0 below 120 minutes, 1/2/3 at 120/180/300; the 60-minute rule is an alternate, not the default",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Evidence · counts come from stored notes; missing evidence prints \"Evidence missing\"; household is not included by default",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Flow C · initial SRA leaves criterion 3 blank when 1 and 2 are met, and never drafts trauma-informed care",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Flow C · initial SRA: no screening facts and no school numbers = \"Evidence missing\", never a number nobody gave",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "drafts with no record behind them print \"Evidence missing\", never another student's facts or the demo's",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "bridge-contract",
-   "tags": [
-    "contract"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 728,
-   "counts": {
-    "pass": 7,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "consumer list: #consumer-list rows carry data-consumer and data-program; .top .r and .side .lnav .b exist",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "consumer header: .hdr .nm, #consumer-name, \"Harvest #\", Program:, .units",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "session form: #lauris-form data-form|session|consumer, #session-form-title, label[for] boxes, Save/Process buttons",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRG redirects and the flash: ?processed= ?saved= ?signed= ?rejected= ?created= with #lauris-flash[data-event|session|form|consumer]",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "portal pages: #portal-form and #portal-confirmation[data-ref|request|kind]",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the bridge source: message shapes, origin checks, no clicks, no background fetch to Lauris, same copy in extension/",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "what the bridge reports is accepted from the Lauris origin only with a JSON body (the bridge posts exactly this)",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "clock",
-   "tags": [
-    "safety"
-   ],
-   "instance": 2,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 1097,
-   "counts": {
-    "pass": 10,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "both presets start on Oct 29; Psyflo and the mock Lauris print the same date",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "advancing the day moves Psyflo AND Lauris together; the default skips the weekend",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a Lauris stamp uses the same clock (a form processed after the advance is dated that day)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the time of day is not the machine clock and is never silently pinned (fixed only through DEMO_TIME)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PDU-02 an information request that is not answered becomes \"missed\" (no 08:40 fudge); the reply-due time is shown",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PDU-01/06 decision clock: \"Day N\", follow-up on day 10, overdue only after the configured window; each number has a source",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the seeded overdue request (R-0399) is overdue by the rule, not by a constant",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXA-04 appeal window: computed from the notice date (60 days, unverified, confirm on the letter); closed after it, never negative",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deadlines return the date, the source and the verification label from the rules table",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no hard-coded story date in the foundation code (the Oct 29 literal, \"Oct 29\", 10/29, the 08:40 fudge)",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "decisions",
-   "tags": [
-    "safety"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 3572,
-   "counts": {
-    "pass": 8,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "T.N. approved at 150 after the peer-to-peer: 150 units, a new window, the old 65 of 65 kept as history",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the task closes only when the page bridge shows the units in Lauris (a person entered them)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "T.W. and E.C. become Active WITH units (demo reply approved on a sent request)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "accepting a partial (D.W. 110 of 150) sets 110 units; M.R. continued stay award replaces 83 of 110 with a new window",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "request.demoReply never approves a draft or anything that was not sent; presenter mode is required",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "R-0391 (J.O.) turns overdue under the clock service, like R-0399",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "/api/state and the roster never serve a screening transcript to an unauthenticated caller",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the phone timer follows store.clock, not the machine clock",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "fixtures",
-   "tags": [
-    "fixtures",
-    "realtime"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 5391,
-   "counts": {
-    "pass": 7,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "tw-screened: the fixture and the UI path give the same state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "tw-isp-ready: the fixture and the UI path give the same state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "tw-signed: the fixture and the UI path give the same state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "tw-sent: the fixture and the UI path give the same state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "base presets, tw-referral, payer-decision and mr-daily load; the clock and Lauris agree",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the presenter scenarios s1-s6 reset, tweak and return where to go",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "DEMO_TEST snapshot of the mock Lauris: present when DEMO_TEST=1 (refused otherwise)",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "flowB",
-   "tags": [
-    "flow"
-   ],
-   "instance": 2,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 5955,
-   "counts": {
-    "pass": 4,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "direct support saves a dictation for a student on their caseload; one off the caseload is refused",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "opening M.R.'s daily note drops the dictation in as the staffer's own words, with questions for what was not said",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a person confirms the units and presses Process Form; the note counts: 5 of 6",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no console errors",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "gates",
-   "tags": [
-    "safety",
-    "realtime"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 5777,
-   "counts": {
-    "pass": 29,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "WPS-01 a Lauris record with an unknown Harvest # is never matched by initials: no draft, no note, dictation stays waiting",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WPS-02 the right Harvest # with the wrong initials on the page is a hard stop (audited), nothing applied",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WPS-03 no default person: an unknown or missing Lauris user, Harvest # or session records nothing",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WPS-04 a forged event (no such session, or another user) is not believed",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WPS-05 a timer or dictation for a student off the caseload is refused",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WPS-08 a portal confirmation needs its request, and an issued reference",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-01 Process Form (observed) lands in Pending clinical approval; nothing can be signed or sent from a client call",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-02 a second Process Form for the same request is an anomaly, not a second processed state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-03 a direct-support user cannot sign in Lauris, and a forged signed event is not believed",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-07 signed in Lauris BEFORE the internal approval: held, not marked signed, Send blocked",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-08 approval: only a designated approver; the signer on the signed PDF and the events is the one read from Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "SIGNED is final: a second signature event or a reject after signing is refused (Lauris and Psyflo)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-09 send: a person with send.packet presses it; the actor is the session, never args.by; the event is simulated, not \"Sfax\"",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PS-2 the portal confirmation attaches only to its request and an issued reference",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PDU-01 the decision clock is \"Day N\" with the configured window and a source; the date comes from the rules table",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "GT-6 a re-send is a distinct action with a reason; it never resets the first send date",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "SVR-01 fax: Send by a person -> simulated Sfax; events carry sim:true and the person, never an actor called \"Sfax\"",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PS-1 an overdue notice or a guardian signature is not a send: \"sent\" is recorded only when the Send stub ran",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EFN-01..03 Lauris: a processed session cannot be written, processed again, or opened for editing",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EFN-04 Psyflo: a repeated processed event for a session changes nothing; the note stays unchanged",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "IIU-09 units must follow the recorded direct time: a note with 3 units on 100 minutes is flagged for review",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EFN-05 consent: a second signature is kept as a new version, the first record and file stay",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EFN-06/07 a sent reply is write-once; patch actions and record rewrites are refused",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "payer decisions need a document reference and are write-once (a correction needs a reason and appends)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "IIU-03/04/05/06 invalid units, dates and results are refused",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "URA note review: not your own note; a decision is write-once; only the assigned reviewer or a supervisor",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "presenter actions are refused without presenter mode; the demo reply is recorded as simulated with a demo reference",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "DSL-04 the internal quarterly is staff only: absent from every other projection",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "RE-4 guardian appeal: signing is not sending; a person presses Send and the stub returns the reference",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "rules",
-   "tags": [
-    "safety"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 995,
-   "counts": {
-    "pass": 8,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "every rule has key, label, value, unit, category, source, verified_on, note, default",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the register is covered: R-001..R-054 each appear in at least one rule",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "unit bands: official 120/180/300 by default; the 60-minute rule is only an alternate value",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the named rules exist with the right category: plan due, decision clock, additional info, continued stay, notes, discharge, signature modes, eligibility, group size",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "settings.rule: admin only, a reason is required, the change is audited and kept in the row history",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a rule change applies forward only: a new information request uses it, stored dates do not move",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "changing the unit bands changes unitsFor; a reset to the default restores it",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signature mode: switching consent to in-person refuses a remote signature",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
   {
    "name": "roles",
    "tags": [
     "safety"
    ],
-   "instance": 2,
+   "instance": 1,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 11997,
+   "durationMs": 10862,
    "counts": {
     "pass": 24,
     "fail": 0,
@@ -737,1030 +163,7 @@
      "note": ""
     }
    ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "flowC",
-   "tags": [
-    "flow",
-    "realtime"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 22651,
-   "counts": {
-    "pass": 6,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "ISP: the three goals are filled; Process Form drafts the request (R-0416)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "SRA: drafted from the call and the school counts; criterion 3 and trauma-informed care left blank; no invented dates or promises",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Process Form lands in Pending clinical approval (observed, with the Harvest # and session)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the approver records the approval; then Get Signature in Lauris is observed: the signer is the Lauris user",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Send is a person's action (session actor); the receipt is the simulated Sfax stub",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no console errors",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "s3",
-   "tags": [
-    "scenario",
-    "realtime"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "FAIL",
-   "exit": 1,
-   "durationMs": 27453,
-   "counts": {
-    "pass": 5,
-    "fail": 4,
-    "skip": 27
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "S3[scenario] · first state: R-0416 is a Draft ready initial request (Humana, fax, 150 units), T.W. has 3 goals and a Harvest #, the Authorizations queue lists it as Draft ready",
-     "note": ""
-    },
-    {
-     "status": "FAIL",
-     "title": "S3[scenario] · 2 the SRA panel: 7 statements, every one with its sources (referral, screening call, school portal, ISP); criterion 3 and trauma-informed care are left for the clinician, never drafted",
-     "note": "\"Request · T.W. Lauris connected Clinician T.W. Harvest #4492 Lynchburg City · MS-2 TDT · Initial request (SRA) Draft · not saved green · already in Lauris yello\" does not match /Checks\\s*7 of 7 pass/"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[scenario] · 3 edit criterion 1: the person's words replace the draft (Clinician edited, Restore previous appears); the draft is Psyflo's, nothing is in Lauris yet",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[scenario] · 4 Accept the statements with sources, Approve and fill: the boxes are typed yellow (not saved); criterion 3 and trauma-informed care stay blank; the version is recorded by Psyflo",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[scenario] · 4b the drafted request dates start on or after the day the request is drafted (one demo clock, no seed date carried over)",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[scenario] · 5 Process Form (a person): Pending clinical approval, Lauris session processed and in Forms to Approve, the queue says so, the timeline gains events",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[scenario] · 6 internal approval (platform): an undesignated supervisor cannot (button disabled with the reason, server 403); the designated clinician approves; Awaiting signature",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[scenario] · 7 Get Signature (a licensed person, in Lauris Forms to Approve): Signed; the signer on the record and the PDF is the Lauris user; Lauris marks the session signed",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[scenario] · 8 Send (a person, in the platform): sending, then Submitted with the simulated Sfax receipt: a fax reference F-nnnn, a receipt, the decision clock \"Day 0\"; the actor is the person, events say simulated",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[scenario] · 9 the timeline and Analytics follow: R-0416 has the full chain of events; the pilot scorecard \"Sends with receipts\" moves +1 over +1 on the screen and in the selector",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[scenario] · no console errors on the desk, Lauris, the panel or the platform",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "PASS",
-     "title": "S3[fixture] · first state: R-0416 is a Draft ready initial request (Humana, fax, 150 units), T.W. has 3 goals and a Harvest #, the Authorizations queue lists it as Draft ready",
-     "note": ""
-    },
-    {
-     "status": "FAIL",
-     "title": "S3[fixture] · 2 the SRA panel: 7 statements, every one with its sources (referral, screening call, school portal, ISP); criterion 3 and trauma-informed care are left for the clinician, never drafted",
-     "note": "\"Request · T.W. Lauris connected Clinician T.W. Harvest #4492 Lynchburg City · MS-2 TDT · Initial request (SRA) Draft · not saved green · already in Lauris yello\" does not match /Checks\\s*7 of 7 pass/"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fixture] · 3 edit criterion 1: the person's words replace the draft (Clinician edited, Restore previous appears); the draft is Psyflo's, nothing is in Lauris yet",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fixture] · 4 Accept the statements with sources, Approve and fill: the boxes are typed yellow (not saved); criterion 3 and trauma-informed care stay blank; the version is recorded by Psyflo",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fixture] · 4b the drafted request dates start on or after the day the request is drafted (one demo clock, no seed date carried over)",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fixture] · 5 Process Form (a person): Pending clinical approval, Lauris session processed and in Forms to Approve, the queue says so, the timeline gains events",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fixture] · 6 internal approval (platform): an undesignated supervisor cannot (button disabled with the reason, server 403); the designated clinician approves; Awaiting signature",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fixture] · 7 Get Signature (a licensed person, in Lauris Forms to Approve): Signed; the signer on the record and the PDF is the Lauris user; Lauris marks the session signed",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fixture] · 8 Send (a person, in the platform): sending, then Submitted with the simulated Sfax receipt: a fax reference F-nnnn, a receipt, the decision clock \"Day 0\"; the actor is the person, events say simulated",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fixture] · 9 the timeline and Analytics follow: R-0416 has the full chain of events; the pilot scorecard \"Sends with receipts\" moves +1 over +1 on the screen and in the selector",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fixture] · no console errors on the desk, Lauris, the panel or the platform",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "PASS",
-     "title": "S3[fresh] · 0 intake (CNA) in Lauris + panel: the boxes are typed from the screening (\"copied from screening\"); a person presses Process Form",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S3[fresh] · 1 ISP in Lauris + panel: \"Fill the 3 goals\" types them; a person presses Process Form; Psyflo drafts the request R-0416 (Draft ready) and holds 3 goals",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S3[fresh] · first state: R-0416 is a Draft ready initial request (Humana, fax, 150 units), T.W. has 3 goals and a Harvest #, the Authorizations queue lists it as Draft ready",
-     "note": ""
-    },
-    {
-     "status": "FAIL",
-     "title": "S3[fresh] · 2 the SRA panel: 7 statements, every one with its sources (referral, screening call, school portal, ISP); criterion 3 and trauma-informed care are left for the clinician, never drafted",
-     "note": "\"Request · T.W. Lauris connected Clinician T.W. Harvest #4492 Lynchburg City · MS-2 TDT · Initial request (SRA) Draft · not saved green · already in Lauris yello\" does not match /Checks\\s*7 of 7 pass/"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fresh] · 3 edit criterion 1: the person's words replace the draft (Clinician edited, Restore previous appears); the draft is Psyflo's, nothing is in Lauris yet",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fresh] · 4 Accept the statements with sources, Approve and fill: the boxes are typed yellow (not saved); criterion 3 and trauma-informed care stay blank; the version is recorded by Psyflo",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fresh] · 4b the drafted request dates start on or after the day the request is drafted (one demo clock, no seed date carried over)",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fresh] · 5 Process Form (a person): Pending clinical approval, Lauris session processed and in Forms to Approve, the queue says so, the timeline gains events",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fresh] · 6 internal approval (platform): an undesignated supervisor cannot (button disabled with the reason, server 403); the designated clinician approves; Awaiting signature",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fresh] · 7 Get Signature (a licensed person, in Lauris Forms to Approve): Signed; the signer on the record and the PDF is the Lauris user; Lauris marks the session signed",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fresh] · 8 Send (a person, in the platform): sending, then Submitted with the simulated Sfax receipt: a fax reference F-nnnn, a receipt, the decision clock \"Day 0\"; the actor is the person, events say simulated",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fresh] · 9 the timeline and Analytics follow: R-0416 has the full chain of events; the pilot scorecard \"Sends with receipts\" moves +1 over +1 on the screen and in the selector",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "SKIP",
-     "title": "S3[fresh] · no console errors on the desk, Lauris, the panel or the platform",
-     "note": "blocked by an earlier failed step in this run: 2 the SRA panel: 7 statements, every one with its sources (r"
-    },
-    {
-     "status": "FAIL",
-     "title": "S3 parity: the first and the last state are the same whether it started from demo.scenario, the fixture tw-isp-ready or a fresh reset",
-     "note": "at least two completed runs to compare: "
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "s1",
-   "tags": [
-    "scenario",
-    "realtime"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "FAIL",
-   "exit": 1,
-   "durationMs": 63954,
-   "counts": {
-    "pass": 27,
-    "fail": 1,
-    "skip": 10
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "S1[scenario] · first state: 4 of 6 notes in, a running timer with six blocks (the last unconfirmed), M.R. 27 of 110 units in Psyflo and in Lauris, nothing waiting",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[scenario] · 1 phone: khale picks M.R. (identity card with Harvest # 3310); picking a student changes nothing in either store",
-     "note": ""
-    },
-    {
-     "status": "FAIL",
-     "title": "S1[scenario] · 2 say what happened, review the draft, save: the dictation WAITS in Psyflo (with the Harvest #), nothing reaches Lauris, the phone says Waiting for Lauris",
-     "note": "locator.click: Timeout 30000ms exceeded."
-    },
-    {
-     "status": "SKIP",
-     "title": "S1[scenario] · 3 Lauris daily note + panel: \"Dictation dropped in\"; the boxes are typed yellow and NOT saved (no session in Lauris, only the panel.filled event in Psyflo)",
-     "note": "blocked by an earlier failed step in this run: 2 say what happened, review the draft, save: the dictation W"
-    },
-    {
-     "status": "SKIP",
-     "title": "S1[scenario] · 4 review wording and sources in the panel: the staffer's words, the drafted narrative (\"Nothing was added\"), the questions for what was not said, 3 of 5 checks",
-     "note": "blocked by an earlier failed step in this run: 2 say what happened, review the draft, save: the dictation W"
-    },
-    {
-     "status": "SKIP",
-     "title": "S1[scenario] · 5 Process Form (a person's click): the note, the units, the dictation, 3+ audit events, in BOTH stores",
-     "note": "blocked by an earlier failed step in this run: 2 say what happened, review the draft, save: the dictation W"
-    },
-    {
-     "status": "SKIP",
-     "title": "S1[scenario] · 5b the processed note's Contact time rows are the confirmed blocks only (the unconfirmed 1:40-3:10 pm block is neither counted NOR written into the note)",
-     "note": "blocked by an earlier failed step in this run: 2 say what happened, review the draft, save: the dictation W"
-    },
-    {
-     "status": "SKIP",
-     "title": "S1[scenario] · 6 the phone and Track Time follow only the observed event: Processed in Lauris, 5 of 6, \"In the note\" 3 h 40 min = 2 units",
-     "note": "blocked by an earlier failed step in this run: 2 say what happened, review the draft, save: the dictation W"
-    },
-    {
-     "status": "SKIP",
-     "title": "S1[scenario] · 7 My Work (khale): 5 of 6 in, M.R. no longer open; the supervisor queue follows the review mode (every note: +1; spot check: the note is sampled or not queued, never silently lost)",
-     "note": "blocked by an earlier failed step in this run: 2 say what happened, review the draft, save: the dictation W"
-    },
-    {
-     "status": "SKIP",
-     "title": "S1[scenario] · 8 the authorization case follows: R-0411 Units used 85 of 110 (25 left), the same figure Lauris prints",
-     "note": "blocked by an earlier failed step in this run: 2 say what happened, review the draft, save: the dictation W"
-    },
-    {
-     "status": "SKIP",
-     "title": "S1[scenario] · 9 Analytics (admin): the pilot scorecard \"Notes on time\" moves +1 over +1, the screen shows what the selector computes, no clinical text for admin",
-     "note": "blocked by an earlier failed step in this run: 2 say what happened, review the draft, save: the dictation W"
-    },
-    {
-     "status": "SKIP",
-     "title": "S1[scenario] · 10 Denial Intelligence and Authorizations are untouched by a daily note (no dispute opened or closed, no Lauris task)",
-     "note": "blocked by an earlier failed step in this run: 2 say what happened, review the draft, save: the dictation W"
-    },
-    {
-     "status": "SKIP",
-     "title": "S1[scenario] · no console errors on the phone, Lauris, the panel or the platform",
-     "note": "blocked by an earlier failed step in this run: 2 say what happened, review the draft, save: the dictation W"
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · first state: 4 of 6 notes in, a running timer with six blocks (the last unconfirmed), M.R. 27 of 110 units in Psyflo and in Lauris, nothing waiting",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · 1 phone: khale picks M.R. (identity card with Harvest # 3310); picking a student changes nothing in either store",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · 2 say what happened, review the draft, save: the dictation WAITS in Psyflo (with the Harvest #), nothing reaches Lauris, the phone says Waiting for Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · 3 Lauris daily note + panel: \"Dictation dropped in\"; the boxes are typed yellow and NOT saved (no session in Lauris, only the panel.filled event in Psyflo)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · 4 review wording and sources in the panel: the staffer's words, the drafted narrative (\"Nothing was added\"), the questions for what was not said, 3 of 5 checks",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · 5 Process Form (a person's click): the note, the units, the dictation, 3+ audit events, in BOTH stores",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · 6 the phone and Track Time follow only the observed event: Processed in Lauris, 5 of 6, \"In the note\" 3 h 40 min = 2 units",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · 7 My Work (khale): 5 of 6 in, M.R. no longer open; the supervisor queue follows the review mode (every note: +1; spot check: the note is sampled or not queued, never silently lost)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · 8 the authorization case follows: R-0411 Units used 85 of 110 (25 left), the same figure Lauris prints",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · 9 Analytics (admin): the pilot scorecard \"Notes on time\" moves +1 over +1, the screen shows what the selector computes, no clinical text for admin",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · 10 Denial Intelligence and Authorizations are untouched by a daily note (no dispute opened or closed, no Lauris task)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fixture] · no console errors on the phone, Lauris, the panel or the platform",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · first state: 4 of 6 notes in, a running timer with six blocks (the last unconfirmed), M.R. 27 of 110 units in Psyflo and in Lauris, nothing waiting",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · 1 phone: khale picks M.R. (identity card with Harvest # 3310); picking a student changes nothing in either store",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · 2 say what happened, review the draft, save: the dictation WAITS in Psyflo (with the Harvest #), nothing reaches Lauris, the phone says Waiting for Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · 3 Lauris daily note + panel: \"Dictation dropped in\"; the boxes are typed yellow and NOT saved (no session in Lauris, only the panel.filled event in Psyflo)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · 4 review wording and sources in the panel: the staffer's words, the drafted narrative (\"Nothing was added\"), the questions for what was not said, 3 of 5 checks",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · 5 Process Form (a person's click): the note, the units, the dictation, 3+ audit events, in BOTH stores",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · 6 the phone and Track Time follow only the observed event: Processed in Lauris, 5 of 6, \"In the note\" 3 h 40 min = 2 units",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · 7 My Work (khale): 5 of 6 in, M.R. no longer open; the supervisor queue follows the review mode (every note: +1; spot check: the note is sampled or not queued, never silently lost)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · 8 the authorization case follows: R-0411 Units used 85 of 110 (25 left), the same figure Lauris prints",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · 9 Analytics (admin): the pilot scorecard \"Notes on time\" moves +1 over +1, the screen shows what the selector computes, no clinical text for admin",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · 10 Denial Intelligence and Authorizations are untouched by a daily note (no dispute opened or closed, no Lauris task)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1[fresh] · no console errors on the phone, Lauris, the panel or the platform",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S1 parity: the first and the last state are the same whether it started from demo.scenario, the fixture or a fresh reset",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "s4",
-   "tags": [
-    "scenario"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 46957,
-   "counts": {
-    "pass": 32,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · first state: R-0411 is a Draft ready continued stay; M.R. has 40 daily notes (83 units), 9 weekly calls and 3 monthly rows in Psyflo; Lauris holds the same sessions; no evidence mark or period yet",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · 1 open from the case (platform): the Evidence section prints counts from the stored rows (40 / 9 / 3) and links to the continued-stay form in Lauris; opening changes nothing; R-0411 stays Draft ready",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · 2 Scan & Enhance › Evidence review (Mode B): read-only, Psyflo's own copies; NO fill, approve or write control exists; the period is chosen and kept (who)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · 3 counts open their rows: each count lists its dated rows (the number of rows equals the number); rows are read-only text from the stored note",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · 4 Exclude (a person): the dialog asks why; the row leaves the count; who, when and why are kept; the note itself and Lauris are untouched",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · 5 missing evidence is a list, not a sentence: every gap that lacks a stored record prints \"Evidence missing",
-     "note": "verify …\" and names the dates; the gap count equals the selector's"
-    },
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · 6 household context is OFF by default (a person must include it); \"Use it in the continued-stay request\", Review statements: a statement with no stored evidence has no Accept; counts in the text equal the rows",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · 7 nothing is processed: R-0411 stays Draft ready, Lauris holds no new session and the same units, every processed note is byte-identical, the draft is Psyflo's record",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · 8 the platform follows: the case Evidence section counts the exclusion, the queue still says Draft ready, Analytics counts no processed note for this",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · 8b the case Evidence section and the panel agree on what is missing: the case must not say \"Nothing missing\" while the panel lists gaps for the same request",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[scenario] · no console errors on the platform, Lauris or the panel",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fixture] · first state: R-0411 is a Draft ready continued stay; M.R. has 40 daily notes (83 units), 9 weekly calls and 3 monthly rows in Psyflo; Lauris holds the same sessions; no evidence mark or period yet",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fixture] · 1 open from the case (platform): the Evidence section prints counts from the stored rows (40 / 9 / 3) and links to the continued-stay form in Lauris; opening changes nothing; R-0411 stays Draft ready",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fixture] · 2 Scan & Enhance › Evidence review (Mode B): read-only, Psyflo's own copies; NO fill, approve or write control exists; the period is chosen and kept (who)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fixture] · 3 counts open their rows: each count lists its dated rows (the number of rows equals the number); rows are read-only text from the stored note",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fixture] · 4 Exclude (a person): the dialog asks why; the row leaves the count; who, when and why are kept; the note itself and Lauris are untouched",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fixture] · 5 missing evidence is a list, not a sentence: every gap that lacks a stored record prints \"Evidence missing",
-     "note": "verify …\" and names the dates; the gap count equals the selector's"
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fixture] · 6 household context is OFF by default (a person must include it); \"Use it in the continued-stay request\", Review statements: a statement with no stored evidence has no Accept; counts in the text equal the rows",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fixture] · 7 nothing is processed: R-0411 stays Draft ready, Lauris holds no new session and the same units, every processed note is byte-identical, the draft is Psyflo's record",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fixture] · 8 the platform follows: the case Evidence section counts the exclusion, the queue still says Draft ready, Analytics counts no processed note for this",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fixture] · no console errors on the platform, Lauris or the panel",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fresh] · first state: R-0411 is a Draft ready continued stay; M.R. has 40 daily notes (83 units), 9 weekly calls and 3 monthly rows in Psyflo; Lauris holds the same sessions; no evidence mark or period yet",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fresh] · 1 open from the case (platform): the Evidence section prints counts from the stored rows (40 / 9 / 3) and links to the continued-stay form in Lauris; opening changes nothing; R-0411 stays Draft ready",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fresh] · 2 Scan & Enhance › Evidence review (Mode B): read-only, Psyflo's own copies; NO fill, approve or write control exists; the period is chosen and kept (who)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fresh] · 3 counts open their rows: each count lists its dated rows (the number of rows equals the number); rows are read-only text from the stored note",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fresh] · 4 Exclude (a person): the dialog asks why; the row leaves the count; who, when and why are kept; the note itself and Lauris are untouched",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fresh] · 5 missing evidence is a list, not a sentence: every gap that lacks a stored record prints \"Evidence missing",
-     "note": "verify …\" and names the dates; the gap count equals the selector's"
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fresh] · 6 household context is OFF by default (a person must include it); \"Use it in the continued-stay request\", Review statements: a statement with no stored evidence has no Accept; counts in the text equal the rows",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fresh] · 7 nothing is processed: R-0411 stays Draft ready, Lauris holds no new session and the same units, every processed note is byte-identical, the draft is Psyflo's record",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fresh] · 8 the platform follows: the case Evidence section counts the exclusion, the queue still says Draft ready, Analytics counts no processed note for this",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4[fresh] · no console errors on the platform, Lauris or the panel",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S4 parity: the first and the last state are the same whether it started from demo.scenario, the fixture mr-corpus or a fresh canvas reset",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "s6",
-   "tags": [
-    "scenario"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "FAIL",
-   "exit": 1,
-   "durationMs": 37407,
-   "counts": {
-    "pass": 27,
-    "fail": 1,
-    "skip": 7
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · first state: the administrator's scorecard is what the selectors compute from the stored records (six measures); the dataset is case-backed, as of the demo date",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · 1 Analytics (admin): three sections as links, Case-backed by default, the banner says where the figures come from; the pilot scorecard shows the six measures and every tile equals its selector; aggregates only",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · 2 timeliness moves while the page is open (S1): a processed daily note raises \"Notes on time\" by one over one, on the screen within seconds, with no reload",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · 3 payer outcomes (S5 effect): a recorded decision moves \"Units approved\" and \"Offers awaiting a reply\" and the unresolved count on the Payer Performance section, which prints case-backed figures only",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · 3b a payer row opens Denial Intelligence filtered to that payer (a link, not a dead cell); an upcoming-work row opens its case",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · 4 patient population, then the Illustrative cohort: a separate dataset with its own banner, never summed with the case-backed figures; groups under 5 are \"Fewer than 5\" in both",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · 4b earlier views: the seeded baseline is labelled \"Sample data, illustrative\" (never \"Harvest's Lauris export\"); outcomes and goals sections keep groups under 5 hidden",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · 4c minimum group size on the counts the administrator reads outside tables: no tile or strip prints a count of 1 to 4 for a group of requests or people",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · 5 drill-down is gated: the administrator has none; the clinician (own caseload) opens the patients behind a case-backed group; the cohort offers no drill-down to anyone",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · 6 export: the CSV the administrator downloads prints the period, the filters, the dataset and the definitions, and every panel equals what is on screen cell for cell; the PDF downloads",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · 7 the administrator's state and screens carry no clinical text: the API projection withholds notes, drafts, screenings and evidence; Denial Intelligence and the case show status only; the clinical routes say why",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[scenario] · no console errors for any role on Analytics",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · first state: the administrator's scorecard is what the selectors compute from the stored records (six measures); the dataset is case-backed, as of the demo date",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · 1 Analytics (admin): three sections as links, Case-backed by default, the banner says where the figures come from; the pilot scorecard shows the six measures and every tile equals its selector; aggregates only",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · 2 timeliness moves while the page is open (S1): a processed daily note raises \"Notes on time\" by one over one, on the screen within seconds, with no reload",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · 3 payer outcomes (S5 effect): a recorded decision moves \"Units approved\" and \"Offers awaiting a reply\" and the unresolved count on the Payer Performance section, which prints case-backed figures only",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · 3b a payer row opens Denial Intelligence filtered to that payer (a link, not a dead cell); an upcoming-work row opens its case",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · 4 patient population, then the Illustrative cohort: a separate dataset with its own banner, never summed with the case-backed figures; groups under 5 are \"Fewer than 5\" in both",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · 4b earlier views: the seeded baseline is labelled \"Sample data, illustrative\" (never \"Harvest's Lauris export\"); outcomes and goals sections keep groups under 5 hidden",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · 5 drill-down is gated: the administrator has none; the clinician (own caseload) opens the patients behind a case-backed group; the cohort offers no drill-down to anyone",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · 6 export: the CSV the administrator downloads prints the period, the filters, the dataset and the definitions, and every panel equals what is on screen cell for cell; the PDF downloads",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · 7 the administrator's state and screens carry no clinical text: the API projection withholds notes, drafts, screenings and evidence; Denial Intelligence and the case show status only; the clinical routes say why",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fixture] · no console errors for any role on Analytics",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fresh] · first state: the administrator's scorecard is what the selectors compute from the stored records (six measures); the dataset is case-backed, as of the demo date",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fresh] · 1 Analytics (admin): three sections as links, Case-backed by default, the banner says where the figures come from; the pilot scorecard shows the six measures and every tile equals its selector; aggregates only",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S6[fresh] · 2 timeliness moves while the page is open (S1): a processed daily note raises \"Notes on time\" by one over one, on the screen within seconds, with no reload",
-     "note": ""
-    },
-    {
-     "status": "FAIL",
-     "title": "S6[fresh] · 3 payer outcomes (S5 effect): a recorded decision moves \"Units approved\" and \"Offers awaiting a reply\" and the unresolved count on the Payer Performance section, which prints case-backed figures only",
-     "note": "\"Analytics\\nCase-backed\\nIllustrative cohort\\nAsk\\nEarlier views\\nExport\\nCase-backed\\nCounted from stored records · as of Oct 29, 2026\\nAll sites\\nAggregates only\\nWhy ag\" does not match /Units approved\\s*\\n?\\s*315/"
-    },
-    {
-     "status": "SKIP",
-     "title": "S6[fresh] · 3b a payer row opens Denial Intelligence filtered to that payer (a link, not a dead cell); an upcoming-work row opens its case",
-     "note": "blocked by an earlier failed step in this run: 3 payer outcomes (S5 effect): a recorded decision moves \"Uni"
-    },
-    {
-     "status": "SKIP",
-     "title": "S6[fresh] · 4 patient population, then the Illustrative cohort: a separate dataset with its own banner, never summed with the case-backed figures; groups under 5 are \"Fewer than 5\" in both",
-     "note": "blocked by an earlier failed step in this run: 3 payer outcomes (S5 effect): a recorded decision moves \"Uni"
-    },
-    {
-     "status": "SKIP",
-     "title": "S6[fresh] · 4b earlier views: the seeded baseline is labelled \"Sample data, illustrative\" (never \"Harvest's Lauris export\"); outcomes and goals sections keep groups under 5 hidden",
-     "note": "blocked by an earlier failed step in this run: 3 payer outcomes (S5 effect): a recorded decision moves \"Uni"
-    },
-    {
-     "status": "SKIP",
-     "title": "S6[fresh] · 5 drill-down is gated: the administrator has none; the clinician (own caseload) opens the patients behind a case-backed group; the cohort offers no drill-down to anyone",
-     "note": "blocked by an earlier failed step in this run: 3 payer outcomes (S5 effect): a recorded decision moves \"Uni"
-    },
-    {
-     "status": "SKIP",
-     "title": "S6[fresh] · 6 export: the CSV the administrator downloads prints the period, the filters, the dataset and the definitions, and every panel equals what is on screen cell for cell; the PDF downloads",
-     "note": "blocked by an earlier failed step in this run: 3 payer outcomes (S5 effect): a recorded decision moves \"Uni"
-    },
-    {
-     "status": "SKIP",
-     "title": "S6[fresh] · 7 the administrator's state and screens carry no clinical text: the API projection withholds notes, drafts, screenings and evidence; Denial Intelligence and the case show status only; the clinical routes say why",
-     "note": "blocked by an earlier failed step in this run: 3 payer outcomes (S5 effect): a recorded decision moves \"Uni"
-    },
-    {
-     "status": "SKIP",
-     "title": "S6[fresh] · no console errors for any role on Analytics",
-     "note": "blocked by an earlier failed step in this run: 3 payer outcomes (S5 effect): a recorded decision moves \"Uni"
-    },
-    {
-     "status": "PASS",
-     "title": "S6 parity: the first and the last state are the same whether it started from demo.scenario, the fixture analytics-case or a fresh canvas reset",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
-  },
-  {
-   "name": "s2",
-   "tags": [
-    "scenario",
-    "realtime"
-   ],
-   "instance": 2,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 126472,
-   "counts": {
-    "pass": 34,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · first state: REF-118 needs a screening call, no family link sent, no eligibility record, T.W. is not in the mock Lauris, no screening",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · 1 school portal (rbell): REF-118 is listed as STATUS only (no clinical text); the counselor submits a new referral through the form; it reaches the clinic queue",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · 2 clinic reviews REF-118: the criteria are read from the form, what is missing is printed as \"Evidence missing",
-     "note": "verify …\"; reading changes nothing"
-    },
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · 3 Send the family link (Simulated SMS): token, an SMS-stub event marked simulated; the guardian completes the five steps on the phone; eligibility becomes \"details received\"",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · 4 record check (person): the plan is required; result, plan, date, source and a dated proof PDF are stored; the DMAS lookup is Simulated; follow-up reminder; referral chip",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · 5a Lauris: the panel types the new-consumer boxes from the referral (yellow, nothing saved); a person presses Save Consumer: T.W. exists in Lauris and Psyflo links the Harvest #",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · 5b Admission screening opens with the pre-call boxes typed; the scripted call runs only after a recorded consent; the panel lists what is still to ask",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · 5c Stop: the draft waits for the clinician (nothing in Lauris processed yet); Fill; the boxes hold only what was said; the person edits one box",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · 5d Process Form (a person): screening done, referral in intake, the 30-day clock starts from its configured event, Lauris session processed, queue and Do next follow",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · 6 intake opens (CNA) with the screening answers carried forward (\"copied from screening\"); nothing is processed by opening it",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[scenario] · no console errors on the school page, the desk, the phone, Lauris or the panel",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · first state: REF-118 needs a screening call, no family link sent, no eligibility record, T.W. is not in the mock Lauris, no screening",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · 1 school portal (rbell): REF-118 is listed as STATUS only (no clinical text); the counselor submits a new referral through the form; it reaches the clinic queue",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · 2 clinic reviews REF-118: the criteria are read from the form, what is missing is printed as \"Evidence missing",
-     "note": "verify …\"; reading changes nothing"
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · 3 Send the family link (Simulated SMS): token, an SMS-stub event marked simulated; the guardian completes the five steps on the phone; eligibility becomes \"details received\"",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · 4 record check (person): the plan is required; result, plan, date, source and a dated proof PDF are stored; the DMAS lookup is Simulated; follow-up reminder; referral chip",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · 5a Lauris: the panel types the new-consumer boxes from the referral (yellow, nothing saved); a person presses Save Consumer: T.W. exists in Lauris and Psyflo links the Harvest #",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · 5b Admission screening opens with the pre-call boxes typed; the scripted call runs only after a recorded consent; the panel lists what is still to ask",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · 5c Stop: the draft waits for the clinician (nothing in Lauris processed yet); Fill; the boxes hold only what was said; the person edits one box",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · 5d Process Form (a person): screening done, referral in intake, the 30-day clock starts from its configured event, Lauris session processed, queue and Do next follow",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · 6 intake opens (CNA) with the screening answers carried forward (\"copied from screening\"); nothing is processed by opening it",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fixture] · no console errors on the school page, the desk, the phone, Lauris or the panel",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · first state: REF-118 needs a screening call, no family link sent, no eligibility record, T.W. is not in the mock Lauris, no screening",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · 1 school portal (rbell): REF-118 is listed as STATUS only (no clinical text); the counselor submits a new referral through the form; it reaches the clinic queue",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · 2 clinic reviews REF-118: the criteria are read from the form, what is missing is printed as \"Evidence missing",
-     "note": "verify …\"; reading changes nothing"
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · 3 Send the family link (Simulated SMS): token, an SMS-stub event marked simulated; the guardian completes the five steps on the phone; eligibility becomes \"details received\"",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · 4 record check (person): the plan is required; result, plan, date, source and a dated proof PDF are stored; the DMAS lookup is Simulated; follow-up reminder; referral chip",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · 5a Lauris: the panel types the new-consumer boxes from the referral (yellow, nothing saved); a person presses Save Consumer: T.W. exists in Lauris and Psyflo links the Harvest #",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · 5b Admission screening opens with the pre-call boxes typed; the scripted call runs only after a recorded consent; the panel lists what is still to ask",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · 5c Stop: the draft waits for the clinician (nothing in Lauris processed yet); Fill; the boxes hold only what was said; the person edits one box",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · 5d Process Form (a person): screening done, referral in intake, the 30-day clock starts from its configured event, Lauris session processed, queue and Do next follow",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · 6 intake opens (CNA) with the screening answers carried forward (\"copied from screening\"); nothing is processed by opening it",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2[fresh] · no console errors on the school page, the desk, the phone, Lauris or the panel",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S2 parity: the first and the last state are the same whether it started from demo.scenario, the fixture or a fresh reset",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T18-19-51Z"
+   "runId": "2026-11-11T18-34-44Z"
   },
   {
    "name": "safety",
@@ -1768,14 +171,14 @@
     "safety",
     "realtime"
    ],
-   "instance": 0,
+   "instance": 2,
    "attempt": 1,
-   "status": "FAIL",
-   "exit": 1,
-   "durationMs": 87952,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 86674,
    "counts": {
-    "pass": 47,
-    "fail": 2,
+    "pass": 49,
+    "fail": 0,
     "skip": 1
    },
    "tests": [
@@ -1860,9 +263,9 @@
      "note": ""
     },
     {
-     "status": "FAIL",
+     "status": "PASS",
      "title": "UAR-05b (not release-blocking) every source chip of those drafts carries a date",
-     "note": "continued stay: source 4 \"Request record\" has no date expected [] but got [\"continued stay: source 4 \\\"Request record\\\" has no date\"]"
+     "note": ""
     },
     {
      "status": "PASS",
@@ -2015,9 +418,9 @@
      "note": ""
     },
     {
-     "status": "FAIL",
+     "status": "PASS",
      "title": "SVR-09 demo controls (reply, advance, reset) are hidden from direct support in the UI and refused by the server",
-     "note": "no demo controls on the page expected 0 but got 6"
+     "note": ""
     },
     {
      "status": "PASS",
@@ -2030,252 +433,351 @@
      "note": ""
     }
    ],
-   "runId": "2026-11-11T18-19-51Z"
+   "runId": "2026-11-11T18-34-44Z"
   },
   {
-   "name": "s5",
+   "name": "ui-kit",
    "tags": [
-    "scenario",
-    "realtime"
+    "ui"
    ],
    "instance": 1,
    "attempt": 1,
    "status": "FAIL",
    "exit": 1,
-   "durationMs": 165589,
+   "durationMs": 101925,
    "counts": {
-    "pass": 34,
-    "fail": 4,
-    "skip": 7
+    "pass": 31,
+    "fail": 2,
+    "skip": 0
    },
    "tests": [
     {
      "status": "PASS",
-     "title": "S5[scenario] · first state: four open cases (D.W. partial 110 of 150, K.T. information request, T.N. peer-to-peer booked, E.C. denied); no Lauris task; Lauris holds D.W. and T.N. as seeded; the queue and Analytics are the baseline",
+     "title": "token pairs: every text pair 4.5:1, every UI pair 3:1 (computed in the page from tokens.css)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[scenario] · first state (soft): before a decision is recorded the offered 110 units are not already in the tracker and in Lauris (an offer by phone is not an award)",
+     "title": "type floor and brand: DM Sans, paper background, 12 px smallest kit size, teal primary",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[scenario] · 1 D.W.: the Authorizations queue row says Partial: decide and opens the case; \"Open in Denial Intelligence\" lands on the same case in the queue of four",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 2 evidence and options: dated sourced evidence, \"Evidence missing",
-     "note": "verify …\" for what is not stored, only valid options, unverified paths labelled"
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 3 choose peer-to-peer: stage peer_to_peer_requested; the page says it is NOT sent to the payer; a next task appears in My Work; owner and deadline stay visible",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 4 brief and schedule: \"Draft from records\" prints Evidence missing items and Simulated; Mark reviewed; Set the call stores p2p_at (stage booked)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 5 log the outcome (130 units): a decision needs its document (the dialog stays open and says so); then Active, 130 awarded, dispute resolved and closed, an \"Enter units in Lauris\" task opens; Psyflo writes NO units into Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 6 back to the authorization: R-0402 is Active with 130 units and the \"Enter units in Lauris\" card (with the Lauris link); the queue says Active; Denial Intelligence lists three open cases",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 7 a person enters the units in Lauris (Authorization Information) and the page bridge reports it: the task closes, the mock shows 130, the two stores agree",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 8 queues and Analytics (admin): unresolved requests -1 (screen = selector), units approved and offers waiting move; the admin payload and the page carry no clinical text",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 9 K.T. (R-0408, Availity): \"Draft from records\", a placeholder blocks Mark reviewed, an edit clears it; Open Availity and send opens the mock portal; the case closes ONLY when the portal page confirms; no \"faxed\" wording",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[scenario] · 10 T.N. (R-0388): the peer-to-peer call outcome \"approved\" at 150: overturned, Active with 150 units, the old 65 of 65 kept as history; the task asks a person for the units in Lauris",
+     "title": "status vocabulary: every stage and dispute status resolves; chips carry text and an icon (never colour alone)",
      "note": ""
     },
     {
      "status": "FAIL",
-     "title": "S5[scenario] · 11 E.C. (R-0384): the clinician drafts and reviews the appeal letter; the guardian signs on the phone (the signer is the guardian behind the link); staff press Send; \"faxed\" appears only after Send, the reference comes from the stub",
-     "note": "locator.getAttribute: Timeout 30000ms exceeded."
-    },
-    {
-     "status": "SKIP",
-     "title": "S5[scenario] · 11b E.C. appeal on an Availity payer: \"Mark ready for upload\" is a person's note that a upload is next, NOT a send: the stage stays out of \"Appeal sent\" and the status out of \"sent\" until the portal page confirms (the way K.T. does)",
-     "note": "blocked by an earlier failed step in this run: 11 E.C. (R-0384): the clinician drafts and reviews the appea"
-    },
-    {
-     "status": "SKIP",
-     "title": "S5[scenario] · 12 the leadership readout agrees with the stores: the four requests show Active, Submitted, Active and the appeal recorded state in the queue; one open Denial Intelligence case remains (the appeal waits for the payer); Analytics = selectors",
-     "note": "blocked by an earlier failed step in this run: 11 E.C. (R-0384): the clinician drafts and reviews the appea"
-    },
-    {
-     "status": "SKIP",
-     "title": "S5[scenario] · no console errors on the desk, the portal, the guardian page, Lauris or Analytics",
-     "note": "blocked by an earlier failed step in this run: 11 E.C. (R-0384): the clinician drafts and reviews the appea"
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · first state: four open cases (D.W. partial 110 of 150, K.T. information request, T.N. peer-to-peer booked, E.C. denied); no Lauris task; Lauris holds D.W. and T.N. as seeded; the queue and Analytics are the baseline",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 1 D.W.: the Authorizations queue row says Partial: decide and opens the case; \"Open in Denial Intelligence\" lands on the same case in the queue of four",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 2 evidence and options: dated sourced evidence, \"Evidence missing",
-     "note": "verify …\" for what is not stored, only valid options, unverified paths labelled"
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 3 choose peer-to-peer: stage peer_to_peer_requested; the page says it is NOT sent to the payer; a next task appears in My Work; owner and deadline stay visible",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 4 brief and schedule: \"Draft from records\" prints Evidence missing items and Simulated; Mark reviewed; Set the call stores p2p_at (stage booked)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 5 log the outcome (130 units): a decision needs its document (the dialog stays open and says so); then Active, 130 awarded, dispute resolved and closed, an \"Enter units in Lauris\" task opens; Psyflo writes NO units into Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 6 back to the authorization: R-0402 is Active with 130 units and the \"Enter units in Lauris\" card (with the Lauris link); the queue says Active; Denial Intelligence lists three open cases",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 7 a person enters the units in Lauris (Authorization Information) and the page bridge reports it: the task closes, the mock shows 130, the two stores agree",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 8 queues and Analytics (admin): unresolved requests -1 (screen = selector), units approved and offers waiting move; the admin payload and the page carry no clinical text",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 9 K.T. (R-0408, Availity): \"Draft from records\", a placeholder blocks Mark reviewed, an edit clears it; Open Availity and send opens the mock portal; the case closes ONLY when the portal page confirms; no \"faxed\" wording",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fixture] · 10 T.N. (R-0388): the peer-to-peer call outcome \"approved\" at 150: overturned, Active with 150 units, the old 65 of 65 kept as history; the task asks a person for the units in Lauris",
-     "note": ""
+     "title": "maturity chips: Working is hidden until the presenter overlay is on; Simulated, Pilot and Future always show",
+     "note": "page.evaluate: TypeError: Cannot read properties of null (reading 'querySelectorAll')"
     },
     {
      "status": "FAIL",
-     "title": "S5[fixture] · 11 E.C. (R-0384): the clinician drafts and reviews the appeal letter; the guardian signs on the phone (the signer is the guardian behind the link); staff press Send; \"faxed\" appears only after Send, the reference comes from the stub",
-     "note": "locator.getAttribute: Timeout 30000ms exceeded."
-    },
-    {
-     "status": "SKIP",
-     "title": "S5[fixture] · 12 the leadership readout agrees with the stores: the four requests show Active, Submitted, Active and the appeal recorded state in the queue; one open Denial Intelligence case remains (the appeal waits for the payer); Analytics = selectors",
-     "note": "blocked by an earlier failed step in this run: 11 E.C. (R-0384): the clinician drafts and reviews the appea"
-    },
-    {
-     "status": "SKIP",
-     "title": "S5[fixture] · no console errors on the desk, the portal, the guardian page, Lauris or Analytics",
-     "note": "blocked by an earlier failed step in this run: 11 E.C. (R-0384): the clinician drafts and reviews the appea"
+     "title": "modal: role=dialog, aria-labelledby, focus trap both ways, Escape, scrim click, focus return",
+     "note": "page.focus: Timeout 30000ms exceeded."
     },
     {
      "status": "PASS",
-     "title": "S5[fresh] · first state: four open cases (D.W. partial 110 of 150, K.T. information request, T.N. peer-to-peer booked, E.C. denied); no Lauris task; Lauris holds D.W. and T.N. as seeded; the queue and Analytics are the baseline",
+     "title": "drawer: same contract as the modal",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[fresh] · 1 D.W.: the Authorizations queue row says Partial: decide and opens the case; \"Open in Denial Intelligence\" lands on the same case in the queue of four",
+     "title": "popover: Escape closes it and focus returns to the control",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[fresh] · 2 evidence and options: dated sourced evidence, \"Evidence missing",
-     "note": "verify …\" for what is not stored, only valid options, unverified paths labelled"
-    },
-    {
-     "status": "PASS",
-     "title": "S5[fresh] · 3 choose peer-to-peer: stage peer_to_peer_requested; the page says it is NOT sent to the payer; a next task appears in My Work; owner and deadline stay visible",
+     "title": "confirm resolves true on Confirm and false on Cancel; the toast has role=status (alert for errors)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[fresh] · 4 brief and schedule: \"Draft from records\" prints Evidence missing items and Simulated; Mark reviewed; Set the call stores p2p_at (stage booked)",
+     "title": "the old modal(html, onMount) helper is now an accessible dialog (screens keep working)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[fresh] · 5 log the outcome (130 units): a decision needs its document (the dialog stays open and says so); then Active, 130 awarded, dispute resolved and closed, an \"Enter units in Lauris\" task opens; Psyflo writes NO units into Lauris",
+     "title": "filter chips: aria-pressed, state in the URL query, survives a reload, Clear",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[fresh] · 6 back to the authorization: R-0402 is Active with 130 units and the \"Enter units in Lauris\" card (with the Lauris link); the queue says Active; Denial Intelligence lists three open cases",
+     "title": "search keeps focus while typing and filters rows",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[fresh] · 7 a person enters the units in Lauris (Authorization Information) and the page bridge reports it: the task closes, the mock shows 130, the two stores agree",
+     "title": "queue table: aria-sort, sort toggles, real links, ArrowDown moves between rows, Enter opens",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[fresh] · 8 queues and Analytics (admin): unresolved requests -1 (screen = selector), units approved and offers waiting move; the admin payload and the page carry no clinical text",
+     "title": "queue table: sticky header, empty, loading and error states",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[fresh] · 9 K.T. (R-0408, Availity): \"Draft from records\", a placeholder blocks Mark reviewed, an edit clears it; Open Availity and send opens the mock portal; the case closes ONLY when the portal page confirms; no \"faxed\" wording",
+     "title": "evidence chip opens a popover with the quote and closes on Escape",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S5[fresh] · 10 T.N. (R-0388): the peer-to-peer call outcome \"approved\" at 150: overturned, Active with 150 units, the old 65 of 65 kept as history; the task asks a person for the units in Lauris",
+     "title": "timeline: an event opens a drawer with What, When, Who, Document, Source, Next action",
      "note": ""
     },
     {
-     "status": "FAIL",
-     "title": "S5[fresh] · 11 E.C. (R-0384): the clinician drafts and reviews the appeal letter; the guardian signs on the phone (the signer is the guardian behind the link); staff press Send; \"faxed\" appears only after Send, the reference comes from the stub",
-     "note": "locator.getAttribute: Timeout 30000ms exceeded."
+     "status": "PASS",
+     "title": "draft review: edit text survives repaints; no bulk accept; Restore previous appears after a save",
+     "note": ""
     },
     {
-     "status": "SKIP",
-     "title": "S5[fresh] · 12 the leadership readout agrees with the stores: the four requests show Active, Submitted, Active and the appeal recorded state in the queue; one open Denial Intelligence case remains (the appeal waits for the payer); Analytics = selectors",
-     "note": "blocked by an earlier failed step in this run: 11 E.C. (R-0384): the clinician drafts and reviews the appea"
+     "status": "PASS",
+     "title": "a store change (SSE) while someone is typing does not wipe the field; the repaint waits for blur",
+     "note": ""
     },
     {
-     "status": "SKIP",
-     "title": "S5[fresh] · no console errors on the desk, the portal, the guardian page, Lauris or Analytics",
-     "note": "blocked by an earlier failed step in this run: 11 E.C. (R-0384): the clinician drafts and reviews the appea"
+     "status": "PASS",
+     "title": "skip link is the first tab stop and moves focus to the main landmark",
+     "note": ""
     },
     {
-     "status": "FAIL",
-     "title": "S5 parity: the first and the last state are the same whether it started from demo.scenario, the fixture payer-decision or a fresh canvas reset",
-     "note": "at least two completed runs to compare: "
+     "status": "PASS",
+     "title": "landmarks: <html lang>, a labelled nav, exactly one main, real links in the rail",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "focus moves to main on a route change and the route is announced",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the old demo bar is gone from the product viewport",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail: light sand, 232 px wide, collapses to icons at 1024; counts only where meaningful",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail by role follows the permission table (supervisor, clinician, admin, direct support)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: hidden by default in Presentation, Ctrl+Shift+P toggles, label PRESENTER, mode always visible, above the viewport",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: ?present=1 opens it; ?mode=explore docks it open (no hide control) and is stored in psyflo_mode",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: role switcher changes the signed-in role without a page reload",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: scenario selector calls demo.scenario, signs in as the scenario role and opens its route",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: simulation controls (receive a reply, advance a day) live in the dock",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: notes drawer \"How the data gets in\" with maturity chips, focus returns to Notes",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: All screens picker is role-aware and searchable",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "UiKit is presenter-only: without the dock it says so; with ?present=1 it shows the gallery",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "prefers-reduced-motion: overlay animation is switched off",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "no console errors on the gallery, the stubs and the shell routes",
+     "note": ""
     }
    ],
-   "runId": "2026-11-11T18-19-51Z"
+   "runId": "2026-11-11T18-34-44Z"
+  },
+  {
+   "name": "presenter",
+   "tags": [
+    "presenter",
+    "ui"
+   ],
+   "instance": 0,
+   "attempt": 1,
+   "status": "FAIL",
+   "exit": 1,
+   "durationMs": 142514,
+   "counts": {
+    "pass": 25,
+    "fail": 3,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "PRES-01 the product viewport has no \"Reset\" or \"Demo:\" text and no presenter controls (Presentation mode, dock hidden)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-02 the dock is hidden by default, takes no tab stop, and is not in the page until opened",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-03 Ctrl+Shift+P opens the dock (focus on its toggle) and toggles it closed again; the page behind keeps its layout",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-04 collapsed: a 28 px handle is the only dock control; its menus stay out of the tab order until the dock is opened",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-05 the dock is visually unlike the product (navy ribbon, monospace PRESENTER label, dashed marigold edge)",
+     "note": ""
+    },
+    {
+     "status": "FAIL",
+     "title": "PRES-06 role switch changes the rail without a reload (clinician -> supervisor -> direct support -> administrator -> clinician)",
+     "note": "page.click: Timeout 30000ms exceeded."
+    },
+    {
+     "status": "FAIL",
+     "title": "PRES-07 \"Demo data · nothing is real\" is on every app screen (rail foot) and on the phone and portal screens",
+     "note": "screens without the \"Demo data · nothing is real\" line expected [] but got [\"MobileApp (phone)\",\"MobileDictate (phone)\",\"MobileAssess (phone)\"]"
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-08 scenario s1 from the dock lands on its route as its role",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-08 scenario s2 from the dock lands on its route as its role",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-08 scenario s3 from the dock lands on its route as its role",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-08 scenario s4 from the dock lands on its route as its role",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-08 scenario s5 from the dock lands on its route as its role",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-08 scenario s6 from the dock lands on its route as its role",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-09 the dock's menus: Reset offers Live flows and Canvas snapshot and asks before resetting; Simulate and Notes and Maturity work; Surfaces opens Lauris",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-10 clinician: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-10 supervisor: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-10 admin: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "PRES-10 direct_support: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "EXP-01 Explore mode: the dock is always open, the mode label is visible, Ctrl+Shift+P focuses it instead of hiding it, and Presentation mode can be restored",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "EXP-02 clinician: \"All screens\" lists every route this role may open and each opens in two clicks",
+     "note": ""
+    },
+    {
+     "status": "FAIL",
+     "title": "EXP-02 supervisor: \"All screens\" lists every route this role may open and each opens in two clicks",
+     "note": "Eligibility opened as supervisor"
+    },
+    {
+     "status": "PASS",
+     "title": "EXP-02 admin: \"All screens\" lists every route this role may open and each opens in two clicks",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "EXP-02 direct_support: \"All screens\" lists every route this role may open and each opens in two clicks",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "EXP-03 portal screens in the picker open as the portal person (guardian, school) in Explore mode",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "EXP-04 clinician: every route this role may open is within three clicks of its home screen (product links: rail, page links)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "EXP-04 supervisor: every route this role may open is within three clicks of its home screen (product links: rail, page links)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "EXP-04 admin: every route this role may open is within three clicks of its home screen (product links: rail, page links)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "EXP-04 direct_support: every route this role may open is within three clicks of its home screen (product links: rail, page links)",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-11T18-34-44Z"
   }
  ],
  "manual": [

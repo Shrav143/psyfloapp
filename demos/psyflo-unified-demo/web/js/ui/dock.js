@@ -21,14 +21,14 @@ export function presenterDock(m = {}) {
     <button type="button" class="sh-dock__tag" data-dock="toggle" aria-expanded="${open}" aria-controls="${px}dock-bar" title="Presenter tools (Ctrl+Shift+P)"><i class="sh-dock__dot" aria-hidden="true"></i><span class="sh-dock__label">PRESENTER</span></button>
     <span class="sh-dock__mode" id="${px}dock-mode" role="status">${esc(MODES[mode].long)}</span>
     <div class="sh-dock__bar" id="${px}dock-bar"${open ? '' : ' hidden'}>
-      ${btn('scenario', 'Scenario', 'play')}${btn('role', 'Role', 'user')}${btn('reset', 'Reset', 'refresh')}${btn('sim', 'Simulate', 'clock')}
+      ${m.presenter ? `${btn('scenario', 'Scenario', 'play')}${btn('role', 'Role', 'user')}${btn('reset', 'Reset', 'refresh')}${btn('sim', 'Simulate', 'clock')}` : ''}
       <button type="button" class="sh-dock__b" data-dock="notes">${icon('file', 15)}<span>Notes</span></button>
       <button type="button" class="sh-dock__b" data-dock="maturity" aria-pressed="${!!m.maturityOn}">${icon('flag', 15)}<span>Maturity</span></button>
-      ${btn('surfaces', 'Surfaces', 'monitor')}${mode === 'explore' ? btn('screens', 'All screens', 'grid') : ''}
+      ${m.presenter ? `${btn('surfaces', 'Surfaces', 'monitor')}${mode === 'explore' ? btn('screens', 'All screens', 'grid') : ''}` : ''}
       <span class="sh-dock__sp"></span>
       <button type="button" class="sh-dock__b" data-dock="mode" title="${mode === 'explore' ? 'Switch to Presentation mode' : 'Switch to Explore mode'}">${icon('chevR', 14)}<span>${mode === 'explore' ? 'Presentation mode' : 'Explore mode'}</span></button>
       <span class="sh-dock__meta">${esc(m.preset === 'canvas' ? 'Canvas snapshot' : 'Live flows')} · ${esc(m.today || '')}</span>
-      ${m.pinRequired && !m.presenter ? `<button type="button" class="sh-dock__b" data-dock="unlock" title="The controls here need the presenter PIN">${icon('lock', 14)}<span>Unlock with PIN</span></button>` : ''}
+      ${!m.presenter ? `<button type="button" class="sh-dock__b" data-dock="unlock" title="${m.pinRequired ? 'The controls here need the presenter PIN' : 'Turns on the scenario, role, reset and simulation controls'}">${icon('lock', 14)}<span>${m.pinRequired ? 'Unlock with PIN' : 'Unlock presenter tools'}</span></button>` : ''}
       ${mode === 'explore' ? '' : `<button type="button" class="sh-dock__b sh-dock__x" data-dock="hide" aria-label="Hide presenter tools">${icon('close', 15)}</button>`}
     </div></div>`;
 }

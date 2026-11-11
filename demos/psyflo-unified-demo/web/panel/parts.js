@@ -3,6 +3,8 @@
 import { esc } from '../js/runtime.js';
 import { fmtDate } from '../js/shared/dates.js';
 import { ui } from '../js/ui/index.js';
+import { dateLabel } from '../js/shared/enhance.js';
+export { dateLabel };
 
 const svg = (stroke, body, size = 16, extra = '') => `<svg aria-hidden="true" focusable="false" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2.2" ${extra}>${body}</svg>`;
 export const I = {
@@ -47,7 +49,7 @@ export function checksBlock(checks, title = 'Checks') {
 export function srcChips(box, sources = []) {
   return (box.src || []).map(n => {
     const s = sources.find(x => x.n === n) || {};
-    return ui.evidenceChip({ n, label: String(s.label || 'source').split('·')[0].trim(), date: s.date ? fmtDate(s.date) : '', quote: s.quote || box.value, source: s.source || s.label || '', href: s.href });
+    return ui.evidenceChip({ n, label: String(s.label || 'source').split('·')[0].trim(), date: dateLabel(s), quote: s.quote || box.value, source: s.source || s.label || '', href: s.href });
   }).join('');
 }
 // a box with its sources; a missing box prints the "Evidence missing" chip instead of a source
