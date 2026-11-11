@@ -63,7 +63,7 @@ function reviewRows(ctx) {
 function consumerList(ctx) {
   const s = ctx.S(); const list = ctx.page.consumers || []; if (!list.length) return '';
   return ctx.parts.accordion(`On this page · ${list.length}`, list.map(x => { const c = s.clients.find(y => y.harvest_no === Number(x.no) || y.lauris_no === Number(x.no)); const w = c ? ctx.M.waitingDictations(s, c.id).length + ctx.M.waitingAssessments(s, c.id).length : 0;
-    return `<div class="sec"><b><a href="#" data-act="nav" data-href="/consumers/${esc(x.no)}">${esc(x.initials)}</a> <span class="muted" style="font-weight:400">· ${esc(x.units)}</span></b>${x.program !== 'TDT' ? `<span class="chip n">${esc(x.program)} · Psyflo off</span>` : w ? `<span class="chip y">${w} waiting</span>` : '<span class="chip g">TDT</span>'}</div>`; }).join(''), { id: 'home-list' });
+    return `<div class="sec"><b><a class="tap" href="#" data-act="nav" data-href="/consumers/${esc(x.no)}">${esc(x.initials)}</a> <span class="muted" style="font-weight:400">· ${esc(x.units)}</span></b>${x.program !== 'TDT' ? `<span class="chip n">${esc(x.program)} · Psyflo off</span>` : w ? `<span class="chip y">${w} waiting</span>` : '<span class="chip g">TDT</span>'}</div>`; }).join(''), { id: 'home-list' });
 }
 
 function recentActivity(ctx, c) {
@@ -148,7 +148,7 @@ const acts = {
 
 export default {
   id: 'home', label: 'Home', cap: null, legend: true, openAlways: true,
-  title: ctx => { const c = ctx.client(); const me = ctx.me(); return c ? `Psyflo · ${c.initials}` : `Psyflo · ${me.name}${me.credential ? ', ' + me.credential : ''}`; },
+  title: ctx => { const c = ctx.client(); return c ? `Psyflo · ${c.initials}` : 'Psyflo'; },   // the greeting below names the person; a long name is cut in the header
   html, acts,
   async onOpen(ctx) {
     // a consumer created in Lauris from a referral with no Psyflo student yet: link the referral to the new Harvest # (Flow A)

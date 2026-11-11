@@ -34,7 +34,7 @@ const hostedPresenter = () => !!window.__HOSTED__;   // the hosted preview signs
 const fail = (j, fallback) => Object.assign(new Error(j.error || fallback), { status: j.status, pin_required: !!j.pin_required });
 
 export const api = {
-  state: null, config: null, base: '', token: null, actor: null, _roster: null, _busy: null, _hooked: false, askPin: null,
+  state: null, config: null, base: '', token: null, actor: null, error: null, _roster: null, _busy: null, _hooked: false, askPin: null,
   async init(base = '') {
     this.base = base;
     this.config = await fetch(base + '/api/config').then(r => r.json());
@@ -144,19 +144,29 @@ export const api = {
     for (const l of listeners) l(this.state);
   },
 
+  // A failed state load is an ERROR, never an empty screen: api.error = { status, message, signin } until a load succeeds. The last good state is kept
+  // (never replaced by the public roster); the shell shows the error state when there is no usable state, or when a staff session has ended (401).
+  _expire() {
+    const staff = this.actor && this.actor.kind === 'staff';
+    this.token = null; this.actor = null; save(null);
+    if (staff) { try { localStorage.removeItem('psyflo_user'); } catch { } this.error = { status: 401, signin: true, message: 'Your session ended.' }; }
+  },
   async refresh(quiet) {
-    let s = null;
+    let s = null; const was = this.error ? this.error.status : null;
     if (this.token) {
       const r = await fetch(this.base + '/api/state', { headers: this.headers() }).catch(() => null);
-      if (r && r.status === 401) { this.token = null; this.actor = null; save(null); }
-      else if (r && r.ok) s = await r.json().catch(() => null);
-      else if (!r) return;
+      if (r && r.status === 401) this._expire();
+      else if (r && r.ok) { s = await r.json().catch(() => null); if (!s) this.error = { status: 502, message: 'The server sent something the app could not read.' }; }
+      else { this.error = { status: r ? r.status : 0, message: r ? 'The server answered ' + r.status + '.' : 'The server did not answer.' }; }
+      if (s) this.error = null;
+      if (!s && this.error && this.error.status !== 401) { if (this.error.status !== was) for (const l of listeners) l(this.state); return; }   // keep what we had; never the roster
     }
-    if (!s) s = await fetch(this.base + '/api/roster').then(r => r.json()).catch(() => null);   // signed out: the roster only
-    if (!s) return;
+    if (!s) s = await fetch(this.base + '/api/roster').then(r => r.ok ? r.json() : null).catch(() => null);   // signed out: the roster only
+    if (!s) { if (!this.token && !this.error) this.error = { status: 0, message: 'The server did not answer.' }; if (!this.state || was === null) for (const l of listeners) l(this.state); return; }
+    if (!this.token && this.error && this.error.status !== 401) this.error = null;
     this._roster = s.staff && s.public ? s.staff : this._roster;
     if (s.public && s.presenter) this._presenter = s.presenter;
-    const changed = !this.state || s.rev !== this.state.rev || !!s.public !== !!this.state.public;
+    const changed = !this.state || s.rev !== this.state.rev || !!s.public !== !!this.state.public || was !== (this.error ? this.error.status : null);
     this.state = s;
     if (changed || !quiet) for (const l of listeners) l(s);
   },
@@ -166,7 +176,7 @@ export const api = {
     const r = await fetch(this.base + '/api/do', { method: 'POST', headers: this.headers({ 'Content-Type': 'application/json' }), body: JSON.stringify({ action, args }) });
     const j = await r.json().catch(() => ({ ok: false, error: 'Bad reply from the server' }));
     if (!j.ok) {
-      if (r.status === 401 && this.token) { this.token = null; this.actor = null; save(null); await this.refresh(true); }
+      if (r.status === 401 && this.token) { this._expire(); await this.refresh(true); }
       const e = new Error(j.error || 'Action failed'); e.status = r.status; e.refused = !!j.refused; e.code = j.code; throw e;
     }
     await this.refresh();

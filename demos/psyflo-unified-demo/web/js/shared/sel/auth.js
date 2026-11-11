@@ -130,7 +130,7 @@ function reauthDeadline(s, rn) {
   const t = s.today; const d = daysBetween(t, rn.end); const dd = daysBetween(t, rn.dueBy);
   const text = dd < 0 ? `Reauth was due ${fmtDate(rn.dueBy)}` : dd === 0 ? 'Reauth due today' : `Reauth due ${fmtDate(rn.dueBy)}`;
   const sub = `${rn.lead} business days before the current one ends ${fmtDate(rn.end)}${d < 0 ? ' · ended' : ' · ' + d + ' days left'}`;
-  return { kind: 'renewal', text, sub, date: rn.dueBy, sev: d < 0 ? 'overdue' : rn.due || dd <= 7 ? 'soon' : 'ok', rule: rn.rule };
+  return { kind: 'renewal', text, sub, short: `ends ${fmtDate(rn.end)}${d < 0 ? ' · ended' : ' · ' + d + ' days left'}`, date: rn.dueBy, sev: d < 0 ? 'overdue' : rn.due || dd <= 7 ? 'soon' : 'ok', rule: rn.rule };
 }
 
 // ---------------------------------------------------------------------------------------------------------------- deadline
@@ -179,7 +179,7 @@ export function deadline(s, r) {
     case 'active': {
       const u = unitsView(s, r); const rn = renewal(s, r);
       if (u.left === 0 && u.total) return { kind: 'units', text: 'Units used up', sub: u.exhausted ? fmtDate(u.exhausted) : '', date: u.exhausted, sev: 'overdue', rule: u.rate && u.rate.rule };
-      if (rn && rn.due) return rn.byDate || !rn.byUnits || !u.rate ? reauthDeadline(s, rn) : { kind: 'renewal', text: 'Reauth due: units running out', sub: `about ${u.daysLeft} school days left${rn.end ? ' · current ends ' + fmtDate(rn.end) : ''}`, date: rn.dueBy || rn.end, sev: 'soon', rule: u.rate.rule };
+      if (rn && rn.due) return rn.byDate || !rn.byUnits || !u.rate ? reauthDeadline(s, rn) : { kind: 'renewal', text: 'Reauth due: units running out', sub: `about ${u.daysLeft} school days left${rn.end ? ' · current ends ' + fmtDate(rn.end) : ''}`, short: `current ends ${rn.end ? fmtDate(rn.end) : '—'}`, date: rn.dueBy || rn.end, sev: 'soon', rule: u.rate.rule };
       if (u.end) return { kind: 'auth_end', text: `Ends ${fmtDate(u.end)}`, sub: `${daysBetween(t, u.end)} days left`, date: u.end, sev: 'ok', rule: ad('payer', 'Payer authorization window') };
       if (u.daysLeft != null) return { kind: 'units', text: `About ${u.daysLeft} school days`, sub: 'end date not recorded', date: null, sev: u.daysLeft <= 10 ? 'soon' : 'ok', rule: u.rate && u.rate.rule };
       return none;

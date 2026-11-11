@@ -15,12 +15,12 @@ import { formValue } from '../lib/items.js';
 import { needsCheck } from '../../js/shared/time.js';
 
 const TYPES = [
-  { id: 'screening', label: 'Admission screening', cap: 'drafts.clinical', form: 'screening' },
-  { id: 'cna', label: 'Intake / CNA', cap: 'drafts.clinical', form: 'cna' },
-  { id: 'dpn', label: 'Daily progress note', cap: 'notes.own', form: 'dpn' },
-  { id: 'weekly', label: 'Weekly guardian contact', cap: 'notes.own', form: 'weekly' },
-  { id: 'collateral', label: 'Monthly collateral', cap: 'notes.own', form: 'collateral' },
-  { id: 'other', label: 'Other supported documentation', cap: 'ext.use', form: null }
+  { id: 'screening', label: 'Admission screening', short: 'Screening', cap: 'drafts.clinical', form: 'screening' },
+  { id: 'cna', label: 'Intake / CNA', short: 'Intake', cap: 'drafts.clinical', form: 'cna' },
+  { id: 'dpn', label: 'Daily progress note', short: 'Daily note', cap: 'notes.own', form: 'dpn' },
+  { id: 'weekly', label: 'Weekly guardian contact', short: 'Weekly call', cap: 'notes.own', form: 'weekly' },
+  { id: 'collateral', label: 'Monthly collateral', short: 'Collateral', cap: 'notes.own', form: 'collateral' },
+  { id: 'other', label: 'Other supported documentation', short: 'Other', cap: 'ext.use', form: null }
 ];
 const OTHER = [['isp', 'Treatment plan (ISP)', 'drafts.clinical'], ['sra-initial', 'Initial request (SRA)', 'drafts.clinical'], ['sra-continued', 'Continued stay', 'drafts.clinical'], ['quarterly', 'Quarterly report', 'drafts.clinical'], ['discharge', 'Discharge summary', 'drafts.clinical'], ['incident', 'Incident report', 'notes.own']];
 const types = ctx => TYPES.filter(t => ctx.can(t.cap));
@@ -30,7 +30,8 @@ const DPN_EXAMPLE = 'played basketball with M.R. after he got upset in math, he 
 function currentType(ctx) {
   const st = ctx.st; const p = ctx.page; const ok = types(ctx).map(t => t.id);
   const fromForm = p && p.form && TYPES.find(t => t.form === p.form.type);
-  if (fromForm && ok.includes(fromForm.id) && st.autoType !== (p.url + fromForm.id)) { st.type = fromForm.id; st.autoType = p.url + fromForm.id; }
+  // the page's own form is chosen once per page; after that the person's choice in NOTE stays (it used to be put back on every redraw)
+  if (fromForm && ok.includes(fromForm.id) && st.autoFor !== p.url) { st.type = fromForm.id; st.autoFor = p.url; }
   if (st.type && ok.includes(st.type)) return st.type;
   const c = ctx.client();
   const screened = c && (ctx.S().screenings || []).some(x => x.client === c.id && (x.status === 'done' || x.processed_at));
@@ -79,7 +80,8 @@ function steps(ctx, c, t) {
 }
 function openForm(ctx, c, t) {
   const no = c.lauris_no || c.harvest_no;
-  return `<div class="tile t"><h2>${esc(t.label)} · ${esc(c.initials)}</h2><div class="small muted" style="margin:2px 0 8px">The form must be open in Lauris so the boxes can be typed.</div><button class="btn p blk" data-act="openForm" data-form="${t.form}" data-no="${no}">Open the ${esc(t.label.toLowerCase())}</button></div>`;
+  const p = ctx.page; const here = p && p.kind === 'session' && p.form ? (ctx.parts.FORM_NAME[p.form.type] || p.form.title || 'another form') : '';
+  return `<div class="tile t"><h2>${esc(t.label)} · ${esc(c.initials)}</h2><div class="small muted" style="margin:2px 0 8px">${here ? `The page open in Lauris is the ${esc(here)}, so nothing can be typed for this note type. ` : ''}Open the ${esc(t.label.toLowerCase())} form in Lauris, then Psyflo can type into it.</div><button class="btn p blk" data-act="openForm" data-form="${t.form}" data-no="${no}">Open the ${esc(t.label.toLowerCase())}</button></div>`;
 }
 function studentPicker(ctx, t) {
   const list = (ctx.page.consumers || []).filter(x => x.program === 'TDT'); const st = ctx.st;
@@ -496,7 +498,7 @@ const ins = {
   fbText(el, ctx) { ctx.st.fbText = el.value; }
 };
 const chs = {
-  pickType(el, ctx) { ctx.st.type = el.value; ctx.st.autoType = ctx.page.url + el.value; ctx.st.again = false; ctx.draw(); },
+  pickType(el, ctx) { ctx.st.type = el.value; ctx.st.autoFor = ctx.page.url; ctx.st.again = false; ctx.draw(); },
   pickStudent(el, ctx) { ctx.st.student = el.value; ctx.draw(); },
   pickRef(el, ctx) { ctx.st.ref = el.value; ctx.pg.filled = []; ctx.draw(); }
 };
@@ -521,7 +523,7 @@ async function onOpen(ctx) {
 
 export default {
   id: 'scribe', label: 'Scribe', cap: 'ext.use',
-  title: ctx => { if (ctx.page.kind === 'new-consumer') return 'Scribe · New consumer'; const t = typeOf(currentType(ctx)); const c = ctx.client(); return `Scribe · ${t ? t.label : ''}${c ? ' · ' + c.initials : ''}`; },
+  title: ctx => { if (ctx.page.kind === 'new-consumer') return 'Scribe · New consumer'; const t = typeOf(currentType(ctx)); return `Scribe · ${t ? t.short || t.label : ''}`; },   // short: it must fit the header at 400 px (the student is in the bar below)
   html, acts, ins, chs, onOpen,
   leave(ctx) { const st = ctx.stOf('scribe'); R.stop(st); },
   // presenter commands: { psyflo:'present', cmd:'example' } puts the worked example in the box; 'script' plays the scripted screening call

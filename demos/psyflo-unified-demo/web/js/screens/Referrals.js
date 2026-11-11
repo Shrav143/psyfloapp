@@ -85,7 +85,7 @@ register('Referrals', class extends Screen {
       { key: 'next', label: 'Next', render: x => esc(x.next || '—') },
       { key: 'act', label: 'Open', render: x => `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(hrefOf(x.r))}">${['in_service', 'grant_program', 'declined'].includes(x.stage) ? 'View' : 'Open'}<span class="ui-sr"> ${esc(x.id)}</span></a>` }
     ];
-    const table = ui.queueTable({ id: 'refs', caption: 'Referrals', columns: cols, rows, rowId: x => x.id, href: x => hrefOf(x.r), sort: st.sort, onSort: sort => { this.setState({ sort }); ui.query.writeQuery({ sort: sort.key, dir: sort.dir }); }, limit: st.limit, limitStep: 25, onMore: () => this.setState({ limit: st.limit + 25 }), total: shown.length, maxHeight: 'none',
+    const table = ui.queueTable({ id: 'refs', caption: 'Referrals', columns: cols, rows, rowId: x => x.id, href: x => hrefOf(x.r), sort: st.sort, onSort: sort => { this.setState({ sort }); ui.query.writeQuery({ sort: sort.key, dir: sort.dir }); }, limit: st.limit, limitStep: 25, onMore: () => this.setState({ limit: st.limit + 25 }), total: shown.length, maxHeight: rows.length > 12 ? undefined : 'none',   // a long queue scrolls inside the table so its header stays visible (QA1-03)
       empty: { title: 'Nothing in this list', body: 'Try another status or clear the search.' } });
     return { bar: raw(bar), table: raw(table), schools: raw(this.schoolTable(base)), maturity: raw(ui.maturity('route.Referrals')) };
   }

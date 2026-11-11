@@ -65,6 +65,7 @@ label.pm-l{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
 .pm-sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:2px solid #217A78;border-radius:16px 16px 0 0;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 -8px 24px rgba(0,0,0,.18);z-index:5}
 .pm-scrim{position:absolute;inset:0;background:rgba(21,27,36,.45);z-index:4}
 .pm-sheet h2{font-size:18px;color:#1B1B19}
+.pm-demo{font-size:12px;color:#5A544B;text-align:center;line-height:16px;padding:2px 0 0}
 </style>
 </helmet>
 
@@ -98,6 +99,7 @@ label.pm-l{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
   <footer class="pm-foot">
     <sc-if value="{{showForm}}"><a class="pm-btn p" href="#save">{{saveLabel}}</a></sc-if>
     <nav class="pm-tabs" aria-label="Phone"><a href="MobileApp.dc.html">Today</a><a class="on" href="MobileAssess.dc.html" aria-current="page">Assessments <span class="pm-sub">({{dueN}})</span></a></nav>
+    <div class="pm-demo">Demo data · nothing is real</div>
   </footer>
 </div>
 </x-dc>

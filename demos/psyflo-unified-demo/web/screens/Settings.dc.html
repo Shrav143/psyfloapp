@@ -12,7 +12,8 @@
 .se{max-width:1180px;margin:0 auto;padding:24px var(--gutter) 56px;color:var(--ink-900)}
 .se-head{display:flex;align-items:center;gap:12px;margin:0 0 8px}
 .se-head h1{margin:0;font:600 var(--fs-28)/var(--lh-28) var(--font);letter-spacing:-.01em}
-.se-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line-200);margin:0 0 20px;overflow-x:auto}
+.se{min-width:0}
+.se-tabs{max-width:100%;display:flex;gap:2px;border-bottom:1px solid var(--line-200);margin:0 0 20px;overflow-x:auto}
 .se-tab{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;color:var(--muted-700);font:600 var(--fs-14)/1 var(--font);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
 .se-tab:hover{color:var(--ink-900)}
 .se-tab[aria-current=page]{color:var(--ink-900);border-bottom-color:var(--teal-600)}
@@ -86,7 +87,8 @@
 .se-dec .ui-btn{align-self:flex-start;margin-top:auto}
 .se-more{margin-top:12px;display:flex;align-items:center;gap:12px}
 @media (max-width:900px){.se-two{grid-template-columns:1fr}.se-arch>div{grid-template-columns:1fr;gap:2px}}
-@media (max-width:760px){.se{padding:16px 16px 40px}.se-card{padding:14px}}
+@media (max-width:760px){
+  .se-tabs{flex-wrap:wrap;overflow-x:visible}.se{padding:16px 16px 40px}.se-card{padding:14px}}
 .mw-asof,.se-asof{font-size:var(--fs-12);line-height:var(--lh-12);color:var(--muted-700);white-space:nowrap}
 </style>
 </helmet>

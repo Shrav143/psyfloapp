@@ -38,7 +38,7 @@ export class ExtComposite extends DCLogic {
 .xframe{display:block;width:100%;flex:1 1 auto;min-height:0;height:auto;border:0;background:#F2F3F5}`; }
   prepare() {
     const H = window.__HOSTED__;   // hosted preview: the frame is filled by the virtual network (after()), not loaded from a URL
-    return `<div class="xbar"><span class="u">{{direct}}</span><span>{{what}}</span><a href="{{direct}}" target="_blank" rel="noopener">${H ? 'Open full screen' : 'Open in its own tab'} ↗</a><span style="color:#5A544B">Mock Lauris with the Psyflo panel beside it (in-page fallback at 400px; same panel as the extension)</span></div>
+    return `<div class="xbar"><span class="u">{{what}}</span><a href="{{direct}}" target="_blank" rel="noopener">${H ? 'Open full screen' : 'Open in its own tab'} ↗</a></div>
 <iframe class="xframe" title="Mock Lauris with the Psyflo panel" ${H ? 'data-src' : 'src'}="{{url}}"${H ? '' : ' allow="microphone"'}></iframe>`;
   }
   after(root) { const f = window.__HOSTED__ && window.__vnet && root.querySelector('iframe.xframe'); if (f && !f.dataset.mounted) { f.dataset.mounted = '1'; window.__vnet.mountFrame(f, f.dataset.src); } }

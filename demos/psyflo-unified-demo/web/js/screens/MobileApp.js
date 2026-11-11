@@ -39,9 +39,9 @@ export function tick(inst, fn) {
 }
 
 // The sticky student bar: the identity card (initials, Harvest #, school, grade). Never initials alone.
-export function patientBar(s, clientId, { change = true, verb = 'Selected', note = '' } = {}) {
+export function patientBar(s, clientId, { change = true, verb = 'Selected', note = '', choosing = false } = {}) {
   const c = clientId ? identityCard(s, clientId) : null;
-  if (!c) return `<div class="pm-pid"><span class="pm-av pm-av--none" aria-hidden="true">?</span><div class="pm-pt"><b>No student selected</b><span>Tap a name to start</span></div></div>`;
+  if (!c) return `<div class="pm-pid"><span class="pm-av pm-av--none" aria-hidden="true">?</span><div class="pm-pt"><b>${choosing ? 'Choose a student' : 'No student selected'}</b><span>${choosing ? 'Tap a name below to change' : 'Tap a name to start'}</span></div></div>`;
   return `<div class="pm-pid"><span class="pm-av" aria-hidden="true">${esc(c.initials.replace(/\./g, ''))}</span><div class="pm-pt"><b>${esc(c.initials)}</b><span>${c.harvest_no ? 'Harvest # ' + esc(c.harvest_no) + ' · ' : ''}${esc(c.schoolShort)}${c.grade != null ? ' · grade ' + esc(c.grade) : ''}</span>${note ? `<span class="pm-pn">${esc(note)}</span>` : ''}</div></div>${change ? '<a class="pm-chg" href="#change" id="pm-change">Change</a>' : ''}`;
 }
 // What state is a dictation in? Processed only when a processed note says so (an observed Process Form), never because a flag was set.
@@ -57,13 +57,13 @@ export const STATE_CHIP = {
 };
 
 register('MobileApp', class extends Screen {
-  init() { this.state = { pick: this.params.client || null, desc: {}, act: '', ending: '', discarding: null, discardWhy: '', open: false }; }
+  init() { this.state = { pick: this.params.client || null, changing: false, desc: {}, act: '', ending: '', discarding: null, discardWhy: '', open: false }; }
   user() { return phoneUser(this.s); }
   students() { const u = this.user(); return u ? myStudents(this.s, u.id) : []; }
   timer() { const u = this.user(); return u ? timerOf(this.s, u.id, nowFull(this.s)) : null; }
   picked() { return this.students().find(c => c.id === this.state.pick) || null; }
   // the student the screen is about: the one the person picked, else the one the running timer is with (never a guess)
-  focus() { const t = this.timer(); return this.picked() || (t && this.students().find(c => c.id === t.client)) || null; }
+  focus() { if (this.state.changing) return null; const t = this.timer(); return this.picked() || (t && this.students().find(c => c.id === t.client)) || null; }
   drafts() { const u = this.user(); return u ? (this.s.time_entries || []).filter(e => e.staff === u.id && e.status === 'draft') : []; }
   renderVals() {
     const s = this.s; const u = this.user(); const today = clockToday(s);
@@ -106,8 +106,8 @@ register('MobileApp', class extends Screen {
     });
     const dot = c => { const done = nt.doneSet.has(c.id); const w = (s.dictations || []).some(d => d.client === c.id && d.status === 'waiting' && d.staff === u.id); return done ? 'ok' : w ? 'wait' : ''; };
     return {
-      who: whoLine(s, u), bar: raw(patientBar(s, fc && fc.id, { note: !pk && fc ? 'Timing now' : '' })), hasStudents: st.length > 0,
-      chips: st.map(c => ({ ini: c.initials, on: fc && c.id === fc.id ? ' on' : '', pressed: !!(fc && c.id === fc.id), dot: dot(c), sr: dot(c) === 'ok' ? 'daily note processed today' : dot(c) === 'wait' ? 'a note is waiting for Lauris' : 'no note yet today', pick: () => this.setState({ pick: c.id }) })),
+      who: whoLine(s, u), bar: raw(patientBar(s, fc && fc.id, { note: !pk && fc ? 'Timing now' : '', choosing: this.state.changing })), hasStudents: st.length > 0,
+      chips: st.map(c => ({ ini: c.initials, on: fc && c.id === fc.id ? ' on' : '', pressed: !!(fc && c.id === fc.id), dot: dot(c), sr: dot(c) === 'ok' ? 'daily note processed today' : dot(c) === 'wait' ? 'a note is waiting for Lauris' : 'no note yet today', pick: () => this.setState({ pick: c.id, changing: false }) })),
       stuNote: st.length ? `${nt.done} of ${nt.total} daily notes processed today` : '',
       hasFocus: !!fc, focusIni: fc ? fc.initials : '',
       isIdle: !t, isRunning: running, isPaused: paused, isStale: stale, hasDrafts: drafts.length > 0, drafts,
@@ -148,7 +148,7 @@ register('MobileApp', class extends Screen {
   }
   get anchors() {
     return {
-      change: () => { this.setState({ pick: null }); document.querySelector('.pm-chips button')?.focus(); },
+      change: () => { this.setState({ pick: null, changing: true }); document.querySelector('.pm-chips button')?.focus(); },
       dictate: () => { const fc = this.focus(); if (!fc) return toast('Pick a student first', 'err'); go('MobileDictate', { client: fc.id }); },
       type: () => { const fc = this.focus(); if (!fc) return toast('Pick a student first', 'err'); go('MobileDictate', { client: fc.id, type: 1 }); }
     };

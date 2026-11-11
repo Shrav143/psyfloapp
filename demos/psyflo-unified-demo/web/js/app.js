@@ -357,8 +357,27 @@ function notice(stage, kind, title, body, extra = '') {
   ensureMain(document.getElementById('root'));
 }
 
+// A failed state load is an error the person can see and act on, never an empty "Nothing needs you right now" (api.error is set by api.js).
+// Shown when there is no usable state (nothing loaded yet, or only the public roster for a signed-in token) and when a staff session ended (401).
+let loadErrorShown = false;
+const noUsableState = () => !api.state || (api.state.public && !!api.token);
+const loadErrorNow = () => !!api.error && (noUsableState() || api.error.status === 401);
+function showLoadError() {
+  const e = api.error; const stage = document.getElementById('stage') || document.body; const signin = e.status === 401;
+  loadErrorShown = true;
+  notice(stage, 'error', signin ? 'Your session ended' : "Can't reach the Psyflo server",
+    signin ? 'Sign in again to carry on. The data on this screen is not current.' : `The demo data did not load${e.status ? ' (error ' + esc(String(e.status)) + ')' : ''}. What is on screen is not current, and nothing is shown as empty on purpose. Try again; if it keeps failing, restart the demo server.`,
+    signin ? '<p><a class="ui-btn ui-btn--primary" href="#/Login" data-signin-again>Sign in again</a></p>' : '<p><button type="button" class="ui-btn ui-btn--primary" data-retry>Retry</button></p>');
+  const root = document.getElementById('root');
+  const again = root.querySelector('[data-signin-again]'); if (again) again.onclick = () => { api.error = null; loadErrorShown = false; };
+  const retry = root.querySelector('[data-retry]'); if (retry) retry.onclick = async () => { retry.disabled = true; try { await api.refresh(); } catch { } if (loadErrorNow()) showLoadError(); else { loadErrorShown = false; route(); } };
+  try { renderRail(true); } catch { }
+  const h = root.querySelector('h1'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); }
+}
 async function route() {
+  if (loadErrorNow()) { showLoadError(); return; }
   if (!api.state) return;
+  loadErrorShown = false;
   const seq = ++routeSeq;
   if (authPending) { const p = authPending; authPending = null; try { await p; } catch { } await api.refresh(true); if (seq !== routeSeq) return; }
   let r = parseRoute();
@@ -526,7 +545,12 @@ async function boot() {
     if (e.ctrlKey && e.shiftKey && !e.altKey && (e.key === 'P' || e.key === 'p')) { e.preventDefault(); if (mode === 'explore') dockEl().querySelector('[data-dock="toggle"]')?.focus(); else setDock(dockState === 'hidden' ? 'open' : 'hidden'); }
   }, true);
   let pending = false;
+  let staleToast = false;
   api.onChange(() => {
+    if (loadErrorNow()) { if (!loadErrorShown || !current) showLoadError(); return; }   // the load failed: say so
+    if (loadErrorShown && !api.error) { loadErrorShown = false; route(); return; }        // it works again: paint the screen
+    if (api.error && !staleToast) { staleToast = true; toast("Can't reach the Psyflo server. You are looking at the last data it sent.", 'err'); }
+    if (!api.error) staleToast = false;
     if (!current || pending) return; pending = true;
     requestAnimationFrame(() => {
       pending = false; if (!current) return;

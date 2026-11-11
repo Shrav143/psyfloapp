@@ -31,7 +31,10 @@ try {
     assert.eq(await p.locator('.pm-bar').count(), 1); assert.ok(await p.getByRole('button', { name: 'Pick a student to start' }).isDisabled(), 'Start waits for a student');
     await p.screenshot({ path: SHOTS + '/mobile-1-home-none.png' });
     await p.locator('.pm-chip', { hasText: 'M.R.' }).click(); await p.waitForTimeout(300);
-    const bar = await p.locator('.pm-bar').innerText(); assert.match(bar, /M\.R\./); assert.match(bar, /Harvest # 3310/); assert.match(bar, /Campbell ES-1/); assert.match(bar, /grade 2/);
+    const bar = await p.locator('.pm-bar').innerText();
+    await p.getByRole('link', { name: 'Change' }).click(); await p.waitForTimeout(300);
+    assert.match(await p.locator('.pm-bar').innerText(), /Choose a student/, 'Change shows a visible change'); assert.eq(await p.locator('.pm-chip[aria-pressed="true"]').count(), 0);
+    await p.locator('.pm-chip', { hasText: 'M.R.' }).click(); await p.waitForTimeout(300); assert.match(bar, /M\.R\./); assert.match(bar, /Harvest # 3310/); assert.match(bar, /Campbell ES-1/); assert.match(bar, /grade 2/);
     assert.deepEq(quiet(errs), [], quiet(errs).join(' | ')); await ctx.close();
   });
 
@@ -174,6 +177,7 @@ try {
       await go(p, hash);
       const small = await p.evaluate(() => [...document.querySelectorAll('#root button, #root a[href], #root input, #root select, #root textarea')].filter(e => e.offsetParent !== null && !e.classList.contains('pm-sr')).map(e => ({ n: (e.textContent || e.id || e.tagName).trim().slice(0, 30), h: Math.round(e.getBoundingClientRect().height) })).filter(x => x.h < 47));
       assert.deepEq(small, [], hash + ': targets under 48 px ' + JSON.stringify(small));
+      const demo = await p.locator('.pm-demo').boundingBox(); assert.ok(demo && demo.y + demo.height <= 844 && demo.height >= 12, hash + ': the "Demo data · nothing is real" line is visible in the footer'); assert.match(await p.locator('.pm-demo').innerText(), /Demo data · nothing is real/);
       const w = await p.evaluate(() => ({ s: document.documentElement.scrollWidth, i: innerWidth })); assert.ok(w.s <= w.i, `${hash}: horizontal scroll ${w.s} > ${w.i}`);
     }
     await ctx.close();

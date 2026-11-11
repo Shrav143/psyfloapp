@@ -19,24 +19,37 @@
 .a-range__f input{width:150px}
 .a-why{font-size:var(--fs-13);color:var(--muted-700);border:1px dashed var(--control-500);border-radius:var(--r-2);padding:10px 14px}
 .a-id{font-weight:500;color:var(--muted-700);font-size:var(--fs-13)}
-.a-sub{color:var(--muted-700);font-size:var(--fs-12);line-height:var(--lh-12);margin-top:3px}
+.a-sub{display:block;color:var(--muted-700);font-size:var(--fs-12);line-height:var(--lh-12);margin-top:2px}
 .a-case-l{display:block}
-.a-di{margin-top:6px;font-size:var(--fs-12)}
+.a-di{margin-top:3px;font-size:var(--fs-12)}
 .a-di a{font-weight:600}
-.a-bar{height:6px;border-radius:3px;background:var(--sand-100);overflow:hidden;margin-top:6px;max-width:170px}
+.a-bar{display:inline-block;width:56px;height:6px;border-radius:3px;background:var(--sand-100);overflow:hidden;flex:none}
 .a-bar i{display:block;height:100%;background:var(--teal-600)}
 .a-bar.is-warn i{background:var(--warning-fg)}
-.a-dl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.a-dl{display:flex;gap:4px;align-items:center}
+.a-dl__i{display:inline-flex;flex:none}
+.a-units{display:block}
+.a-ub{display:flex;align-items:center;gap:6px}
+.a-line{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}
+.a-nw{white-space:nowrap}
 .a-dl__t{font-weight:600}
 .a-dl--overdue .a-dl__t{color:var(--danger-fg)}
 .a-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.a-page .ui-qt__sort{min-height:24px}
 .a-page a:not(.ui-btn):not(.ui-qt__link){color:var(--teal-700)}
 .a-page a:not(.ui-btn):not(.ui-qt__link):hover{text-decoration:underline}
 .a-di a{text-decoration:none}
 .a-id{white-space:nowrap}
 .a-units .ui-num{font-weight:600}
 .a-page .ui-verify{font-size:var(--fs-12)}
-.a-page .ui-qt__table td{padding-top:14px;padding-bottom:14px}
+.a-page .ui-qt__table td{padding:8px 8px;vertical-align:middle}
+.a-page .ui-qt__table th{padding-left:8px;padding-right:8px}
+.a-c-case{min-width:150px}.a-c-case .a-sub{white-space:nowrap}
+.a-c-units{min-width:170px}.a-c-units .a-sub{white-space:nowrap}
+.a-c-dl{min-width:225px}
+.a-bar{width:40px}
+.a-page .ui-qt__table .ui-chip{padding:0 8px}
+.a-page .ui-qt__table .ui-verify{padding:0 6px;font-size:11px;line-height:16px}
 .a-page .ui-qt__table td:last-child{white-space:nowrap}
 .a-page .ui-qt__link{color:inherit}
 </style>

@@ -149,3 +149,7 @@ details.acc>div{padding:0 12px 10px}
 .ui-dr .ui-stepper__i.is-current .ui-stepper__l{white-space:nowrap}
 .ui-stepper{gap:6px 14px}
 .body{gap:10px}
+
+/* touch targets: a link that is a control is 40 px tall (a student's initials in a list); a link inside a sentence is at least 24 px */
+a.tap{display:inline-flex;align-items:center;min-height:40px;min-width:40px;padding:0 4px;margin:0 -4px;color:var(--teal-700);font-weight:600}
+.banner a[data-act],.hint a[data-act],.small a[data-act]{display:inline-block;min-height:24px;line-height:24px;padding:0 2px}

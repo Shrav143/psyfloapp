@@ -132,6 +132,17 @@ try {
     assert.match(v['What was discussed'], /^Spoke with grandmother for 12 minutes about the break card at home\./); assert.eq(v['Duration'], '12 min');
     assert.eq(v['Follow-up'], '', 'what was not separated out is left for the person');
   });
+  await T.test('the NOTE selector keeps the type the person picks; a page that cannot take it says so and offers to open that form (it used to be put back silently)', async () => {
+    await p.goto(`${LAURIS}/login?as=khale&next=${encodeURIComponent('/consumers/3310/session/weekly')}`); await p.waitForTimeout(1800);
+    const sel = panel().locator('#sc-type'); assert.eq(await sel.inputValue(), 'weekly', 'starts on the page\'s own form');
+    await sel.selectOption('collateral'); await p.waitForTimeout(600);
+    assert.eq(await sel.inputValue(), 'collateral', 'the choice stays'); await p.waitForTimeout(1500); assert.eq(await sel.inputValue(), 'collateral', 'and stays after the panel repaints');
+    const t = (await panel().locator('#panel').innerText()).replace(/\s+/g, ' ');
+    assert.match(t, /The page open in Lauris is the Weekly guardian contact, so nothing can be typed for this note type/); assert.match(t, /Open the monthly collateral/i);
+    assert.eq(await panel().getByText(/Draft it/).count(), 0, 'no drafting for a type the open page cannot take');
+    await panel().getByRole('button', { name: /Open the monthly collateral/i }).click(); await p.waitForURL(/session\/collateral/); await p.waitForTimeout(1500);
+    assert.eq(await panel().locator('#sc-type').inputValue(), 'collateral', 'on the page that takes it, the type matches');
+  });
   // Confirm and "didn't happen" go through the time model (time.save / time.discard), so the note, Track Time and the phone always show the same minutes.
   const sumOf = async () => { const s = await state('khale'); const t = timeSummary(s, 'MR', s.today, { staff: 'khale' }); return { s, t }; };
   await reset('live');

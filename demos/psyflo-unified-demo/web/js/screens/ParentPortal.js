@@ -332,7 +332,7 @@ a.fp-link{display:inline-flex;align-items:center;align-self:flex-start}
 .fp-btn--p{background:var(--teal-600);color:#fff}.fp-btn--p:hover{background:var(--teal-700);color:#fff}
 .fp-btn--o{background:#fff;color:var(--ink-900);border-color:var(--control-500)}.fp-btn--o:hover{background:var(--sand-50)}
 .fp-btn[aria-disabled=true]{opacity:.55;cursor:not-allowed}
-.fp-link{background:none;border:0;padding:0;min-height:44px;font:600 16px var(--font);color:var(--teal-700);text-decoration:underline;cursor:pointer}
+.fp-link{background:none;border:0;padding:0 8px;min-width:44px;min-height:44px;font:600 16px var(--font);color:var(--teal-700);text-decoration:underline;cursor:pointer}
 .fp-chip{display:inline-flex;align-items:center;gap:6px;border-radius:var(--r-pill);padding:4px 12px;font-size:14px;line-height:20px;font-weight:600;white-space:nowrap;flex:none}
 .fp-chip svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .fp-chip--ok{background:var(--success-bg);color:var(--success-fg)}.fp-chip--todo,.fp-chip--warn{background:var(--warning-bg);color:var(--warning-fg)}

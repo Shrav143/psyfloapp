@@ -24,7 +24,7 @@ if (opt.help) { console.log(fs.readFileSync(new URL(import.meta.url), 'utf8').sp
 const TEST = path.join(ROOT, 'test');
 const META = {
   unit: { cmd: ['--test', 'test/draft.test.mjs'], tags: ['unit'], timeout: 120 },
-  smoke: { tags: ['screens'], timeout: 900 }, panels: { tags: ['panel'], timeout: 300 }, 'ui-kit': { tags: ['ui'], timeout: 600 }, routes: { tags: ['ui'], timeout: 600 },
+  smoke: { tags: ['screens'], timeout: 900 }, panels: { tags: ['panel'], timeout: 300 }, 'ui-kit': { tags: ['ui'], timeout: 600 }, routes: { tags: ['ui'], timeout: 600 }, errors: { tags: ['ui'], timeout: 300 },
   flowA: { tags: ['flow', 'realtime'], timeout: 300 }, flowB: { tags: ['flow'], timeout: 300 }, flowC: { tags: ['flow', 'realtime'], timeout: 300 }, flowD: { tags: ['flow'], timeout: 300 },
   roles: { tags: ['safety'] }, gates: { tags: ['safety', 'realtime'] }, clock: { tags: ['safety'] }, rules: { tags: ['safety'] }, decisions: { tags: ['safety'] }, 'bridge-contract': { tags: ['contract'] }, fixtures: { tags: ['fixtures', 'realtime'], timeout: 400 },
   audit: { tags: ['audit', 'ui'], timeout: 5400 }, a11y: { tags: ['a11y', 'ui'], timeout: 1500 }, visual: { tags: ['visual', 'ui'], timeout: 1500 }, presenter: { tags: ['presenter', 'ui'], timeout: 600 }   // QA1 suites: audit.mjs, a11y.mjs, visual.mjs, presenter.mjs

@@ -1,7 +1,8 @@
 // Settings (route Settings, ?tab=people|roles|units|rules|audit|family|presenter). Admin only (admin.settings); everything here is
 // audited and takes effect on the next server call. Rules are edited through settings.rule (a reason is required, changes apply forward only);
 // people, roles and designations through the settings.* actions (a raise or a designation needs a second person).
-import { register, Screen, M, raw, esc, ui, session, hrefFor } from '../app.js';
+import { register, Screen, M, raw, esc, ui, session, hrefFor, canOpen } from '../app.js';
+import { BY_ID, resolveRoute } from '../registry.js';
 import { MATRIX, CAP_LIST, STAFF_ROLES, ROLE_LABEL, PORTAL_ACTORS, can } from '../shared/permissions.js';
 import { rule, unitsFor, unitBands, unitThresholds, ruleValue } from '../shared/rules.js';
 import { today as clockToday } from '../shared/clock.js';
@@ -286,12 +287,14 @@ register('Settings', class extends Screen {
     const q = a.q.toLowerCase();
     return rows.filter(r => kindOk(r) && (!a.sim || r.sim) && (!a.who || r.who === a.who) && (!q || (String(r.what) + ' ' + r.record + ' ' + this.staffName(r.who)).toLowerCase().includes(q)));
   }
+  // a record id is a link only when this role may open the screen it leads to (after the redirect table); otherwise it is plain text
   recordLink(rec) {
-    if (/^R-\d+$/.test(rec)) return hrefFor('Authorizations.dc.html?id=' + rec);
-    if (/^REF-\d+$/.test(rec)) return hrefFor('Referral.dc.html?id=' + rec);
-    if (M.byId(this.s.staff, rec)) return '#/Settings?tab=people';
-    if (rec === 'rules') return '#/Settings?tab=rules';
-    return '';
+    const to = /^R-\d+$/.test(rec) ? 'Authorizations.dc.html?id=' + rec : /^REF-\d+$/.test(rec) ? 'Referral.dc.html?id=' + rec : M.byId(this.s.staff, rec) ? 'Settings.dc.html?tab=people' : rec === 'rules' ? 'Settings.dc.html?tab=rules' : '';
+    if (!to) return '';
+    const [id0, qs] = to.split('?'); const id = id0.replace(/\.dc\.html$/, '');
+    const r = resolveRoute({ id, params: Object.fromEntries(new URLSearchParams(qs || '')) }, { role: this.actor && this.actor.role });
+    const target = r.presenter ? id : r.id;
+    return BY_ID[target] && canOpen(target) ? hrefFor(to) : '';
   }
   audit() {
     const s = this.s; const a = this.state.a; const all = (s.events || []);
@@ -333,9 +336,9 @@ register('Settings', class extends Screen {
     const modes = DOC_MODES.map(([key, label]) => { const r = rule(s, key); const v = r.value; return `<tr><th scope="row"><span>${esc(label)}</span><small class="se-sub">${esc(r.source || '')}</small></th><td><div class="se-seg" role="group" aria-label="${esc(label)} signature mode">${['remote_allowed', 'in_person_required'].map(m => `<button type="button" class="se-seg__b" data-x="mode" data-key="${esc(key)}" data-value="${m}" aria-pressed="${v === m}">${esc(MODE_LABEL[m])}</button>`).join('')}</div>${v === 'pending_validation' ? ui.chip('Pending validation', { tone: 'warning', size: 'sm' }) : ''}</td><td>${ui.chip('Policy not validated', { tone: 'warning', size: 'sm', icon: 'alert' })} ${withDate(r)}</td></tr>`; }).join('');
     const qs = ((s.settings || {}).family_link || {}).questions || [];
     const exp = rule(s, 'family_link.expires_days'); const rec = rule(s, 'recording.require_consent_record'); const p2p = rule(s, 'p2p.recording_enabled');
-    const sw = (on, key, what, label, disabled) => `<button type="button" class="se-sw" role="switch" aria-checked="${on}" aria-label="${esc(label)}" data-x="fq" data-key="${esc(key)}" data-what="${what}"${disabled ? ' disabled' : ''}><i aria-hidden="true"></i></button>`;
+    const sw = (on, key, what, label, disabled, why) => { const id = 'se-why-' + key + '-' + what; return `<button type="button" class="se-sw" role="switch" aria-checked="${on}" aria-label="${esc(label)}" data-x="fq" data-key="${esc(key)}" data-what="${what}"${disabled ? ` disabled title="${esc(why || 'Not available')}" aria-describedby="${id}"` : ''}><i aria-hidden="true"></i></button>${disabled ? `<span class="se-asof" id="${id}">${esc(why || 'Not available')}</span>` : ''}`; };
     let h = `<section class="se-card"><h2 class="se-h2">Guardian signatures</h2><div class="se-scroll"><table class="se-matrix se-matrix--plain"><caption class="ui-sr">Signature mode per document type</caption><thead><tr><th scope="col">Document</th><th scope="col">Mode</th><th scope="col">Status</th></tr></thead><tbody>${modes}</tbody></table></div><p class="se-foot">Switching a document to In person changes the family screens for it. Every change asks why and is audited.</p></section>`;
-    h += `<section class="se-card"><h2 class="se-h2">What the family link asks</h2><div class="se-scroll"><table class="se-matrix se-matrix--plain"><caption class="ui-sr">Questions on the family link</caption><thead><tr><th scope="col">Question</th><th scope="col">Ask</th><th scope="col">Required</th><th scope="col">Goes to</th></tr></thead><tbody>${qs.map(q => `<tr><th scope="row"><span>${esc(q.label)}</span>${q.sub ? `<small class="se-sub">${esc(q.sub)}</small>` : ''}</th><td>${sw(q.ask !== false, q.key, 'ask', 'Ask: ' + q.label, q.locked)}</td><td>${sw(q.ask !== false && !!q.required, q.key, 'req', 'Required: ' + q.label, q.locked || q.ask === false)}</td><td class="se-muted">${esc(q.goes || '')}</td></tr>`).join('')}<tr><th scope="row"><span>Any question about behavior, diagnosis or history</span></th><td colspan="3">${ui.chip('Not allowed', { tone: 'neutral', size: 'sm', icon: 'lock' })}</td></tr></tbody></table></div></section>`;
+    h += `<section class="se-card"><h2 class="se-h2">What the family link asks</h2><div class="se-scroll"><table class="se-matrix se-matrix--plain"><caption class="ui-sr">Questions on the family link</caption><thead><tr><th scope="col">Question</th><th scope="col">Ask</th><th scope="col">Required</th><th scope="col">Goes to</th></tr></thead><tbody>${qs.map(q => `<tr><th scope="row"><span>${esc(q.label)}</span>${q.sub ? `<small class="se-sub">${esc(q.sub)}</small>` : ''}</th><td>${sw(q.ask !== false, q.key, 'ask', 'Ask: ' + q.label, q.locked, 'Always on: it runs the eligibility check')}</td><td>${sw(q.ask !== false && !!q.required, q.key, 'req', 'Required: ' + q.label, q.locked || q.ask === false, q.locked ? 'Always on: it runs the eligibility check' : 'Turn on Ask first')}</td><td class="se-muted">${esc(q.goes || '')}</td></tr>`).join('')}<tr><th scope="row"><span>Any question about behavior, diagnosis or history</span></th><td colspan="3">${ui.chip('Not allowed', { tone: 'neutral', size: 'sm', icon: 'lock' })}</td></tr></tbody></table></div></section>`;
     h += `<section class="se-card"><h2 class="se-h2">Link and recording</h2><div class="se-scroll"><table class="se-matrix se-matrix--plain"><caption class="ui-sr">Link expiry and recording consent</caption><thead><tr><th scope="col">Setting</th><th scope="col">Now</th><th scope="col">Source</th><th scope="col">Change</th></tr></thead><tbody>
       <tr><th scope="row"><span>${esc(exp.label)}</span></th><td>${esc(showValue(exp))}</td><td>${withDate(exp)}</td><td><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rule" data-key="family_link.expires_days">Edit</button></td></tr>
       <tr><th scope="row"><span>Recording needs a recorded consent</span><small class="se-sub">Off by default until the consent policy and the BAA are settled</small></th><td>${esc(showValue(rec))}</td><td>${withDate(rec)}</td><td><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rulebool" data-key="recording.require_consent_record">${rec.value ? 'Turn off' : 'Turn on'}</button></td></tr>

@@ -80,14 +80,14 @@ export const SP_CSS = `
 .sp-btn--p{background:var(--teal-600);color:#fff}.sp-btn--p:hover{background:var(--teal-700);color:#fff}
 .sp-btn--o{background:#fff;color:var(--ink-900);border-color:var(--control-500)}.sp-btn--o:hover{background:var(--sand-50)}
 .sp-btn--sm{min-height:44px;padding:0 14px;font-size:15px}
-.sp-link{background:none;border:0;padding:0;min-height:44px;font:600 15px var(--font);color:var(--teal-700);text-decoration:underline;cursor:pointer}
+.sp-link{background:none;border:0;padding:0 6px;min-width:44px;min-height:44px;font:600 15px var(--font);color:var(--teal-700);text-decoration:underline;cursor:pointer}
 .sp-chip{display:inline-flex;align-items:center;gap:6px;border-radius:var(--r-pill);padding:3px 12px;font-size:14px;line-height:20px;font-weight:600;white-space:nowrap}
 .sp-chip--ok{background:var(--success-bg);color:var(--success-fg)}.sp-chip--todo{background:var(--warning-bg);color:var(--warning-fg)}.sp-chip--neutral{background:var(--neutral-bg);color:var(--neutral-fg)}.sp-chip--info{background:var(--info-bg);color:var(--info-fg)}
 .sp-table{width:100%;border-collapse:collapse;font-size:16px}
 .sp-table th{text-align:left;font-size:14px;font-weight:600;color:var(--muted-700);padding:8px 12px;background:var(--sand-100);border-bottom:1px solid var(--line-200)}
 .sp-table td{padding:10px 12px;border-bottom:1px solid var(--line-200);vertical-align:middle}
 .sp-table tr:last-child td{border-bottom:0}
-.sp-table a.sp-name{font-weight:700;color:var(--teal-700);display:inline-flex;align-items:center;min-height:44px}
+.sp-table a.sp-name{font-weight:700;color:var(--teal-700);display:inline-flex;align-items:center;min-height:44px;min-width:44px}
 .sp-field{display:flex;flex-direction:column;gap:6px}.sp-lab{font-size:15px;font-weight:600}
 .sp-in{width:100%;min-height:44px;border:1px solid var(--control-500);border-radius:var(--r-2);padding:10px 12px;font:inherit;font-size:16px;background:#fff;color:var(--ink-900)}
 textarea.sp-in{min-height:96px;resize:vertical}

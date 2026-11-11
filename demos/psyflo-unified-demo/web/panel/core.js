@@ -170,7 +170,7 @@ export { ctx };
 // ---------------------------------------------------------------- chrome
 function header(title, { connected = true } = {}) {
   const me = meFromPage();
-  return `<header class="ph"><span class="logo">${P.logo}</span><div class="pt"><h1>${esc(title)}</h1><span><i class="${connected ? '' : 'off'}"></i>${connected ? 'Lauris connected' : 'Waiting for Lauris'}</span></div>${me.role ? `<span class="rolechip">${esc(roleLabel(me.role))}</span>` : ''}</header>`;
+  return `<header class="ph"><span class="logo">${P.logo}</span><div class="pt"><h1 title="${esc(title)}">${esc(title)}</h1><span><i class="${connected ? '' : 'off'}"></i>${connected ? 'Lauris connected' : 'Waiting for Lauris'}</span></div>${me.role ? `<span class="rolechip">${esc(roleLabel(me.role))}</span>` : ''}</header>`;
 }
 const foot = () => `<div class="foot"><i></i>Demo data · nothing is real · reads only the page you have open</div>`;
 function docStatus(p) {
@@ -201,7 +201,7 @@ function stopCard(p, stop) {
 function viewHTML() {
   const s = S();
   if (!s) return header('Psyflo', { connected: false }) + '<div class="body">Loading…</div>';
-  if (!framed) return page('Psyflo panel', `<p>This is the Psyflo panel. It runs beside a Lauris page: open the mock Lauris (${esc(api.config.laurisURL)}) and the panel appears at the right, or install the extension from <code>extension/</code> and open its side panel.</p><a class="btn p" href="${esc(api.config.laurisURL)}/login?as=jperez">Open the mock Lauris</a>`, { connected: false });
+  if (!framed) return page('Psyflo panel', `<p>The Psyflo panel works beside a Lauris page. Open Lauris and it appears at the right.</p><a class="btn p" href="${esc(api.config.laurisURL)}/login?as=jperez">Open Lauris</a>`, { connected: false });
   const p = P.page;
   if (!p) return page('Psyflo', banner('n', 'Waiting for the page… If this stays, reload the Lauris tab.'), { connected: false });
   const me = meFromPage();

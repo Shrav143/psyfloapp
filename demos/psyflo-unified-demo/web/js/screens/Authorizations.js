@@ -102,19 +102,19 @@ register('Authorizations', class extends Screen {
       shown: q.shown, total: q.total, noun: NOUN, onChange: f => this.setF(f), onClear: f => { this.state.range = { from: '', to: '' }; ui.query.writeQuery({ from: '', to: '' }); this.setF(f); }
     });
     const cols = [
-      { key: 'case', label: 'Case', sort: true, primary: true, width: '21%', render: r => `<span class="a-case-l"><b>${esc(r.label)}</b> <span class="a-id">${esc(r.id)}</span></span><span class="a-sub">${esc(r.school || '')}</span>` },
-      { key: 'payer', label: 'Payer', sort: true, hideBelow: 1024, width: '12%', render: r => `${esc(r.payer)}<div class="a-sub">${esc(r.channel)}${r.ref ? ' · ' + esc(r.ref) : ''}</div>` },
-      { key: 'type', label: 'Request type', sort: true, hideBelow: 1280, width: '11%', render: r => `${esc(r.typeLabel)}<div class="a-sub">${esc(r.service)}</div>` },
-      { key: 'status', label: 'Status', sort: true, width: '13%', render: r => ui.statusChip(r.stage) + (r.inDI ? (canOpen('DenialCase') || canOpen('Partials') ? `<div class="a-di"><a href="${esc(diHref(r.req))}">In Denial Intelligence</a></div>` : '<div class="a-sub">In Denial Intelligence · clinician only</div>') : '') },
-      { key: 'units', label: 'Units', sort: true, width: '15%', render: r => this.unitsCell(r) },
-      { key: 'deadline', label: 'Deadline', sort: true, width: '16%', render: r => this.deadlineCell(r) },
-      { key: 'owner', label: 'Owner', sort: true, hideBelow: 1280, width: '7%', render: r => `<span title="${esc(r.owner.backup ? 'Backup: ' + r.owner.backup.name : 'No backup set')}">${esc(r.owner.short)}</span>` },
+      { key: 'case', label: 'Case', sort: true, primary: true, width: '16%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.label)}</b> <span class="a-id">${esc(r.id)}</span></span><span class="a-sub">${esc(r.school || '')}</span>` },
+      { key: 'payer', label: 'Payer', sort: true, hideBelow: 1024, width: '12%', render: r => `<span class="a-nw">${esc(r.payer)}</span><div class="a-sub a-nw">${esc(r.channel)}${r.ref ? ' · ' + esc(r.ref) : ''}</div>` },
+      { key: 'type', label: 'Request type', sort: true, hideBelow: 1280, width: '10%', render: r => `${esc(r.typeLabel)}<div class="a-sub">${esc(r.service)}</div>` },
+      { key: 'status', label: 'Status', sort: true, width: '12%', render: r => ui.statusChip(r.stage) + (r.inDI ? (canOpen('DenialCase') || canOpen('Partials') ? `<div class="a-di"><a href="${esc(diHref(r.req))}">In Denial Intelligence</a></div>` : '<div class="a-sub">In Denial Intelligence · clinician only</div>') : '') },
+      { key: 'units', label: 'Units', sort: true, width: '16%', className: 'a-c-units', render: r => this.unitsCell(r) },
+      { key: 'deadline', label: 'Deadline', sort: true, width: '21%', className: 'a-c-dl', render: r => this.deadlineCell(r) },
+      { key: 'owner', label: 'Owner', sort: true, hideBelow: 1280, width: '6%', render: r => `<span class="a-nw" title="${esc(r.owner.backup ? 'Backup: ' + r.owner.backup.name : 'No backup set')}">${esc(r.owner.short)}</span>` },
       { key: 'next', label: 'Next action', sort: true, render: r => this.nextCell(r) }
     ];
     const table = ui.queueTable({
       id: 'auth', caption: 'Authorizations', columns: cols, rows: q.rows, rowId: r => r.id, href: r => caseHref(r.id),
       sort: st.sort.key === 'priority' ? {} : st.sort, onSort: sort => { this.setState({ sort }); ui.query.writeQuery({ sort: sort.key, dir: sort.dir }); },
-      limit: st.limit, limitStep: 25, onMore: () => this.setState({ limit: st.limit + 25 }), total: q.shown, maxHeight: 'none',
+      limit: st.limit, limitStep: 25, onMore: () => this.setState({ limit: st.limit + 25 }), total: q.shown, maxHeight: q.rows.length > 12 ? undefined : 'none',   // a long queue scrolls inside the table so its header stays visible (QA1-03)
       empty: { title: q.total ? 'No requests match' : 'No requests yet', body: q.total ? 'Clear a filter to see more.' : 'Requests appear after a packet is drafted.' }
     });
     const canDraft = !!me && can(me, 'drafts.clinical');
@@ -124,15 +124,17 @@ register('Authorizations', class extends Screen {
   }
   unitsCell(r) {
     const u = r.units; const warn = u.daysLeft != null && u.daysLeft < 10;
-    const bar = u.showBar ? `<div class="a-bar${warn ? ' is-warn' : ''}" role="img" aria-label="${esc(`${u.used} of ${u.total} units used`)}"><i style="width:${Math.min(100, u.pct)}%"></i></div>` : '';
-    const sub = u.showBar ? `<div class="a-sub">${esc(u.sub)}</div>` : (r.stage === 'submitted' || r.stage === 'overdue') && r.req.sent ? `<div class="a-sub">sent ${esc(M.fmtDate(r.req.sent))}</div>` : '';
-    const days = u.showBar && u.daysLeft != null && u.rate ? `<div class="a-sub">about ${u.daysLeft} school days</div><div class="a-chips">${ui.sourceChip(u.rate.rule)}</div>` : '';
-    return `<span class="a-units"><b class="ui-num">${esc(u.text)}</b></span>${bar}${sub}${days}`;
+    const bar = u.showBar ? `<span class="a-bar${warn ? ' is-warn' : ''}" role="img" aria-label="${esc(`${u.used} of ${u.total} units used`)}"><i style="width:${Math.min(100, u.pct)}%"></i></span>` : '';
+    const sub = u.showBar ? `<span class="a-sub a-ub">${bar}${esc(u.sub)}</span>` : (r.stage === 'submitted' || r.stage === 'overdue') && r.req.sent ? `<span class="a-sub">sent ${esc(M.fmtDate(r.req.sent))}</span>` : '';
+    const days = u.showBar && u.daysLeft != null && u.rate ? `<span class="a-sub a-line">about ${u.daysLeft} school days ${ui.sourceChip(u.rate.rule)}</span>` : '';
+    return `<span class="a-units"><b class="ui-num">${esc(u.text)}</b></span>${sub}${days}`;
   }
   deadlineCell(r) {
     const d = r.deadline; if (d.kind === 'none') return '<span class="ui-muted">—</span>';
-    const chips = [d.sev === 'overdue' || d.sev === 'soon' ? ui.statusChip(d.sev, { kind: 'clock' }) : '', d.rule ? ui.sourceChip(d.rule) : ''].filter(Boolean).join('');
-    return `<div class="a-dl a-dl--${d.sev}"><span class="a-dl__t">${esc(d.text)}</span></div>${d.sub ? `<div class="a-sub">${esc(d.sub)}</div>` : ''}${chips ? `<div class="a-chips">${chips}</div>` : ''}`;
+    // the Overdue / Due soon chip is the colour and an icon here (the Status column already says Overdue); the source chip stays, on the second line
+    const mark = d.sev === 'overdue' ? `<span class="a-dl__i">${ui.icon('alert', 14)}<span class="ui-sr">Overdue: </span></span>` : d.sev === 'soon' ? `<span class="a-dl__i">${ui.icon('clock', 14)}<span class="ui-sr">Due soon: </span></span>` : '';
+    const src = d.rule ? ui.sourceChip(d.rule) : '';
+    return `<div class="a-dl a-dl--${d.sev}">${mark}<span class="a-dl__t">${esc(d.text)}</span></div>${d.sub || src ? `<span class="a-sub a-line">${esc(d.short || d.sub || '')} ${src}</span>` : ''}`;
   }
   nextCell(r) {
     const n = r.next; const href = n.di && (canOpen('DenialCase') || canOpen('Partials')) ? diHref(r.req) : caseHref(r.id);

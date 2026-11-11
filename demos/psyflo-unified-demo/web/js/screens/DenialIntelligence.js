@@ -58,7 +58,7 @@ register('DenialIntelligence', class extends Screen {
     const sorted = ui.sortRows(rows, this.state.sort, D.queueGetters);
     const table = ui.queueTable({
       id: 'di-q', caption: 'Denial cases', columns, rows: sorted, href: r => '#/DenialCase?id=' + encodeURIComponent(r.request), sort: this.state.sort, onSort: sort => this.setState({ sort }),
-      limit: this.state.limit, total: rows.length, onMore: () => this.setState({ limit: this.state.limit + 25 }), maxHeight: 'none',
+      limit: this.state.limit, total: rows.length, onMore: () => this.setState({ limit: this.state.limit + 25 }),   // bounded scroll region (the kit default) so the header stays sticky on a long queue (QA1-03)
       empty: { title: (f.status || '') === '' ? 'No open denial cases' : 'Nothing matches', body: all.length ? 'Change a filter, or open the Closed status to see resolved cases.' : 'A case opens by itself when a payer asks for information, offers fewer units or denies a request.' }
     });
     const clinical = D.canReadClinical(me);
