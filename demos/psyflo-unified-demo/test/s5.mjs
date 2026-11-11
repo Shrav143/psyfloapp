@@ -61,13 +61,13 @@ async function run(mode) {
       await desk.getByRole('link', { name: /^Options/ }).click(); t = await rootText(desk);
       assert.match(t, /Accept decision/); assert.match(t, /Prepare peer-to-peer/); assert.match(t, /Payer rule not verified/); assert.match(t, /Not available here \(2\)/);
     });
-    await F.step('3 choose peer-to-peer: stage peer_to_peer_requested; the page says it is NOT sent to the payer; a next task appears in My Work; owner and deadline stay visible', async () => {
+    await F.step('3 choose peer-to-peer: stage peer_to_peer_requested; the page says it is NOT sent to the payer; a next task appears on the Dashboard; owner and deadline stay visible', async () => {
       await desk.getByRole('button', { name: 'Open' }).nth(1).click(); await desk.waitForSelector('#d-h-p2p');
       await desk.getByRole('button', { name: /Ask Sentara for a peer-to-peer/ }).click(); await desk.getByRole('dialog').getByRole('button', { name: 'Log the request' }).click();
       const s = await waitState(x => req(x, 'R-0402').stage === 'peer_to_peer_requested', { what: 'peer_to_peer_requested' });
       assert.eq(req(s, 'R-0402').decision.door, 'p2p'); assert.eq(req(s, 'R-0402').decision.by, 'jperez'); assert.ok(s.events.some(e => e.record === 'R-0402' && /peer-to-peer/i.test(e.what) && e.who === 'jperez'));
       assert.ok(!s.events.filter(e => e.record === 'R-0402').slice(L.s0.events.filter(e => e.record === 'R-0402').length).some(e => /sent to (Sentara|the payer)|faxed/i.test(e.what)), 'logging a request is not sending anything');
-      const mw = await openAs(b, 'jperez'); pages.push(mw); await mw.goto(BASE + '/#/MyWork'); await mw.waitForTimeout(1200); const sa = mw.getByRole('button', { name: /Show all/ }); if (await sa.count()) await sa.first().click(); await mw.waitForTimeout(300); assert.match(await mainText(mw), /Peer-to-peer requested · D\.W\./, 'My Work carries the next step (enter the call date)');
+      const mw = await openAs(b, 'jperez'); pages.push(mw); await mw.goto(BASE + '/#/Dashboard?q=D.W.&open=all'); await mw.waitForTimeout(1200); assert.match(await mainText(mw), /Peer-to-peer requested/, 'the Dashboard carries the next step under D.W. (enter the call date)');
       assert.match(await rootText(desk), /nothing is sent/i, 'the screen says nothing is sent to the payer (a person asks the payer by phone; Psyflo logs it)');
     });
     await F.step('4 brief and schedule: "Draft from records" prints Evidence missing items and Simulated; Mark reviewed; Set the call stores p2p_at (stage booked)', async () => {

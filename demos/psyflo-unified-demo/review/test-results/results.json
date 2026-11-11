@@ -1,6 +1,6 @@
 {
- "runId": "2026-11-11T20-12-06Z",
- "commit": "5a5a60f",
+ "runId": "2026-11-11T20-12-52Z",
+ "commit": "4b84709",
  "release": false,
  "releaseReady": false,
  "env": {
@@ -12,20 +12,107 @@
   "basePort": 5520
  },
  "summary": {
-  "pass": 1,
-  "fail": 0,
+  "pass": 2,
+  "fail": 1,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 11618,
+  "durationMs": 112484,
   "tests": {
-   "pass": 8,
-   "fail": 0,
+   "pass": 38,
+   "fail": 1,
    "skip": 0
   }
  },
  "suites": [
+  {
+   "name": "dashboard",
+   "tags": [],
+   "instance": 0,
+   "attempt": 1,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 22985,
+   "counts": {
+    "pass": 14,
+    "fail": 0,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "fail closed: no actor, no patients; a portal actor has none either",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "scope by role: direct support own caseload, supervisor the staff they manage, clinician and administrator everyone",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "units: the flag is the rules-table threshold (75% used) and nothing else; 0 left is out",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "filters: attention chips, search by Lauris number, units flagged, staff, due overdue; counts match the rows",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "sorting: default is attention (red first); patient, units and staff sorts are stable and reversible",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "direct support: one h1, no paragraphs, only own patients, items under the patient with a verb, units bar with the flag, no console errors",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "expand and collapse: per-row chevron, Expand all / Collapse all, the choice lands in the address",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "supervisor: roster for their staff, Staff filter, chips filter the table, search by Lauris number, a patient opens the chart",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "filter state survives a reload and Clear filters resets it; an empty result says so with a way out",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "clinician: all patients, Responsible column, authorization chip with the unit bar, sort by Patient, items open their screen",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "administrator: statuses and dates only, no write or review verbs, no note text, items open the chart when the role cannot open the target",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "two-person confirmations: after the administrator proposes a designation the clinician sees the strip with a Review button; the proposer does not, and no strip when nothing waits",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "phone width: no horizontal scroll, patients become cards, buttons are 44 px",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the old My Work, Do next and Staff dashboard routes land on the Dashboard; the review sections land on Documentation",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-11T20-12-52Z"
+  },
   {
    "name": "patient",
    "tags": [],
@@ -33,7 +120,7 @@
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 11517,
+   "durationMs": 14959,
    "counts": {
     "pass": 8,
     "fail": 0,
@@ -81,7 +168,109 @@
      "note": ""
     }
    ],
-   "runId": "2026-11-11T20-12-06Z"
+   "runId": "2026-11-11T20-12-52Z"
+  },
+  {
+   "name": "settings",
+   "tags": [],
+   "instance": 0,
+   "attempt": 1,
+   "status": "FAIL",
+   "exit": 1,
+   "durationMs": 74236,
+   "counts": {
+    "pass": 16,
+    "fail": 1,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "roles: a raise needs a second person (not the proposer, an administrator or a clinician); a lowering applies at once; never your own",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "people: new users start as direct support or supervisor; clinician and administrator go through a role change",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "designated access: proposed by an administrator, confirmed by someone else, never for yourself, never a clinical-record grant for an administrator",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rules: a reason is required, only the administrator edits, the type is kept, and a change is audited with its values",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rules: the dependent screen changes (day-5 follow-up makes the Aetna request a follow-up call in My Work); reset restores it",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "units: the alternate bands change the units a day earns; restore returns the official bands (audited)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "signature mode per document type: default remote (not validated); In person changes the rule the family screens read",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "family link questions: ask and required switches (the guardian link reads them); the insurance question is locked",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the administrator has no clinical-record access: Settings never carries note text, and the matrix says so",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "Settings: seven tabs, one h1, every tab renders without console errors; only the administrator opens it",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rules tab: filter by source, search, edit in the drawer (reason required, value type kept), history and the audit tab show it",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "units tab: the try-it box follows the bands; switching to the alternate asks why and is audited",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "roles tab: the matrix is drawn from permissions.js; designate in the UI, the clinician confirms from My Work, the grant takes effect",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "people tab: change a role with a reason (a lowering applies, a raise waits), the second person confirms in Settings or My Work",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "family tab: In person changes the rule, asks why, shows Policy not validated; the family-link question switches work",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "presenter tab: how it fits, architecture, maturity legend with all four levels, the unresolved decisions with where each is set",
+     "note": ""
+    },
+    {
+     "status": "FAIL",
+     "title": "Login: four role cards, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390",
+     "note": "page.waitForFunction: Timeout 8000ms exceeded."
+    }
+   ],
+   "runId": "2026-11-11T20-12-52Z"
   }
  ],
  "manual": [

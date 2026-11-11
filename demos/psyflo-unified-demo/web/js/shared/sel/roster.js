@@ -149,10 +149,14 @@ export function outstandingByClient(s, actor) {
   // the authorization worklist, by client: what this person can act on now or this week (what waits on other people stays on the chart)
   if (!isDS) {
     const w = worklist(s, actor);
+    // a referral step (screening call, eligibility check or re-check) belongs to the patient once the referral has one
+    const refClient = id => { const r = M.byId(s.referrals, id); return r && r.client && M.byId(s.clients, r.client) ? r.client : null; };
+    const AUTH = ['info', 'overdue', 'partial', 'draft', 'approve', 'sign', 'send', 'sending', 'followup', 'p2p', 'units', 'units-out', 'lauris-units'], REFERRAL = ['screening', 'eligibility', 'recheck'];
     for (const it of w.items) {
-      if (!it.client || it.group === 'waiting' || !['info', 'overdue', 'partial', 'draft', 'approve', 'sign', 'send', 'sending', 'followup', 'p2p', 'units', 'units-out', 'lauris-units'].includes(it.kind)) continue;
-      const lbl = M.clientLabel(s, it.client);
-      add({ client: it.client, kind: 'auth', type: it.kind, title: String(it.title).replace(new RegExp(` · ${lbl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`), ''), sub: it.sub || '', due: '', dueText: it.when || '', sev: it.urgent ? 'r' : tone(it.chip && it.chip.tone), status: 'action', rank: it.rank || 50, verb: it.verb || 'Open', to: it.to || '', record: it.record, ops: it.ops !== false, rule: it.rule });
+      const client = it.client || (REFERRAL.includes(it.kind) ? refClient(it.record) : null);
+      if (!client || it.group === 'waiting' || !(AUTH.includes(it.kind) || REFERRAL.includes(it.kind))) continue;
+      const lbl = M.clientLabel(s, client);
+      add({ client, kind: REFERRAL.includes(it.kind) ? 'referral' : 'auth', type: it.kind, title: String(it.title).replace(new RegExp(` · ${lbl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`), ''), sub: it.sub || '', due: '', dueText: it.when || '', sev: it.urgent ? 'r' : tone(it.chip && it.chip.tone), status: 'action', rank: it.rank || 50, verb: it.verb || 'Open', to: it.to || '', record: it.record, ops: it.ops !== false, rule: it.rule });
     }
   }
   for (const list of map.values()) list.sort((a, b) => (SEV_N[a.sev] - SEV_N[b.sev]) || (a.rank - b.rank) || String(a.due || '9999').localeCompare(String(b.due || '9999')));
@@ -175,7 +179,7 @@ function buildRow(s, actor, c, items) {
   const behind = count(i => i.kind === 'note' && i.sev === 'r'), notesDue = count(i => i.kind === 'note' && i.sev !== 'r');
   const review = count(i => i.kind === 'review'), fix = count(i => i.kind === 'fix');
   const formsLate = count(i => i.kind === 'form' && i.sev === 'r'), forms = count(i => i.kind === 'form');
-  const authActions = count(i => i.kind === 'auth');
+  const authActions = count(i => i.kind === 'auth'), referralSteps = count(i => i.kind === 'referral');
   const alerts = [];
   if (behind) alerts.push({ key: 'note-behind', sev: 'r', icon: 'alert', text: `${plural(behind, 'note')} behind`, to: chartHref(c.id, 'documentation') });
   if (fix) alerts.push({ key: 'note-fix', sev: 'r', icon: 'alert', text: `${plural(fix, 'note')} sent back`, to: chartHref(c.id, 'documentation') });
@@ -184,13 +188,14 @@ function buildRow(s, actor, c, items) {
   if (au && au.units && au.units.warn) alerts.push({ key: 'units', sev: au.units.left === 0 ? 'r' : 'y', icon: 'alert', text: au.units.left === 0 ? 'No units left' : `${au.units.pctUsed}% of units used (${au.units.left} left)`, to: chartHref(c.id, 'authorization') });
   if (au && au.date && (au.dateSev === 'soon' || au.dateSev === 'overdue')) alerts.push({ key: 'deadline', sev: au.dateSev === 'overdue' ? 'r' : 'y', icon: 'clock', text: `${au.dateWhy || 'Deadline'}`, to: chartHref(c.id, 'authorization') });
   if (authActions && !alerts.some(a => a.key === 'deadline')) alerts.push({ key: 'auth-action', sev: items.some(i => i.kind === 'auth' && i.sev === 'r') ? 'r' : 'y', icon: 'inbox', text: `${plural(authActions, 'authorization action')}`, to: chartHref(c.id, 'authorization') });
+  if (referralSteps) alerts.push({ key: 'referral', sev: items.some(i => i.kind === 'referral' && i.sev === 'r') ? 'r' : 'y', icon: 'inbox', text: `${plural(referralSteps, 'referral step')}`, to: chartHref(c.id, 'documentation') });
   const worst = alerts.reduce((a, x) => worse(a, x.sev), items.reduce((a, x) => worse(a, x.sev), ''));
   const staffId = c.staff || '';
   return {
     id: c.id, label: M.clientLabel(s, c.id, false), age: c.age || null, lauris: c.harvest_no || c.lauris_no || '', school: siteShort(s, c.school), siteId: c.school, locality: M.school(s, c.school).locality || '',
     stage: c.stage, staffId, staffShort: staffId ? M.staffShort(s, staffId) : '', clinicianId: c.clinician || '', clinicianShort: c.clinician ? M.staffShort(s, c.clinician) : '',
     payer: au ? au.payer : '', payerId: au ? au.payerId : '',
-    counts: { behind, due: notesDue, review, fix, forms, formsLate, auth: authActions, total: items.length }, alerts, worst, auth: au, items, href: chartHref(c.id)
+    counts: { behind, due: notesDue, review, fix, forms, formsLate, auth: authActions, referral: referralSteps, total: items.length }, alerts, worst, auth: au, items, href: chartHref(c.id)
   };
 }
 

@@ -106,7 +106,7 @@ async function run(mode) {
     });
     await F.step('7 the administrator\'s state and screens carry no clinical text: the API projection withholds notes, drafts, screenings and evidence; Denial Intelligence and the case show status only; the clinical routes say why', async () => {
       const s = await state('dowens'); assert.ok(s.notes.every(n => !('fields' in n) && !('dictation' in n)), 'note rows are metadata only'); for (const k of ['screenings', 'drafts', 'dictations', 'evidence_marks', 'doc_versions', 'internal_quarterlies']) assert.eq((s[k] || []).length, 0, k);
-      for (const h of ['/DenialCase?id=R-0408&section=evidence', '/Authorization?id=R-0411&section=evidence', '/MyWork']) { await ad.goto(BASE + '#' + h); await ad.waitForTimeout(1000); assert.ok(!CLINICAL.test(await ad.content()), 'clinical text on ' + h); }
+      for (const h of ['/DenialCase?id=R-0408&section=evidence', '/Authorization?id=R-0411&section=evidence', '/Dashboard']) { await ad.goto(BASE + '#' + h); await ad.waitForTimeout(1000); assert.ok(!CLINICAL.test(await ad.content()), 'clinical text on ' + h); }
       const j = await tryApi('enhance.historical', { client: 'MR' }, 'dowens'); assert.ok(!j.ok && j.status === 403, 'the clinical evidence review is refused for admin');
       L.last = { scorecard: Object.fromEntries(Object.entries(scoreRows(await state('dowens'), 'dowens')).map(([k, v]) => [k, v.headline])), notes: s.notes.length, csv: L.csvRows };
     });

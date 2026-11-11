@@ -41,10 +41,10 @@ async function run(mode) {
       const s = await waitState(x => x.referrals.length === L.s0.referrals.length + 1, { what: 'the new referral' });
       const n = s.referrals.find(r => !L.s0.referrals.some(o => o.id === r.id)); assert.eq(n.stage, 'needs_screening'); assert.eq(n.school, 'LC-MS2'); assert.eq(n.referred_by, 'rbell');
       await waitText(p, /Referral sent/); L.newRef = n.id; await shot(p, `s2-${mode}-1-school`);
-      // the clinic queue (Referrals) and My Work show it
+      // the clinic queue (Referrals) shows it; the old My Work referrals section lands on Referrals
       const c = await openAs(b, 'jperez'); pages.push(c); await c.goto(BASE + '/#/Referrals'); await c.waitForSelector('.ui-qt__row');
       assert.ok((await c.locator('.ui-qt__row', { hasText: n.id }).count()) === 1, 'the new referral is in the clinic queue'); assert.ok((await c.locator('.ui-qt__row', { hasText: REF }).count()) === 1);
-      await c.goto(BASE + '/#/MyWork?section=referrals'); await c.waitForTimeout(900); assert.match(await mainText(c), /Referrals/);
+      await c.goto(BASE + '/#/MyWork?section=referrals'); await c.waitForTimeout(900); assert.match(await c.evaluate(() => location.hash), /#\/Referrals/); assert.match(await mainText(c), /Referrals/);
     });
 
     // ---------------------------------------------------------------- 2 clinic reviews

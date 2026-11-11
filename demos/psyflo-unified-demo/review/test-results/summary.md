@@ -1,12 +1,18 @@
-# Test results · 2026-11-11T20-12-06Z
+# Test results · 2026-11-11T20-12-52Z
 
-1 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 8 pass, 0 fail, 0 skip · 12 s
+2 suites pass · 1 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 38 pass, 1 fail, 0 skip · 112 s
 
-Commit 5a5a60f · node v22.22.0 · demo time 15:30 · workers 1 · base port 5520
+Commit 4b84709 · node v22.22.0 · demo time 15:30 · workers 1 · base port 5520
 
 | Suite | Status | Pass | Fail | Skip | Seconds |
 |---|---|---|---|---|---|
-| [patient](patient.md) | PASS | 8 | 0 | 0 | 11.5 |
+| [dashboard](dashboard.md) | PASS | 14 | 0 | 0 | 23.0 |
+| [patient](patient.md) | PASS | 8 | 0 | 0 | 15.0 |
+| [settings](settings.md) | FAIL | 16 | 1 | 0 | 74.2 |
+
+## Failures
+
+- **settings** · Login: four role cards, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390 — page.waitForFunction: Timeout 8000ms exceeded.
 
 ## Manual checklist (not automatable)
 

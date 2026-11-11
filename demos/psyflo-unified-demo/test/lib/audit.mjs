@@ -387,9 +387,11 @@ export class Sweeper {
 // ---------------------------------------------------------------------------------------------------- route inventory (shared with a11y.mjs and visual.mjs)
 // Parameter variants (UI-KIT section 5 deep-link patterns). Variants a role cannot open are dropped by routeAllowed; redirect-only historic ids
 // (DoNext, Partials?id ...) land on these same screens and are covered by test/routes.mjs.
-export const REDIRECT_ONLY = new Set(['DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive', 'UiKit', 'Login']);
+export const REDIRECT_ONLY = new Set(['MyWork', 'DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive', 'UiKit', 'Login']);
 export const VARIANTS = {
-  MyWork: { direct_support: [{ section: 'day' }], supervisor: [{ section: 'review' }, { section: 'team' }, { section: 'day' }], clinician: [{ section: 'todo' }, { section: 'review' }, { section: 'team' }, { section: 'referrals' }], admin: [{ section: 'todo' }, { section: 'team' }] },
+  Dashboard: { '*': [{}] },
+  Documentation: { supervisor: [{}, { status: 'pending_review' }, { view: 'staff' }], clinician: [{}, { status: 'pending_review' }, { view: 'staff' }], admin: [{}, { view: 'staff' }] },
+  Patient: { direct_support: [{ id: 'MR' }], supervisor: [{ id: 'MR' }, { id: 'DW' }], clinician: [{ id: 'MR' }, { id: 'TW' }, { id: 'KT' }], admin: [{ id: 'MR' }] },
   Authorizations: { '*': [{}] },
   Authorization: { clinician: ['R-0411', 'R-0402', 'R-0399', 'R-0391', 'R-0388', 'R-0384'].map(id => ({ id })), supervisor: [{ id: 'R-0411' }, { id: 'R-0399' }], admin: [{ id: 'R-0411' }, { id: 'R-0402' }] },
   DenialIntelligence: { clinician: [{}, { decision: 'partial' }], admin: [{}] },

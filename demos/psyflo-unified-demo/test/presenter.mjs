@@ -38,19 +38,19 @@ const apiActor = page => page.evaluate(async () => { const { api } = await impor
 {
   const page = await newPage({ who: 'jperez' });
   await run('PRES-01 the product viewport has no "Reset" or "Demo:" text and no presenter controls (Presentation mode, dock hidden)', async () => {
-    for (const [id, p] of [['MyWork', '?section=todo'], ['Authorizations', ''], ['Authorization', '?id=R-0411'], ['DenialIntelligence', ''], ['DenialCase', '?id=R-0402&section=decision'], ['Analytics', '?section=outcomes'], ['Referrals', ''], ['Referral', '?id=REF-118']]) {
+    for (const [id, p] of [['Dashboard', ''], ['Authorizations', ''], ['Authorization', '?id=R-0411'], ['DenialIntelligence', ''], ['DenialCase', '?id=R-0402&section=decision'], ['Analytics', '?section=outcomes'], ['Referrals', ''], ['Referral', '?id=REF-118']]) {
       await go(page, `/#/${id}${p}`); const t = await stageText(page); assert.noMatch(t, FORBIDDEN, `${id}`);
       const inStage = await page.evaluate(() => !!document.querySelector('#stage #dock, #stage [data-dock], #stage .sh-dock, #rail [data-dock]')); assert.ok(!inStage, id + ': presenter controls inside the product viewport');
     }
   });
   await run('PRES-02 the dock is hidden by default, takes no tab stop, and is not in the page until opened', async () => {
-    await go(page, '/#/MyWork?section=todo'); const d = await dockState(page);
+    await go(page, '/#/Dashboard'); const d = await dockState(page);
     assert.ok(d.hidden && d.state === 'hidden', 'dock hidden: ' + JSON.stringify(d)); assert.eq(d.tabbable, 0, 'no tabbable dock control'); assert.eq(d.h, 0, 'dock takes no height');
     const stops = await A.tabWalk(page.mainFrame(), { page, max: 40 }); assert.ok(!stops.some(s => s.where === 'dock'), 'tab never lands in the dock');
     const first = stops.find(s => s.cur); assert.match(first.name, /skip to main/i, 'first stop: ' + first.name);
   });
   await run('PRES-03 Ctrl+Shift+P opens the dock (focus on its toggle) and toggles it closed again; the page behind keeps its layout', async () => {
-    await go(page, '/#/MyWork?section=todo'); const before = await page.evaluate(() => Math.round(document.getElementById('app').getBoundingClientRect().top));
+    await go(page, '/#/Dashboard'); const before = await page.evaluate(() => Math.round(document.getElementById('app').getBoundingClientRect().top));
     await page.keyboard.press('Control+Shift+P'); await page.waitForTimeout(250);
     let d = await dockState(page); assert.ok(!d.hidden && d.state === 'open', 'open: ' + JSON.stringify(d)); assert.ok(d.tabbable >= 5, 'controls reachable once open: ' + d.tabbable);
     assert.match(d.label, /Presentation/, 'mode label');
@@ -61,20 +61,20 @@ const apiActor = page => page.evaluate(async () => { const { api } = await impor
     d = await dockState(page); assert.ok(d.hidden && d.state === 'hidden', 'closed again: ' + JSON.stringify(d)); assert.eq(d.tabbable, 0);
   });
   await run('PRES-04 collapsed: a 28 px handle is the only dock control; its menus stay out of the tab order until the dock is opened', async () => {
-    await go(page, '/?present=1#/MyWork?section=todo'); await page.waitForTimeout(250);
+    await go(page, '/?present=1#/Dashboard'); await page.waitForTimeout(250);
     await page.click('[data-dock="toggle"]'); await page.waitForTimeout(200);
     const d = await dockState(page); assert.eq(d.state, 'collapsed'); assert.eq(d.tabbable, 1, 'only the handle is tabbable: ' + d.tabbable); assert.ok(d.h <= 40 && d.h >= 20, 'handle height ' + d.h);
     const exp = await page.getAttribute('[data-dock="toggle"]', 'aria-expanded'); assert.eq(exp, 'false');
     await page.click('[data-dock="toggle"]'); await page.waitForTimeout(150); assert.eq((await dockState(page)).state, 'open');
   });
   await run('PRES-05 the dock is visually unlike the product (navy ribbon, monospace PRESENTER label, dashed marigold edge)', async () => {
-    await go(page, '/?present=1#/MyWork?section=todo'); await page.waitForTimeout(250);
+    await go(page, '/?present=1#/Dashboard'); await page.waitForTimeout(250);
     const s = await page.evaluate(() => { const d = document.getElementById('dock'); const cs = getComputedStyle(d); const l = document.querySelector('.sh-dock__label'); return { bg: cs.backgroundColor, border: cs.borderBottomStyle + ' ' + cs.borderBottomColor, font: l ? getComputedStyle(l).fontFamily : '', text: l ? l.textContent : '' }; });
     assert.match(s.bg, /rgb\(21, 27, 36\)/, 'navy ' + s.bg); assert.match(s.font, /mono|Menlo|Consolas|Courier/i, 'label font ' + s.font); assert.match(s.text, /PRESENTER/);
     await page.screenshot({ path: `${SHOTS}/presenter-dock-open.png` });
   });
   await run('PRES-06 role switch changes the rail without a reload (clinician -> supervisor -> direct support -> administrator -> clinician)', async () => {
-    await go(page, '/?present=1#/MyWork?section=todo'); await page.evaluate(() => { window.__noReload = 'marker'; });
+    await go(page, '/?present=1#/Dashboard'); await page.evaluate(() => { window.__noReload = 'marker'; });
     if (await page.locator('[data-dock="unlock"]').count()) { await page.click('[data-dock="unlock"]'); await page.waitForSelector('[data-dock-menu="role"]', { timeout: 10000 }); }   // ?present=1 never elevates by itself: the presenter unlocks the tools
     const want = { 'Site supervisor': (l) => l.includes('Authorizations') && !l.includes('Denial Intelligence'), 'Direct support': l => !l.includes('Authorizations') && !l.includes('Analytics') && l.length <= 2, 'Administrator': l => l.includes('Settings') && l.includes('Analytics') && !l.includes('Referrals'), 'Clinician (LMHP-type)': l => l.includes('Referrals') && l.includes('Denial Intelligence') && !l.includes('Settings') };
     const start = await railLinks(page); assert.ok(start.includes('Denial Intelligence'), 'clinician rail: ' + start.join(','));
@@ -89,7 +89,7 @@ const apiActor = page => page.evaluate(async () => { const { api } = await impor
   await run('PRES-07 "Demo data · nothing is real" is on every app screen (rail foot) and on the phone and portal screens', async () => {
     const miss = [];
     await login(page, 'jperez', { presenter: false });
-    for (const [id, p] of [['MyWork', '?section=todo'], ['Authorizations', ''], ['Authorization', '?id=R-0402'], ['DenialIntelligence', ''], ['DenialCase', '?id=R-0402&section=decision'], ['Analytics', '?section=payer'], ['Referrals', ''], ['Referral', '?id=REF-118'], ['ExtHome', '']]) {
+    for (const [id, p] of [['Dashboard', ''], ['Authorizations', ''], ['Authorization', '?id=R-0402'], ['DenialIntelligence', ''], ['DenialCase', '?id=R-0402&section=decision'], ['Analytics', '?section=payer'], ['Referrals', ''], ['Referral', '?id=REF-118'], ['ExtHome', '']]) {
       await go(page, `/#/${id}${p}`); const t = await allText(page); if (!/Demo data · nothing is real/.test(t)) miss.push(id);
     }
     await login(page, 'dowens', { presenter: false }); await go(page, '/#/Settings?tab=people'); if (!/Demo data · nothing is real/.test(await page.evaluate(() => document.body.innerText))) miss.push('Settings');
@@ -111,7 +111,7 @@ const apiActor = page => page.evaluate(async () => { const { api } = await impor
     await run(`PRES-08 scenario ${id} from the dock lands on its route as its role`, async () => {
       const s = want[id]; assert.ok(s, 'scenario ' + id + ' is in the table');
       const page = await newPage({ who: 'jperez', presenter: true });
-      await go(page, '/?present=1#/MyWork?section=todo'); await page.waitForTimeout(300);
+      await go(page, '/?present=1#/Dashboard'); await page.waitForTimeout(300);
       await page.click('[data-dock-menu="scenario"]'); await page.waitForSelector('.sh-menu [role=menuitem]');
       const items = await page.evaluate(() => [...document.querySelectorAll('.sh-menu [role=menuitem]')].map(b => b.innerText.replace(/\s+/g, ' ').trim()));
       assert.ok(items.length >= 6, 'six scenarios listed: ' + items.length);
@@ -153,7 +153,7 @@ const apiActor = page => page.evaluate(async () => { const { api } = await impor
 for (const role of ['clinician', 'supervisor', 'admin', 'direct_support']) {
   await run(`PRES-10 ${role}: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are`, async () => {
     const page = await newPage({ who: STAFF[role] });
-    await go(page, '/#/MyWork');
+    await go(page, '/#/Dashboard');
     const has = await page.locator('#rail [data-signout]').count();
     if (!has) { await page.ctx.close(); return T.skip(`${role}: no Sign out in the rail on this landing screen`, 'landing is the framed Lauris page'); }
     await page.click('#rail [data-signout]'); await page.waitForFunction(() => location.hash.startsWith('#/Login'), null, { timeout: 8000 }); await page.waitForFunction(READY, null, { timeout: 8000 });
@@ -170,7 +170,7 @@ for (const role of ['clinician', 'supervisor', 'admin', 'direct_support']) {
 {
   await run('EXP-01 Explore mode: the dock is always open, the mode label is visible, Ctrl+Shift+P focuses it instead of hiding it, and Presentation mode can be restored', async () => {
     const page = await newPage({ who: 'jperez' });
-    await go(page, '/?mode=explore#/MyWork?section=todo'); await page.waitForTimeout(300);
+    await go(page, '/?mode=explore#/Dashboard'); await page.waitForTimeout(300);
     let d = await dockState(page); assert.ok(!d.hidden && d.state === 'open' && d.mode === 'explore', JSON.stringify(d)); assert.match(d.label, /Explore · all features by role/);
     await page.keyboard.press('Control+Shift+P'); await page.waitForTimeout(150); d = await dockState(page); assert.eq(d.state, 'open', 'stays open');
     assert.eq(await page.evaluate(() => document.activeElement.getAttribute('data-dock')), 'toggle');
@@ -184,7 +184,7 @@ for (const role of ['clinician', 'supervisor', 'admin', 'direct_support']) {
   for (const role of ['clinician', 'supervisor', 'admin', 'direct_support']) {
     await run(`EXP-02 ${role}: "All screens" lists every route this role may open and each opens in two clicks`, async () => {
       const page = await newPage({ who: STAFF[role], presenter: true });
-      await go(page, '/?mode=explore#/MyWork?section=todo'); await page.waitForTimeout(300);
+      await go(page, '/?mode=explore#/Dashboard'); await page.waitForTimeout(300);
       const live = SCREENS.filter(s => s.id !== 'Login' && s.id !== 'UiKit' && !['DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive'].includes(s.id));
       const act = await apiActor(page); const des = await page.evaluate(async () => { const { api } = await import('/js/api.js'); return (api.session() || {}).designations || []; }); const may = id => routeAllowed(role, id, { role, designations: des, presenter: true });
       const expected = live.filter(s => s.min === 0 ? true : may(s.id)).map(s => s.id); void act;
@@ -207,13 +207,13 @@ for (const role of ['clinician', 'supervisor', 'admin', 'direct_support']) {
   }
   await run('EXP-03 portal screens in the picker open as the portal person (guardian, school) in Explore mode', async () => {
     const page = await newPage({ who: 'jperez', presenter: true });
-    await go(page, '/?mode=explore#/MyWork?section=todo'); await page.waitForTimeout(300);
+    await go(page, '/?mode=explore#/Dashboard'); await page.waitForTimeout(300);
     for (const [id, kind] of [['ParentPortal', 'guardian'], ['SchoolPortal', 'school']]) {
       await page.click('[data-dock-menu="screens"]'); await page.waitForSelector('#dock-q'); const hit = page.locator(`#dock-ql [data-i="${id}"]`); assert.ok(await hit.count(), id + ' is listed'); await hit.click();
       await page.waitForFunction(i => location.hash.startsWith('#/' + i), id, { timeout: 10000 }); await page.waitForFunction(READY); await settle(page.mainFrame());
       assert.eq((await apiActor(page)).kind, kind, id + ' opens as the ' + kind);
       const dock = await dockState(page); assert.ok(dock.state === 'open' || dock.state === 'collapsed', 'the dock is still there to go back: ' + dock.state);
-      await go(page, '/#/Login').catch(() => { }); await login(page, 'jperez', { presenter: true }); await go(page, '/?mode=explore#/MyWork?section=todo');
+      await go(page, '/#/Login').catch(() => { }); await login(page, 'jperez', { presenter: true }); await go(page, '/?mode=explore#/Dashboard');
     }
     await page.ctx.close();
   });
@@ -234,9 +234,9 @@ for (const role of ['clinician', 'supervisor', 'admin', 'direct_support']) {
         frontier = next;
       }
       // direct support lands on the framed Lauris page: its way into My Work is the panel's "My day in Psyflo" control (a button that opens the platform)
-      if (role === 'direct_support' && !('MyWork' in depth)) { await go(page, `/#/${sid}${sq ? '?' + sq : ''}`).catch(() => { }); await page.waitForTimeout(2500); for (const f of page.frames().slice(1)) { if (await f.evaluate(() => [...document.querySelectorAll('a,button')].some(b => /My day in Psyflo/i.test(b.innerText))).catch(() => false)) depth.MyWork = 1; } }
+      if (role === 'direct_support' && !('Dashboard' in depth)) { await go(page, `/#/${sid}${sq ? '?' + sq : ''}`).catch(() => { }); await page.waitForTimeout(2500); for (const f of page.frames().slice(1)) { if (await f.evaluate(() => [...document.querySelectorAll('a,button')].some(b => /My day in Psyflo/i.test(b.innerText))).catch(() => false)) depth.Dashboard = 1; } }
       const must = SCREENS.filter(s => s.min > 0 && s.surface === 'app' && routeAllowed(role, s.id) && !['Login', 'UiKit'].includes(s.id)).map(s => s.id);
-      const redirected = new Set(['DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility']);
+      const redirected = new Set(['MyWork', 'DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility']);
       const unreached = must.filter(id => !(id in depth) && !redirected.has(id));
       console.log(`  ${role}: product links reach ${Object.keys(depth).length} routes within 3 clicks; the picker lists the rest (${picks[role] || '?'} routes)`);
       assert.deepEq(unreached, [], `${role}: routes not reachable in 3 clicks through the product's own links (Explore picker still reaches them in 2)`);

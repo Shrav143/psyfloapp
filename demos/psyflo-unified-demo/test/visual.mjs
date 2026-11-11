@@ -70,16 +70,16 @@ const verdict = issues => { if (issues.length) throw new Error(issues.join(' · 
 // ------------------------------------------------------------------------------------------------ 1. platform screens, 1440x900 and 1024x768
 const PLATFORM = {
   clinician: ['jperez', [
-    ['MyWork', { section: 'todo' }], ['MyWork', { section: 'review' }], ['MyWork', { section: 'team' }], ['MyWork', { section: 'referrals' }],
+    ['Dashboard', {}], ['Documentation', {}], ['Documentation', { status: 'pending_review' }], ['Documentation', { view: 'staff' }], ['Patient', { id: 'MR' }], ['Patient', { id: 'MR', section: 'authorization' }], ['Patient', { id: 'TW' }],
     ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['Authorization', { id: 'R-0402' }], ['Authorization', { id: 'R-0399', section: 'submission' }], ['Authorization', { id: 'R-0391' }], ['Authorization', { id: 'R-0388' }], ['Authorization', { id: 'R-0384' }],
     ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['DenialCase', { id: 'R-0402', section: 'evidence' }], ['DenialCase', { id: 'R-0402', section: 'options' }], ['DenialCase', { id: 'R-0402', section: 'action', action: 'options' }], ['DenialCase', { id: 'R-0402', section: 'history' }],
     ['DenialCase', { id: 'R-0408', section: 'action', action: 'info' }], ['DenialCase', { id: 'R-0388', section: 'action', action: 'p2p' }], ['DenialCase', { id: 'R-0384', section: 'action', action: 'appeal' }],
     ['Referrals', {}], ['Referral', { id: 'REF-118' }], ['Referral', { id: 'REF-118', panel: 'eligibility' }], ['Referral', { id: 'REF-121' }],
     ['Analytics', { section: 'outcomes', dataset: 'case' }], ['Analytics', { section: 'outcomes', dataset: 'illustrative' }], ['Analytics', { section: 'payer', dataset: 'case' }], ['Analytics', { section: 'population', dataset: 'illustrative' }]]],
-  supervisor: ['cdiaz', [['MyWork', { section: 'review' }], ['MyWork', { section: 'team' }], ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['Analytics', { section: 'outcomes' }]]],
-  admin: ['dowens', [['MyWork', { section: 'todo' }], ['Authorizations', {}], ['Authorization', { id: 'R-0402' }], ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['Analytics', { section: 'outcomes' }], ['Analytics', { section: 'payer' }],
+  supervisor: ['cdiaz', [['Dashboard', {}], ['Documentation', {}], ['Documentation', { view: 'staff' }], ['Patient', { id: 'MR' }], ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['Analytics', { section: 'outcomes' }]]],
+  admin: ['dowens', [['Dashboard', {}], ['Documentation', {}], ['Authorizations', {}], ['Authorization', { id: 'R-0402' }], ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['Analytics', { section: 'outcomes' }], ['Analytics', { section: 'payer' }],
     ...['people', 'roles', 'units', 'rules', 'audit', 'family', 'presenter'].map(tab => ['Settings', { tab }])]],
-  direct_support: ['khale', [['MyWork', { section: 'day' }], ['ExtHome', {}], ['ExtDPN', {}]]]
+  direct_support: ['khale', [['Dashboard', {}], ['Patient', { id: 'MR' }], ['ExtHome', {}], ['ExtDPN', {}]]]
 };
 for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
   const page = await newPage({ who });
@@ -209,12 +209,12 @@ for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
   });
   await run('P19.5 visual · error state · the event stream is blocked: screens still work (polling)', async () => {
     await ep.route('**/api/stream', r => r.abort());
-    await openAt(ep, 'MyWork', { section: 'todo' }); const r = await shoot(ep, { name: 'error-sse-blocked', surface: 'states', label: 'SSE blocked · My Work' });
+    await openAt(ep, 'Dashboard', {}); const r = await shoot(ep, { name: 'error-sse-blocked', surface: 'states', label: 'SSE blocked · Dashboard' });
     await ep.unroute('**/api/stream'); verdict(r.issues.filter(i => !/console errors/.test(i)));
   });
   await run('P19.5 visual · error state · /api/state fails on load: a message, not an endless "Loading the demo"', async () => {
     await ep.route('**/api/state', r => r.fulfill({ status: 500, contentType: 'application/json', body: '{"ok":false,"error":"down"}' }));
-    await ep.goto('about:blank'); await ep.goto(BASE + hashOf('MyWork', { section: 'todo' }), { waitUntil: 'domcontentloaded' }); await ep.waitForTimeout(2500);
+    await ep.goto('about:blank'); await ep.goto(BASE + hashOf('Dashboard', {}), { waitUntil: 'domcontentloaded' }); await ep.waitForTimeout(2500);
     const t = await ep.evaluate(() => ({ text: document.body.innerText.replace(/\s+/g, ' ').trim().slice(0, 200), loading: /Loading the demo/.test(document.body.innerText), alert: !!document.querySelector('[role=alert]'), retry: !!([...document.querySelectorAll('button,a')].find(b => /retry|try again|reload/i.test(b.innerText))) }));
     await ep.screenshot({ path: path.join(DIR, 'error-state-500.png') }); addTile('states', path.join(DIR, 'error-state-500.png'), 'error · /api/state 500', t.loading ? ['x'] : null);
     await ep.unroute('**/api/state');
@@ -227,7 +227,7 @@ for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
 // ------------------------------------------------------------------------------------------------ 4. modals and drawers at 400, 1024 and 1440
 {
   const OPENERS = [
-    { role: 'jperez', route: ['MyWork', { section: 'todo' }], label: 'Help drawer', open: async p => { const vis = await p.evaluate(() => { const b = document.querySelector('#rail [data-sh=help]'); if (!b) return false; const r = b.getBoundingClientRect(); return r.width > 0 && r.height > 0; }); if (!vis) throw new Error('Help (and Sign out) are not available in the rail at this width: the rail foot is hidden'); await p.click('#rail [data-sh=help]'); }, kind: 'drawer' },
+    { role: 'jperez', route: ['Dashboard', {}], label: 'Help drawer', open: async p => { const vis = await p.evaluate(() => { const b = document.querySelector('#rail [data-sh=help]'); if (!b) return false; const r = b.getBoundingClientRect(); return r.width > 0 && r.height > 0; }); if (!vis) throw new Error('Help (and Sign out) are not available in the rail at this width: the rail foot is hidden'); await p.click('#rail [data-sh=help]'); }, kind: 'drawer' },
     { role: 'jperez', route: ['Analytics', { section: 'outcomes', dataset: 'case' }], label: 'Analytics export modal', open: p => p.getByRole('button', { name: /^Export/ }).first().click(), kind: 'modal' },
     { role: 'jperez', route: ['Analytics', { section: 'outcomes', dataset: 'case' }], label: 'Analytics pilot measures drawer', open: p => p.getByRole('button', { name: /measures|defin/i }).first().click(), kind: 'drawer' },
     { role: 'jperez', route: ['Authorization', { id: 'R-0399', section: 'submission' }], label: 'Authorization overdue notice', open: p => p.getByRole('button', { name: /notice|receipt|send/i }).first().click(), kind: 'any' },
@@ -261,7 +261,7 @@ for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
 
 // ------------------------------------------------------------------------------------------------ 5. phone, family and school screens: 390x844 and 360x740
 const PHONES = [
-  { who: 'khale', label: 'direct support', fx: 'mr-daily', routes: [['MobileApp', {}], ['MobileDictate', {}], ['MobileAssess', {}], ['MyWork', { section: 'day' }]] },
+  { who: 'khale', label: 'direct support', fx: 'mr-daily', routes: [['MobileApp', {}], ['MobileDictate', {}], ['MobileAssess', {}], ['Dashboard', {}]] },
   { portal: { portalClient: 'TW', presenter: true }, label: 'guardian', fx: 'base-live', routes: [['ParentPortal', {}], ['ParentEnroll', {}], ['ParentSign', {}], ['ParentProgress', {}], ['ParentQuarterly', {}], ['ParentLetters', {}], ['ParentSchedule', {}], ['ParentSurvey', {}], ['FamilyLink', {}], ['AppealLetter', { c: 'EC' }]] },
   { portal: { schoolUser: 'rbell', presenter: true }, label: 'school', fx: 'base-live', routes: [['SchoolPortal', {}], ['ReferralForm', {}], ['ReferralSent', {}]] }
 ];
@@ -303,7 +303,7 @@ await resetTo('base-live');
   }
   const pp = await newPage({ who: 'dowens', present: true });
   await run('P19.5 visual · presenter dock open with the scenario menu (1440)', async () => {
-    await pp.goto(BASE + '/?present=1#/MyWork?section=todo', { waitUntil: 'domcontentloaded' }); await pp.waitForFunction(READY, null, { timeout: 15000 }); await pp.waitForTimeout(500);
+    await pp.goto(BASE + '/?present=1#/Dashboard', { waitUntil: 'domcontentloaded' }); await pp.waitForFunction(READY, null, { timeout: 15000 }); await pp.waitForTimeout(500);
     await pp.click('[data-dock-menu="scenario"]'); await pp.waitForTimeout(300);
     const r = await shoot(pp, { name: 'dock-scenario-menu', surface: 'states', label: 'presenter dock · scenario menu' }); await pp.keyboard.press('Escape'); verdict(r.issues);
   });

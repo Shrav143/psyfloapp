@@ -143,9 +143,9 @@ if (ok('supervisor')) await runGroup('supervisor tw-signed', 'tw-signed', () => 
 // 3. data-rich fixtures
 if (ok('clinician')) await runGroup('clinician analytics-case', 'analytics-case', () => [{ section: 'outcomes', dataset: 'case' }, { section: 'payer', dataset: 'case' }, { section: 'population', dataset: 'case' }].map(p => appTarget('clinician@analytics-case', 'app', 'Analytics', p)), { who: STAFF.clinician });
 if (ok('admin')) await runGroup('admin analytics-case', 'analytics-case', () => [{ section: 'outcomes', dataset: 'case' }].map(p => appTarget('admin@analytics-case', 'app', 'Analytics', p)), { who: STAFF.admin });
-if (ok('direct_support')) await runGroup('direct_support mr-daily', 'mr-daily', () => [appTarget('direct_support@mr-daily', 'app', 'MyWork', { section: 'day' })], { who: STAFF.direct_support });
-// canvas preset (the second preset): the queue, My Work and the denial queue render and work
-if (ok('clinician')) await runGroup('clinician base-canvas', 'base-canvas', () => [['MyWork', { section: 'todo' }], ['Authorizations', {}], ['DenialIntelligence', {}], ['Referrals', {}]].map(([r, p]) => appTarget('clinician@canvas', 'app', r, p)), { who: STAFF.clinician });
+if (ok('direct_support')) await runGroup('direct_support mr-daily', 'mr-daily', () => [appTarget('direct_support@mr-daily', 'app', 'Dashboard', {})], { who: STAFF.direct_support });
+// canvas preset (the second preset): the queue, the Dashboard and the denial queue render and work
+if (ok('clinician')) await runGroup('clinician base-canvas', 'base-canvas', () => [['Dashboard', {}], ['Documentation', {}], ['Authorizations', {}], ['DenialIntelligence', {}], ['Referrals', {}]].map(([r, p]) => appTarget('clinician@canvas', 'app', r, p)), { who: STAFF.clinician });
 
 // 4. the phone (direct support, 390x844)
 if (ok('phone') || ok('direct_support')) {

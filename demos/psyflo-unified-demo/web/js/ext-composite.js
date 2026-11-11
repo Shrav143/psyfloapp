@@ -49,7 +49,7 @@ export class ExtComposite extends DCLogic {
     if (!this._t) {
       const t = laurisHref(this.meta?.id || 'ExtHome', this.params);
       const rest = String(this.meta?.title || 'Lauris').replace(/^Extension · /, ''); const role = (api.session && api.session() || {}).role;
-      this._t = { ...t, title: 'Lauris · ' + rest.charAt(0).toUpperCase() + rest.slice(1), back: isLive('MyWork') ? '#/MyWork' + (role === 'supervisor' ? '?section=review' : '') : '#/DoNext' };
+      this._t = { ...t, title: 'Lauris · ' + rest.charAt(0).toUpperCase() + rest.slice(1), back: isLive('Dashboard') ? '#/Dashboard' : '#/DoNext' };
     }
     return this._t;
   }

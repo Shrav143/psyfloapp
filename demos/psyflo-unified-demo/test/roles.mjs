@@ -268,7 +268,7 @@ await T.test('with PRESENTER_PIN set: the server and the dock ask for the PIN, a
     // the dock
     const ctx = await browser.newContext(); const page = await ctx.newPage();
     await page.goto(APP + '/#/Login'); await page.evaluate(async ({ tok, actor }) => { localStorage.setItem('psyflo_session', JSON.stringify({ token: tok, actor })); localStorage.setItem('psyflo_user', 'jperez'); }, { tok: plain.token, actor: plain.actor });
-    await page.goto(APP + '/?present=1#/MyWork'); await page.waitForSelector('#dock [data-dock="unlock"]', { timeout: 10000 });
+    await page.goto(APP + '/?present=1#/Dashboard'); await page.waitForSelector('#dock [data-dock="unlock"]', { timeout: 10000 });
     await page.click('#dock [data-dock="unlock"]'); await page.waitForSelector('#presenter-pin');
     await page.fill('#presenter-pin', '0000'); await page.click('[data-ui-action="1"]'); await page.waitForFunction(() => /did not match/.test((document.querySelector('[role=dialog]') || {}).innerText || ''), null, { timeout: 8000 });
     await page.fill('#presenter-pin', '4242'); await page.click('[data-ui-action="1"]');

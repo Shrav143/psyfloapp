@@ -212,8 +212,8 @@ try {
     const w = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth })); assert.ok(w.sw <= w.iw + 1, 'no sideways scroll');
     assert.eq(await p.evaluate(() => [...document.querySelectorAll('#root button, #root select, #root a.ui-btn')].filter(e => e.getBoundingClientRect().height < 44).length), 0, 'touch targets 44 px');
     await p.screenshot({ path: SHOTS + '/login-390.png' });
-    await p.click('[data-signin="supervisor"]'); await p.waitForFunction(() => /MyWork/.test(location.hash), null, { timeout: 8000 }); await p.waitForTimeout(500);
-    assert.match(await p.evaluate(() => location.hash), /section=review/); assert.eq((await p.evaluate(() => psyflo.session.user.id)), 'cdiaz');
+    await p.click('[data-signin="supervisor"]'); await p.waitForFunction(() => /Dashboard/.test(location.hash), null, { timeout: 8000 }); await p.waitForTimeout(500);
+    assert.match(await p.evaluate(() => location.hash), /Dashboard/); assert.eq((await p.evaluate(() => psyflo.session.user.id)), 'cdiaz');
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
 } finally { await browser.close(); }

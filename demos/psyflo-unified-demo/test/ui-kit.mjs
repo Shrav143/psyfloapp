@@ -346,7 +346,7 @@ await T.test('prefers-reduced-motion: overlay animation is switched off', async 
 });
 await T.test('no console errors on the gallery, the stubs and the shell routes', async () => {
   const bad = [];
-  for (const r of ['/?present=1#/UiKit', '/#/MyWork', '/#/Authorization?id=R-0416', '/#/DenialIntelligence', '/#/DenialCase?id=R-0402', '/#/DoNext']) {
+  for (const r of ['/?present=1#/UiKit', '/#/Dashboard', '/#/Authorization?id=R-0416', '/#/DenialIntelligence', '/#/DenialCase?id=R-0402', '/#/DoNext']) {
     const page = await open('jperez', r); const e = realErrors(page); if (e.length) bad.push(r + ' ' + e[0]); await page.close();
   }
   assert.deepEq(bad, []); await closeAll();
@@ -356,7 +356,7 @@ await T.test('no console errors on the gallery, the stubs and the shell routes',
 // ---------------------------------------------------------------- QA1 shell fixes
 for (const w of [1024, 700]) {
   await T.test(`rail foot stays reachable at ${w} px: Sign out and Help as named controls, "Demo data · nothing is real" visible`, async () => {
-    const page = await open('jperez', '/#/MyWork?section=todo', { w, h: 800 });
+    const page = await open('jperez', '/#/Dashboard', { w, h: 800 });
     const r = await page.evaluate(() => { const vis = e => !!e && e.getClientRects().length > 0 && getComputedStyle(e).visibility !== 'hidden'; const so = document.querySelector('#rail [data-signout]'), help = document.querySelector('#rail [data-sh=help]'), demo = [...document.querySelectorAll('#rail span')].find(e => e.children.length === 0 && /Demo data · nothing is real/.test(e.textContent)); const box = e => { const b = e.getBoundingClientRect(); return [Math.round(b.width), Math.round(b.height)]; }; return { so: vis(so), help: vis(help), demo: vis(demo), soName: so && so.getAttribute('aria-label'), helpName: help && help.getAttribute('aria-label'), soBox: so && box(so), helpBox: help && box(help), demoBottom: demo && Math.round(demo.getBoundingClientRect().bottom) === innerHeight || !!demo, hscroll: document.documentElement.scrollWidth > innerWidth + 1 }; });
     assert.ok(r.so && r.help && r.demo, JSON.stringify(r)); assert.match(r.soName, /Sign out/); assert.eq(r.helpName, 'Help');
     assert.ok(r.soBox[0] >= 44 && r.soBox[1] >= 44, 'sign out target ' + r.soBox); assert.ok(r.helpBox[0] >= 44 && r.helpBox[1] >= 44, 'help target ' + r.helpBox); assert.ok(!r.hscroll, 'no sideways scroll');
@@ -365,7 +365,7 @@ for (const w of [1024, 700]) {
   });
 }
 await T.test('the wordmark on the light rail is the full-colour logo (navy, teal, marigold), not the reverse one', async () => {
-  const page = await open('jperez', '/#/MyWork?section=todo');
+  const page = await open('jperez', '/#/Dashboard');
   const fills = await page.evaluate(() => [...document.querySelectorAll('#rail .sh-logo svg path')].map(p => p.getAttribute('fill').toUpperCase()));
   assert.ok(fills.length >= 6 && fills.every(f => ['#151B24', '#217A78', '#E0A030'].includes(f)), 'fills ' + [...new Set(fills)].join(','));
   assert.ok(!fills.includes('#FFFFFF') && !fills.includes('#5FC0BE'), 'no reverse-logo colours on the sand rail');
@@ -374,9 +374,9 @@ await T.test('the wordmark on the light rail is the full-colour logo (navy, teal
 await T.test('framed Lauris routes: a slim top bar with "Back to Psyflo", the route title as the h1 and no developer text', async () => {
   const page = await open('jperez', '/#/ExtScreening?referral=REF-118');
   const r = await page.evaluate(() => ({ back: document.querySelector('.xbar .xback') && document.querySelector('.xbar .xback').getAttribute('href'), h1: [...document.querySelectorAll('#root h1')].map(h => h.textContent.trim()), bar: document.querySelector('.xbar').innerText, h: Math.round(document.querySelector('.xbar').getBoundingClientRect().height) }));
-  assert.match(r.back, /^#\/MyWork/); assert.eq(r.h1.length, 1); assert.match(r.h1[0], /Lauris · Screening call/); assert.ok(r.h <= 56, 'slim bar ' + r.h);
+  assert.match(r.back, /^#\/Dashboard/); assert.eq(r.h1.length, 1); assert.match(r.h1[0], /Lauris · Screening call/); assert.ok(r.h <= 56, 'slim bar ' + r.h);
   assert.noMatch(r.bar, /localhost|http:|fallback|same panel|Flow A|the panel reads/i, 'developer text: ' + r.bar);
-  await page.click('.xbar .xback'); await page.waitForFunction(() => /#\/MyWork/.test(location.hash)); await closeAll();
+  await page.click('.xbar .xback'); await page.waitForFunction(() => /#\/Dashboard/.test(location.hash)); await closeAll();
 });
 
 await browser.close();

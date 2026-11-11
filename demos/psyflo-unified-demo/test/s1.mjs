@@ -93,16 +93,20 @@ async function run(mode) {
     });
 
     // ---------------------------------------------------------------- 7+ the platform follows
-    await F.step('7 My Work (khale): 5 of 6 in, M.R. no longer open; the supervisor queue follows the review mode (every note: +1; spot check: the note is sampled or not queued, never silently lost)', async () => {
+    await F.step('7 Dashboard (khale): 5 of 6 in, M.R. no longer open; the supervisor queue follows the review mode (every note: +1; spot check: the note is sampled or not queued, never silently lost)', async () => {
       const s = await state('jperez'), k = await state('khale'); assert.eq(done(k), '5 of 6');
-      const kp = await openAs(b, 'khale'); pages.push(kp); await kp.goto(BASE + '/#/MyWork'); await kp.waitForTimeout(1200);
-      const kt = await mainText(kp); assert.match(kt, /5 of 6 daily notes in/); assert.match(kt, /E\.S\. still open/); assert.ok(!/M\.R\., E\.S\. still open/.test(kt));
+      const kp = await openAs(b, 'khale'); pages.push(kp); await kp.goto(BASE + '/#/Dashboard'); await kp.waitForTimeout(1200);
+      // the Dashboard is a patient roster: today's daily note is owed on E.S. and no longer on M.R. (the roster selector is what the screen draws)
+      const { rosterRows } = await import('../web/js/shared/sel/roster.js'); const { fmtDate } = await import('../web/js/shared/dates.js'); const ka = (await session('khale')).actor;
+      const rr = rosterRows(k, ka).rows, todayLbl = fmtDate(k.clock.date, { dow: true }), openToday = id => ((rr.find(r => r.id === id) || {}).items || []).some(i => i.kind === 'note' && i.type === 'daily' && i.sub === todayLbl);
+      assert.ok(openToday('ES'), 'E.S. still owes today\'s daily note'); assert.ok(!openToday('MR'), 'M.R. no longer owes today\'s daily note');
+      const kt = await mainText(kp); assert.match(kt, /M\.R\./); assert.match(kt, /E\.S\./);
       const mode_ = s.staff.find(x => x.id === 'khale').review_mode; const n = s.notes.find(x => x.session === L.sess);
       const sup = await state('cdiaz'); const pend = sup.notes.filter(x => x.review === 'pending').length;
       if (mode_ === 'every_note') { assert.eq(n.review, 'pending', 'every-note mode queues the note'); assert.eq(pend, L.review0 + 1, 'supervisor review queue +1'); }
       else { assert.ok(typeof n.review === 'string' && n.review.length, 'spot check: the review state is explicit, never blank: ' + n.review); assert.eq(pend, L.review0 + (n.review === 'pending' ? 1 : 0), 'the queue moves exactly when the note is queued'); }
       L.review = { mode: mode_, note: n.review, pending: pend - L.review0 };
-      const sp = await openAs(b, 'cdiaz'); pages.push(sp); await sp.goto(BASE + '/#/MyWork?section=review'); await sp.waitForTimeout(1200);
+      const sp = await openAs(b, 'cdiaz'); pages.push(sp); await sp.goto(BASE + '/#/Documentation?status=pending_review'); await sp.waitForTimeout(1200);
       const st = await mainText(sp); if (mode_ === 'every_note') assert.match(st, /K\. Hale|M\.R\./, 'the note is in the reviewer\'s list');
       await shot(sp, `s1-${mode}-7-review`);
     });

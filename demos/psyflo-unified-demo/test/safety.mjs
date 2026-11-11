@@ -200,19 +200,19 @@ await T.test('IIU-11 the mock Lauris warns or refuses a daily note when no units
 // =============================================================================================================== 9 · expired authorizations
 await reset('canvas');
 await T.test('EXA-02 the renewal due date follows the rule (end date minus 14 business days), not the end date itself', async () => {
-  const s = await state('jperez'); const u = await uiText('jperez', '/MyWork'); const sa = u.page.getByRole('button', { name: /Show all/ }); if (await sa.count()) await sa.first().click(); await u.page.waitForTimeout(300); u.text = (await u.page.locator('main').innerText()).replace(/\s+/g, ' '); const m = u.text.match(/Continued stay · M\.R\., \d+ Renew by (\w{3} \d+)/); await u.ctx.close();
+  const s = await state('jperez'); const u = await uiText('jperez', '/Dashboard?q=M.R.&open=all'); await u.page.waitForTimeout(300); u.text = (await u.page.locator('main').innerText()).replace(/\s+/g, ' '); const m = u.text.match(/Renew by (\w{3} \d+)/); await u.ctx.close();
   const end = s.clients.find(c => c.id === 'MR').authorization.end; assert.eq(end, '2026-11-13');
   const lead = s.rules.find(r => r.key === 'continued_stay.lead_business_days').value; const d = new Date('2026-11-13T00:00Z'); let n = lead; while (n > 0) { d.setUTCDate(d.getUTCDate() - 1); if (![0, 6].includes(d.getUTCDay())) n--; }
   const want = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }); const got = m && (m[1] || m[2]); assert.ok(got === want, `the renewal is "Renew by ${got}" but the rule (${lead} business days before Nov 13) gives ${want}`);
 });
 await T.test('EXA-03 an exhausted authorization (T.N.) says service continues unpaid or that no units are left, with a date and an owner', async () => {
-  const u = await uiText('jperez', '/MyWork'); const sa = u.page.getByRole('button', { name: /Show all/ }); if (await sa.count()) await sa.first().click(); await u.page.waitForTimeout(300); const t = (await u.page.locator('main').innerText()).replace(/\s+/g, ' '); await u.ctx.close(); assert.match(t, /Units used up · T\.N\./); assert.match(t, /65 of 65 units used/); assert.match(t, /No units left/);
+  const u = await uiText('jperez', '/Dashboard?q=T.N.&open=all'); await u.page.waitForTimeout(300); const t = (await u.page.locator('main').innerText()).replace(/\s+/g, ' '); await u.ctx.close(); assert.match(t, /Units used up/); assert.match(t, /65 of 65 units used/); assert.match(t, /0 left of 65/);
   const c = await uiText('jperez', '/DenialCase?id=R-0388&section=action&action=p2p'); assert.match(c.text, /Owner: J\. Perez/); assert.match(c.text, /Dec 9/); await c.ctx.close();
 });
-await T.test('EXA-05 an eligibility re-check that is due appears in My Work (Do next) once the recheck interval has passed', async () => {
+await T.test('EXA-05 an eligibility re-check that is due appears on the patient's Dashboard row once the recheck interval has passed', async () => {
   await api('demo.scenario', { id: 'tw-eligible' }, 'dowens+p'); const days = (await state('jperez')).rules.find(r => r.key === 'eligibility.recheck_days').value; await advance(days + 1, true);
-  const u = await uiText('jperez', '/MyWork'); const sa = u.page.getByRole('button', { name: /Show all/ }); if (await sa.count()) await sa.first().click(); const t = (await u.page.locator('main').innerText()).replace(/\s+/g, ' '); await u.ctx.close();
-  assert.match(t, /DMAS portal · a person runs the lookup|[Ee]ligibility (re-?check|check due)/, 'no re-check line in My Work');
+  const u = await uiText('jperez', '/Dashboard?q=T.W.&open=all'); await u.page.waitForTimeout(300); const t = (await u.page.locator('main').innerText()).replace(/\s+/g, ' '); await u.ctx.close();
+  assert.match(t, /DMAS portal · a person runs the lookup|[Ee]ligibility (re-?check|check due)/, 'no re-check line on the Dashboard');
 });
 { const used = /lapse/i.test(read('web/js/screens/Authorization.js') + read('web/js/shared/sel/mywork.js') + read('web/js/screens/MyWorkViews.js'));
   if (used) await T.test('EXA-06 services after a lapse of more than 31 days are flagged for discharge review', async () => { assert.ok(true); });
@@ -258,7 +258,7 @@ await T.test('SVR-07 no stored credentials, tokens or unattended payer or Lauris
   assert.deepEq(bad, [], bad.join(' | '));
 });
 await T.test('SVR-09 demo controls (reply, advance, reset) are hidden from direct support in the UI and refused by the server', async () => {
-  const u = await uiText('khale', '/MyWork?present=1', { presenter: false }); assert.eq(await u.page.locator('#dock [data-dock]:not([data-dock="unlock"]):not([data-dock="hide"]):not([data-dock="mode"]):not([data-dock="toggle"]):not([data-dock="notes"]):not([data-dock="maturity"])').count() + (await u.page.getByText(/Advance the clock|Receive a reply|Reset/).count()), 0, 'no demo controls on the page'); await u.ctx.close();
+  const u = await uiText('khale', '/Dashboard?present=1', { presenter: false }); assert.eq(await u.page.locator('#dock [data-dock]:not([data-dock="unlock"]):not([data-dock="hide"]):not([data-dock="mode"]):not([data-dock="toggle"]):not([data-dock="notes"]):not([data-dock="maturity"])').count() + (await u.page.getByText(/Advance the clock|Receive a reply|Reset/).count()), 0, 'no demo controls on the page'); await u.ctx.close();
   for (const a of ['demo.reset', 'demo.advanceDay', 'request.demoReply', 'demo.scenario']) assert.ok([401, 403].includes((await tryApi(a, { preset: 'live', id: 'R-0402', kind: 'approved' }, 'khale')).status), a);
 });
 

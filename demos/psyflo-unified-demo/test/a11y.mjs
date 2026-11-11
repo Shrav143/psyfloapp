@@ -94,7 +94,7 @@ const verdict = (issues, extra = '') => { if (issues.length) throw new Error(iss
 if (on('shell')) {
   const { ctx, page } = await ctxFor({ who: 'jperez' });
   await run('A11Y-01 skip link is the first tab stop and moves focus to the main landmark', async () => {
-    await openAt(page, 'MyWork', { section: 'todo' });
+    await openAt(page, 'Dashboard', {});
     const stops = await A.tabWalk(page.mainFrame(), { page, max: 2 });
     assert.eq(stops[0].where, 'skip', 'first tab stop is ' + stops[0].name); assert.match(stops[0].name, /skip to main/i);
     assert.ok(stops[0].indicator !== false || true);
@@ -104,7 +104,7 @@ if (on('shell')) {
     await shot(page, 'skip-link');
   });
   await run('A11Y-02 presenter dock is out of the tab order and not in the product viewport (Presentation mode)', async () => {
-    await openAt(page, 'MyWork', { section: 'todo' });
+    await openAt(page, 'Dashboard', {});
     const d = await page.evaluate(() => { const dock = document.getElementById('dock'); return { hidden: dock.hidden, state: dock.dataset.state, text: document.getElementById('stage').innerText }; });
     assert.ok(d.hidden && d.state === 'hidden', 'dock hidden by default: ' + JSON.stringify(d));
     assert.noMatch(d.text, /\bReset\b|Demo:|PRESENTER/);
@@ -124,12 +124,12 @@ if (on('shell')) {
     verdict(out);
   });
   await run('A11Y-05 toasts are announced: status for messages, alert for errors; the route change is announced', async () => {
-    await openAt(page, 'MyWork', { section: 'todo' });
+    await openAt(page, 'Dashboard', {});
     const r = await page.evaluate(() => { window.psyflo.toast('Saved the thing'); window.psyflo.toast('Could not do the thing', 'err'); const t = document.getElementById('toasts'); const s = document.querySelectorAll('#toasts [role=status]').length, a = document.querySelectorAll('#toasts [role=alert]').length; return { live: t.getAttribute('aria-live'), s, a, announce: { role: document.getElementById('sh-announce').getAttribute('role'), text: document.getElementById('sh-announce').textContent } }; });
-    assert.eq(r.live, 'polite'); assert.ok(r.s >= 1, 'status toast'); assert.ok(r.a >= 1, 'alert toast'); assert.eq(r.announce.role, 'status'); assert.match(r.announce.text, /My Work/);
+    assert.eq(r.live, 'polite'); assert.ok(r.s >= 1, 'status toast'); assert.ok(r.a >= 1, 'alert toast'); assert.eq(r.announce.role, 'status'); assert.match(r.announce.text, /Dashboard/);
   });
   for (const w of [1024, 700, 400]) await run(`A11Y-06 sign out, Help and the "Demo data · nothing is real" line stay available at ${w} px`, async () => {
-    await page.setViewportSize({ width: w, height: 800 }); await openAt(page, 'MyWork', { section: 'todo' });
+    await page.setViewportSize({ width: w, height: 800 }); await openAt(page, 'Dashboard', {});
     const v = await page.evaluate(() => { const vis = e => !!e && e.getClientRects().length > 0 && getComputedStyle(e).visibility !== 'hidden' && (!e.checkVisibility || e.checkVisibility()); const t = [...document.querySelectorAll('#rail *')].find(e => e.children.length === 0 && /Demo data · nothing is real/.test(e.textContent)); return { signout: vis(document.querySelector('#rail [data-signout]')), help: vis(document.querySelector('#rail [data-sh=help]')), demo: vis(t) }; });
     const out = []; if (!v.signout) out.push('Sign out is not shown'); if (!v.help) out.push('Help is not shown'); if (!v.demo) out.push('"Demo data · nothing is real" is not shown (at most a tooltip on a dot)');
     verdict(out);
@@ -206,7 +206,7 @@ if (on('panel')) {
 if (on('keyboard') || on('clinician')) {
   const { ctx, page } = await ctxFor({ who: 'jperez' });
   await run('A11Y-K1 rail: Tab reaches every item in order, Enter opens it, focus moves to main, Shift+Tab goes back', async () => {
-    await openAt(page, 'MyWork', { section: 'todo' });
+    await openAt(page, 'Dashboard', {});
     const names = await page.evaluate(() => [...document.querySelectorAll('#rail .sh-logo, #rail .sh-nav a, #rail [data-sh=help], #rail [data-signout]')].map(e => (e.getAttribute('aria-label') || e.innerText || '').trim()));
     assert.ok(names.length >= 6, 'rail controls: ' + names.join(' | '));
     const stops = await A.tabWalk(page.mainFrame(), { page, max: names.length + 2 });
@@ -238,7 +238,7 @@ if (on('keyboard') || on('clinician')) {
     await page.keyboard.press('Enter'); await page.waitForFunction(() => /^#\/Authorization\?/.test(location.hash), null, { timeout: 4000 });
   });
   await run('A11Y-K3 drawer (Help): focus enters, Tab and Shift+Tab are trapped, Escape closes, focus returns to the button', async () => {
-    await openAt(page, 'MyWork', { section: 'todo' });
+    await openAt(page, 'Dashboard', {});
     const r = await A.dialogCheck(page, { label: 'Help drawer', open: async () => { await page.focus('#rail [data-sh=help]'); await page.keyboard.press('Enter'); } });
     const ret = r.after && r.after.active; if (r.after && !/Help/.test(ret || '')) r.bad.push(`Help drawer: focus returns to "${ret}", not the Help button`);
     assert.ok(r.meta && r.meta.kind === 'drawer', 'it is a drawer: ' + (r.meta && r.meta.kind)); verdict(r.bad);
@@ -253,7 +253,7 @@ if (on('keyboard') || on('clinician')) {
   });
   await run('A11Y-K5 every enabled control on the main screens is reachable with Tab (walk compared with the enumerated set)', async () => {
     const out = [];
-    for (const [id, params] of [['MyWork', { section: 'todo' }], ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['Referral', { id: 'REF-118' }], ['Analytics', { section: 'outcomes', dataset: 'case' }]]) {
+    for (const [id, params] of [['Dashboard', {}], ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['Referral', { id: 'REF-118' }], ['Analytics', { section: 'outcomes', dataset: 'case' }]]) {
       await page.setViewportSize({ width: 1440, height: 900 }); await openAt(page, id, params);
       const stops = await A.tabWalk(page.mainFrame(), { page, max: 220 });
       const nm = x => String(x || '').replace(/\s+/g, ' ').trim().toLowerCase().slice(0, 40);
@@ -273,11 +273,11 @@ if (on('motion') || on('clinician')) {
   await run('A11Y-M prefers-reduced-motion: no transition or animation keeps running on the main screens, a drawer or a modal', async () => {
     const { ctx, page } = await ctxFor({ who: 'jperez', reduced: true });
     const out = [];
-    for (const [id, params] of [['MyWork', { section: 'todo' }], ['Authorizations', {}], ['Analytics', { section: 'outcomes', dataset: 'case' }], ['DenialIntelligence', {}]]) {
+    for (const [id, params] of [['Dashboard', {}], ['Authorizations', {}], ['Analytics', { section: 'outcomes', dataset: 'case' }], ['DenialIntelligence', {}]]) {
       await openAt(page, id, params); const m = await page.evaluate(A.motion);
       if (!m.reduce) out.push('media query not matched'); if (m.bad.length) out.push(`${id}: ${short(m.bad, 3)}`);
     }
-    await openAt(page, 'MyWork', { section: 'todo' }); await page.click('#rail [data-sh=help]'); await page.waitForTimeout(150);
+    await openAt(page, 'Dashboard', {}); await page.click('#rail [data-sh=help]'); await page.waitForTimeout(150);
     const m = await page.evaluate(A.motion); if (m.bad.length) out.push(`drawer: ${short(m.bad, 3)}`);
     await ctx.close(); verdict(out);
   });

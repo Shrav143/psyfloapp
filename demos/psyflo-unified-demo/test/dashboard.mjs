@@ -141,6 +141,20 @@ try {
     assert.deepEq(bad, [], 'no links into screens an administrator cannot open');
     await p.screenshot({ path: SHOTS + '/dashboard-admin-1440.png' }); assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
+  await T.test('two-person confirmations: after the administrator proposes a designation the clinician sees the strip with a Review button; the proposer does not, and no strip when nothing waits', async () => {
+    let p = await open('jperez', '/#/Dashboard'); assert.eq(await p.locator('.d-confirms').count(), 0, 'no strip when nothing waits'); await p.close();
+    const r = await api('settings.designate', { id: 'cdiaz', cap: 'approve.sra', grant: true, reason: 'Covers when the LPC is out' }, 'dowens'); assert.ok(r.ok !== false, 'proposed');
+    p = await open('jperez', '/#/Dashboard');
+    assert.eq(await p.locator('.d-confirms .d-confirm').count(), 1); assert.match(await p.locator('.d-confirm').innerText(), /Confirm access · Carla Diaz/);
+    assert.eq(await p.locator('.d-confirm [data-x="confirm"]').count(), 1);
+    await p.click('[data-x="confirm"]'); await p.waitForSelector('.ui-dialog'); assert.match(await p.locator('.ui-dialog').innerText(), /Carla Diaz/); assert.match(await p.locator('.ui-dialog').innerText(), /Covers when the LPC is out/);
+    await p.screenshot({ path: SHOTS + '/dashboard-confirm-1440.png' });
+    await p.click('.ui-dialog [data-ui-action="1"]'); await p.waitForTimeout(800);
+    assert.ok((await state('dowens')).staff.find(x => x.id === 'cdiaz').designations.includes('approve.sra'), 'effective after the second person confirms');
+    assert.eq(await p.locator('.d-confirms').count(), 0, 'the strip is gone once decided');
+    const q = await open('dowens', '/#/Dashboard'); assert.eq(await q.locator('.d-confirms').count(), 0, 'the proposer never sees their own request');
+    assert.deepEq(fatal(p), [], 'console errors'); await done(); await reset('live');
+  });
   await T.test('phone width: no horizontal scroll, patients become cards, buttons are 44 px', async () => {
     const p = await open('khale', '/#/Dashboard', { w: 390, h: 900 });
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'no horizontal overflow');

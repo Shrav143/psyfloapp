@@ -1,6 +1,6 @@
 # dashboard · PASS
 
-Run 2026-11-11T20-11-33Z · 18753 ms · instance 0 · exit 0
+Run 2026-11-11T20-12-52Z · 22985 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -15,5 +15,6 @@ Run 2026-11-11T20-11-33Z · 18753 ms · instance 0 · exit 0
 | PASS | filter state survives a reload and Clear filters resets it; an empty result says so with a way out |  |
 | PASS | clinician: all patients, Responsible column, authorization chip with the unit bar, sort by Patient, items open their screen |  |
 | PASS | administrator: statuses and dates only, no write or review verbs, no note text, items open the chart when the role cannot open the target |  |
+| PASS | two-person confirmations: after the administrator proposes a designation the clinician sees the strip with a Review button; the proposer does not, and no strip when nothing waits |  |
 | PASS | phone width: no horizontal scroll, patients become cards, buttons are 44 px |  |
 | PASS | the old My Work, Do next and Staff dashboard routes land on the Dashboard; the review sections land on Documentation |  |

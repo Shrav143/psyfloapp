@@ -88,7 +88,7 @@ try {
   });
   await T.test('the presenter\'s view of a child still works when it is deliberate: dock open, or a staff member signed in in this browser', async () => {
     const g = await asGuardianPresenter('TW', 'ParentProgress'); assert.eq(await g.p.locator('[data-link-invalid]').count(), 0); assert.match(await text(g.p), /Tyler/); await g.c.close();
-    const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); await login(p, 'jperez', { presenter: true, hash: '/MyWork' });
+    const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); await login(p, 'jperez', { presenter: true, hash: '/Dashboard' });
     await p.goto(`${BASE}/#/ParentPortal`); await p.waitForSelector('#root .fp'); await p.waitForTimeout(500); assert.eq(await p.locator('[data-link-invalid]').count(), 0); assert.match(await text(p), /Tyler/); await c.close();
   });
 

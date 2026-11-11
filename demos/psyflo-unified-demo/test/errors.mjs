@@ -18,7 +18,7 @@ await T.test('/api/state answers 500 on load: an alert says the server cannot be
   const { ctx, page } = await open('jperez');
   try {
     await page.route('**/api/state', r => r.fulfill({ status: 500, contentType: 'application/json', body: '{"ok":false,"error":"down"}' }));
-    await page.goto('about:blank'); await page.goto(BASE + '/#/MyWork?section=todo'); await page.waitForSelector('#root [data-retry]', { timeout: 10000 });
+    await page.goto('about:blank'); await page.goto(BASE + '/#/Dashboard'); await page.waitForSelector('#root [data-retry]', { timeout: 10000 });
     const t = await body(page);
     assert.ok(t.alert.some(a => /Can't reach the Psyflo server/.test(a)), 'alert: ' + JSON.stringify(t.alert));
     assert.ok(t.retry, 'a Retry button'); assert.ok(!calm.test(t.text), 'the calm empty state is not shown'); assert.ok(!t.loading, 'not stuck on Loading'); assert.eq(t.h1.length, 1, 'one h1: ' + t.h1);
@@ -34,7 +34,7 @@ await T.test('the server does not answer at all (the request is dropped): the sa
   const { ctx, page } = await open('jperez');
   try {
     await page.route('**/api/state', r => r.abort()); await page.route('**/api/roster', r => r.abort());
-    await page.goto('about:blank'); await page.goto(BASE + '/#/MyWork?section=todo'); await page.waitForSelector('#root [data-retry]', { timeout: 10000 });
+    await page.goto('about:blank'); await page.goto(BASE + '/#/Dashboard'); await page.waitForSelector('#root [data-retry]', { timeout: 10000 });
     const t = await body(page); assert.ok(t.alert.some(a => /Can't reach the Psyflo server/.test(a)), JSON.stringify(t.alert)); assert.ok(!calm.test(t.text));
   } finally { await ctx.close(); }
 });
@@ -44,7 +44,7 @@ await T.test('the session ended (401): "Your session ended" with Sign in again, 
   try {
     await page.goto(BASE + '/#/Login');
     await page.evaluate(() => { localStorage.setItem('psyflo_session', JSON.stringify({ token: 'not-a-live-token', actor: { kind: 'staff', id: 'jperez', role: 'clinician', name: 'Jordan Perez' } })); localStorage.setItem('psyflo_user', 'jperez'); });
-    await page.goto(BASE + '/#/MyWork?section=todo'); await page.reload(); await page.waitForSelector('#root [data-signin-again]', { timeout: 10000 });
+    await page.goto(BASE + '/#/Dashboard'); await page.reload(); await page.waitForSelector('#root [data-signin-again]', { timeout: 10000 });
     const t = await body(page); assert.ok(t.alert.some(a => /Your session ended/.test(a)), JSON.stringify(t.alert)); assert.ok(!calm.test(t.text), 'no calm empty state');
     await page.click('#root [data-signin-again]'); await page.waitForFunction(() => /#\/Login/.test(location.hash) && document.querySelector('#root h1'), null, { timeout: 8000 });
     assert.ok(/Sign in|Who are you|Choose/i.test((await body(page)).text), 'the sign-in screen');
@@ -54,7 +54,7 @@ await T.test('the session ended (401): "Your session ended" with Sign in again, 
 await T.test('a failure after the screen loaded keeps the last good data and says so; when the server returns the screen is current again', async () => {
   const { ctx, page } = await open('jperez');
   try {
-    await page.goto(BASE + '/#/MyWork?section=todo'); await page.waitForSelector('#root h1'); await page.waitForTimeout(600);
+    await page.goto(BASE + '/#/Dashboard'); await page.waitForSelector('#root h1'); await page.waitForTimeout(600);
     const before = (await body(page)).text;
     await page.route('**/api/state', r => r.fulfill({ status: 503, contentType: 'application/json', body: '{"ok":false}' }));
     await page.evaluate(async () => { const { api } = await import('/js/api.js'); await api.refresh(); });
