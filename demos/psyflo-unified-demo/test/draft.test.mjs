@@ -119,10 +119,28 @@ test('Evidence · counts come from stored notes; missing evidence prints "Eviden
 
 test('Flow C · initial SRA leaves criterion 3 blank when 1 and 2 are met, and never drafts trauma-informed care', () => {
   const sc = draftScreening({ transcript, today: '2026-10-16' });
-  const d = draftInitialSRA({ client: { initials: 'T.W.' }, screening: { facts: sc.facts, when: '2026-10-16' }, referral: seed.referrals.find(r => r.id === 'REF-118'), today: '2026-10-22' });
+  const school = { reported: '2026-10-19', by: 'rbell', unexcused_absences: 9, iss_days_6mo: 1, oss_days_6mo: 0, classes: 7, passing: 4, incident_dates: ['2026-10-14', '2026-10-20'] };
+  const d = draftInitialSRA({ client: { initials: 'T.W.' }, screening: { facts: sc.facts, when: '2026-10-16' }, referral: seed.referrals.find(r => r.id === 'REF-118'), school, today: '2026-10-22' });
   assert.equal(d.boxes.length, 7);
   assert.ok(d.blank.find(b => b.label.includes('criterion 3')).why.includes('two of three'));
   assert.ok(!d.boxes.find(b => b.label.includes('trauma')));
   assert.match(d.boxes.find(b => b.label.includes('criterion 2')).value, /Piedmont Counseling, Mar–Jun/);
   assert.ok(d.checks.every(c => c.pass), JSON.stringify(d.checks.filter(c => !c.pass)));
+});
+
+// 05b ICE-04: the initial request never states a count, intensity or consequence that the call or the school did not give
+test('Flow C · initial SRA: no screening facts and no school numbers = "Evidence missing", never a number nobody gave', () => {
+  const none = draftInitialSRA({ client: { initials: 'X.Y.' }, screening: { facts: {}, when: '2026-10-20' }, referral: { id: 'REF-9' }, school: null, today: '2026-10-29', request: { id: 'R-1', units_requested: 150, dates: '2026-10-30 to 2027-01-26' } });
+  const c1 = none.boxes.find(b => /criterion 1/.test(b.label));
+  assert.match(c1.value, /^Evidence missing — verify/); assert.ok(c1.missing);
+  assert.ok(!/office referral|in-school suspension|moderate|lasting \?|, ,/i.test(none.boxes.map(b => b.value).join(' ')), 'nothing invented anywhere in the draft');
+  // the call but not the school: only the call's words, an empty-slot-free sentence, and the school's counts reported as missing
+  const sc = draftScreening({ transcript, today: '2026-10-16' });
+  const call = draftInitialSRA({ client: { initials: 'T.W.' }, screening: { facts: sc.facts, when: '2026-10-16' }, referral: { id: 'REF-118' }, school: null, today: '2026-10-22' });
+  const v = call.boxes.find(b => /criterion 1/.test(b.label)).value;
+  assert.match(v, /2–3 times a week/); assert.ok(!/Unexcused|ISS past|OSS|passing|, ,|\?/.test(v), v);
+  assert.equal(call.checks.find(c => c.rule === 'School counts on record').pass, false);
+  // every source of every initial-request draft carries a date (or says it is unknown)
+  for (const d of [none, call]) for (const x of d.sources) assert.ok(x.date && x.date_label, JSON.stringify(x));
+  assert.equal(none.sources[2].date, 'undated'); assert.equal(none.sources[2].date_label, 'Evidence missing — date unknown');
 });

@@ -19,6 +19,7 @@ import { addDays, addHours, daysBetween, hoursBetween, isSchoolDay, fmtDate, fmt
 import { today as clockToday, now as clockNow } from '../clock.js';
 import { rule, ruleValue, decisionDay } from '../rules.js';
 import { can, CAP_NOTE } from '../permissions.js';
+import { reauthDue } from './auth.js';
 
 // ---------------------------------------------------------------------------------------------------------------- sections
 export const SECTION_LABEL = { todo: 'To do', review: 'Review', team: 'Team', day: 'My day', referrals: 'Referrals' };
@@ -220,7 +221,7 @@ export function worklist(s, actor) {
         else wait('Clinician', `${c} · ${p} offered ${q.units_offered} of ${q.units_requested} units`, 'View');
         break;
       case 'draft_ready':
-        if (cap('drafts.clinical')) add({ ...base, kind: 'draft', rank: 60, when: 'today', title: q.type === 'continued_stay' ? `Continued stay · ${c}` : `${typ} · ${c}`, sub: q.type === 'continued_stay' ? `Renew by ${fmtDate(q.renew_by || (M.byId(s.clients, q.client) || {}).authorization?.end)}` : clock.text, chip: { text: 'Draft ready', tone: 'neutral' }, verb: 'Review draft', to: M.requestHref(q) });
+        if (cap('drafts.clinical')) add({ ...base, kind: 'draft', rank: 60, when: 'today', title: q.type === 'continued_stay' ? `Continued stay · ${c}` : `${typ} · ${c}`, sub: q.type === 'continued_stay' ? `Renew by ${fmtDate((reauthDue(s, q) || {}).date || q.renew_by || (M.byId(s.clients, q.client) || {}).authorization?.end)}` : clock.text, rule: q.type === 'continued_stay' ? (reauthDue(s, q) || {}).rule : undefined, chip: { text: 'Draft ready', tone: 'neutral' }, verb: 'Review draft', to: M.requestHref(q) });
         else wait('Clinician', `${typ} · ${c} · draft ready`, 'View');
         break;
       case 'needs_approval':

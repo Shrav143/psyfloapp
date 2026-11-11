@@ -1,5 +1,7 @@
 // draft(formType, sources) — the one place Psyflo writes text for a form.
-// Returns { boxes: [{label, value, src:[n], note}], sources: [{n, kind, label, date}], checks: [{rule, pass, detail}], blank: [{label, why}] }.
+// Returns { boxes: [{label, value, src:[n], note}], sources: [{n, kind, label, date, date_label}], checks: [{rule, pass, detail}], blank: [{label, why}] }.
+// Every source carries `date`: the day of the record it names (yyyy-mm-dd, from the stored note, form, request or call), or the string 'undated'
+// when that is truly unknown; `date_label` is what a chip prints ("Oct 16", or "Evidence missing — date unknown").
 // Every box carries the numbered sources it came from (rule 7). The drafting rules are explicit checks,
 // run on the output before the panel shows it (rules 1–14 in the brief), not hints in a prompt.
 // The worked examples in seed/scripts are its tests (test/draft.test.mjs).
@@ -7,7 +9,7 @@
 // This build is deterministic: extractors over the transcript/dictation and the record. A hosted LLM can
 // sit behind the same function later; the checks below still gate whatever it returns.
 
-import { fmtDate, fmtUS, daysBetween, mins, fmtDuration, unitsForDirectMinutes, clock12 } from './dates.js';
+import { fmtDate, fmtUS, daysBetween, mins, fmtDuration, unitsForDirectMinutes, clock12, addDays } from './dates.js';
 import { unitsFor } from './rules.js';
 
 // ---------------------------------------------------------------- the checks (rules 1–14)
@@ -45,6 +47,12 @@ export const CHECKS = {
     return { pass: bad.length === 0, detail: bad.length ? bad.map(r => `${r.provider}: outcome unknown`).join('; ') : '' };
   }
 };
+
+export const UNDATED = 'undated';
+const isoDay = d => { const m = String(d || '').match(/^\d{4}-\d{2}-\d{2}/); return m ? m[0] : null; };
+const src = (n, kind, label, date, extra = {}) => { const d = isoDay(date); return { n, kind, label, date: d || UNDATED, date_label: d ? fmtDate(d) : 'Evidence missing — date unknown', ...extra }; };
+const MISSING = what => `Evidence missing — verify ${what}.`;
+const guardianWord = f => (String(f.guardian || '').split(' (')[0] || 'the guardian').toLowerCase();
 
 function result(boxes, sources, checks, blank = [], extra = {}) {
   // a box whose text is "Evidence missing — verify …" is a placeholder for the person to replace: flagged so it is never typed as if it were evidence
@@ -104,22 +112,22 @@ export function screeningPrompts(f) {
       ask: c1 ? 'Ask the school: absences, ISS/OSS days, classes passing.' : '"How long do those last, and how bad do they get?"' },
     { key: 'c2', group: 'Insurance needs two of these three', title: 'Documented repeated interventions that have not worked', done: !!c2, partial: !!f.prior_provider && !c2,
       text: c2 ? `Shown: ${f.prior_provider}, ${f.prior_dates}, ${f.prior_sessions || ''}${f.prior_ended ? ', ' + f.prior_ended : ''}; ${f.prior_outcome}.` : f.prior_provider ? `${f.prior_provider} named — still need dates and whether it helped.` : '"Outpatient a while ago" will be read by the insurer as no prior service; school counseling does not count as a failed service.',
-      ask: c2 ? '' : f.prior_provider ? '"Did it help while he was going? When did it end and why?"' : 'Ask: who, when, how often, and whether it helped.' },
+      ask: c2 ? '' : f.prior_provider ? '"Did it help while the student was going? When did it end and why?"' : 'Ask: who, when, how often, and whether it helped.' },
     { key: 'c3', group: 'Insurance needs two of these three', title: 'Cognitive ability to recognise danger to self or others', done: !!(f.elope_ex && f.danger), partial: !!f.elope_yes && !f.danger,
-      text: f.danger ? `Partly shown: ${f.elope_ex || 'leaves the building'}; guardian: ${f.danger}` : 'Not asked. Elopement to the parking lot (10/6) may support this — needs the guardian\'s words.', ask: f.danger ? '' : '"Does he understand that leaving the building could be dangerous?"' },
+      text: f.danger ? `Partly shown: ${f.elope_ex || 'leaves the building'}; guardian: ${f.danger}` : f.elope_ex ? `Not asked. What the guardian said about leaving (${f.elope_ex}) may support this — it needs the guardian's words.` : 'Not asked.', ask: f.danger ? '' : '"Does the student understand that leaving the building could be dangerous?"' },
     { key: 'loc', group: 'And one of these (level of care)', title: 'Risk of out-of-home placement or more restrictive setting', done: !!f.placement, partial: !!f.elope_ex && !f.placement,
-      text: f.placement ? 'Shown: alternative placement raised twice by the school' + (f.elope_ex ? '; 1 day ISS' : '') + '.' : 'Partly: 1 day ISS, school asking about alternative placement.', ask: f.placement ? '' : '"Has the school talked about moving him to a different program?"' },
+      text: f.placement ? 'Shown: ' + f.placement + (f.elope_ex ? '; ' + f.elope_ex : '') + '.' : f.elope_ex ? `Partly: ${f.elope_ex}. Nothing yet on whether the school has raised a different setting.` : 'Not asked.', ask: f.placement ? '' : '"Has the school talked about moving the student to a different program?"' },
     { key: 'int', group: 'Not yet asked', title: 'Internalizing: sleep, withdrawal, sadness, worries', done: !!f.internal, partial: false,
-      text: f.internal ? 'Asked and on record: ' + f.internal + '.' : 'Insurers often deny these because they "can\'t see" them. Asking now puts the answer on record with a date.', ask: f.internal ? '' : '"Is he sleeping okay? Any sadness, keeping to himself?"' },
-    { key: 'sh', group: 'Not yet asked', title: 'Self-harm asked directly', done: !!f.selfharm, partial: false, text: f.selfharm ? 'Asked directly; grandmother says no.' : 'Ask directly and put the answer on record.', ask: f.selfharm ? '' : '"Has he ever said anything about hurting himself?"' }
+      text: f.internal ? 'Asked and on record: ' + f.internal + '.' : 'Insurers often deny these because they "can\'t see" them. Asking now puts the answer on record with a date.', ask: f.internal ? '' : '"Is the student sleeping okay? Any sadness, keeping to themselves?"' },
+    { key: 'sh', group: 'Not yet asked', title: 'Self-harm asked directly', done: !!f.selfharm, partial: false, text: f.selfharm ? `Asked directly; ${guardianWord(f)} says no.` : 'Ask directly and put the answer on record.', ask: f.selfharm ? '' : '"Has the student ever said anything about hurting themselves?"' }
   ];
 }
 
 export function draftScreening({ transcript, today, guardianPhone = '', referral, pre = {} }) {
   const f = screeningFacts(transcript);
   const S = [
-    { n: 1, kind: 'call', label: 'Screening call · recorded with consent', date: today },
-    { n: 2, kind: 'referral', label: 'Referral form' + (referral?.id ? ' · ' + referral.id : ''), date: referral?.received?.slice(0, 10) }
+    src(1, 'call', 'Screening call · recorded with consent', today),
+    src(2, 'referral', 'Referral form' + (referral?.id ? ' · ' + referral.id : ''), referral?.received)
   ];
   const row = (name, p) => ({ name, yn: f[p + '_yes'] || (p === 'selfharm' ? f.selfharm : null), freq: f[p + '_freq'], dur: f[p + '_dur'], int: f[p + '_int'], ex: f[p + '_ex'] });
   const rows = [row('Physical aggression toward peers', 'agg'), row('Leaving the classroom / building', 'elope'), row('Verbal aggression / threats', 'verbal')];
@@ -130,7 +138,7 @@ export function draftScreening({ transcript, today, guardianPhone = '', referral
     const cells = { 'Y/N': r.yn, Frequency: r.freq, Duration: r.dur, Intensity: r.int, 'Example given': r.ex };
     for (const [col, v] of Object.entries(cells)) if (v) boxes.push({ label: `${r.name} — ${col}`, value: v, src: [1], row: r.name });
   }
-  if (f.selfharm) { boxes.push({ label: 'Self-harm statements — Y/N', value: 'N', src: [1], row: 'Self-harm statements' }); boxes.push({ label: 'Self-harm statements — Example given', value: 'Asked directly; grandmother says no', src: [1], row: 'Self-harm statements' }); }
+  if (f.selfharm) { boxes.push({ label: 'Self-harm statements — Y/N', value: 'N', src: [1], row: 'Self-harm statements' }); boxes.push({ label: 'Self-harm statements — Example given', value: `Asked directly; ${guardianWord(f)} says no`, src: [1], row: 'Self-harm statements' }); }
   if (f.internal) { boxes.push({ label: 'Withdrawal / internalizing — Y/N', value: 'N', src: [1], row: 'Withdrawal / internalizing' }); boxes.push({ label: 'Withdrawal / internalizing — Example given', value: f.internal, src: [1], row: 'Withdrawal / internalizing' }); }
   // prior services (rule 7): provider · dates · outcome; empty outcome blocks and asks
   const prior = [];
@@ -147,9 +155,9 @@ export function draftScreening({ transcript, today, guardianPhone = '', referral
   if (f.strengths) boxes.push({ label: 'Strengths', value: f.strengths, src: [1] });
   // narrative: one paragraph from the boxes above, no new facts
   const nar = [];
-  if (f.guardian) nar.push(`Screening call with the grandmother (legal guardian).`);
-  const agg = rows[0]; if (agg.yn) nar.push(`She reports physical aggression toward peers ${agg.freq || ''}${agg.dur ? ', lasting ' + agg.dur : ''}${agg.int ? ', ' + agg.int.toLowerCase() + ' intensity' : ''}${f.agg_ex && f.agg_ex.includes('office') ? ', with 2 office referrals this month' : ''}.`);
-  const el = rows[1]; if (el.yn) nar.push(`He leaves the classroom or building ${el.freq || ''}${el.dur ? ' for ' + el.dur : ''}${f.elope_ex ? '; on 10/6 he left to the parking lot and received 1 day ISS' : ''}.`);
+  if (f.guardian) nar.push(`Screening call with the ${f.guardian.charAt(0).toLowerCase() + f.guardian.slice(1)}.`);
+  const agg = rows[0]; if (agg.yn) nar.push(`The guardian reports physical aggression toward peers${agg.freq ? ' ' + agg.freq : ''}${agg.dur ? ', lasting ' + agg.dur : ''}${agg.int ? ', ' + agg.int.toLowerCase() + ' intensity' : ''}${f.agg_ex && f.agg_ex.includes('office') ? ', with ' + f.agg_ex.split('; ').find(x => /office referrals/.test(x)) : ''}.`);
+  const el = rows[1]; if (el.yn) nar.push(`The student leaves the classroom or building${el.freq ? ' ' + el.freq : ''}${el.dur ? ' for ' + el.dur : ''}${f.elope_ex ? '; ' + f.elope_ex.charAt(0).toLowerCase() + f.elope_ex.slice(1) : ''}.`);
   if (rows[2].yn) nar.push(`Verbal aggression is daily and brief.`);
   if (f.selfharm) nar.push('Self-harm statements denied when asked directly.');
   if (f.internal) nar.push(`Internalizing: ${f.internal.charAt(0).toLowerCase() + f.internal.slice(1)}.`);
@@ -228,20 +236,40 @@ export function contactTime(blocks = [], { confirmed = true, s = null } = {}) {
 export function draftInitialSRA({ client, screening, referral, school, today, isp = {}, cna, request }) {
   const f = screening?.facts || {};
   const S = [
-    { n: 1, kind: 'referral', label: `Referral form · ${referral?.id || ''}`, date: referral?.received?.slice(0, 10) },
-    { n: 2, kind: 'call', label: 'Screening call', date: screening?.when?.slice(0, 10) },
-    { n: 3, kind: 'school', label: 'School portal · counts from the counselor', date: school?.reported },
-    { n: 4, kind: 'plan', label: 'ISP 2.0 (in Lauris)', date: isp.date },
-    { n: 5, kind: 'intake', label: 'Intake / CNA', date: cna?.date }
+    src(1, 'referral', `Referral form · ${referral?.id || ''}`, referral?.received),
+    src(2, 'call', 'Screening call', screening?.when),
+    src(3, 'school', 'School portal · counts from the counselor', school?.reported),
+    src(4, 'plan', 'ISP 2.0 (in Lauris)', isp.date),
+    src(5, 'intake', 'Intake / CNA', cna?.date)
   ];
   const sch = school || {};
-  const c1 = [`In the last 30 days ${client.initials} was physically aggressive toward peers on ${sch.incident_dates ? sch.incident_dates.length + ' dated occasions (' + sch.incident_dates.map(d => fmtDate(d)).join(', ') + ')' : 'repeated occasions'}, ${f.agg_freq ? f.agg_freq.replace('× / week', ' times a week') : ''}, lasting ${f.agg_dur || '?'}, ${String(f.agg_int || 'moderate').toLowerCase()} intensity; 2 office referrals and 1 day of in-school suspension followed.`,
-    f.verbal_yes ? 'Verbal aggression daily.' : '', referral?.form?.iep ? 'IEP: yes.' : '',
-    sch.unexcused_absences != null ? `Unexcused absences: ${sch.unexcused_absences}. ISS past 6 months: ${sch.iss_days_6mo} day. OSS: ${sch.oss_days_6mo}. Classes: ${sch.classes}, passing ${sch.passing}.` : ''].filter(Boolean).join(' ');
+  const ini = client?.initials || 'The student';
+  // Criterion 1 is built ONLY from the screening call and the school portal: every number, count and word is one somebody gave. A part with no
+  // evidence is left out; with neither the call nor the school there is no draft, only "Evidence missing — verify …" (05b ICE-04).
+  const plural = (n, w) => `${n} ${w}${+n === 1 ? '' : 's'}`;
+  const call = [];
+  if (f.agg_yes) {
+    const bits = [f.agg_freq ? f.agg_freq.replace('× / week', ' times a week') : '', f.agg_dur ? 'lasting ' + f.agg_dur : '', f.agg_int ? String(f.agg_int).toLowerCase() + ' intensity' : ''].filter(Boolean);
+    call.push(`At the screening call${screening?.when ? ' (' + fmtDate(String(screening.when).slice(0, 10)) + ')' : ''} the guardian reported that ${ini} is physically aggressive toward peers${bits.length ? ': ' + bits.join(', ') : ''}${f.agg_ex ? '. Example given: ' + f.agg_ex.charAt(0).toLowerCase() + f.agg_ex.slice(1) : ''}.`);
+  }
+  if (f.verbal_yes && f.verbal_freq) call.push(`Verbal aggression: ${f.verbal_freq.toLowerCase()}.`);
+  const schoolBits = [];
+  if (sch.incident_dates && sch.incident_dates.length) schoolBits.push(`${plural(sch.incident_dates.length, 'dated incident')} (${sch.incident_dates.map(d => fmtDate(d)).join(', ')})`);
+  if (sch.unexcused_absences != null) schoolBits.push(`unexcused absences: ${sch.unexcused_absences}`);
+  if (sch.iss_days_6mo != null) schoolBits.push(`ISS past 6 months: ${plural(sch.iss_days_6mo, 'day')}`);
+  if (sch.oss_days_6mo != null) schoolBits.push(`OSS: ${plural(sch.oss_days_6mo, 'day')}`);
+  if (sch.classes != null && sch.passing != null) schoolBits.push(`classes: ${sch.classes}, passing ${sch.passing}`);
+  const schoolLine = schoolBits.length ? `The school reports${sch.reported ? ' (' + fmtDate(sch.reported) + ')' : ''} ${schoolBits.join('; ')}.` : '';
+  const iep = referral?.form?.iep ? 'IEP: yes (referral form).' : '';
+  const c1 = [...call, schoolLine, iep].filter(Boolean).length && (call.length || schoolLine)
+    ? [...call, schoolLine, iep].filter(Boolean).join(' ')
+    : MISSING('the screening call facts and the school\'s counts for criterion 1 (none are on record yet)');
+  const c1Evidence = !/^Evidence missing/.test(c1);
   const c2 = f.prior_provider && f.prior_outcome
     ? `Outpatient therapy, ${f.prior_provider}, ${f.prior_dates}, ${(f.prior_sessions || '').replace('~', '')} — ${f.prior_ended || 'ended'}; ${f.prior_outcome}.`
     : '';
-  const loc = f.placement ? `The school has raised alternative placement twice this year${f.elope_dur ? '; elopement from the building (' + f.elope_dur + ')' : ''}${f.elope_ex ? ' and ' + f.elope_ex.toLowerCase() : ''}.` : '';
+  // level of care: only what the call said (the placement remark as heard, the elopement example as heard)
+  const loc = f.placement ? `Guardian: ${f.placement}${f.elope_dur ? '; elopement from the building (' + f.elope_dur + ')' : ''}${f.elope_ex ? '; ' + f.elope_ex.charAt(0).toLowerCase() + f.elope_ex.slice(1) : ''}.` : '';
   // care coordination and barriers: only what the call and the school portal said (no promise of future contact, no invented risk times)
   const coordBits = [f.school_bi, f.school_cico, f.school_iep].filter(Boolean);
   const coord = coordBits.length ? `School supports in place: ${coordBits.join('; ')}.` : '';
@@ -257,7 +285,7 @@ export function draftInitialSRA({ client, screening, referral, school, today, is
     { label: 'Barriers', value: barriers, src: [2], short: 'Barriers' },
     { label: 'Discharge', value: isp.date ? "Discharge criteria as written in the ISP (copy them from the ISP in Lauris; Psyflo does not restate them)." : 'Evidence missing — verify the ISP discharge criteria.', src: [4], short: 'Discharge' }
   ];
-  const c1met = !!c1 && !!f.agg_freq; const c2met = !!c2;
+  const c1met = c1Evidence && !!f.agg_freq; const c2met = !!c2;
   const blank = [
     { label: 'Section I · criterion 3 — recognise danger to self or others', why: c1met && c2met ? 'Left blank · criteria 1 and 2 are met (two of three is enough)' : 'Needs the guardian\'s words — not enough on record yet', short: 'Criterion 3 · recognising danger' },
     { label: 'Section III · trauma-informed care', why: 'You write this one. Psyflo notes the section was discussed and leaves the box to you.', short: 'Trauma-informed care' }
@@ -266,6 +294,7 @@ export function draftInitialSRA({ client, screening, referral, school, today, is
   const checks = [
     { rule: 'Numbers', pass: CHECKS.counts(text).pass, detail: 'Every count is "3 of 5," never a percentage — the form asks for it that way' },
     { rule: 'Dates', pass: CHECKS.recent(c1, today).pass, detail: 'All examples are from the last 30 days' },
+    { rule: 'School counts on record', pass: schoolBits.length > 0, detail: schoolBits.length ? 'From the school portal' : 'Evidence missing — verify the school\'s counts (absences, ISS/OSS days, classes passing) before sending' },
     { rule: 'Prior services', pass: !!c2, detail: c2 ? 'Outcome column is filled for both rows' : 'Prior outpatient outcome missing — blocked until it is asked' },
     { rule: 'School counseling', pass: !/school counsel/i.test(c2), detail: 'Under care coordination, not criterion 2' },
     { rule: 'Criterion 3', pass: true, detail: c1met && c2met ? 'Left blank: criteria 1 and 2 are met' : 'Still open' },
@@ -289,56 +318,67 @@ export function draftSeeded(form, ctx = {}) {
   const inRange = n => !today || range === 'all' || range === 'whole' || (daysBetween(String(n.date || '').slice(0, 10), today) <= 30 && daysBetween(String(n.date || '').slice(0, 10), today) >= 0);
   const daily = mine.filter(n => n.type === 'daily' && inRange(n)), weekly = mine.filter(n => n.type === 'weekly_guardian' && inRange(n)), monthly = mine.filter(n => n.type === 'monthly_collateral' && inRange(n));
   const dts = arr => arr.map(n => fmtDate(n.date)).join(', ');
-  const MISSING = what => `Evidence missing — verify ${what}.`;
   const objOf = n => n.objective != null ? +n.objective : (String(n.fields?.['Objective addressed'] || '').match(/Obj\.?\s*(\d)/) || [])[1] ? +String(n.fields['Objective addressed']).match(/Obj\.?\s*(\d)/)[1] : null;
   const ivOf = n => n.interventions || (n.fields?.['Interventions'] ? String(n.fields['Interventions']).split(/\s*·\s*/) : []);
   const perGoal = [1, 2, 3].map(g => daily.filter(n => objOf(n) === g).length);
   const ivCounts = {}; for (const n of daily) for (const v of ivOf(n)) ivCounts[v] = (ivCounts[v] || 0) + 1;
   const topIv = Object.entries(ivCounts).sort((x, y) => y[1] - x[1]).slice(0, 4).map(([k, v]) => `${k} ×${v}`).join(', ');
+  const latest = arr => arr.map(n => String(n.date || '').slice(0, 10)).filter(Boolean).sort().at(-1) || '';
   const span = arr => arr.length ? `${fmtDate(arr.map(n => n.date).sort()[0])}–${fmtDate(arr.map(n => n.date).sort().at(-1))}` : '';
   const D = {
     cna: () => {
       const f = screening?.facts || {};
-      const fromScreening = !!screening;
-      const S = [{ n: 1, kind: 'call', label: 'Screening call (copied)', date: screening?.when?.slice(0, 10) }, { n: 2, kind: 'referral', label: 'Referral form', date: '2026-10-13' }, { n: 3, kind: 'call', label: 'Intake conversation (recorded)', date: today }];
-      const presenting = `Referred by MS-2 for physical and verbal aggression toward peers${f.agg_freq ? ' (' + f.agg_freq + ', ' + f.agg_dur + ')' : ''}, elopement from the building (Oct 6, ISS), and daily off-task behaviour. Copied from the referral and the screening call.`;
+      const fromScreening = !!screening && Object.keys(f).length > 0;
+      const tl = client.timeline || {};
+      const S = [src(1, 'call', 'Screening call (copied)', screening?.when), src(2, 'referral', 'Referral form', tl.referral || ctx.referral?.received), src(3, 'call', 'Intake conversation (recorded)', today)];
+      // what the call said, in its own words: no school name, no date, no behaviour that was not heard
+      const heard = [f.agg_yes ? `physical aggression toward peers${f.agg_freq ? ' (' + f.agg_freq + (f.agg_dur ? ', ' + f.agg_dur : '') + ')' : ''}` : '', f.verbal_yes ? 'verbal aggression' + (f.verbal_freq ? ' (' + f.verbal_freq.toLowerCase() + ')' : '') : '', f.elope_yes ? 'leaving the classroom' + (f.elope_ex ? ' (' + f.elope_ex + ')' : '') : ''].filter(Boolean);
+      const presenting = heard.length ? `Referred for ${heard.join(', ')}. Copied from the referral and the screening call.` : MISSING('the presenting issue (no screening call facts are on record)');
       const prior = screening?.boxes?.find(b => b.label.startsWith('Prior / current services'))?.value;
       return result([
         { label: 'Presenting issue / reason for referral', value: presenting, src: [2, 1], copied: fromScreening },
         { label: 'Prior services (provider · dates · outcome)', value: prior || '', src: [1], copied: fromScreening, note: 'confirm dates with guardian' },
-        { label: 'Developmental history', value: 'Full-term; walked at 13 months; speech delay noted at 3, resolved with school SLP by 1st grade. Grandmother raising him since age 4.', src: [3] },
-        { label: 'Medical · medications · prescriber', value: f.medical ? f.medical + '. Pediatrician: on file.' : 'No current medications (grandmother). Asthma, inhaler at school.', src: f.medical ? [1, 3] : [3] },
-        { label: 'Family mental-health history', value: 'Reported: maternal depression.', src: [3], note: 'Written in the clinician\'s words — no family quotes.' },
-        { label: 'Strengths and resources', value: f.strengths ? f.strengths + '; engaged grandmother.' : 'Engaged grandmother; basketball, drawing; does well one-to-one with an adult.', src: [1, 3] }
-      ], S, [{ rule: 'Prior services carry provider, dates and outcome', pass: !!prior, detail: prior ? '' : 'Run the screening first' }, { rule: 'Trauma history', pass: true, detail: 'Not drafted — discussed at 1:48 pm, left to the clinician' }, { rule: 'Nothing invented', pass: true, detail: '' }],
-      [{ label: 'Trauma history', why: 'Left for the clinician. Psyflo drafts nothing here; it notes that the section was discussed.' }]);
+        // nothing in the call or the record says these: they are written from the intake conversation, which Psyflo has no transcript of here
+        { label: 'Developmental history', value: MISSING('the developmental history from the intake conversation (none is on record)'), src: [3] },
+        { label: 'Medical · medications · prescriber', value: f.medical ? f.medical + '.' : MISSING('medical history and medications (not said on the call)'), src: f.medical ? [1] : [3] },
+        { label: 'Family mental-health history', value: MISSING('the family mental-health history from the intake conversation (none is on record)'), src: [3], note: 'Written in the clinician\'s words — no family quotes.' },
+        { label: 'Strengths and resources', value: f.strengths ? f.strengths + '.' : MISSING('strengths and resources (not said on the call)'), src: [1] }
+      ], S, [{ rule: 'Prior services carry provider, dates and outcome', pass: !!prior, detail: prior ? '' : 'Run the screening first' }, { rule: 'Trauma history', pass: true, detail: 'Not drafted — left to the clinician' }, { rule: 'Nothing invented', pass: true, detail: 'Boxes without evidence on record say so' }],
+      [{ label: 'Trauma history', why: 'Left for the clinician. Psyflo drafts nothing here.' }]);
     },
-    isp: () => result([
-      { label: 'Start / end', value: '10/21/2026 – 10/20/2027', src: [1] },
-      { label: 'Prescribed frequency', value: 'Daily', src: [1] },
-      { label: 'Presenting issue', value: 'Physical and verbal aggression toward peers, leaving the building, daily off-task behaviour. Copied from the CNA.', src: [1] },
-      { label: 'Strengths', value: 'Engaged grandmother; enjoys basketball and drawing; responds well to one-to-one adult attention.', src: [1, 2] },
-      { label: 'Goal 1 · Objective', value: 'T.W. will use a taught coping strategy before leaving the room in 4 of 5 escalations.', src: [1, 2] },
-      { label: 'Goal 1 · Intervention 1', value: 'Clinical 2.1 Movement', src: [3] }, { label: 'Goal 1 · Intervention 2', value: 'QMHP 1.3 Psychoeducation', src: [3] }, { label: 'Goal 1 · Est. completion', value: '3 months', src: [3] },
-      { label: 'Goal 2 · Objective', value: 'T.W. will respond to peer conflict without physical contact in 4 of 5 incidents.', src: [1, 2] },
-      { label: 'Goal 2 · Intervention 1', value: 'QMHP 1.9 Solving peer conflict', src: [3] }, { label: 'Goal 2 · Intervention 2', value: 'QMHP 1.5 Make or maintain friendships', src: [3] }, { label: 'Goal 2 · Est. completion', value: '3 months', src: [3] },
-      { label: 'Goal 3 · Objective', value: 'T.W. will stay in class for the full period on 4 of 5 school days.', src: [1, 2] },
-      { label: 'Goal 3 · Intervention 1', value: 'QMHP 1.6 Recognize danger / healthy boundaries', src: [3] }, { label: 'Goal 3 · Intervention 2', value: 'QMHP 1.4b Structured problem solving', src: [3] }, { label: 'Goal 3 · Est. completion', value: '3 months', src: [3] }
-    ], [{ n: 1, kind: 'intake', label: 'CNA', date: '2026-10-20' }, { n: 2, kind: 'call', label: 'Plan meeting with guardian and client', date: '2026-10-21' }, { n: 3, kind: 'list', label: "Harvest's intervention list" }],
-      [{ rule: 'Every goal counts, never a percentage', pass: true, detail: '4 of 5' }, { rule: 'Interventions from Harvest\'s list', pass: true, detail: '' }]),
+    isp: () => {
+      // a CANNED sample plan (labelled "Illustrative sample" by the caller): the goals are a clinician's, so nothing here is derived from evidence.
+      // What can be exact is exact: the student's initials, dates from the clock, the presenting issue and strengths only as the call said them.
+      const f = screening?.facts || {}; const tl = client.timeline || {};
+      const start = today || ''; const end = start ? addDays(start, 364) : '';
+      const heard = [f.agg_yes ? 'physical aggression toward peers' : '', f.verbal_yes ? 'verbal aggression' : '', f.elope_yes ? 'leaving the classroom or building' : ''].filter(Boolean);
+      return result([
+        { label: 'Start / end', value: start ? `${fmtUS(start)} – ${fmtUS(end)}` : MISSING('the plan dates'), src: [2] },
+        { label: 'Prescribed frequency', value: 'Daily', src: [1] },
+        { label: 'Presenting issue', value: heard.length ? `${heard[0].charAt(0).toUpperCase() + heard[0].slice(1)}${heard.length > 1 ? ', ' + heard.slice(1).join(', ') : ''}. Copied from the CNA.` : MISSING('the presenting issue (no CNA or screening on record)'), src: [1] },
+        { label: 'Strengths', value: f.strengths ? f.strengths + '.' : MISSING('strengths (not on record)'), src: [1] },
+        { label: 'Goal 1 · Objective', value: `${ini} will use a taught coping strategy before leaving the room in 4 of 5 escalations.`, src: [2] },
+        { label: 'Goal 1 · Intervention 1', value: 'Clinical 2.1 Movement', src: [3] }, { label: 'Goal 1 · Intervention 2', value: 'QMHP 1.3 Psychoeducation', src: [3] }, { label: 'Goal 1 · Est. completion', value: '3 months', src: [3] },
+        { label: 'Goal 2 · Objective', value: `${ini} will respond to peer conflict without physical contact in 4 of 5 incidents.`, src: [2] },
+        { label: 'Goal 2 · Intervention 1', value: 'QMHP 1.9 Solving peer conflict', src: [3] }, { label: 'Goal 2 · Intervention 2', value: 'QMHP 1.5 Make or maintain friendships', src: [3] }, { label: 'Goal 2 · Est. completion', value: '3 months', src: [3] },
+        { label: 'Goal 3 · Objective', value: `${ini} will stay in class for the full period on 4 of 5 school days.`, src: [2] },
+        { label: 'Goal 3 · Intervention 1', value: 'QMHP 1.6 Recognize danger / healthy boundaries', src: [3] }, { label: 'Goal 3 · Intervention 2', value: 'QMHP 1.4b Structured problem solving', src: [3] }, { label: 'Goal 3 · Est. completion', value: '3 months', src: [3] }
+      ], [src(1, 'intake', 'CNA', tl.intake || today), src(2, 'call', 'Plan meeting with guardian and client', tl.isp || today), src(3, 'list', "Harvest's intervention list", ctx.interventionsDate || today)],
+        [{ rule: 'Every goal counts, never a percentage', pass: true, detail: '4 of 5' }, { rule: 'Interventions from Harvest\'s list', pass: true, detail: '' }]);
+    },
     weekly: () => result([
-      { label: 'Duration', value: '14 min · 3:05–3:19 pm', src: [1] },
+      { label: 'Duration', value: wk?.duration_min ? `${wk.duration_min} min` : MISSING('the length of the call'), src: [1] },
       { label: 'What was discussed', value: wk?.discussed || '', src: [1] },
       { label: 'Follow-up', value: wk?.follow_up || '', src: [1] },
-      { label: 'Contact with', value: wk?.contact || 'Grandmother (guardian) · phone', src: [1] }
-    ], [{ n: 1, kind: 'call', label: 'Weekly guardian call (recorded)', date: today }], [{ rule: 'Counts, never percentages', pass: true, detail: '' }, { rule: 'Nothing from home beyond the form\'s question', pass: true, detail: '' }],
-      [], { alsoNoted: ['Guardian practiced the calm-down corner at home (family involvement)', 'Bedtime still inconsistent (continuing need)', 'Asked about the Nov 13 renewal'] }),
+      { label: 'Contact with', value: wk?.contact || MISSING('who was contacted'), src: [1] }
+    ], [src(1, 'call', 'Weekly guardian call (recorded)', wk?.date || today)], [{ rule: 'Counts, never percentages', pass: true, detail: '' }, { rule: 'Nothing from home beyond the form\'s question', pass: true, detail: '' }],
+      [], { alsoNoted: wk ? ['Guardian practiced the calm-down corner at home (family involvement)', 'Bedtime still inconsistent (continuing need)', 'Asked about the Nov 13 renewal'] : [] }),
     collateral: () => result([
       { label: 'Collateral', value: mo?.collateral || 'School counselor · R. Bell', src: [2] },
       { label: 'Method', value: mo?.method || 'In person · 11 min', src: [2] },
       { label: 'Information shared / received', value: mo?.shared || '', src: [1, 2, 3] },
       { label: 'Coordination', value: mo?.coordination || '', src: [2, 3] }
-    ], [{ n: 1, kind: 'school', label: 'School portal (counselor counts, teacher check-in Oct 27)', date: '2026-10-27' }, { n: 2, kind: 'call', label: 'Collateral conversation (recorded)', date: today }, { n: 3, kind: 'chart', label: 'Chart (treatment plan shared Oct 22)', date: '2026-10-22' }], [{ rule: 'Counts, never percentages', pass: true, detail: '2 office referrals, down from 6' }]),
+    ], [src(1, 'school', 'School portal (counselor counts, teacher check-in)', mo?.date), src(2, 'call', 'Collateral conversation (recorded)', mo?.date || today), src(3, 'chart', 'Chart (treatment plan shared)', client.timeline?.isp)], [{ rule: 'Counts, never percentages', pass: true, detail: '' }]),
     incident: () => result([
       { label: 'Date/time', value: '10/28/2026 · 2:40 pm', src: [1] },
       { label: 'Location', value: 'Home (reported by guardian)', src: [1] },
@@ -346,7 +386,7 @@ export function draftSeeded(form, ctx = {}) {
       { label: 'Staff present', value: 'None · phone report', src: [1] },
       { label: 'What happened', value: 'Guardian called the site supervisor at 2:40 pm: D.W. admitted to Centra psychiatric unit this afternoon after a crisis at home. No Harvest staff present. Safety plan on file dated Oct 3.', src: [1, 2] },
       { label: 'Actions taken', value: 'Site supervisor notified clinical director 2:55 pm. Clinician to update safety plan on discharge. Guardian release confirmed.', src: [1] }
-    ], [{ n: 1, kind: 'call', label: 'Guardian\'s call to the site supervisor', date: '2026-10-28' }, { n: 2, kind: 'chart', label: 'Safety plan', date: '2026-10-03' }], [{ rule: 'Facts only, with times', pass: true, detail: '' }, { rule: 'CPS and injury left to the staffer', pass: true, detail: 'Yes/No boxes are yours' }]),
+    ], [src(1, 'call', 'Guardian\'s call to the site supervisor', ctx.incident?.date || '2026-10-28'), src(2, 'chart', 'Safety plan', client.safety_plan_date || '2026-10-03')], [{ rule: 'Facts only, with times', pass: true, detail: '' }, { rule: 'CPS and injury left to the staffer', pass: true, detail: 'Yes/No boxes are yours' }]),
     quarterly: () => {
       const q = client.quarter || null;   // assessments stored on the record, if any; there is NO fallback to another student's numbers
       const days = daily.length;
@@ -356,7 +396,7 @@ export function draftSeeded(form, ctx = {}) {
         { label: 'Goal 2 progress', value: goalBox(2), src: [1] },
         { label: 'Goal 3 progress', value: goalBox(3), src: [1] },
         { label: 'Assessments', value: q && q.phq_a ? `PHQ-A ${q.phq_a[0]} → ${q.phq_a[1]}${q.dsm_child ? ' · DSM cross-cutting (child) ' + q.dsm_child[0] + ' → ' + q.dsm_child[1] : ''}${q.dsm_parent ? ' · (parent) ' + q.dsm_parent[0] + ' → ' + q.dsm_parent[1] : ''}` : MISSING('the assessments stored in Lauris'), src: [2] }
-      ], [{ n: 1, kind: 'notes', label: `${days} daily notes${days ? ' · ' + span(daily) : ' (none stored)'}`, date: today }, { n: 2, kind: 'assess', label: 'Assessments on the record' }],
+      ], [src(1, 'notes', `${days} daily notes${days ? ' · ' + span(daily) : ' (none stored)'}`, latest(daily)), src(2, 'assess', 'Assessments on the record', q && (q.date || latest((ctx.assessments || []).filter(a => !a.client || a.client === client.id))))],
         [{ rule: 'Counts, never percentages', pass: true, detail: days ? `${days} stored notes` : 'No notes stored' }, { rule: 'Nothing invented', pass: true, detail: days ? '' : 'Boxes without stored evidence say so' }],
         [{ label: 'Recommendations', why: 'You write recommendations. Psyflo drafts none.' }, { label: 'Attendance / school functioning', why: 'Needs the school portal counts; none are used from another student.' }], { computed: true });
     },
@@ -365,7 +405,7 @@ export function draftSeeded(form, ctx = {}) {
       const include = ctx.includeHousehold === true;
       const hh = include ? mine.find(n => n.household || (n.fields && n.fields.household)) : null;
       const req = ctx.request || null;
-      const S = [{ n: 1, kind: 'notes', label: `Daily notes (${daily.length})${daily.length ? ' · ' + span(daily) : ''}`, date: today }, { n: 2, kind: 'call', label: `Weekly guardian calls (${weekly.length})` }, { n: 3, kind: 'call', label: `Monthly collateral (${monthly.length})` }, { n: 4, kind: 'plan', label: 'Request record' }];
+      const S = [src(1, 'notes', `Daily notes (${daily.length})${daily.length ? ' · ' + span(daily) : ''}`, latest(daily)), src(2, 'call', `Weekly guardian calls (${weekly.length})`, latest(weekly)), src(3, 'call', `Monthly collateral (${monthly.length})`, latest(monthly)), src(4, 'plan', 'Request record', req && (req.drafted_at || req.created || req.sent))];
       const progress = daily.length ? `${daily.length} daily note${daily.length === 1 ? '' : 's'} stored for ${range === '30' ? 'the last 30 days' : 'the whole period'} (${span(daily)}). Notes naming Goal 1: ${perGoal[0]}; Goal 2: ${perGoal[1]}; Goal 3: ${perGoal[2]}.${topIv ? ' Interventions named: ' + topIv + '.' : ''}` : MISSING(`the daily notes for ${ini} for this period (none are stored)`);
       const boxes = [
         { label: 'Request', value: req && req.dates ? `${fmtUS(req.dates.split(' to ')[0])} – ${fmtUS(req.dates.split(' to ')[1] || '')} · ${req.units_requested} units` : MISSING('the request dates and units'), src: [4] },
@@ -388,7 +428,7 @@ export function draftSeeded(form, ctx = {}) {
         { label: 'Reason', value: plan ? 'Units exhausted · planned early discharge' : MISSING('the reason'), src: [3] },
         { label: 'Progress', value: days ? `${days} stored daily notes (${span(daily)}); Goal 1 named in ${perGoal[0]}, Goal 2 in ${perGoal[1]}, Goal 3 in ${perGoal[2]}.` : MISSING('the daily notes (none are stored)'), src: [1] },
         { label: 'Services recommended', value: plan ? `Re-admission to TDT on a new initial request, earliest ${fmtUS(plan.new_initial)}` : MISSING('the recommended services'), src: [3] }
-      ], [{ n: 1, kind: 'notes', label: `${days} daily notes`, date: today }, { n: 2, kind: 'call', label: 'Guardian calls' }, { n: 3, kind: 'plan', label: 'Early-discharge plan (Psyflo)' }],
+      ], [src(1, 'notes', `${days} daily notes`, latest(daily)), src(2, 'call', 'Guardian calls', latest(weekly)), src(3, 'plan', 'Early-discharge plan (Psyflo)', plan && (plan.at || plan.saved_at || plan.created))],
       [{ rule: 'Counts, never percentages', pass: true, detail: '' }, { rule: 'Nothing written as done that has not happened', pass: true, detail: 'Guardian notification is left for you to record when it happens' }],
       [{ label: 'Condition at discharge', why: 'You write the condition at discharge.' }, { label: 'Guardian notified', why: 'Record it when it has happened: Psyflo does not write future events as done.' }], { computed: true });
     }
