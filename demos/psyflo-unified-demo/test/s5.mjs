@@ -17,7 +17,7 @@ const unitsPanel = (s, who) => Object.fromEntries(payerRows(s, who).panels.find(
 const queueRows = p => p.$$eval('.ui-qt__row', rs => rs.map(r => ({ id: r.dataset.rowId, text: r.innerText.replace(/\s+/g, ' ') })));
 const guardianPage = async (client, route) => {
   const j = await (await fetch(BASE + '/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ portalClient: client, presenter: true }) })).json();
-  const c = await b.newContext({ viewport: { width: 390, height: 844 } }); await c.addInitScript(({ token, actor }) => { try { localStorage.setItem('psyflo_session', JSON.stringify({ token, actor })); } catch { } }, { token: j.token, actor: j.actor });
+  const c = await b.newContext({ viewport: { width: 390, height: 844 } }); await c.addInitScript(({ token, actor }) => { try { localStorage.setItem('psyflo_session', JSON.stringify({ token, actor })); localStorage.setItem('psyflo_dock', 'open'); } catch { } }, { token: j.token, actor: j.actor });
   const p = await c.newPage(); p.errs = errors(p); p.ctx = c; p.token = j.token; await p.goto(`${BASE}/#/${route}`); await p.waitForSelector('#root main', { timeout: 8000 }); await p.waitForTimeout(300); return p;
 };
 // a person types the units the payer gave into the Lauris Authorization Information tab and presses Save Authorization (the page bridge reports it)
@@ -154,14 +154,14 @@ async function run(mode) {
       s = await state('jperez'); assert.eq(req(s, 'R-0384').stage, 'denied', 'signing is not sending'); assert.ok(!s.events.some(e => e.record === 'R-0384' && /faxed|Sfax|sent to Anthem/i.test(e.what) && /appeal/i.test(e.what)), 'no send language before Send'); assert.ok(req(s, 'R-0384').appeal.signer !== 'Elena Carter', 'the signer is the guardian behind the link, never the typed text');
       await desk.goto(BASE + '/#/DenialCase?id=R-0384&section=action&action=appeal'); await desk.waitForSelector('.d-tabs');
       await desk.getByRole('button', { name: /Mark ready for upload/ }).first().click(); await desk.getByRole('dialog').getByRole('button', { name: 'Mark ready' }).click();
-      s = await waitState(x => req(x, 'R-0384').stage !== 'denied', { ms: 15000, what: 'the person\'s Mark ready' }); const a = req(s, 'R-0384').appeal;
+      s = await waitState(x => (req(x, 'R-0384').appeal || {}).status === 'ready_to_upload', { ms: 15000, what: 'the person\'s Mark ready' }); const a = req(s, 'R-0384').appeal;
       const e = s.events.filter(x => x.record === 'R-0384' && /Appeal letter ready for the clinician to upload in Availity/.test(x.what)); assert.ok(e.length === 1 && e[0].sim === true && e[0].who === 'jperez', 'the recorded action is a person\'s and says simulated: ' + JSON.stringify(e.map(x => [x.who, x.sim, x.what])));
-      assert.ok(a.sent_by === 'jperez', 'the person who pressed it is recorded');
+      assert.ok(a.ready_by === 'jperez' && !a.sent_by && !a.sent_at, 'the person who pressed it is recorded, and nothing is sent yet');
       L.ec = { stage: req(s, 'R-0384').stage, status: a.status, ref: a.ref };
     });
     await F.step('11b E.C. appeal on an Availity payer: "Mark ready for upload" is a person\'s note that a upload is next, NOT a send: the stage stays out of "Appeal sent" and the status out of "sent" until the portal page confirms (the way K.T. does)', async () => {
-      assert.ok(L.ec.stage !== 'appeal_sent' && L.ec.status !== 'sent', `after "Mark ready for upload" (no portal upload observed) Psyflo records stage "${L.ec.stage}", appeal status "${L.ec.status}", reference "${L.ec.ref}"; the guardian page then says "Submitted by staff"`);
-    }, { soft: true, once: true });
+      assert.ok(L.ec.stage === 'denied' && L.ec.status === 'ready_to_upload' && !L.ec.ref, `after "Mark ready for upload" (no portal upload observed) Psyflo records stage "${L.ec.stage}", appeal status "${L.ec.status}", reference "${L.ec.ref}": ready to upload, not sent, no reference`);
+    });
     await F.step('12 the leadership readout agrees with the stores: the four requests show Active, Submitted, Active and the appeal recorded state in the queue; one open Denial Intelligence case remains (the appeal waits for the payer); Analytics = selectors', async () => {
       await desk.goto(BASE + '/#/Authorizations'); await desk.waitForSelector('.ui-qt__row'); await desk.waitForTimeout(400); const rows = await queueRows(desk); const st = id => (rows.find(r => r.id === id) || {}).text || '';
       assert.ok(/Active/.test(st('R-0402')) && /Submitted/.test(st('R-0408')) && /Active/.test(st('R-0388')) && new RegExp(L.ec.stage === 'appeal_sent' ? 'Appeal sent' : 'Denied').test(st('R-0384')), rows.filter(r => /R-0402|R-0408|R-0388|R-0384/.test(r.id)).map(r => r.text).join(' || '));

@@ -269,7 +269,11 @@ export class Sweeper {
         case 'datetime': { await loc.click({ timeout: 2500 }); const t = await loc.getAttribute('type'); await loc.fill(t === 'time' ? '09:15' : '2026-11-02', { timeout: 2000 }).catch(() => { }); act = 'typed'; break; }
         case 'range': { await loc.focus(); await f.page().keyboard.press('ArrowRight'); act = 'key'; break; }
         case 'color': { row.outcome = 'SKIPPED'; row.detail = 'color picker'; return row; }
-        default: await loc.click({ timeout: 2500 }); act = 'click';
+        default: {
+          // a toast from an earlier click can sit over the control for a few seconds: wait it out before calling a control unclickable
+          for (let i = 0; ; i++) { try { await loc.click({ timeout: 2500 }); break; } catch (e) { if (i >= 2 || !/intercepts pointer events|not stable|not visible/.test(String(e.message))) throw e; await sleep(1600); } }
+          act = 'click';
+        }
       }
     } catch (e) {
       const m = String(e.message || e);
@@ -303,7 +307,7 @@ export class Sweeper {
     };
     try {
       await measureAfter(); cl = classify(before, after, ev, c);
-      if (cl.outcome === 'NO-EFFECT') { await sleep(T.kind === 'panel' ? 1100 : 700); await settle(f, { quiet: 300, max: 2500 }); await measureAfter(); cl = classify(before, after, ev, c); row.secondLook = true; }   // an effect that arrives late (a panel asking the Lauris page to move) is still an effect
+      if (cl.outcome === 'NO-EFFECT' || (c.kind === 'select' && cl.outcome === 'DOM')) { await sleep(T.kind === 'panel' ? 1100 : 700); await settle(f, { quiet: 300, max: 2500 }); await measureAfter(); cl = classify(before, after, ev, c); row.secondLook = true; }   // an effect that arrives late (a panel asking the Lauris page to move) is still an effect
     } catch (e) {
       if (!/detached|destroyed|closed|Target page/i.test(String(e.message))) throw e;
       frameGone = true;                                           // the click replaced the frame (a panel button that moves the Lauris page on)

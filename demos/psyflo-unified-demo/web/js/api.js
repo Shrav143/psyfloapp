@@ -64,14 +64,16 @@ export const api = {
       if ((m = p.match(/^\/f\/([\w-]+)/)) || (m = p.match(/^\/parent\/([\w-]+)/))) { await this.signInPortal(m[1], { quiet: true }); return; }
       if ((m = p.match(/^\/school\/([\w-]+)/)) && m[1] !== 'index.html') { await this.signInPortal(m[1], { quiet: true }); return; }
     } catch { /* an expired link: the screen shows it */ }
+    // A portal session is NEVER created silently from a bare hash (#/ParentProgress?c=MR, #/SchoolPortal): it comes from a real family-link token
+    // in the address (above), a school login, or a deliberate presenter view (a staff session in this browser or the dock, through signInAs, which
+    // the shell does). Only the hosted preview, a presenter demo with no staff login in front of it, opens the portal screens by hash.
     const hash = location.hash || ''; let h;
     try {
-      // demo presenter views (no token in the address): ?c=<child> on a family screen, the school portal screens
-      if (!framed && (h = hash.match(/^#\/(Parent\w+|FamilyLink|AppealLetter)(?:\?(.*))?$/))) {
+      if (hostedPresenter() && !framed && (h = hash.match(/^#\/(Parent\w+|FamilyLink|AppealLetter)(?:\?(.*))?$/))) {
         const c = new URLSearchParams(h[2] || '').get('c') || 'TW';
         await this.signInAs({ portalClient: c }, { presenter: true, quiet: true, lazy: true }); return;
       }
-      if (!framed && /^#\/(SchoolPortal|ReferralForm|ReferralSent)\b/.test(hash)) {
+      if (hostedPresenter() && !framed && /^#\/(SchoolPortal|ReferralForm|ReferralSent)\b/.test(hash)) {
         let u = 'rbell'; try { u = localStorage.getItem('psyflo_school_user') || 'rbell'; } catch { }
         await this.signInAs({ schoolUser: u }, { presenter: true, quiet: true, lazy: true }); return;
       }

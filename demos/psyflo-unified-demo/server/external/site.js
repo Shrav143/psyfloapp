@@ -27,17 +27,17 @@ export async function externalHandler(req, res) {
       const f = await readForm(req);
       const ref = (portal === 'availity' ? 'AV-' : 'UHC-') + Math.floor(100000 + Math.random() * 899999);
       attest.portalIssued(ref, { request: f.request || '', kind: f.kind || 'request', portal });
-      return html(res, page(req, brand, color, `<div class="ok" id="portal-confirmation" data-ref="${ref}" data-request="${esc(f.request || '')}" data-kind="${esc(f.kind || '')}"><b>Submission received.</b> Confirmation number <b id="confirmation-number">${ref}</b>.</div>
-<p>Member: ${esc(f.member || '')} · ${esc(f.kind === 'reply' ? 'Additional information reply' : 'Authorization request')} · ${esc(f.files || 'packet')} attached.</p>
+      return html(res, page(req, brand, color, `<div class="ok" id="portal-confirmation" data-ref="${ref}" data-request="${esc(f.request || '')}" data-kind="${esc(f.kind || '')}"><b>${f.kind === 'appeal' ? 'Appeal received' : 'Submission received'}.</b> Confirmation number <b id="confirmation-number">${ref}</b>.</div>
+<p>Member: ${esc(f.member || '')} · ${esc(f.kind === 'reply' ? 'Additional information reply' : f.kind === 'appeal' ? 'Appeal of a denied authorization' : 'Authorization request')} · ${esc(f.files || 'packet')} attached.</p>
 <p class="muted">The Psyflo extension reads this confirmation and logs it on the request. You can close this tab.</p>`));
     }
     const kind = q.get('kind') || 'request';
     return html(res, page(req, brand, color, `<div class="demo">Demo: this page stands in for ${esc(brand)}. You are in your own session; Psyflo opened it with the packet ready to attach.</div>
-<h2 style="margin-top:0">${kind === 'reply' ? 'Respond to a request for information' : 'Submit an authorization request'}</h2>
+<h2 style="margin-top:0">${kind === 'reply' ? 'Respond to a request for information' : kind === 'appeal' ? 'Submit an appeal' : 'Submit an authorization request'}</h2>
 <form method="post" id="portal-form"><input type="hidden" name="request" value="${esc(q.get('request') || '')}"><input type="hidden" name="kind" value="${esc(kind)}">
 <label for="member">Member ID</label><input id="member" name="member" placeholder="Medicaid ID" value="on file (demo)">
 <label for="svc">Service</label><select id="svc" name="svc"><option>TDT school day · H2016</option><option>TDT after-school · H2016-UG</option></select>
-<label for="files">Attachments</label><input id="files" name="files" value="${esc(q.get('request') || '')} packet (signed PDF${kind === 'reply' ? ', reply' : ', CNA, ISP'})">
+<label for="files">Attachments</label><input id="files" name="files" value="${esc(q.get('request') || '')} packet (signed PDF${kind === 'reply' ? ', reply' : kind === 'appeal' ? ', signed appeal letter, decision notice' : ', CNA, ISP'})">
 ${kind === 'reply' ? '<label for="reply">Reply</label><textarea id="reply" name="reply" rows="6" placeholder="Paste the reply Psyflo drafted"></textarea>' : ''}
 <button type="submit">Submit</button></form>`));
   }

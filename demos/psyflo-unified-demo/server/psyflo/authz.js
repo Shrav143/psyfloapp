@@ -73,7 +73,8 @@ registerAuthz({
   'request.resend': { any: ['send.packet'] },
   'request.overdueNotice': { any: ['send.packet'] },
   'request.receiptCheck': { any: ['send.packet'] },
-  'request.appealSend': { any: ['send.packet'] },
+  // fax payers only (the Sfax stub gives the reference); a portal payer's appeal is marked ready (dispute.send) and sent only by the observed portal confirmation
+  'request.appealSend': { any: ['send.packet'], check: (s, a) => { const r = byId(s.requests, a.id); if (r && r.channel !== 'fax') throw new Refusal('Mark ready for upload, then upload in the payer portal. Psyflo records the send only when the portal page shows its confirmation number.', { record: r.id, status: 409, code: 'portal_confirmation' }); } },
   'request.pdfCopy': { any: ['authorizations'] },
   'request.close': { any: ['payer.reply'] },
   'request.set': { internal: true },                    // generic patch removed (RE-4): typed actions only

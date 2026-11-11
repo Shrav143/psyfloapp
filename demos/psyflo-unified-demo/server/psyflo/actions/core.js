@@ -478,15 +478,18 @@ export default {
     this.event('Guardian signed the appeal letter on the parent portal · ready for a person at Harvest to review and send', 'guardian:' + r.client, id, { actor_kind: 'portal' });
     return { file };
   },
-  // A person at Harvest presses Send on the signed appeal letter (the send stub records its reference).
+  // A person at Harvest presses Send on the signed appeal letter. FAX payers only: the send stub records its reference.
+  // A portal payer (Availity, UHC) has no stub reference: "Mark ready for upload" (dispute.send, x-disputes.js) sets appeal.status 'ready_to_upload',
+  // and only the confirmation read off the payer page (portal.observed, kind=appeal) records 'sent'. A direct call here never does.
   'request.appealSend'(s, { id }) {
     const r = need(byId(s.requests, id), 'Request'); const by = this.who();
     if (r.stage !== 'denied' || !r.appeal?.signed_at) refuse(`${id} has no signed appeal letter ready to send.`, { record: id, code: 'bad_stage' });
     if (r.appeal.sent_at) refuse(`The appeal for ${id} was already sent.`, { record: id, code: 'write_once' });
-    const ref = r.channel === 'fax' ? faxRef() : 'portal-upload';
+    if (r.channel !== 'fax') refuse('Mark ready for upload, then upload in the payer portal. Psyflo records the send only when the portal page shows its confirmation number.', { record: id, code: 'portal_confirmation', status: 409 });
+    const ref = faxRef();
     r.appeal = { ...r.appeal, sent_at: this.now(), sent_by: by, ref, status: 'sent' };
     r.stage = 'appeal_sent';
-    this.event(r.channel === 'fax' ? `Appeal letter sent through simulated Sfax · ref ${ref}` : `Appeal letter ready for the clinician to upload in ${r.channel === 'availity' ? 'Availity' : 'the UHC portal'} (simulated)`, by, id, { sim: true });
+    this.event(`Appeal letter sent through simulated Sfax · ref ${ref}`, by, id, { sim: true });
     return { ref };
   },
   'request.close'(s, { id, why }) {

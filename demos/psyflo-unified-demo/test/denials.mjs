@@ -160,6 +160,9 @@ await T.test('E.C. appeal (Availity): seeded sample cannot be reviewed; the guar
   assert.ok(gs.appeal_drafts['R-0384'] && gs.appeal_drafts['R-0384'].en && gs.appeal_drafts['R-0384'].status === 'ready', 'the guardian can read the reviewed letter'); assert.ok(!gs.disputes.length && !gs.dispute_evidence.length, 'and nothing else of the case');
   await api('request.appealSign', { id: 'R-0384', text: gs.appeal_drafts['R-0384'].en, signer: 'ignored' }, gt);
   let r = await request('R-0384'); assert.ok(r.appeal.signed_at); assert.eq(r.stage, 'denied', 'signing is not sending');
+  // a direct API call can never record a portal payer's appeal as sent (core.js + authz.js): only the observed portal confirmation does
+  await assert.refused(tryApi('request.appealSend', { id: 'R-0384' }, 'jperez'), /Mark ready for upload, then upload in the payer portal/, 409);
+  r = await request('R-0384'); assert.eq(r.stage, 'denied'); assert.ok(!r.appeal.sent_at && r.appeal.status === 'signed', 'the refused direct call changed nothing');
   // Availity payer: "Mark ready for upload" is a person's note, NOT a send. Sent only after the portal page confirms (QA2 D3).
   const sent = await api('dispute.send', { id: 'R-0384', doc: 'appeal' }, 'jperez'); assert.ok(sent.ready && !sent.ref, 'marking ready returns no reference: ' + JSON.stringify(sent));
   r = await request('R-0384'); assert.eq(r.stage, 'denied', 'still denied: nothing was uploaded'); assert.eq(r.appeal.status, 'ready_to_upload'); assert.ok(!r.appeal.sent_at && !r.appeal.ref, 'no sent time and no reference before the portal confirms');
@@ -186,6 +189,20 @@ await T.test('E.C. appeal (Availity): seeded sample cannot be reviewed; the guar
   await api('dispute.resolve', { id: 'R-0384', outcome: 'approved', units: 90, doc_ref: 'Anthem appeal decision Dec 2' }, 'jperez');
   const s2 = await state('jperez'); r = s2.requests.find(x => x.id === 'R-0384'); d = s2.disputes.find(x => x.request === 'R-0384');
   assert.eq(r.stage, 'active'); assert.eq(r.units_awarded, 90); assert.eq(d.status, 'overturned'); assert.ok(s2.lauris_tasks.some(t => t.client === 'EC' && t.units === 90 && t.status === 'open'));
+});
+
+await reset('canvas');
+await T.test('appeal on a FAX payer: Send records the stub reference at once (simulated Sfax); a caller-supplied reference is ignored', async () => {
+  await api('request.demoReply', { id: 'R-0416', kind: 'denied' }, 'dowens+p');
+  let d = await dispute('R-0416'); assert.eq(d.issue, 'denial');
+  await api('dispute.choose', { id: 'R-0416', path: 'appeal' }, 'jperez'); await api('dispute.genDoc', { id: 'R-0416', doc: 'appeal' }, 'jperez'); d = await dispute('R-0416');
+  for (const sec of d.docs.appeal.sections.filter(x => x.missing.length)) await api('dispute.editDoc', { id: 'R-0416', doc: 'appeal', section: sec.key, text: sec.text.replace(MISSING_RE, 'The clinician adds the dated record before this goes out.') }, 'jperez');
+  await api('dispute.reviewDoc', { id: 'R-0416', doc: 'appeal' }, 'jperez');
+  const gt = await guardianToken('TW'); await api('request.appealSign', { id: 'R-0416', text: (await state(gt)).appeal_drafts['R-0416'].en }, gt);
+  let r = await request('R-0416'); assert.eq(r.stage, 'denied', 'signing is not sending');
+  const sent = await api('dispute.send', { id: 'R-0416', doc: 'appeal', ref: 'F-9999' }, 'jperez'); assert.match(sent.ref, /^F-\d{4}$/); assert.ok(sent.ref !== 'F-9999', 'a caller-supplied reference is ignored');
+  r = await request('R-0416'); assert.eq(r.stage, 'appeal_sent'); assert.eq(r.appeal.status, 'sent'); assert.eq(r.appeal.ref, sent.ref); d = await dispute('R-0416'); assert.eq(d.docs.appeal.sent.via, 'fax'); assert.eq(d.docs.appeal.sent.ref, sent.ref);
+  const e = (await state('jperez')).events.find(x => x.record === 'R-0416' && /Appeal letter sent through simulated Sfax · ref F-/.test(x.what)); assert.ok(e && e.sim === true && e.who === 'jperez');
 });
 
 await reset('canvas');

@@ -2,7 +2,8 @@
 // Pending · Completed · Ready to review), the appeal letter states (Draft · Ready to review · Signed · Submitted by staff), the letters in plain words,
 // accessibility of every family screen at 390 px (landmarks, one h1, no horizontal scroll, targets of 44 px, 16 px body) and the pure selectors.
 // Standalone: node test/family.mjs with BASE=... (test/run-all.mjs starts a fresh server).
-import { suite, assert, api, tryApi, state, reset, login, playwright, errors, BASE, SHOTS } from './lib/index.mjs';
+import { suite, assert, api, tryApi, state, reset, login, playwright, errors, bridge, BASE, EXT, SHOTS } from './lib/index.mjs';
+import { MISSING_RE } from '../web/js/shared/sel/disputes.js';
 import { checklist, sigState, appealView, signForms, referralStatus } from '../web/js/shared/sel/portal.js';
 
 const T = suite('family');
@@ -259,7 +260,7 @@ try {
     const r = { id: 'R-9', client: 'X', stage: 'denied', denied_on: '2026-10-22', notice_date: '2026-10-22', appeal_deadline: '2026-12-21' };
     const mk = (d, appeal, stage) => appealView({ appeal_drafts: d ? { 'R-9': d } : {}, rules: [], clock: { date: '2026-10-29' }, today: '2026-10-29' }, { ...r, appeal, stage: stage || 'denied' });
     assert.eq(mk(null).status, 'draft', 'no letter yet'); assert.eq(mk({ status: 'draft', en: 'x' }).status, 'draft'); assert.eq(mk({ status: 'ready', en: 'x' }).status, 'ready');
-    assert.eq(mk({ en: 'old seed shape' }).status, 'ready'); assert.eq(mk({ status: 'ready', en: 'x' }, { signed_at: '2026-10-30T09:00' }).status, 'signed');
+    assert.eq(mk({ en: 'old seed shape' }).status, 'ready'); assert.eq(mk({ status: 'ready', en: 'x' }, { signed_at: '2026-10-30T09:00' }).status, 'signed'); assert.eq(mk({ status: 'ready', en: 'x' }, { signed_at: '2026-10-30T09:00', status: 'ready_to_upload', ready_at: '2026-10-30T10:00' }).status, 'signed', 'ready to upload is not submitted');
     assert.eq(mk({ status: 'ready', en: 'x' }, { signed_at: '2026-10-30T09:00', sent_at: '2026-10-30T10:00' }, 'appeal_sent').status, 'submitted');
     assert.eq(mk(null).deadline.date, '2026-12-21'); assert.eq(mk(null).deadline.daysLeft, 53);
     assert.eq(appealView({ appeal_drafts: {}, rules: [], clock: { date: '2026-10-29' } }, { id: 'R-8', stage: 'denied', denied_on: '2026-10-22' }).deadline.date, null, 'no rule row and no date on the record: no number is invented');
@@ -278,7 +279,20 @@ try {
     assert.eq(r.stage, 'denied', 'signing is not sending'); assert.eq(r.appeal.status, 'signed'); assert.match(r.appeal.text, /please look again/i); assert.ok(r.appeal.file);
     assert.eq(await steps(), 'signed'); assert.match(await text(p), /Signed · staff will send/); assert.eq(await p.locator('a[href="#sign"]').count(), 0, 'no second signature');
     await p.screenshot({ path: SHOTS + '/family-appeal-signed.png', fullPage: true });
-    await api('request.appealSend', { id: 'R-0384' }, 'jperez');
+    // E.C. is an Availity payer: a direct request.appealSend is refused, "Mark ready for upload" (dispute.send) is a person's note and NOT a send, and the
+    // letter reads Submitted only after the Availity page's confirmation is observed (portal.observed, kind=appeal). Staff review their own record first.
+    await assert.refused(tryApi('request.appealSend', { id: 'R-0384' }, 'jperez'), /Mark ready for upload, then upload in the payer portal/, 409);
+    await api('dispute.genDoc', { id: 'R-0384', doc: 'appeal' }, 'jperez');
+    const dd = (await state('jperez')).disputes.find(x => x.request === 'R-0384');
+    for (const sec of dd.docs.appeal.sections.filter(x => x.missing.length)) await api('dispute.editDoc', { id: 'R-0384', doc: 'appeal', section: sec.key, text: sec.text.replace(MISSING_RE, 'The clinician adds the dated record before this goes out.') }, 'jperez');
+    await api('dispute.reviewDoc', { id: 'R-0384', doc: 'appeal' }, 'jperez');
+    await api('dispute.send', { id: 'R-0384', doc: 'appeal' }, 'jperez');
+    await p.reload(); await p.waitForSelector('#root main'); await p.waitForTimeout(400);
+    assert.eq(await steps(), 'signed', 'ready to upload is not submitted'); assert.noMatch(await text(p), /Harvest staff sent your signed letter/); assert.match(await text(p), /Signed · staff will send/);
+    r = (await state({ token: g.token })).requests.find(x => x.id === 'R-0384'); assert.eq(r.stage, 'denied'); assert.ok(!r.appeal.sent_at && !r.appeal.ref, 'nothing is sent before the portal page confirms');
+    const pr = await fetch(EXT + '/availity/upload', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ request: 'R-0384', kind: 'appeal', member: 'x' }) });
+    const pm = (await pr.text()).match(/data-ref="(AV-\d+)"/); assert.ok(pm, 'the mock Availity page issued a confirmation');
+    const ob = await bridge('portal.observed', { event: 'confirmation', request: 'R-0384', ref: pm[1], kind: 'appeal' }); assert.ok(ob.ok, ob.error);
     await p.reload(); await p.waitForSelector('#root main'); await p.waitForTimeout(400);
     assert.eq(await steps(), 'submitted'); assert.match(await text(p), /Submitted by staff/); assert.match(await text(p), /Harvest staff sent your signed letter/);
     await p.screenshot({ path: SHOTS + '/family-appeal-submitted.png', fullPage: true });
