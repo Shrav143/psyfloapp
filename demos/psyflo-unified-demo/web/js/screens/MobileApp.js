@@ -6,7 +6,8 @@ import { register, Screen, M, session, toast, go, api, app } from '../app.js';
 import { clock12, mins, fmtDuration } from '../shared/dates.js';
 
 // ---------- shared phone helpers ----------
-export function phoneUser(s) { const u = session.user; return u && u.role === 'direct_support' ? u : M.byId(s.staff, 'khale') || u; }
+// the phone acts as the person signed in: no fallback to another staff member (the server also checks the caseload and the role)
+export function phoneUser(s) { return session.user; }
 export const myStudents = (s, uid) => s.clients.filter(c => c.staff === uid && c.stage !== 'discharged');
 export function siteShort(s, u) { return (u.sites?.[0] ? M.school(s, u.sites[0]).name : '').split(' · ').pop(); }
 export function whoLine(s, u) { return `${u.name.split(' ')[0]} · ${siteShort(s, u)} · ${M.fmtDate(s.today, { dow: true })}`; }

@@ -75,8 +75,8 @@ register('Submission', class extends Screen {
     return {
       send: async () => {
         const r = this.req(); if (!r || r.stage !== 'signed') return;
-        if (r.channel === 'fax') { await this.do('request.send', { id: r.id, by: this.me?.id || 'jperez' }); toast('Send pressed · faxing through Sfax'); }
-        else { const res = await openPortal(this, 'request.send', { id: r.id, by: this.me?.id || 'jperez' }); if (res) toast(`${M.CHANNEL_LABEL[r.channel]} opened in a new tab · upload there`); }
+        if (r.channel === 'fax') { await this.do('request.send', { id: r.id }); toast('Send pressed · faxing through Sfax'); }
+        else { const res = await openPortal(this, 'request.send', { id: r.id }); if (res) toast(`${M.CHANNEL_LABEL[r.channel]} opened in a new tab · upload there`); }
       },
       portal: () => { const r = this.req(); if (r) window.open(`${api.config.extURL}/${r.channel}/upload?request=${encodeURIComponent(r.id)}${r.info_reply_pending ? '&kind=reply' : ''}`, '_blank'); },
       pdf: () => { const r = this.req(); if (r) openFile(this, 'request.pdfCopy', { id: r.id }); },
@@ -101,6 +101,6 @@ register('Submission', class extends Screen {
       <p style="margin:0 0 8px;color:#525B66">A person calls provider services (number on Harvest's payer sheet) and types the outcome here.</p>
       <div style="border:1px solid #E6E1D9;border-radius:8px;padding:10px 12px;font-size:13px">"I'm calling to confirm you received a ${esc(M.TYPE_LABEL[r.type])} for member ${esc(M.clientLabel(s, r.client, false))}, faxed ${esc(M.fmtDateTime(r.sent))}${r.fax_ref ? ', Sfax reference ' + esc(r.fax_ref) : ''}, ${r.pages || 11} pages. Can you confirm it is in clinical review?"</div>
       <div style="display:flex;gap:8px;margin-top:14px"><button class="mbtn p" data-go>Rep confirmed receipt</button><button class="mbtn" data-close>Not yet</button></div>`,
-      (box, close) => { box.querySelector('[data-go]').onclick = async () => { close(); await this.do('request.receiptCheck', { id: r.id, by: this.me?.id }); toast('Receipt confirmed · logged on ' + r.id); }; });
+      (box, close) => { box.querySelector('[data-go]').onclick = async () => { close(); await this.do('request.receiptCheck', { id: r.id }); toast('Receipt confirmed · logged on ' + r.id); }; });
   }
 });
