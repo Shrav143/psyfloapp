@@ -16,6 +16,7 @@ import { recordDecision, applyAward } from './core.js';
 import { today as clockToday } from '../../../web/js/shared/clock.js';
 import { fmtDate } from '../../../web/js/shared/dates.js';
 import { rule } from '../../../web/js/shared/rules.js';
+import { attest } from '../../attest.js';
 import { can } from '../../../web/js/shared/permissions.js';
 import {
   ADVERSE, P2P_STAGES, ISSUE_LABEL, PATH_LABEL, DOC_TITLE, isOpen, byDisputeId, byRequest, issueOfRequest, deriveStatus, derivePath, resolutionOf, buildDoc, docText, docMissing,
@@ -27,6 +28,12 @@ const faxRef = () => 'F-' + (2300 + Math.floor(rand() * 600));
 const DOCS = ['info', 'p2p', 'appeal', 'recon'];
 const OUTWARD = ['info', 'appeal', 'recon'];
 const staffName = (s, id) => (byId(s.staff, id) || {}).name || id;
+const PORTAL_L = ch => ch === 'availity' ? 'Availity' : ch === 'uhc' ? 'the UHC portal' : 'the payer portal';
+// The appeal upload confirmation is read from the open portal page by the extension (portal.observed). The base action (lead-extension.js, loaded
+// before this file) only knows a request that is waiting in portal_open; an appeal stays 'denied' until the payer page confirms, so this file
+// wraps it and hands every other confirmation straight back.
+const observedBase = store.actions['portal.observed'];
+if (!observedBase) console.error('x-disputes: portal.observed is not registered yet; appeal upload confirmations cannot be read');
 
 // ------------------------------------------------------------------------------------------------------------- reconcile
 const adverse = r => !!r && (ADVERSE.includes(r.stage) || (r.stage === 'portal_open' && !!r.info_reply_pending));
@@ -118,6 +125,27 @@ function publishAppeal(s, d, r, st) {
 }
 
 export default {
+  // The appeal upload confirmation: the same checks as the base action (a reference the portal page issued, for this request), then the send is recorded.
+  // Anything that is not an appeal waiting for its upload goes to the base action unchanged.
+  'portal.observed'(s, args) {
+    const { ref, request, kind } = args || {};
+    const r = request ? byId(s.requests, request) : null;
+    const waiting = !!r && r.stage === 'denied' && !!r.appeal && r.appeal.status === 'ready_to_upload' && !r.appeal.sent_at;
+    const known = ref ? attest.portalKnown(ref) : null;
+    if (!waiting || !(kind === 'appeal' || (known && known.kind === 'appeal'))) return observedBase.call(this, s, args);
+    if (!ref) refuse('No confirmation number was read from the portal page.', { code: 'no_ref', audit: false });
+    if (attest.lauris && !known) refuse(`The confirmation ${ref} was not issued by the portal page. Nothing was recorded.`, { code: 'unknown_ref' });
+    if (known && known.request && known.request !== request) refuse(`The confirmation ${ref} was issued for ${known.request}, not ${request}.`, { code: 'wrong_request', record: request });
+    if (known && known.kind !== 'appeal') refuse(`The confirmation ${ref} is for a different upload, not the appeal. Nothing was recorded.`, { code: 'wrong_kind', record: request });
+    const d = byRequest(s, r.id); const at = this.now(); const by = r.appeal.ready_by || 'bridge';
+    r.appeal = { ...r.appeal, status: 'sent', sent_at: at, sent_by: by, ref, via: 'portal' };
+    r.stage = 'appeal_sent';
+    if (d && d.docs && d.docs.appeal) d.docs.appeal.sent = { at, by, ref, via: r.channel, observed: true };
+    this.event(`Appeal uploaded in ${PORTAL_L(r.channel)} · confirmation ${ref} (read from the open portal page)`, by, r.id, { actor_kind: 'bridge' });
+    this.hooks.run('observed', this, s, { type: 'portal', ref, request: r.id }, {});
+    return { request: r.id, appeal: true };
+  },
+
   // Open the case of a request that needs a payer-decision response (it also opens by itself; this is the explicit form).
   'dispute.open'(s, { request }) {
     const r = byId(s.requests, request); if (!r) throw new Error('Request not found');
@@ -169,7 +197,7 @@ export default {
       log(this, s, d, `Appeal chosen · guardian-led: Psyflo prepares, the guardian reviews and signs, staff press Send (${rule(s, 'appeal.window_days').verification.toLowerCase()})`);
     } else if (path === 'none') {
       if (!['recon', 'appeal'].includes(d.path)) refuse('There is no chosen path to clear.', { record: r.id, code: 'no_path' });
-      if (d.docs[d.path] && d.docs[d.path].sent) refuse('That document was already sent; the path cannot be cleared.', { record: r.id, code: 'write_once' });
+      if (d.docs[d.path] && (d.docs[d.path].sent || d.docs[d.path].ready)) refuse(`That document was already ${d.docs[d.path].sent ? 'sent' : 'marked ready to upload'}; the path cannot be cleared.`, { record: r.id, code: 'write_once' });
       log(this, s, d, `Path cleared: ${PATH_LABEL[d.path]} not pursued`); d.path = null;
     } else throw new Error('Unknown path: ' + path);
     d.choice = { path, at: this.now(), by: this.who() };
@@ -183,6 +211,7 @@ export default {
     if (!ok.includes(r.stage) || (kind === 'recon' && d.path !== 'recon') || (kind === 'appeal' && d.path !== 'appeal')) refuse(`${DOC_TITLE[kind]} is not part of this case right now (${r.id} is ${r.stage.replace(/_/g, ' ')}${d.path ? ', path ' + PATH_LABEL[d.path].toLowerCase() : ''}).`, { record: r.id, code: 'bad_doc' });
     const cur = d.docs[kind];
     if (cur && cur.sent) refuse(`${DOC_TITLE[kind]} was already sent; a sent document is write-once.`, { record: r.id, code: 'write_once' });
+    if (cur && cur.ready) refuse(`${DOC_TITLE[kind]} was already marked ready to upload; the letter the guardian signed is the one that goes.`, { record: r.id, code: 'write_once' });
     const next = buildDoc(s, d, r, kind, this.who());
     next.versions = (cur ? cur.versions || [] : []).concat([{ at: this.now(), by: this.who(), what: cur ? 'Regenerated from stored evidence' : 'Generated from stored evidence (Simulated)', previous: cur && cur.sections ? docText(cur, kind).slice(0, 400) : undefined }]);
     d.docs[kind] = next;
@@ -196,6 +225,7 @@ export default {
     const d = dispute(s, id); const r = requestOf(s, d); const kind = needDoc(doc); const cur = d.docs[kind];
     if (!cur || !cur.sections) refuse('Generate the draft first.', { record: r.id, status: 422, audit: false });
     if (cur.sent) refuse(`${DOC_TITLE[kind]} was already sent; the sent text cannot be changed.`, { record: r.id, code: 'write_once' });
+    if (cur.ready) refuse(`${DOC_TITLE[kind]} was already marked ready to upload; the letter the guardian signed cannot be changed.`, { record: r.id, code: 'write_once' });
     const sec = cur.sections.find(x => x.key === section); if (!sec) throw new Error('Section not found: ' + section);
     const t = String(text ?? '').trim(); if (!t) refuse('A section cannot be empty. Delete the draft instead, or write the sentence.', { record: r.id, status: 422, audit: false });
     cur.versions = (cur.versions || []).concat([{ at: this.now(), by: this.who(), what: `Edited · ${sec.title}`, previous: sec.text.slice(0, 300) }]);
@@ -260,8 +290,20 @@ export default {
     }
     if (kind === 'appeal') {
       if (!can(this.actor, 'send.packet')) refuse('Press Send needs the send capability.', { record: r.id, status: 403 });
+      if (r.channel !== 'fax') {
+        // A portal payer: "Mark ready for upload" is a person's note that an upload is next. It is NOT a send. The appeal stays denied, the status
+        // 'ready_to_upload', with no reference, until the extension reads the confirmation off the payer page (portal.observed, below).
+        if (r.stage !== 'denied' || !(r.appeal && r.appeal.signed_at)) refuse(`${r.id} has no signed appeal letter ready to send.`, { record: r.id, code: 'bad_stage' });
+        if (r.appeal.sent_at) refuse(`The appeal for ${r.id} was already sent.`, { record: r.id, code: 'write_once' });
+        if (r.appeal.status === 'ready_to_upload') refuse(`The appeal for ${r.id} is already marked ready to upload. Upload it in ${PORTAL_L(r.channel)}; Psyflo records the send when the page shows its confirmation number.`, { record: r.id, code: 'write_once' });
+        const at = this.now();
+        r.appeal = { ...r.appeal, status: 'ready_to_upload', ready_at: at, ready_by: by };
+        cur.ready = { at, by };
+        this.event(`Appeal letter ready for the clinician to upload in ${PORTAL_L(r.channel)} (simulated) · not sent until the portal page shows a confirmation number`, by, r.id, { sim: true });
+        return { id: d.id, ready: true };
+      }
       const res = call(this, s, 'request.appealSend', { id: r.id });
-      cur.sent = { at: this.now(), by, ref: res && res.ref, via: r.channel === 'fax' ? 'fax' : 'portal' };
+      cur.sent = { at: this.now(), by, ref: res && res.ref, via: 'fax' };
       return { id: d.id, ...(res || {}) };
     }
     // reconsideration: fax runs the stub; a portal is opened in the clinician's own login and the confirmation is entered by them

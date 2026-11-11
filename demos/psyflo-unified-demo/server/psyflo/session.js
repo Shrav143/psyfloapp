@@ -9,13 +9,19 @@
 // Every /api/do and /api/state call resolves the ACTOR from the token against the CURRENT state, so a role change or a removed
 // user takes effect on the next call. An unknown or missing token has no actor: deny (401), except the explicit allow-lists
 // in authz.js (portal-token actions, bridge-side calls).
-// Presenter mode (demo.controls) needs presenter:true on sign-in AND DEMO_PRESENTER not set to 0; PRESENTER_PIN, if set, must match.
+// Presenter mode (demo.controls) is an explicit ELEVATION, never a default: a session is a presenter only when the caller asks for it
+// (presenter:true, from the presenter dock or a test) AND DEMO_PRESENTER is not 0 AND, when PRESENTER_PIN is set, the pin matches.
+// The browser client never asks on its own (lazy and legacy sign-ins, Login role cards: presenter:false). The hosted preview signs everyone
+// in as a presenter on purpose (no PIN there). GET /api/roster tells the dock whether a PIN is needed: presenter {enabled, pin_required}.
 import crypto from 'node:crypto';
 import { caseloadOf } from './gates.js';
 
 const sessions = new Map(); // token -> { kind, staffId?, client?, linkToken?, schoolUserId?, presenter, at }
 
 export const presenterEnabled = () => process.env.DEMO_PRESENTER !== '0';
+// what the sign-in screen and the dock may know: whether presenter mode exists and whether it needs a PIN (never the PIN itself)
+export const presenterInfo = (env = process.env) => ({ enabled: env.DEMO_PRESENTER !== '0', pin_required: !!env.PRESENTER_PIN });
+const sameText = (a, b) => { const x = Buffer.from(String(a)), y = Buffer.from(String(b)); return x.length === y.length && crypto.timingSafeEqual(x, y); };
 
 export function tokenFrom(req) {
   const h = req.headers || {};
@@ -34,8 +40,8 @@ export function createSession(s, body = {}, { env = process.env } = {}) {
   const fail = (status, message) => { const e = new Error(message); e.status = status; throw e; };
   let wantPresenter = body.presenter === true;
   if (wantPresenter) {
-    if (!presenterEnabled()) wantPresenter = false;
-    else if (env.PRESENTER_PIN && String(body.pin || '') !== env.PRESENTER_PIN) fail(403, 'Presenter PIN required');
+    if (env.DEMO_PRESENTER === '0') wantPresenter = false;
+    else if (env.PRESENTER_PIN && !sameText(body.pin || '', env.PRESENTER_PIN)) { const e = new Error(body.pin ? 'That presenter PIN is not right' : 'Presenter PIN required'); e.status = 403; e.pin = true; throw e; }
   }
   const mint = rec => { const token = crypto.randomBytes(18).toString('base64url'); sessions.set(token, { ...rec, presenter: !!rec.presenter, at: Date.now() }); return token; };
   if (body.staffId) {

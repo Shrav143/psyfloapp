@@ -168,7 +168,7 @@ export function nextAction(s, d, r) {
       const a = dc('appeal');
       if (!(a.sections || a.gen)) return { label: 'Draft the appeal letter', group: 'prepare' };
       if (!a.reviewed) return { label: 'Review the letter', group: 'review' };
-      if (r.appeal && r.appeal.signed_at) return { label: 'Review the signed letter and send it', group: 'send' };
+      if (r.appeal && r.appeal.signed_at) return r.appeal.status === 'ready_to_upload' ? { label: `Upload the signed letter in ${CHANNEL_LABEL[channel] || 'the portal'}`, group: 'send' } : { label: channel === 'fax' ? 'Review the signed letter and send it' : 'Review the signed letter and mark it ready to upload', group: 'send' };
       return { label: 'Waiting for the guardian to sign', group: 'wait' };
     }
     case 'appeal': return { label: 'Record the payer answer', group: 'record' };

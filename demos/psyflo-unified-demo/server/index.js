@@ -100,7 +100,7 @@ const app = http.createServer(async (req, res) => {
         const { token, actor } = createSession(s, body);
         res.setHeader('Set-Cookie', `psyflo_session=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax`);
         return json(res, { ok: true, token, actor: publicActor(actor), presenter: !!actor.presenter });
-      } catch (e) { return sendErr(res, e.status || 400, e.message); }
+      } catch (e) { return sendErr(res, e.status || 400, e.message, e.pin ? { pin_required: true } : {}); }
     }
     if (p === '/api/do' && req.method === 'POST') {
       // state-changing calls: JSON only (a cross-origin form post cannot send it) and only from a listed origin

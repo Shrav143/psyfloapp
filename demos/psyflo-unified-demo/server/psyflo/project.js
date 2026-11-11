@@ -11,6 +11,7 @@
 // A key nobody declared here is passed through to clinicians only; other roles get it empty. Declare new keys with
 // registerProjection(key, { staff: fn(s, actor, value) | true | false, ...}) or `export const projection = {...}` in an action file.
 import { can } from '../../web/js/shared/permissions.js';
+import { presenterInfo } from './session.js';
 
 const EXTRA = {};
 export function registerProjection(map) { Object.assign(EXTRA, map); }
@@ -158,7 +159,7 @@ export function empty(v) { return isArr(v) ? [] : v && typeof v === 'object' ? {
 export function publicState(s) {
   const out = {};
   for (const k of Object.keys(s)) out[k] = empty(s[k]);
-  Object.assign(out, { preset: s.preset, rev: s.rev, today: s.today, clock: s.clock, org: s.org, schools: s.schools, roles: s.roles, public: true,
+  Object.assign(out, { preset: s.preset, rev: s.rev, today: s.today, clock: s.clock, org: s.org, schools: s.schools, roles: s.roles, public: true, presenter: presenterInfo(),
     staff: (s.staff || []).map(x => pick(x, ['id', 'name', 'initials', 'credential', 'title', 'role', 'sites'])),
     school_users: (s.school_users || []).map(u => pick(u, ['id', 'name', 'role', 'school'])) });
   return out;

@@ -2,7 +2,7 @@
 // table; the timer follows store.clock; wrong-student protection by Harvest #; corrections and discards keep the earlier record; a processed daily note
 // makes the time it lists final; processed time is documented only from an observed page event.
 import { suite, assert, api, tryApi, state, reset, lpost, bridge } from './lib/index.mjs';
-import { timeSummary, timerOf, unionMinutes, entriesInNoteText, parseDirectMinutes, identityCard, sameStudent, micConsentOf, blocksFor } from '../web/js/shared/time.js';
+import { timeSummary, timerOf, unionMinutes, entriesInNoteText, parseDirectMinutes, identityCard, sameStudent, micConsentOf, blocksFor, confirmedContact } from '../web/js/shared/time.js';
 import { unitsFor } from '../web/js/shared/rules.js';
 
 const T = suite('time');
@@ -207,6 +207,20 @@ await T.test('helpers: identity card, contact-time matching, minutes parsing', a
   const list = s.time_entries.filter(e => e.client === 'MR');
   assert.deepEq(entriesInNoteText(list, '08:05–08:35 · x\n13:10–13:40 · y').map(e => e.id), ['te-1', 'te-5']); assert.deepEq(entriesInNoteText(list, FULL_DAY).length, 5);
   assert.deepEq([parseDirectMinutes('3 h 40 min'), parseDirectMinutes('220 min'), parseDirectMinutes('3:40'), parseDirectMinutes('')], [220, 220, 220, null]);
+});
+
+await T.test('the Contact time box may carry confirmed direct rows only; a processed note that lists an unconfirmed block is flagged and audited, and the block is not counted or linked', async () => {
+  await reset('live');
+  let s = await state('khale'); const cc = confirmedContact(s, 'MR', s.today, { staff: 'khale' });
+  assert.eq(cc.entries.length, 5); assert.noMatch(cc.lines, /unconfirmed|3:10 pm/); assert.eq(cc.minutes, 220); assert.eq(cc.units, 2); assert.match(cc.lines.split('\n')[0], /^8:05 am–8:35 am · Morning check-in/);
+  await api('time.save', { id: 'te-6', confirm: true }, 'khale'); s = await state('khale'); assert.eq(confirmedContact(s, 'MR', s.today, { staff: 'khale' }).entries.length, 6, 'a person pressed Confirm: now it may be typed');
+  await reset('live');
+  const vals = { 'Direct time': '3 h 40 min', 'Units': '2', 'Contact time': FULL_DAY + '\n1:40 pm–3:10 pm · Afternoon classes, transitions (unconfirmed)', 'Narrative': 'Worked with M.R. today.' };
+  const pr = await lpost('/consumers/3310/session/dpn', 'khale', { action: 'process', f2: vals['Direct time'], f3: vals['Units'], f4: vals['Contact time'], f9: vals['Narrative'] }); const sid = (pr.loc || '').match(/processed=(\d+)/)[1];
+  const j = await bridge('lauris.observed', { event: 'processed', session: sid, form: 'dpn', consumer: { no: '3310', initials: 'M.R.' }, values: vals, typed: [], user: 'K. Hale' }); assert.ok(j.ok, j.error);
+  s = await state('khale'); const x = timeSummary(s, 'MR', s.today, { staff: 'khale' });
+  assert.ok(x.flags.some(f => f.key === 'note_lists_unconfirmed' && f.tone === 'danger'), 'flagged'); assert.eq(x.direct, 220, 'not counted'); assert.ok(!entry(s, 'te-6').dpn, 'not linked');
+  assert.ok(s.events.some(e => /lists 1 time block nobody confirmed \(1:40–3:10 pm\)/.test(e.what) && e.actor_kind === 'bridge'), 'audited');
 });
 
 await T.done();

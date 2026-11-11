@@ -124,6 +124,7 @@ details.acc>div{padding:0 12px 10px}
 .ui-dr{padding:10px}
 .ui-dr__t{font-size:var(--fs-14)}
 .idcard{border:2px solid var(--danger-fg);border-radius:var(--r-3);padding:12px;background:var(--danger-bg);color:var(--danger-fg)}
+.idcard.n{border:1px solid var(--line-200);background:var(--sand-50);color:var(--ink-900)}
 .idcard dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;margin:8px 0 0;font-size:var(--fs-13)}
 .idcard dt{font-weight:600}.idcard dd{margin:0}
 @media (max-width:360px){.trio{grid-template-columns:1fr}.stamp{grid-template-columns:80px minmax(0,1fr)}}

@@ -133,10 +133,14 @@ register('Authorization', class extends Screen {
   sec_evidence(c) {
     const e = c.evidence;
     const chips = e.sources.map((x, i) => ui.evidenceChip({ n: i + 1, label: x.label, date: x.date, source: x.source, state: e.clinical ? 'sourced' : 'sensitive', reason: e.clinical ? '' : 'Text needs the clinical-records permission' })).join('');
-    const miss = e.missing.map(m => ui.evidenceChip({ state: 'missing', label: m.label })).join('');
+    const list = (arr, state) => `<ul class="a-ass">${arr.map(m => `<li>${ui.evidenceChip({ state, label: m.label })}</li>`).join('')}</ul>`;
     const counts = e.counts && c.type !== 'initial' && c.type !== 'early_discharge_new_initial' ? this.dl([['Daily notes', `${e.counts.daily} stored · ${e.counts.dailyWindow} in the last ${e.window} days ${ui.sourceChip(e.windowRule)}`], ['Weekly calls', String(e.counts.weekly)], ['Monthly collateral', String(e.counts.monthly)]]) : '';
-    const body = `${e.clinical ? '' : `<div class="a-chips">${ui.chip('Clinical text hidden for your role', { tone: 'outline', icon: 'lock' })}</div>`}${counts}<h3 class="a-h3">Sources</h3><div class="a-chips a-chips--wrap">${chips || '<span class="ui-muted">None stored</span>'}</div><h3 class="a-h3">Missing</h3><div class="a-chips a-chips--wrap">${miss || '<span class="ui-muted">Nothing missing in the stored record</span>'}</div>`;
-    return { sum: `${e.sources.length} source${e.sources.length === 1 ? '' : 's'} · ${e.missing.length} missing`, body, chip: e.missing.length ? ui.chip(`${e.missing.length} missing`, { tone: 'warning', size: 'sm', icon: 'alert' }) : '' };
+    const period = e.period ? `<p class="a-sub">The same list the Scan &amp; Enhance panel prints for ${esc(fmtDate(e.period.from))} to ${esc(fmtDate(e.period.to))}.</p>` : '';
+    const missing = e.missing.length ? `<h3 class="a-h3">Missing evidence (${e.missing.length})</h3>${list(e.missing, 'missing')}` : '<h3 class="a-h3">Missing evidence</h3><span class="ui-muted">None found in the stored record for this period</span>';
+    const future = e.future && e.future.length ? `<h3 class="a-h3">To fix in future notes (${e.future.length})</h3><ul class="a-ass">${e.future.map(m => `<li>${esc(m.label)}</li>`).join('')}</ul>` : '';
+    const body = `${e.clinical ? '' : `<div class="a-chips">${ui.chip('Clinical text hidden for your role', { tone: 'outline', icon: 'lock' })}</div>`}${counts}<h3 class="a-h3">Sources</h3><div class="a-chips a-chips--wrap">${chips || '<span class="ui-muted">None stored</span>'}</div>${period}${missing}${future}`;
+    const total = e.missing.length + (e.future ? e.future.length : 0);
+    return { sum: `${e.sources.length} source${e.sources.length === 1 ? '' : 's'} · ${total} gap${total === 1 ? '' : 's'}${e.missing.length ? ` (${e.missing.length} missing)` : ''}`, body, chip: e.missing.length ? ui.chip(`${e.missing.length} missing`, { tone: 'warning', size: 'sm', icon: 'alert' }) : '' };
   }
   sec_submission(c) {
     const sub = c.submission; const k = c.caps;

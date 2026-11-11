@@ -1,7 +1,7 @@
 // Box builders shared by the views (E5): the boxes a referral and the family link already answer, the new-consumer boxes, the school
 // updates (the counselor's words, credited, never staff observation) and the contact-time rows from the timer.
 // Every function takes ctx (views/index.js) and builds from stored records only.
-import { fmtDate, fmtTime } from '../../js/shared/dates.js';
+import { fmtDate, fmtTime, clock12 } from '../../js/shared/dates.js';
 import { contactTime } from '../../js/shared/draft.js';
 import { today as clockToday } from '../../js/shared/clock.js';
 import { blocksFor, entriesOf, timeSummary, unionMinutes, unitsFor, fmtMin } from '../../js/shared/time.js';
@@ -113,7 +113,11 @@ export function timerBoxes(ctx, c) {
   const blocks = timerBlocks(ctx, c); if (!blocks.length) return { blocks, ct: null, boxes: [] };
   const s = ctx.S();
   const sum = timeSummary(s, c.id, dayOf(ctx), { staff: staffOf(ctx) });   // confirmed direct minutes (pauses taken out, overlaps counted once) and the rule's units
-  const ct = { ...contactTime(blocks, { confirmed: false, s }), total: sum.direct, text: fmtMin(sum.direct), units: sum.units };   // an unconfirmed block is listed, never counted
+  const raw = contactTime(blocks, { confirmed: false, s });
+  // The note's Contact time lists ONLY confirmed direct blocks (a processed note is write-once, so nothing unconfirmed may be typed into it). The unconfirmed
+  // block stays in `ct.rows` (flagged) for the panel's own card; it reaches the form only after the person confirms it (time.save), never before.
+  const lines = raw.rows.filter(r => !r.unconfirmed).map(r => `${clock12(r.from)}\u2013${clock12(r.to)} \u00b7 ${r.what}`).join('\n');
+  const ct = { ...raw, lines, total: sum.direct, text: fmtMin(sum.direct), units: sum.units };
   return { blocks, ct, boxes: [{ label: 'Contact time', value: ct.lines, src: [2] }, { label: 'Direct time', value: ct.text, src: [2] }, { label: 'Units', value: String(ct.units), src: [2] }] };
 }
 export const fmtT = hhmm => { let [h, m] = hhmm.split(':').map(Number); h = h % 12 || 12; return `${h}:${String(m).padStart(2, '0')}`; };

@@ -324,20 +324,21 @@ ${c.goals?.length ? `<span class="lbl">ISP goals</span>${c.goals.map(g => `<div 
       const body = await readForm(req);
       let s;
       try { s = lauris.saveSession({ id: body.session_id, no: c.no, form: m[2], values: collect(spec, body), staff: user.id, process: body.action === 'process' }); }
-      catch (e) { if (e instanceof LaurisError) return redirect(res, `/consumers/${c.no}?tab=active&blocked=${encodeURIComponent(e.message)}`); throw e; }
+      catch (e) { if (e instanceof LaurisError) return redirect(res, e.sessionId ? `/consumers/${c.no}/session/${m[2]}?id=${e.sessionId}&blocked=${encodeURIComponent(e.message)}` : `/consumers/${c.no}?tab=active&blocked=${encodeURIComponent(e.message)}`); throw e; }
       if (body.action === 'process') return redirect(res, (spec.approve ? `/consumers/${c.no}?tab=active&processed=${s.id}` : `/consumers/${c.no}?tab=active&processed=${s.id}`));
       return redirect(res, `/consumers/${c.no}/session/${m[2]}?id=${s.id}&saved=${s.id}`);
     }
     const s = q.get('id') ? lauris.session(q.get('id')) : null;
     if (s && !['saved', 'rejected'].includes(s.status)) return redirect(res, s.status === 'processed' && s.approve ? `/approvals/${s.id}` : `/sessions/${s.id}`);   // processed and signed forms are read-only
     const vals = s ? s.values : {};
+    const noUnits = m[2] === 'dpn' && (!c.auth || c.auth.available == null || (c.auth.units && c.auth.available <= 0));
     const fieldsHTML = spec.fields.map((f, i) => {
       const pre = f.prefill ? f.prefill(c, lauris.db) : '';
       const v = s ? (vals[f.label] ?? (f.type === 'static' ? pre : '')) : pre;
       const green = !!pre && (typeof v !== 'string' || v === pre);
       return fieldHTML(f, i, v, green && f.type !== 'table', c);
     }).join('');
-    return page(spec.short, 'add', `${flash(q)}${consumerHeader(c)}${tabs(c, 'active')}
+    return page(spec.short, 'add', `${flash(q)}${noUnits ? '<div class="flash w" role="note" id="no-units-note">No units available for this consumer: a note that enters units cannot be processed until an authorization is entered.</div>' : ''}${consumerHeader(c)}${tabs(c, 'active')}
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><label style="margin:0">Session entry</label><div class="in" style="min-width:260px;width:auto" id="session-form-title">${esc(spec.title)}</div><span class="small muted">Add Session · ${lauris.db.todayUS} · ${esc(user.name)}${s ? ' · saved session #' + s.id : ''}</span></div>
 <form method="post" id="lauris-form" data-form="${m[2]}" data-consumer="${c.no}" data-session="${s ? s.id : ''}">
 <input type="hidden" name="session_id" value="${s ? s.id : ''}">

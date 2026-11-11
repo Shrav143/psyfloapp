@@ -188,7 +188,8 @@ function initDockState() {
 const dockEl = () => document.getElementById('dock');
 function dockModel() {
   const u = session.user;
-  return { state: dockState, mode, preset: api.state && api.state.preset, today: api.state ? M.fmtDate(api.state.today, { dow: true }) : '', maturityOn, canSim: !!u, simReason: 'Sign in as staff first' };
+  const pi = apiFn('presenterInfo') ? apiFn('presenterInfo')() : {}; const a = apiActor();
+  return { state: dockState, mode, preset: api.state && api.state.preset, today: api.state ? M.fmtDate(api.state.today, { dow: true }) : '', maturityOn, canSim: !!u, simReason: 'Sign in as staff first', presenter: !!(a && a.presenter), pinRequired: !!(pi && pi.pin_required) };
 }
 let dockKey = '';
 function renderDock(force) {
@@ -240,10 +241,25 @@ function parseTarget(t, params) {
   const [id, qs] = String(t).replace(/^#\/?/, '').replace(/^\.?\//, '').split('?');
   return { id: id.replace(/\.dc\.html$/, ''), params: { ...Object.fromEntries(new URLSearchParams(qs || '')), ...(params || {}) } };
 }
+// Presenter mode is an explicit elevation (server/psyflo/session.js): nothing signs in as a presenter on its own. The dock's controls call this
+// first; the server grants it unless DEMO_PRESENTER=0, and asks for the PIN only when PRESENTER_PIN is set (api.askPin below).
 async function ensurePresenter() {
   const a = apiActor(); const u = session.user;
-  if (u && a && !a.presenter && apiFn('signIn')) { await session.signIn(u.id, { presenter: true }); authPending = null; }
+  if (u && a && !a.presenter && apiFn('signIn')) {
+    await session.signIn(u.id, { presenter: true }); authPending = null;
+    const b = apiActor(); if (!b || !b.presenter) throw new Error('Presenter mode is off on this server.');
+  }
 }
+function askPin(reason) {
+  return new Promise(res => {
+    const h = ui.modal({ title: 'Presenter PIN', size: 'sm', initialFocus: '#presenter-pin', dismissable: true,
+      body: `<p>${esc(reason || 'The presenter tools (reset, advance the day, simulated replies, role switching) need the PIN set for this demo machine.')}</p><div class="ui-field"><label class="ui-label" for="presenter-pin">PIN</label><input class="ui-input" id="presenter-pin" type="password" inputmode="numeric" autocomplete="off" spellcheck="false"></div>`,
+      actions: [{ label: 'Cancel', tone: 'secondary', result: null }, { label: 'Unlock presenter tools', tone: 'primary', keepOpen: true, onClick: d => { d.close(d.dialog.querySelector('#presenter-pin').value || ''); return false; } }],
+      onMount: d => { d.querySelector('#presenter-pin').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); d.querySelector('[data-ui-action="1"]').click(); } }); } });
+    h.closed.then(r => res(typeof r === 'string' && r !== 'scrim' && r !== 'close' && r !== 'Cancel' ? r : null));
+  });
+}
+api.askPin = askPin;
 async function signInAs(staffId) { await session.signIn(staffId, { presenter: true }); authPending = null; await api.refresh(true); }
 function guardianLink() {
   const fls = (api.state && api.state.family_links) || []; const fl = fls.find(f => f.referral === 'REF-118') || fls[0];
@@ -323,6 +339,7 @@ function openSurface(id) {
 const simDock = { receiveReply: async () => { try { await ensurePresenter(); } catch { } sim.receiveReply(); }, advanceDay: async () => { try { await ensurePresenter(); } catch { } return sim.advanceDay(); } };
 const dockCtx = {
   api, M, sim: simDock, toast, go, current: () => current, model: dockModel, scenarios: scenarioList, runScenario, openScreen, switchRole, resetTo, roleChoices, screens: pickerScreens, surfaces, openSurface,
+  unlock: async () => { try { await ensurePresenter(); toast('Presenter tools unlocked'); renderDock(true); } catch (e) { toast(e.message, 'err'); } },
   setDock, setMode, setMaturity, routeMeta: id => BY_ID[id], notes: id => NOTES[id] || '',
   features: id => { const seen = new Set(); return featuresFor(id).filter(f => !seen.has(f.id) && seen.add(f.id)).sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level)); }
 };

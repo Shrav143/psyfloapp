@@ -23,6 +23,7 @@ const pages = [
   ['jperez', '/approvals', 'approvals', /Sign-off[\s\S]*forms wait for a signature/, /Signed in as/, 1700],
   ['jperez', '/consumers/5120', 'sebs-off', /Psyflo is off for H\.B\./, /Scribe|Track Time/, 600],
   ['khale', '/consumers/3310/session/screening', 'ds-screening', /for clinicians|Not permitted/, /Fill the \d+ boxes/, 700],
+  ['khale', '/consumers/4102/session/dpn', 'not-my-caseload', /Not on your caseload[\s\S]*Harvest #4102[\s\S]*Change student/, /Say what happened|Draft it|Open a student in Lauris/, 600],
   ['jperez', '/consumers/3310', 'record', /M\.R\.[\s\S]*Harvest #3310/, /Signed in as/, 1700]
 ];
 try {

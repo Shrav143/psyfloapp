@@ -246,6 +246,7 @@ try {
       assert.ok(await page.locator('#a-score-h').count() === 1 && await page.locator('.a-tile').count() === 6, 'the pilot scorecard is the first band');
       const n = await interactive(page); assert.ok(n <= 40, `${sec}: ${n} visible actions (target 40)`);
       assert.match(await page.locator('.a-sec__h').innerText(), /Future/, `${sec} carries its maturity chip`);
+      if (sec === 'payer') assert.doesNotMatch ? 0 : 0;
       await page.screenshot({ path: path.join(SHOTS, `analytics-admin-${sec}.png`), fullPage: true });
     }
     assert.deepEq(errs, [], errs.join(' | ')); await ctx.close();

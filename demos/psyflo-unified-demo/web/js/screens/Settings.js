@@ -6,7 +6,7 @@ import { MATRIX, CAP_LIST, STAFF_ROLES, ROLE_LABEL, PORTAL_ACTORS, can } from '.
 import { rule, unitsFor, unitBands, unitThresholds, ruleValue } from '../shared/rules.js';
 import { today as clockToday } from '../shared/clock.js';
 import { MATURITY, LEVELS, LEVEL_ORDER } from '../shared/maturity.js';
-import { confirmAccess } from './MyWorkViews.js';
+import { confirmAccess, withDate } from './MyWorkViews.js';
 import { TABS, CAP_GROUPS, CELL, capLabel, designatable, areaOf, CATEGORY_CHIPS, CLOCK_KEYS, UNIT_KEYS, showValue, editorKind, choicesOf, parseValue, editorText, DOC_MODES, MODE_LABEL, SURFACES, ARCH, DECISIONS } from './SettingsData.js';
 
 const RANKED = ['direct_support', 'supervisor', 'clinician', 'admin'];
@@ -34,7 +34,6 @@ register('Settings', class extends Screen {
     const g = /^guardian:(\w+)$/.exec(id || ''); if (g) return 'Guardian · ' + M.clientLabel(this.s, g[1], false);
     return id || 'Not recorded';
   }
-  ruleChips(r) { return ui.sourceChip(r) + (r.verified_on ? '' : ''); }
   // a reason is always asked: it goes into the audit log (settings.rule needs four or more characters)
   askReason({ title, lead, confirmLabel = 'Save', opener, extra = '', onOpen, run }) {
     ui.modal({
@@ -200,18 +199,18 @@ register('Settings', class extends Screen {
     const same = JSON.stringify(official.value) === JSON.stringify(official.default);
     const using = same ? 'Official bands' : JSON.stringify(official.value) === JSON.stringify(alt.value) ? 'Alternate bands (60-minute rule)' : 'Custom bands';
     const bandRows = bands.map(b => `<tr><th scope="row">${esc(b.minutes)} minutes or more</th><td>${b.units} unit${b.units === 1 ? '' : 's'}</td></tr>`).join('');
-    let h = `<section class="se-card"><div class="se-bar"><h2 class="se-h2">Daily unit rule</h2><div>${ui.chip(using, { tone: same ? 'success' : 'warning', size: 'sm' })} ${ui.sourceChip(official)}</div></div>
+    let h = `<section class="se-card"><div class="se-bar"><h2 class="se-h2">Daily unit rule</h2><div>${ui.chip(using, { tone: same ? 'success' : 'warning', size: 'sm' })} ${withDate(official)}</div></div>
       <div class="se-two"><div><table class="se-matrix se-matrix--plain"><caption class="ui-sr">Daily direct minutes and units</caption><thead><tr><th scope="col">Direct time in a day</th><th scope="col">Units</th></tr></thead><tbody>${bandRows}</tbody></table>
       <p class="se-foot">Rounded down, at most ${ruleValue(s, 'units.tdt.max_per_day', 3)} a day. ${esc(official.source || '')}</p></div>
       <div class="se-try"><label class="ui-field__l" for="se-min">Try it: direct minutes</label><div class="se-try__row"><input class="ui-input" id="se-min" type="number" min="0" step="5" inputmode="numeric" value="${esc(this.state.minutes)}"><output id="se-min-out" class="se-try__out" aria-live="polite">${esc(this.calc(this.state.minutes))}</output></div>
       <div class="se-try__btns">${same ? `<button type="button" class="ui-btn ui-btn--secondary" data-x="bands" data-mode="alt">Use the alternate bands</button>` : `<button type="button" class="ui-btn ui-btn--secondary" data-x="bands" data-mode="official">Restore the official bands</button>`}<button type="button" class="ui-btn ui-btn--ghost" data-x="rule" data-key="units.tdt.day_tiers">Edit bands</button></div>
-      <p class="se-foot">Alternate: ${esc(showValue(alt))} ${ui.sourceChip(alt)}</p></div></div></section>`;
+      <p class="se-foot">Alternate: ${esc(showValue(alt))} ${withDate(alt)}</p></div></div></section>`;
     h += this.ruleTable('Units', UNIT_KEYS) + this.ruleTable('Deadlines and clocks', CLOCK_KEYS);
     return h;
   }
   ruleTable(title, keys) {
     const rows = keys.map(k => rule(this.s, k)).filter(r => !r.missing);
-    return `<section class="se-card"><h2 class="se-h2">${esc(title)}</h2><div class="se-scroll"><table class="se-matrix se-matrix--plain"><caption class="ui-sr">${esc(title)}</caption><thead><tr><th scope="col">Rule</th><th scope="col">Value</th><th scope="col">Source</th><th scope="col">Change</th></tr></thead><tbody>${rows.map(r => `<tr><th scope="row"><span>${esc(r.label)}</span><code>${esc(r.key)}</code></th><td>${esc(showValue(r))}${r.enabled === false ? ' ' + ui.chip('Off', { tone: 'neutral', size: 'sm' }) : ''}</td><td>${ui.sourceChip(r)}<small class="se-sub">${esc(r.verified_on ? 'Checked ' + M.fmtDate(r.verified_on, { year: true }) : 'Not verified')}</small></td><td><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rule" data-key="${esc(r.key)}">Edit</button></td></tr>`).join('')}</tbody></table></div></section>`;
+    return `<section class="se-card"><h2 class="se-h2">${esc(title)}</h2><div class="se-scroll"><table class="se-matrix se-matrix--plain"><caption class="ui-sr">${esc(title)}</caption><thead><tr><th scope="col">Rule</th><th scope="col">Value</th><th scope="col">Source</th><th scope="col">Change</th></tr></thead><tbody>${rows.map(r => `<tr><th scope="row"><span>${esc(r.label)}</span><code>${esc(r.key)}</code></th><td>${esc(showValue(r))}${r.enabled === false ? ' ' + ui.chip('Off', { tone: 'neutral', size: 'sm' }) : ''}</td><td>${withDate(r)}</td><td><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rule" data-key="${esc(r.key)}">Edit</button></td></tr>`).join('')}</tbody></table></div></section>`;
   }
   setBands(mode, opener) {
     const s = this.s; const alt = rule(s, 'units.tdt.alt_tiers');
@@ -331,16 +330,16 @@ register('Settings', class extends Screen {
   }
   family() {
     const s = this.s;
-    const modes = DOC_MODES.map(([key, label]) => { const r = rule(s, key); const v = r.value; return `<tr><th scope="row"><span>${esc(label)}</span><small class="se-sub">${esc(r.source || '')}</small></th><td><div class="se-seg" role="group" aria-label="${esc(label)} signature mode">${['remote_allowed', 'in_person_required'].map(m => `<button type="button" class="se-seg__b" data-x="mode" data-key="${esc(key)}" data-value="${m}" aria-pressed="${v === m}">${esc(MODE_LABEL[m])}</button>`).join('')}</div>${v === 'pending_validation' ? ui.chip('Pending validation', { tone: 'warning', size: 'sm' }) : ''}</td><td>${ui.chip('Policy not validated', { tone: 'warning', size: 'sm', icon: 'alert' })} ${ui.sourceChip(r)}</td></tr>`; }).join('');
+    const modes = DOC_MODES.map(([key, label]) => { const r = rule(s, key); const v = r.value; return `<tr><th scope="row"><span>${esc(label)}</span><small class="se-sub">${esc(r.source || '')}</small></th><td><div class="se-seg" role="group" aria-label="${esc(label)} signature mode">${['remote_allowed', 'in_person_required'].map(m => `<button type="button" class="se-seg__b" data-x="mode" data-key="${esc(key)}" data-value="${m}" aria-pressed="${v === m}">${esc(MODE_LABEL[m])}</button>`).join('')}</div>${v === 'pending_validation' ? ui.chip('Pending validation', { tone: 'warning', size: 'sm' }) : ''}</td><td>${ui.chip('Policy not validated', { tone: 'warning', size: 'sm', icon: 'alert' })} ${withDate(r)}</td></tr>`; }).join('');
     const qs = ((s.settings || {}).family_link || {}).questions || [];
     const exp = rule(s, 'family_link.expires_days'); const rec = rule(s, 'recording.require_consent_record'); const p2p = rule(s, 'p2p.recording_enabled');
     const sw = (on, key, what, label, disabled) => `<button type="button" class="se-sw" role="switch" aria-checked="${on}" aria-label="${esc(label)}" data-x="fq" data-key="${esc(key)}" data-what="${what}"${disabled ? ' disabled' : ''}><i aria-hidden="true"></i></button>`;
     let h = `<section class="se-card"><h2 class="se-h2">Guardian signatures</h2><div class="se-scroll"><table class="se-matrix se-matrix--plain"><caption class="ui-sr">Signature mode per document type</caption><thead><tr><th scope="col">Document</th><th scope="col">Mode</th><th scope="col">Status</th></tr></thead><tbody>${modes}</tbody></table></div><p class="se-foot">Switching a document to In person changes the family screens for it. Every change asks why and is audited.</p></section>`;
     h += `<section class="se-card"><h2 class="se-h2">What the family link asks</h2><div class="se-scroll"><table class="se-matrix se-matrix--plain"><caption class="ui-sr">Questions on the family link</caption><thead><tr><th scope="col">Question</th><th scope="col">Ask</th><th scope="col">Required</th><th scope="col">Goes to</th></tr></thead><tbody>${qs.map(q => `<tr><th scope="row"><span>${esc(q.label)}</span>${q.sub ? `<small class="se-sub">${esc(q.sub)}</small>` : ''}</th><td>${sw(q.ask !== false, q.key, 'ask', 'Ask: ' + q.label, q.locked)}</td><td>${sw(q.ask !== false && !!q.required, q.key, 'req', 'Required: ' + q.label, q.locked || q.ask === false)}</td><td class="se-muted">${esc(q.goes || '')}</td></tr>`).join('')}<tr><th scope="row"><span>Any question about behavior, diagnosis or history</span></th><td colspan="3">${ui.chip('Not allowed', { tone: 'neutral', size: 'sm', icon: 'lock' })}</td></tr></tbody></table></div></section>`;
     h += `<section class="se-card"><h2 class="se-h2">Link and recording</h2><div class="se-scroll"><table class="se-matrix se-matrix--plain"><caption class="ui-sr">Link expiry and recording consent</caption><thead><tr><th scope="col">Setting</th><th scope="col">Now</th><th scope="col">Source</th><th scope="col">Change</th></tr></thead><tbody>
-      <tr><th scope="row"><span>${esc(exp.label)}</span></th><td>${esc(showValue(exp))}</td><td>${ui.sourceChip(exp)}</td><td><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rule" data-key="family_link.expires_days">Edit</button></td></tr>
-      <tr><th scope="row"><span>Recording needs a recorded consent</span><small class="se-sub">Off by default until the consent policy and the BAA are settled</small></th><td>${esc(showValue(rec))}</td><td>${ui.sourceChip(rec)}</td><td><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rulebool" data-key="recording.require_consent_record">${rec.value ? 'Turn off' : 'Turn on'}</button></td></tr>
-      <tr><th scope="row"><span>${esc(p2p.label)}</span></th><td>${esc(showValue(p2p))}</td><td>${ui.sourceChip(p2p)}</td><td><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rulebool" data-key="p2p.recording_enabled">${p2p.value ? 'Turn off' : 'Turn on'}</button></td></tr></tbody></table></div></section>`;
+      <tr><th scope="row"><span>${esc(exp.label)}</span></th><td>${esc(showValue(exp))}</td><td>${withDate(exp)}</td><td><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rule" data-key="family_link.expires_days">Edit</button></td></tr>
+      <tr><th scope="row"><span>Recording needs a recorded consent</span><small class="se-sub">Off by default until the consent policy and the BAA are settled</small></th><td>${esc(showValue(rec))}</td><td>${withDate(rec)}</td><td><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rulebool" data-key="recording.require_consent_record">${rec.value ? 'Turn off' : 'Turn on'}</button></td></tr>
+      <tr><th scope="row"><span>${esc(p2p.label)}</span></th><td>${esc(showValue(p2p))}</td><td>${withDate(p2p)}</td><td><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rulebool" data-key="p2p.recording_enabled">${p2p.value ? 'Turn off' : 'Turn on'}</button></td></tr></tbody></table></div></section>`;
     return h;
   }
 

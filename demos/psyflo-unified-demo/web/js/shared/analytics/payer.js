@@ -3,22 +3,21 @@
 //
 // A request fact: { id, payer, payerLabel, type, svc, submitted, decided, outcome:'approved'|'partial'|'denied'|'pending',
 //   requested, approved (units awarded, null when none yet), offered, reason, appealed, appealOutcome, renewal, days (decision day N) }
-// Counts here are workflow counts (requests). A payer row with fewer than the minimum number of requests is rolled up and prints
-// "Fewer than 5"; the "All payers" row is a tracker count and is always shown.
-import { sup, median, r1, sum } from './common.js';
+// Every count of requests (strip, rows, All payers) of 1 to 4 prints "Fewer than 5"; only unit sums and statistics over 5 or more are shown.
+import { sup, grp, median, r1, sum } from './common.js';
 
 const COLS = (first, ...more) => [{ key: 'label', label: first }, ...more.map(([key, label]) => ({ key, label, align: 'right' }))];
 const isDecided = r => ['approved', 'partial', 'denied'].includes(r.outcome);
 
-export function payerStrip(R) {
-  const dec = R.filter(isDecided);
+export function payerStrip(R, min) {
+  const dec = R.filter(isDecided); const g = n => grp(n, min);
   return [
-    { id: 'requests', label: 'Requests', value: R.length },
-    { id: 'submitted', label: 'Sent', value: R.filter(r => r.submitted).length },
-    { id: 'decided', label: 'Decided', value: dec.length },
-    { id: 'pending', label: 'Awaiting decision', value: R.filter(r => !isDecided(r)).length },
-    { id: 'partial', label: 'Partial', value: dec.filter(r => r.outcome === 'partial').length },
-    { id: 'denied', label: 'Denied', value: dec.filter(r => r.outcome === 'denied').length }
+    { id: 'requests', label: 'Requests', value: g(R.length) },
+    { id: 'submitted', label: 'Sent', value: g(R.filter(r => r.submitted).length) },
+    { id: 'decided', label: 'Decided', value: g(dec.length) },
+    { id: 'pending', label: 'Awaiting decision', value: g(R.filter(r => !isDecided(r)).length) },
+    { id: 'partial', label: 'Partial', value: g(dec.filter(r => r.outcome === 'partial').length) },
+    { id: 'denied', label: 'Denied', value: g(dec.filter(r => r.outcome === 'denied').length) }
   ];
 }
 
@@ -28,7 +27,7 @@ export function payerPanels(R, env) {
   // by payer
   const byPayer = new Map(); for (const r of R) { if (!byPayer.has(r.payer)) byPayer.set(r.payer, []); byPayer.get(r.payer).push(r); }
   const row = (label, list, extra = {}) => { const d = list.filter(isDecided); const days = d.map(r => r.days).filter(x => x != null);
-    return { label, n: list.length, decided: d.length, approved: d.filter(r => r.outcome === 'approved').length, partial: d.filter(r => r.outcome === 'partial').length, denied: d.filter(r => r.outcome === 'denied').length, day: days.length >= min ? 'Day ' + r1(median(days)) : days.length ? sup(min) : '—', ...extra }; };
+    return { label, n: grp(list.length, min), decided: grp(d.length, min), approved: grp(d.filter(r => r.outcome === 'approved').length, min), partial: grp(d.filter(r => r.outcome === 'partial').length, min), denied: grp(d.filter(r => r.outcome === 'denied').length, min), day: days.length >= min ? 'Day ' + r1(median(days)) : days.length ? sup(min) : '—', ...extra }; };
   // every payer with a request gets a row (so a payer row can open its queue); the numbers of a payer under the minimum are not shown
   const small = n => ({ label: '', n: sup(min), decided: sup(min), approved: sup(min), partial: sup(min), denied: sup(min), day: sup(min) });
   const entries = [...byPayer.entries()];
@@ -37,13 +36,13 @@ export function payerPanels(R, env) {
   const pRows = [...shown.map(([payer, list]) => row(list[0].payerLabel || payer, list, { _payer: payer })), ...hiddenP.map(([payer, list]) => ({ ...small(), label: list[0].payerLabel || payer, _payer: payer, _small: true }))];
   pRows.push({ ...row('All payers', R), _total: true });
   P.push({ id: 'pay.by_payer', title: 'By payer', kind: 'table', columns: COLS('Payer', ['n', 'Requests'], ['decided', 'Decided'], ['approved', 'Approved'], ['partial', 'Partial'], ['denied', 'Denied'], ['day', 'Decision day']), rows: pRows, wide: true,
-    definition: 'Requests and decisions by payer. Decision day is the number of days from the day a request was sent to the decision, as a median. The numbers for a payer with fewer than the minimum number of requests are not shown; the All payers row is a tracker count. A payer row opens that payer\'s queue.' });
+    definition: 'Requests and decisions by payer. Decision day is the number of days from the day a request was sent to the decision, as a median. Any count of 1 to 4 prints "Fewer than 5", including in the All payers row. A payer row opens that payer\'s queue.' });
   // approved versus requested units (longer-term measure: Future)
   const awarded = dec.filter(r => r.approved != null || r.outcome === 'denied');
   const reqU = sum(awarded.map(r => r.requested)), apprU = sum(awarded.map(r => r.approved || 0));
   P.push({ id: 'pay.units', title: 'Units approved', kind: 'table', columns: COLS('Measure', ['v', 'Value']), rows: [
-    { label: 'Decided requests with units', v: awarded.length }, { label: 'Units requested', v: reqU }, { label: 'Units approved', v: apprU },
-    { label: 'Share approved', v: reqU ? Math.round((100 * apprU) / reqU) + '%' : '—' }, { label: 'Offers awaiting a reply', v: dec.filter(r => r.outcome === 'partial' && r.approved == null).length }],
+    { label: 'Decided requests with units', v: grp(awarded.length, min) }, { label: 'Units requested', v: reqU }, { label: 'Units approved', v: apprU },
+    { label: 'Share approved', v: reqU ? Math.round((100 * apprU) / reqU) + '%' : '—' }, { label: 'Offers awaiting a reply', v: grp(dec.filter(r => r.outcome === 'partial' && r.approved == null).length, min) }],
     definition: 'Units approved against units requested, over decided requests. A partial offer counts as approved units only after it is accepted and the award is recorded.', note: 'Longer-term measure; not a pilot gate.', maturity: 'analytics.payer' });
   // turnaround
   const days = dec.map(r => r.days).filter(x => x != null);
@@ -57,8 +56,8 @@ export function payerPanels(R, env) {
   const typeOf = r => (r.type === 'initial' ? 'initial' : r.type === 'continued_stay' || r.renewal ? 'continued_stay' : 'other');
   const extra = R.filter(r => r.extraWork).length;
   P.push({ id: 'pay.reauth', title: 'Reauthorization burden', kind: 'table', columns: COLS('Request type', ['n', 'Requests']), rows: [
-    ...types.map(([k, l]) => ({ label: l, n: R.filter(r => typeOf(r) === k).length })),
-    { label: 'Needed an information reply, peer-to-peer or appeal', n: extra }, ...(R.some(r => r.appealed) ? [{ label: 'Appealed', n: R.filter(r => r.appealed).length }] : [])],
+    ...types.map(([k, l]) => ({ label: l, n: grp(R.filter(r => typeOf(r) === k).length, min) })),
+    { label: 'Needed an information reply, peer-to-peer or appeal', n: grp(extra, min) }, ...(R.some(r => r.appealed) ? [{ label: 'Appealed', n: grp(R.filter(r => r.appealed).length, min) }] : [])],
     definition: 'Requests by type, and how many needed more work after they were sent (an information reply, a peer-to-peer call or an appeal). Continued-stay requests are the reauthorization workload.' });
   // reasons
   const rc = new Map(); for (const r of R) if (r.reason) rc.set(r.reason, (rc.get(r.reason) || 0) + 1);

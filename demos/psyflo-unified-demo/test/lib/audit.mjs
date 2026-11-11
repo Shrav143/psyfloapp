@@ -148,6 +148,7 @@ export function classify(b, a, ev, c) {
   if (ev.nativeDialog) flags.push('native-dialog');
   if (ev.chooser) return out('FILE-CHOOSER', ev.chooser);
   if (ev.popup) return out('POPUP', ev.popup);
+  if (ev.parentMoved) return out('NAVIGATED', 'the Lauris page moved');
   if (ev.download) return out('DOWNLOAD', ev.download);
   if (b.hash !== a.hash || b.path !== a.path) return out('NAVIGATED', `${b.hash || b.path} -> ${a.hash || a.path}`);
   const ovAdded = a.ov.filter(x => !b.ov.includes(x)); const ovGone = b.ov.filter(x => !a.ov.includes(x));
@@ -279,18 +280,18 @@ export class Sweeper {
     await settle(f, { quiet: 170, max: 3000 });
     // popups open a tick later (only links and openers that say so are given the extra moment)
     if (this.popups.length === nPop && (c.target === '_blank' || /open|lauris|portal|print|pdf|download|view/i.test(c.name))) await sleep(140);
-    let after, ev, frameGone = false;
-    try {
+    let after, ev, cl, frameGone = false;
+    const measureAfter = async () => {
       // the server refusing an action (400, 401, 403, 409, 422) is a visible, designed answer, not a console error; a 500 or a script error is
       const REFUSAL = /^HTTP (400|401|403|409|422) \S*\/api\/do$/;
-      ev = { errors: this.errs.filter(e => !REFUSAL.test(e)), refused: this.errs.filter(e => REFUSAL.test(e)).length, nativeDialog: this.dialogs.length ? this.dialogs[0] : '' };
-      if (ev.refused) row.flags.push('refused');
+      ev = { errors: this.errs.filter(e => !REFUSAL.test(e)), refused: this.errs.filter(e => REFUSAL.test(e)).length, nativeDialog: this.dialogs.length ? this.dialogs[0] : '', parentMoved: T.kind === 'panel' && this.page.url() !== parentUrl0 };
+      if (ev.refused && !row.flags.includes('refused')) row.flags.push('refused');
       if (this.popups.length > nPop) {
         const pg = this.popups[this.popups.length - 1];
         try { await pg.waitForLoadState('domcontentloaded', { timeout: 4000 }); } catch { }
         let status = '';
         try { const info = await pg.evaluate(() => ({ t: document.title, b: (document.body.innerText || '').slice(0, 160) })); status = (/\b404\b|not found|cannot get|error/i.test(info.t + ' ' + info.b) ? 'BROKEN ' : '') + pg.url() + ' · ' + info.t; } catch { status = pg.url(); }
-        ev.popup = status; if (/^BROKEN/.test(status)) row.flags.push('broken-popup');
+        ev.popup = status; if (/^BROKEN/.test(status) && !row.flags.includes('broken-popup')) row.flags.push('broken-popup');
       }
       if (!ev.popup && this.downloads.length) ev.download = this.downloads[0].suggestedFilename();
       if (this.choosers.length) ev.chooser = this.choosers[0];
@@ -299,7 +300,10 @@ export class Sweeper {
       const rev1 = await revOf(this.base); ev.revChanged = rev0 != null && rev1 != null && rev1 !== rev0;
       if (T.kind === 'panel' || T.checkLauris) ev.laurisChanged = lau0 !== (await lauSnap(this.lauris));
       if (T.parentForm) ev.parentFormChanged = pf0 !== (await T.parentForm());
-
+    };
+    try {
+      await measureAfter(); cl = classify(before, after, ev, c);
+      if (cl.outcome === 'NO-EFFECT') { await sleep(T.kind === 'panel' ? 1100 : 700); await settle(f, { quiet: 300, max: 2500 }); await measureAfter(); cl = classify(before, after, ev, c); row.secondLook = true; }   // an effect that arrives late (a panel asking the Lauris page to move) is still an effect
     } catch (e) {
       if (!/detached|destroyed|closed|Target page/i.test(String(e.message))) throw e;
       frameGone = true;                                           // the click replaced the frame (a panel button that moves the Lauris page on)
@@ -308,7 +312,6 @@ export class Sweeper {
       await sleep(700); const url1 = this.page.url();
       row.outcome = url1 !== parentUrl0 ? 'NAVIGATED' : 'DOM'; row.detail = url1 !== parentUrl0 ? 'the Lauris page moved: ' + parentUrl0.replace(/^https?:\/\/[^/]+/, '') + ' -> ' + url1.replace(/^https?:\/\/[^/]+/, '') : 'the panel was reloaded'; row.act = act; row.ms = Date.now() - t0; row.dirty = true; row.sameDoc = false; const rev1 = await revOf(this.base); const lau1 = T.kind === 'panel' || T.checkLauris ? await lauSnap(this.lauris) : lau0; row.revChanged = rev0 != null && rev1 != null && rev1 !== rev0; row.laurisChanged = lau1 !== lau0; row.mutated = row.revChanged || row.laurisChanged; if (T.kind === 'panel' && row.laurisChanged) row.flags.push('panel-wrote-lauris'); return row;
     }
-    const cl = classify(before, after, ev, c);
     row.outcome = cl.outcome; row.detail = cl.detail; row.flags.push(...cl.flags); row.act = act; row.ms = Date.now() - t0;
     row.revChanged = !!ev.revChanged; row.laurisChanged = !!ev.laurisChanged;
     if (T.kind === 'panel' && ev.laurisChanged) row.flags.push('panel-wrote-lauris');

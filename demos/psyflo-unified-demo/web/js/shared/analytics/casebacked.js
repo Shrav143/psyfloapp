@@ -264,7 +264,7 @@ export function payerSection(s, rawF, actor) {
     rows: up.map(r => ({ when: r.when, what: r.what, case: r.case, src: r.src, _rule: r._rule, _payer: r._payer, _route: { id: 'DenialCase', params: { id: r._id } }, _past: r.past })), limit: 4,
     definition: 'Dated payer work on open requests: replies due, calls, windows closing and continued-stay renewals. Each date carries its source: a rule with its verification label, or a date a person recorded.', empty: 'No dated payer work on open requests.' });
   const undated = (s.requests || []).filter(r => ctx.inScope(r.client) && (!F.payer || r.payer === F.payer)).length - R.length;
-  return { dataset: PROV.CASE, strip: payerStrip(R), panels, period: P, filters: F, asOf: ctx.today, source: CASE_SOURCE, notes: undated > 0 ? [`${undated} request${undated === 1 ? '' : 's'} outside this period or with no recorded date are not counted.`] : [] };
+  return { dataset: PROV.CASE, strip: payerStrip(R, ctx.min), panels, period: P, filters: F, asOf: ctx.today, source: CASE_SOURCE, notes: undated > 0 ? [`${undated} request${undated === 1 ? '' : 's'} outside this period or with no recorded date are not counted.`] : [] };
 }
 
 // ---------- the seeded baseline, labelled "Sample data, illustrative" ----------

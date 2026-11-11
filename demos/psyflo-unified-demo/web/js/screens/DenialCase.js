@@ -170,10 +170,10 @@ register('DenialCase', class extends Screen {
     }
     const appealPortal = doc === 'appeal' && portal;
     this.dialog({ title: appealPortal ? 'Mark ready for upload' : 'Send', confirm: appealPortal ? 'Mark ready' : portal ? `Open ${M.CHANNEL_LABEL[r.channel]}` : 'Send by fax', returnFocus: el,
-      body: appealPortal ? `<p>Mark ${esc(what)} ready to upload to ${esc(pf)}.</p><p class="d-modal-note">A person uploads it in ${esc(M.CHANNEL_LABEL[r.channel])}, in their own login. Psyflo does not sign in or submit anything.</p>` : `<p>Send ${esc(what)} to ${esc(pf)}.</p><p class="d-modal-note">${portal ? `Opens ${esc(M.CHANNEL_LABEL[r.channel])} in a new tab, in your own login. The confirmation number is read from that page.` : "A person presses Send. The Sfax stub (simulated) records the reference; nothing real is faxed."}</p>`,
+      body: appealPortal ? `<p>Mark ${esc(what)} ready to upload to ${esc(pf)}.</p><p class="d-modal-note">This is not a send. A person uploads it in ${esc(M.CHANNEL_LABEL[r.channel])}, in their own login. Psyflo does not sign in or submit anything, and records the send only when the ${esc(M.CHANNEL_LABEL[r.channel])} page shows a confirmation number.</p>` : `<p>Send ${esc(what)} to ${esc(pf)}.</p><p class="d-modal-note">${portal ? `Opens ${esc(M.CHANNEL_LABEL[r.channel])} in a new tab, in your own login. The confirmation number is read from that page.` : "A person presses Send. The Sfax stub (simulated) records the reference; nothing real is faxed."}</p>`,
       onSubmit: async () => {
         let w = null; if (portal && !appealPortal) { try { w = window.open('', '_blank'); } catch { } }
-        const res = await this.call('dispute.send', { id: d.id, doc }, rr => rr.ref && /^F-\d+/.test(rr.ref) ? `Sent · simulated Sfax ref ${rr.ref}` : appealPortal ? `Ready for upload in ${M.CHANNEL_LABEL[r.channel]} · a person uploads the signed letter` : `${M.CHANNEL_LABEL[r.channel]} opened · paste the reply and upload there`);
+        const res = await this.call('dispute.send', { id: d.id, doc }, rr => rr.ref && /^F-\d+/.test(rr.ref) ? `Sent · simulated Sfax ref ${rr.ref}` : appealPortal ? `Marked ready to upload · not sent until ${M.CHANNEL_LABEL[r.channel]} shows a confirmation` : `${M.CHANNEL_LABEL[r.channel]} opened · paste the reply and upload there`);
         if (!res) { if (w) w.close(); return false; }
         if (res.open) { const url = `${c.extUrl}${res.open}`; if (w) w.location.href = url; else window.open(url, '_blank'); } else if (w) w.close();
       } });

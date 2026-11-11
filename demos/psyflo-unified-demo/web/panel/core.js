@@ -87,6 +87,14 @@ export function identityStop() {
   const m = S().clients.find(x => no && (x.lauris_no === no || x.harvest_no === no));
   return m && c.initials && String(c.initials).replace(/\s/g, '') !== m.initials.replace(/\s/g, '') ? m : null;
 }
+// A direct support worker's projection holds only their own caseload, so a record Psyflo cannot match for them is "not on your caseload":
+// the panel reads, drafts and types nothing, and says so (fail closed), with a way to another student.
+const STUDENT_PAGES = ['record', 'session', 'pick-form', 'surveys'];
+export function notOnCaseload() {
+  const me = meFromPage(); const k = P.page?.consumer;
+  if (!P.page || !STUDENT_PAGES.includes(P.page.kind) || !k || !k.no || me.role !== 'direct_support' || !api.session || !api.session()) return null;
+  return clientForPage() || identityStop() ? null : k;
+}
 export const appURL = path => (window.__vapp || location.origin) + '/' + path;   // hosted preview: the panel is a srcdoc frame; the page's virtual app origin
 const roleLabel = r => M.ROLE_LABEL[r] || 'Not signed in';
 // can() for the signed-in person; an 'A' grant is scoped to the person's caseload (the projection already holds only that caseload)
@@ -135,6 +143,7 @@ const openApp = hash => window.open(appURL(hash), '_blank', 'noopener');
 // Process Form. Nothing is typed when the page shows a different student than Psyflo's record (the hard stop).
 export async function fill(boxes, { form, client, sources, animate = true } = {}) {
   if (identityStop()) { flash('Wrong student? Nothing was typed.', 'r'); return { error: 'wrong patient' }; }
+  if (notOnCaseload()) { flash('Not on your caseload. Nothing was typed.', 'r'); return { error: 'not on caseload' }; }
   const clean = (boxes || []).filter(b => b && b.value != null && String(b.value) !== '' && !b.missing && !/^Evidence missing/.test(String(b.value)));
   P.ui.filling = true; draw();
   const r = await call('fill', { fields: clean.map(b => ({ label: b.label, value: b.value })), opts: { animate } });
@@ -203,6 +212,9 @@ function viewHTML() {
   if (stop) return page('Stop', stopCard(p, stop));
   if (p.consumer && p.consumer.program && p.consumer.program !== 'TDT') return page('Off for this record', banner('n', `<b>Psyflo is off for ${esc(p.consumer.initials)}.</b> This record is in ${esc(p.consumer.program)}. The extension works with TDT consumers only; it reads and types nothing here.`), { p, c: null });
   if (!canDo('ext.use')) return page('No access', banner('n', `<b>Not permitted.</b> ${esc(roleLabel(me.role))} does not use the panel.`, { icon: I.no }));
+  const off = notOnCaseload();
+  if (off) return page('Not on your caseload', `<div class="idcard n" role="alert"><b>Not on your caseload.</b> ${esc(off.initials || 'This student')} · Harvest #${esc(off.no)} is not one of your students, so the panel reads, drafts and types nothing here.
+    <div class="row w" style="margin-top:10px"><button class="btn o" data-act="__students">Change student</button></div></div>`);
   const c = clientForPage();
   const vid = activeViewId(); const v = VIEWS[vid];
   if (v.cap && !canDo(v.cap)) {

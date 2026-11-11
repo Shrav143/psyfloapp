@@ -10,7 +10,7 @@ import { ROLE_LABEL, can } from '../shared/permissions.js';
 import { rule } from '../shared/rules.js';
 import { today as clockToday, now as clockNow } from '../shared/clock.js';
 import { sectionsFor, resolveSection, worklist, dayView, teamView, reviewQueue, viewedStaff, tabCounts, canSeeDay, SECTION_LABEL } from '../shared/sel/mywork.js';
-import { todoHtml, dayHtml, teamHtml, reviewHtml, reviewModel, tabsHtml, confirmAccess } from './MyWorkViews.js';
+import { todoHtml, dayHtml, teamHtml, reviewHtml, reviewModel, tabsHtml, confirmAccess, withDate } from './MyWorkViews.js';
 
 const idOf = to => String(to || '').replace(/^\.?\//, '').replace(/^#\/?/, '').split('?')[0].replace(/\.dc\.html$/, '');
 const KNOWN = ['todo', 'review', 'team', 'day', 'referrals'];
@@ -61,7 +61,7 @@ register('MyWork', class extends Screen {
     } else if (sec === 'team') {
       const t = teamView(s, a);
       const sid = this.params.staff && canSeeDay(s, a, this.params.staff) ? this.params.staff : null;
-      body = teamHtml(t, { ...o, canApprove: can(a, 'notes.review'), sort: this.state.sort, onSort: sort => this.setState({ sort }), selected: sid, ruleChip: ui.sourceChip(o.rule24) });
+      body = teamHtml(t, { ...o, canApprove: can(a, 'notes.review'), sort: this.state.sort, onSort: sort => this.setState({ sort }), selected: sid, ruleChip: withDate(o.rule24) });
       if (sid) { const v = dayView(s, a, sid); body += `<section class="mw-staff" aria-label="${esc(v.name)}'s day"><h2 class="mw-h2">${esc(v.name)}'s day <a class="ui-linkbtn" href="#/MyWork?section=team">Close</a></h2>${dayHtml(v, this.state, o)}</section>`; }
     } else if (sec === 'review') {
       const q = reviewQueue(s, a);

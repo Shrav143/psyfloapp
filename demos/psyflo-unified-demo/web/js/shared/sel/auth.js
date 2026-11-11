@@ -12,6 +12,7 @@ import * as M from '../model.js';
 import { addDays, addBusinessDays, businessDaysBetween, daysBetween, dow, fmtDate, fmtDateTime, isSchoolDay } from '../dates.js';
 import { rule, ruleValue, decisionDay, unitBands, maxUnitsPerDay } from '../rules.js';
 import { can } from '../permissions.js';
+import { evidenceIndex } from '../enhance.js';
 
 // ---------------------------------------------------------------------------------------------------------------- vocabulary
 export const GROUP = {
@@ -118,6 +119,20 @@ export function renewal(s, r) {
   return { due: byDate || byUnits, end, dueBy, lead, daysLeft: u.daysLeft, byDate, byUnits, rule: rule(s, 'continued_stay.lead_business_days') };
 }
 
+// the date a continued stay should be started by: the end of the current authorization minus the lead time (rules table, unverified).
+// One definition: the queue, the case, the timeline and My Work all read it, so the end date is never shown as the due date.
+export function reauthDue(s, r) {
+  const rn = renewal(s, r); if (!rn || !rn.end || !rn.dueBy) return null;
+  return { date: rn.dueBy, end: rn.end, lead: rn.lead, rule: rn.rule, past: rn.dueBy < s.today, text: `Reauth due ${fmtDate(rn.dueBy)}`, sub: `${rn.lead} business days before the current one ends ${fmtDate(rn.end)}` };
+}
+function reauthDeadline(s, rn) {
+  if (!rn.dueBy) return { kind: 'renewal', text: 'Reauth due', sub: '', date: null, sev: 'soon', rule: rn.rule };
+  const t = s.today; const d = daysBetween(t, rn.end); const dd = daysBetween(t, rn.dueBy);
+  const text = dd < 0 ? `Reauth was due ${fmtDate(rn.dueBy)}` : dd === 0 ? 'Reauth due today' : `Reauth due ${fmtDate(rn.dueBy)}`;
+  const sub = `${rn.lead} business days before the current one ends ${fmtDate(rn.end)}${d < 0 ? ' · ended' : ' · ' + d + ' days left'}`;
+  return { kind: 'renewal', text, sub, date: rn.dueBy, sev: d < 0 ? 'overdue' : rn.due || dd <= 7 ? 'soon' : 'ok', rule: rn.rule };
+}
+
 // ---------------------------------------------------------------------------------------------------------------- deadline
 const CAT = { official: 'OFFICIAL-VERIFIED', payer: 'PAYER-SPECIFIC', harvest: 'HARVEST-REPORTED', unverified: 'UNVERIFIED-DEMO-ASSUMPTION' };
 const ad = (cat, source) => ({ category: CAT[cat], source, verification: { official: 'Officially verified', payer: 'Payer-specific', harvest: 'Harvest-reported', unverified: 'Unverified demo assumption' }[cat], verified_on: null, note: '' });
@@ -133,7 +148,7 @@ export function deadline(s, r) {
         return { kind: 'send_limit', text: d < 0 ? `${-d} days past the send limit` : `Send by ${fmtDate(r.limit_30)}`, sub: d < 0 ? fmtDate(r.limit_30) : `${d} days left of ${n}`, date: r.limit_30, sev: sevByDays(d), rule: rule(s, 'initial_sra.send_within_days') };
       }
       const rn = renewal(s, r);
-      if (rn && rn.end) { const d = daysBetween(t, rn.end); return { kind: 'auth_end', text: `Current ends ${fmtDate(rn.end)}`, sub: d < 0 ? 'ended' : `${d} days left`, date: rn.end, sev: rn.due ? (d < 0 ? 'overdue' : 'soon') : 'ok', rule: rn.rule }; }
+      if (rn && rn.end) return reauthDeadline(s, rn);
       return none;
     }
     case 'sending': return { kind: 'sending', text: 'Faxing now', sub: 'Simulated Sfax', date: null, sev: 'ok', rule: null };
@@ -164,7 +179,7 @@ export function deadline(s, r) {
     case 'active': {
       const u = unitsView(s, r); const rn = renewal(s, r);
       if (u.left === 0 && u.total) return { kind: 'units', text: 'Units used up', sub: u.exhausted ? fmtDate(u.exhausted) : '', date: u.exhausted, sev: 'overdue', rule: u.rate && u.rate.rule };
-      if (rn && rn.due) return { kind: 'renewal', text: 'Renewal due', sub: rn.end ? `current ends ${fmtDate(rn.end)}` : '', date: rn.dueBy || rn.end, sev: 'soon', rule: rn.byUnits && !rn.byDate && u.rate ? u.rate.rule : rn.rule };
+      if (rn && rn.due) return rn.byDate || !rn.byUnits || !u.rate ? reauthDeadline(s, rn) : { kind: 'renewal', text: 'Reauth due: units running out', sub: `about ${u.daysLeft} school days left${rn.end ? ' · current ends ' + fmtDate(rn.end) : ''}`, date: rn.dueBy || rn.end, sev: 'soon', rule: u.rate.rule };
       if (u.end) return { kind: 'auth_end', text: `Ends ${fmtDate(u.end)}`, sub: `${daysBetween(t, u.end)} days left`, date: u.end, sev: 'ok', rule: ad('payer', 'Payer authorization window') };
       if (u.daysLeft != null) return { kind: 'units', text: `About ${u.daysLeft} school days`, sub: 'end date not recorded', date: null, sev: u.daysLeft <= 10 ? 'soon' : 'ok', rule: u.rate && u.rate.rule };
       return none;
@@ -338,7 +353,7 @@ export function documents(s, r) {
 
 // the stored records a statement can rest on; text only for roles that may read clinical text
 export function evidenceOf(s, r, me) {
-  const c = clientOf(s, r); const clinical = can(me, 'notes.view') && me && me.role === 'clinician'; const out = { clinical, sources: [], missing: [], counts: null, window: ruleValue(s, 'evidence.current_window_days', 30), windowRule: rule(s, 'evidence.current_window_days') };
+  const c = clientOf(s, r); const clinical = can(me, 'notes.view') && me && me.role === 'clinician'; const out = { clinical, sources: [], missing: [], future: [], gaps: [], counts: null, window: ruleValue(s, 'evidence.current_window_days', 30), windowRule: rule(s, 'evidence.current_window_days') };
   if (!c) { out.missing.push({ label: 'student record', why: 'no stored student record for this request' }); return out; }
   const from = addDays(s.today, -out.window);
   const notes = (s.notes || []).filter(n => n.client === c.id);
@@ -349,11 +364,17 @@ export function evidenceOf(s, r, me) {
   const tl = c.timeline || {};
   if (r.type !== 'initial' && r.type !== 'early_discharge_new_initial') {
     if (out.counts.daily) add(`${out.counts.daily} daily note${out.counts.daily === 1 ? '' : 's'} stored`, null, `Processed notes in Psyflo (${out.counts.dailyWindow} in the last ${out.window} days)`, { count: out.counts.daily });
-    else out.missing.push({ label: `daily notes for ${c.initials}`, why: 'no processed daily notes are stored for this student' });
     if (out.counts.weekly) add(`${out.counts.weekly} weekly guardian call${out.counts.weekly === 1 ? '' : 's'}`, null, 'Processed notes in Psyflo', { count: out.counts.weekly });
-    else out.missing.push({ label: `weekly guardian calls for ${c.initials}`, why: 'none stored' });
     if (out.counts.monthly) add(`${out.counts.monthly} monthly collateral`, null, 'Processed notes in Psyflo', { count: out.counts.monthly });
-    else out.missing.push({ label: `monthly collateral for ${c.initials}`, why: 'none stored' });
+    // what is missing is the evidence index's list, the same one the Scan & Enhance panel prints for this student and period.
+    // A role that holds no note text sees the structural gaps only (days, weeks, months, units): text-based ones would read as "missing" when they are withheld.
+    const idx = evidenceIndex(s, c.id);
+    const structural = new Set(['days', 'weeks', 'months', 'units']);
+    const all = idx.gaps.filter(g => clinical || structural.has(g.id));
+    out.gaps = all.map(g => ({ id: g.id, text: g.text, label: g.kind === 'missing' ? String(g.text).replace(/^Evidence missing — verify /, '').replace(/\.$/, '') : g.text, why: '', missing: g.kind === 'missing', dates: g.dates || [] }));
+    out.missing = out.gaps.filter(g => g.missing);
+    out.future = out.gaps.filter(g => !g.missing);
+    out.period = idx.period; out.panelGaps = idx.gaps.length;
   } else {
     const ref = (s.referrals || []).find(x => x.id === c.referral);
     if (ref) add('School referral form', ref.received, `Referral ${ref.id}`); else out.missing.push({ label: 'school referral form', why: 'no referral record is linked' });
@@ -380,7 +401,13 @@ export function timelineOf(s, r, me) {
   };
   const src = e => e.via || (e.actor_kind === 'bridge' ? 'Open Lauris page (page bridge)' : e.actor_kind === 'system' ? 'Psyflo, rule-based' : e.actor_kind === 'integration' ? 'Simulated integration' : e.actor_kind === 'demo' ? 'Presenter control' : e.actor_kind === 'portal' ? 'Portal' : 'Recorded by a person in Psyflo');
   ev.forEach((e, i) => out.push({ id: `${r.id}:e${i}`, at: e.at, what: e.what.replace(/^Refused · /, 'Refused · '), who: whoName(s, e.who), actor: /payer/i.test(e.who || '') ? 'payer' : ACTOR[e.actor_kind] || 'staff', sim: !!e.sim, document: doc(e), source: src(e), tone: e.refused ? 'danger' : undefined }));
-  hist.filter(h => h.derived && h.at).forEach((h, i) => out.push({ id: `${r.id}:d${i}`, at: h.at, what: (h.upcoming ? 'Upcoming · ' : '') + h.what, who: '', actor: 'system', sim: false, source: 'Derived from the request record and the rules table', tone: h.upcoming ? 'warning' : undefined }));
+  const rd = reauthDue(s, r);
+  hist.filter(h => h.derived && h.at).forEach((h, i) => {
+    // the model's derived "Renewal due" sits on the end date; the lead time puts it earlier (rules table)
+    const re = rd && /^Renewal due$/.test(h.what) ? { at: rd.date, what: `Reauth due · ${rd.sub}`, upcoming: rd.date > s.today } : null;
+    const x = re ? { ...h, ...re } : h;
+    out.push({ id: `${r.id}:d${i}`, at: x.at, what: (x.upcoming ? 'Upcoming · ' : '') + x.what, who: '', actor: 'system', sim: false, source: re ? 'Lead time from the rules table (unverified demo assumption)' : 'Derived from the request record and the rules table', tone: x.upcoming ? 'warning' : undefined });
+  });
   out.sort((a, b) => String(b.at).localeCompare(String(a.at)));
   const latest = out.find(x => !String(x.what).startsWith('Upcoming')); if (latest && na.text) latest.next = { label: na.text };
   return out;

@@ -137,11 +137,13 @@ try {
   await reset('live');
   await p.goto(`${LAURIS}/login?as=khale&next=${encodeURIComponent('/consumers/3310/session/dpn')}`); await p.waitForTimeout(1800);
   await T.test('Confirm saves the block through time.save: the entries, the note boxes and the units all say 5 h 10 min / 3 units; before it, the 90-minute block is not counted', async () => {
+    const v0 = await form(); assert.noMatch(v0['Contact time'] || '', /Afternoon classes|unconfirmed/, 'the unconfirmed block is not in the typed Contact time');
+    await panel().getByText(/Contact time . your timer/).first().waitFor(); assert.ok(await panel().getByText(/Afternoon classes/).count() >= 1, 'the panel lists it (flagged), not the note');
     let { t } = await sumOf(); assert.eq(t.direct, 220, 'seeded confirmed time'); assert.eq(t.units, 2); assert.eq(t.unconfirmed.length, 1, 'the afternoon block starts unconfirmed'); assert.eq(t.unconfirmed[0].minutes, 90);
     await panel().getByText(/^Confirm 3 units/).click(); await p.waitForTimeout(1500);
     const r = await sumOf(); assert.eq(r.t.unconfirmed.length, 0); assert.eq(r.t.direct, 310); assert.eq(r.t.units, 3);
     const v = await form(); assert.eq(v['Direct time'], '5 h 10 min'); assert.eq(v['Units'], '3', 'the note says what the entries say');
-    assert.noMatch(v['Contact time'], /unconfirmed/, 'the confirmed block is no longer marked unconfirmed');
+    assert.noMatch(v['Contact time'], /unconfirmed/, 'the confirmed block is no longer marked unconfirmed'); assert.match(v['Contact time'], /1:40 pm\u20133:10 pm . Afternoon classes/, 'listed only after the person pressed Confirm');
     assert.eq(await panel().getByText(/^Confirm \d units/).count(), 0, 'nothing left to confirm');
   });
   await reset('live');

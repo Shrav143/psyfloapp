@@ -7,7 +7,8 @@
 //   tryApi(...)               { ok, status, error, result, refused, code } (never throws)
 //   state(as)                 the role-projected /api/state for that session (throws when anonymous: 401)
 //   reset(preset)             demo.reset as a presenter; waits for it
-//   login(page, staffId, {presenter, hash})   signs the browser in (token in localStorage, same keys as web/js/api.js)
+//   login(page, staffId, {presenter, hash})   signs the browser in (token in localStorage, same keys as web/js/api.js). Presenter is requested
+//                             explicitly (default true here, pass {presenter:false} for a plain role session); the page itself never asks for it.
 //   suite(name)               .test(title, fn) .skip(title, why) .done(): prints PASS/FAIL lines and a RESULT line; exit code 1 on any FAIL
 import fs from 'node:fs';
 import os from 'node:os';
@@ -45,7 +46,7 @@ export async function session(as) {
   }
   if (cache.has(as)) return cache.get(as);
   const [id, flag] = String(as).split('+'); const presenter = flag === 'p';
-  const j = await post('/api/session', { staffId: id, presenter }); if (!j.ok) throw new Error(`sign-in as ${as}: ${j.error}`);
+  const j = await post('/api/session', { staffId: id, presenter, pin: presenter ? process.env.PRESENTER_PIN : undefined }); if (!j.ok) throw new Error(`sign-in as ${as}: ${j.error}`);
   cache.set(as, j); return j;
 }
 export const forgetSessions = () => cache.clear();
@@ -86,12 +87,12 @@ export async function bridge(action, args) {
 // ---- browser ----
 export async function login(page, staffId, { presenter = true, hash = '/Login' } = {}) {
   await page.goto(BASE + '/#' + hash);
-  await page.evaluate(async ({ id, presenter }) => {
-    const r = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ staffId: id, presenter }) });
+  await page.evaluate(async ({ id, presenter, pin }) => {
+    const r = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ staffId: id, presenter, pin: presenter ? pin : undefined }) });
     const j = await r.json(); if (!j.ok) throw new Error(j.error);
     localStorage.setItem('psyflo_session', JSON.stringify({ token: j.token, actor: j.actor }));
     localStorage.setItem('psyflo_user', id);   // the old shell reads this key; the new shell reads psyflo_session
-  }, { id: staffId, presenter });
+  }, { id: staffId, presenter, pin: process.env.PRESENTER_PIN || '' });
   // the running page still holds the signed-out roster; reload so api.init() adopts the stored token and loads the projected state BEFORE
   // any route renders (without it a following hash navigation can paint a screen from the roster: "reading 'initials'" on the phone)
   await page.reload();

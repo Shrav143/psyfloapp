@@ -12,7 +12,13 @@
 //   api.token                                  the current token (for links that cannot send a header: /files uses the cookie)
 //
 // Lazy sign-in so the old shell keeps working: when no token exists but localStorage.psyflo_user holds a staff id, signIn() is called for
-// it (changes to that key are picked up too); portal URLs (/f/<token>, /parent/<token>/...) sign the guardian in from the token.
+// it; portal URLs (/f/<token>, /parent/<token>/...) sign the guardian in from the token.
+//
+// PRESENTER IS AN EXPLICIT ELEVATION, never a default. Every sign-in this file makes on its own (lazy, legacy, Login role cards) is
+// presenter:false; a presenter session comes only from the dock (or a test) calling signIn(id, {presenter:true, pin}). The server grants it when
+// DEMO_PRESENTER is not 0 and, if PRESENTER_PIN is set, the pin matches. When a PIN is needed and none is given, the shell's askPin hook
+// (api.askPin = async reason => pin | null) is asked; the PIN is remembered for this browser (never sent unless a presenter session is asked for).
+// A write to localStorage.psyflo_user never replaces a session that exists. The hosted preview (window.__HOSTED__) is presenter on purpose.
 // The Lauris panel (an iframe) keeps its own session in sessionStorage: the panel signs in as the Lauris user on the open page.
 const listeners = new Set();
 const KEY = 'psyflo_session';
@@ -21,9 +27,14 @@ const box = () => { try { return framed ? sessionStorage : localStorage; } catch
 const load = () => { try { return JSON.parse(box().getItem(KEY) || 'null'); } catch { return null; } };
 const save = rec => { try { rec ? box().setItem(KEY, JSON.stringify(rec)) : box().removeItem(KEY); } catch { } };
 const legacyUser = () => { try { return framed ? null : localStorage.getItem('psyflo_user'); } catch { return null; } };
+const PIN_KEY = 'psyflo_pin';
+const pinGet = () => { try { return localStorage.getItem(PIN_KEY) || ''; } catch { return ''; } };
+const pinSet = p => { try { p ? localStorage.setItem(PIN_KEY, p) : localStorage.removeItem(PIN_KEY); } catch { } };
+const hostedPresenter = () => !!window.__HOSTED__;   // the hosted preview signs everyone in as a presenter on purpose (no PIN there)
+const fail = (j, fallback) => Object.assign(new Error(j.error || fallback), { status: j.status, pin_required: !!j.pin_required });
 
 export const api = {
-  state: null, config: null, base: '', token: null, actor: null, _roster: null, _busy: null, _hooked: false,
+  state: null, config: null, base: '', token: null, actor: null, _roster: null, _busy: null, _hooked: false, askPin: null,
   async init(base = '') {
     this.base = base;
     this.config = await fetch(base + '/api/config').then(r => r.json());
@@ -42,6 +53,8 @@ export const api = {
   headers(extra = {}) { return this.token ? { 'X-Psyflo-Session': this.token, ...extra } : extra; },
   session() { return this.actor; },
   roster() { return (this._roster || (this.state && this.state.staff) || []); },
+  // { enabled, pin_required }: from the public roster, else the config (the dock asks for a PIN only when one is needed)
+  presenterInfo() { const p = (this.state && this.state.presenter) || this._presenter; return p || { enabled: !!(this.config && this.config.presenter), pin_required: !!(this.config && this.config.pin) }; },
 
   // find a way to be signed in without asking: stored token, the old shell's staff id, or a portal link in the address
   async _ensureSession() {
@@ -56,15 +69,15 @@ export const api = {
       // demo presenter views (no token in the address): ?c=<child> on a family screen, the school portal screens
       if (!framed && (h = hash.match(/^#\/(Parent\w+|FamilyLink|AppealLetter)(?:\?(.*))?$/))) {
         const c = new URLSearchParams(h[2] || '').get('c') || 'TW';
-        await this.signInAs({ portalClient: c }, { presenter: true, quiet: true }); return;
+        await this.signInAs({ portalClient: c }, { presenter: true, quiet: true, lazy: true }); return;
       }
       if (!framed && /^#\/(SchoolPortal|ReferralForm|ReferralSent)\b/.test(hash)) {
         let u = 'rbell'; try { u = localStorage.getItem('psyflo_school_user') || 'rbell'; } catch { }
-        await this.signInAs({ schoolUser: u }, { presenter: true, quiet: true }); return;
+        await this.signInAs({ schoolUser: u }, { presenter: true, quiet: true, lazy: true }); return;
       }
     } catch { }
     const id = legacyUser();
-    if (id) { try { await this.signIn(id, { presenter: true, quiet: true }); } catch { } }
+    if (id) { try { await this.signIn(id, { presenter: hostedPresenter(), quiet: true, lazy: true }); } catch { } }
   },
   // the old shell sets localStorage.psyflo_user on sign-in / sign-out: follow it
   _watchLegacy() {
@@ -75,9 +88,11 @@ export const api = {
       Storage.prototype.removeItem = function (k) { rem.call(this, k); if (this === localStorage && k === 'psyflo_user') api._legacyChanged(null); };
     } catch { }
   },
+  // A page with NO session picks the role the old shell wrote (the same as choosing it on the Login screen: demo identity has no credential).
+  // A session that exists is never replaced by a localStorage write, and nothing here asks for presenter mode.
   async _legacyChanged(id) {
     try {
-      if (id && (!this.actor || this.actor.id !== id)) await this.signIn(id, { presenter: true, quiet: true });
+      if (id && !this.actor) await this.signIn(id, { presenter: hostedPresenter(), quiet: true, lazy: true });
       else if (!id && this.actor && this.actor.kind === 'staff') await this.signOut({ quiet: true });
     } catch { }
   },
@@ -93,20 +108,32 @@ export const api = {
     for (const l of listeners) l(this.state);   // repaint whoever is listening (the shell, the panel)
     return this.actor;
   },
-  async signIn(staffId, { presenter = false, pin, quiet } = {}) {
-    const j = await this._post('/api/session', { staffId, presenter, pin });
-    if (!j.ok) throw new Error(j.error || 'Sign-in failed');
-    return this._adopt(j, quiet);
+  // POST /api/session. A presenter request carries the remembered PIN; when the server says a PIN is needed the shell is asked (unless lazy).
+  async _session(body, { lazy } = {}) {
+    const wants = body.presenter === true;
+    const send = pin => this._post('/api/session', wants && pin ? { ...body, pin } : { ...body, pin: undefined });
+    let pin = (wants && (body.pin || pinGet())) || '';
+    let j = await send(pin);
+    for (let n = 0; wants && !j.ok && j.pin_required && !lazy && typeof this.askPin === 'function' && n < 3; n++) {
+      const p = await this.askPin(n || pin ? 'That PIN did not match. Try again.' : '');
+      if (p == null) break;
+      pin = String(p); j = await send(pin);
+    }
+    if (j.ok && wants && pin) pinSet(pin); else if (wants && j.pin_required) pinSet('');
+    if (!j.ok) throw fail(j, 'Sign-in failed');
+    return j;
+  },
+  async signIn(staffId, { presenter = hostedPresenter(), pin, quiet, lazy } = {}) {
+    return this._adopt(await this._session({ staffId, presenter: !!presenter, pin }, { lazy }), quiet);
   },
   async signInPortal(portalToken, { quiet } = {}) {
     const j = await this._post('/api/session', { portalToken });
-    if (!j.ok) throw new Error(j.error || 'This link is not valid any more');
+    if (!j.ok) throw fail(j, 'This link is not valid any more');
     return this._adopt(j, quiet);
   },
-  async signInAs(who, { presenter = true, pin, quiet } = {}) {
-    const j = await this._post('/api/session', { ...who, presenter, pin });
-    if (!j.ok) throw new Error(j.error || 'Sign-in failed');
-    return this._adopt(j, quiet);
+  // presenter views a portal as that person (needs presenter mode: the server refuses it otherwise)
+  async signInAs(who, { presenter = true, pin, quiet, lazy } = {}) {
+    return this._adopt(await this._session({ ...who, presenter: !!presenter, pin }, { lazy }), quiet);
   },
   async signOut({ quiet } = {}) {
     try { await this._post('/api/session', { signOut: true }); } catch { }
@@ -126,6 +153,7 @@ export const api = {
     if (!s) s = await fetch(this.base + '/api/roster').then(r => r.json()).catch(() => null);   // signed out: the roster only
     if (!s) return;
     this._roster = s.staff && s.public ? s.staff : this._roster;
+    if (s.public && s.presenter) this._presenter = s.presenter;
     const changed = !this.state || s.rev !== this.state.rev || !!s.public !== !!this.state.public;
     this.state = s;
     if (changed || !quiet) for (const l of listeners) l(s);

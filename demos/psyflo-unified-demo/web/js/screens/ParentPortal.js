@@ -398,13 +398,39 @@ export const langToggle = lang => `<div class="fp-lang" role="group" aria-label=
 export const presChip = id => `<span class="fp-pres">${ui.maturity(id)}</span>`;
 
 // Base class of every family screen. A screen supplies `page()` (returns { title, sub, body, back?, pres?, foot? }) and `act()` (its anchors).
+// Who may see a family page: a guardian session made from the family-link token (the link is the identity), or the presenter's deliberate view of
+// a child (the presenter dock is open, or a staff member is signed in in this browser). A bare #/ParentX?c=<child> with neither is NOT a page:
+// it gets the neutral "link not valid" screen and never renders a child's data from a client id. A token in the address must match the session.
+export function portalAccess(params) {
+  const a = api.session && api.session();
+  if (!a || a.kind !== 'guardian') return { ok: false, why: 'no guardian session' };
+  if (params && params.t && a.linkToken && params.t !== a.linkToken) return { ok: false, why: 'link belongs to another family' };
+  if (!a.presenter) return { ok: !!a.linkToken, why: 'link session' };
+  let staff = false; try { staff = !!localStorage.getItem('psyflo_user'); } catch { }
+  const dock = (window.psyflo && window.psyflo.dock) || {};
+  const deliberate = !!(params && params.t) || staff || (dock.state && dock.state !== 'hidden') || dock.mode === 'explore';
+  return { ok: deliberate, why: deliberate ? 'presenter view' : 'presenter session without the presenter dock' };
+}
+const NOLINK = {
+  en: { title: 'This link is not valid', body: 'Open the link Harvest texted you. If you cannot find it, call Harvest and they will send it again.', call: 'Call Harvest' },
+  es: { title: 'Este enlace no es válido', body: 'Abra el enlace que Harvest le envió por mensaje. Si no lo encuentra, llame a Harvest y se lo enviarán otra vez.', call: 'Llame a Harvest' }
+};
+
+// Base class of every family screen. A screen supplies `page()` (returns { title, sub, body, back?, pres?, foot? }) and `act()` (its anchors).
 export class PortalScreen extends Screen {
   get css() { return FP_CSS; }
   async init() {
     // the presenter's ?c=<child> view: switch the demo guardian session to that child (the server allows it only for a presenter session)
     const a = api.session && api.session(); const want = this.params && this.params.c;
-    if (want && !this.params.t && a && a.kind === 'guardian' && a.client !== want && a.presenter) { try { await api.signInAs({ portalClient: want }, { presenter: true, quiet: true }); } catch { } }
-    if (this.setup) await this.setup();
+    if (want && !this.params.t && a && a.kind === 'guardian' && a.client !== want && a.presenter && portalAccess(this.params).ok) { try { await api.signInAs({ portalClient: want }, { presenter: true, quiet: true }); } catch { } }
+    if (portalAccess(this.params).ok && this.setup) await this.setup();
+  }
+  invalid() {
+    const lang = getLang(null); const t = NOLINK[lang]; const u = UI[lang]; const org = (this.s && this.s.org) || {};
+    return raw(`<div class="fp" lang="${lang}"><header class="fp-hd"><div class="fp-brand">${u.brand}</div>${langToggle(lang)}</header>
+      <main class="fp-main" data-link-invalid><div><h1 class="fp-h1">${t.title}</h1><p class="fp-sub">${t.body}</p></div>
+      ${org.phone ? `<section class="fp-card"><h2 class="fp-h2">${t.call}</h2><p class="fp-p"><b>${esc(org.phone)}</b> (${lang === 'es' ? 'número de demostración' : 'demo number'})</p></section>` : ''}</main>
+      <footer class="fp-ft"><span>${u.demo}</span></footer></div>`);
   }
   ctx() { return famCtx(this.s, this.params); }
   lang() { return getLang(this.ctx().client); }
@@ -420,9 +446,10 @@ export class PortalScreen extends Screen {
       <footer class="fp-ft"><span>${u.secure}</span>${foot}<button type="button" class="fp-link" data-call>${u.call}</button><span>${u.demo}</span></footer>
     </div>`);
   }
-  renderVals() { return { page: this.frame(this.page()) }; }
+  renderVals() { if (!portalAccess(this.params).ok) return { page: this.invalid() }; return { page: this.frame(this.page()) }; }
   after(root) {
     root.querySelectorAll('[data-lang]').forEach(b => { b.onclick = () => { setLang(b.dataset.lang); this.repaint(); }; });
+    if (!portalAccess(this.params).ok) return;
     root.querySelectorAll('[data-call]').forEach(b => { b.onclick = () => { const c = this.ctx(); callSheet(this.s, c, getLang(c.client)); }; });
     if (!root._fpKey) { root._fpKey = true; root.addEventListener('keydown', e => { if (e.key === ' ' && e.target.matches && e.target.matches('a[role=button]')) { e.preventDefault(); e.target.click(); } }); }
     if (this.afterPaint) this.afterPaint(root);

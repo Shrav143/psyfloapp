@@ -125,6 +125,11 @@ export function timeSummary(s, clientId, date = clockToday(s), { staff } = {}) {
   if (unconfirmed.length) flags.push({ key: 'unconfirmed', tone: 'warning', text: `${unconfirmed.length} block${unconfirmed.length === 1 ? '' : 's'} to confirm (${fmtMin(unionMinutes(unconfirmed))}, not counted)` });
   if (note && noteMin != null && noteMin !== directMin) flags.push({ key: 'mismatch', tone: 'danger', text: `The note states ${fmtMin(noteMin)}; saved direct time is ${fmtMin(directMin)}` });
   if (note && documented.units != null && documented.units > units) flags.push({ key: 'units', tone: 'danger', text: `The note states ${documented.units} unit${documented.units === 1 ? '' : 's'}; the rule gives ${units} for ${fmtMin(directMin)}` });
+  // a processed note that lists a block nobody confirmed (write-once: it cannot be undone, only shown)
+  if (note && note.fields && note.fields['Contact time']) {
+    const listedUnconf = entriesInNoteText(all.filter(e => !(e.status === 'saved' && e.confirmed)), note.fields['Contact time']);
+    if (listedUnconf.length) flags.push({ key: 'note_lists_unconfirmed', tone: 'danger', text: `The processed note lists ${listedUnconf.length} block${listedUnconf.length === 1 ? '' : 's'} nobody confirmed (${fmtMin(unionMinutes(listedUnconf))}); they are not counted as direct time` });
+  }
   const checks = all.filter(needsCheck);
   if (checks.length) flags.push({ key: 'check', tone: 'neutral', text: `${checks.length} block${checks.length === 1 ? '' : 's'} to check against the not-reimbursable list` });
   const overlap = all.filter(e => overlapsOf(e, all).length);
@@ -132,6 +137,14 @@ export function timeSummary(s, clientId, date = clockToday(s), { staff } = {}) {
   const unitRule = unitRuleOf(s);
   return { client: clientId, date, entries: all, recorded, direct: directMin, documented, linkedMinutes: linkedMin, linkedCount: linked.length,
     units, maxUnits: maxUnitsPerDay(s), bands: unitBands(s, 'tdt'), unitRule, flags, drafts, unconfirmed, checks, overlapIds: overlap.map(e => e.id), note: note ? note.id : null };
+}
+
+// The rows the daily note's "Contact time" box may carry: saved, CONFIRMED, direct entries only (an unconfirmed or stopped block is never typed into a note,
+// because a processed note is write-once). Same line format as the DPN uses ("8:05 am–8:35 am · what"). direct/units come from the same entries and the rules table.
+export function confirmedContact(s, clientId, date = clockToday(s), { staff } = {}) {
+  const rows = entriesOf(s, { client: clientId, staff, date }).filter(e => e.status === 'saved' && e.confirmed && (e.kind || 'direct') === 'direct');
+  const direct = unionMinutes(rows);
+  return { entries: rows, lines: rows.map(e => `${clock12(e.start)}–${clock12(e.end)} · ${e.what}`).join('\n'), minutes: direct, text: fmtMin(direct), units: unitsFor(s, 'tdt', direct) };
 }
 
 // legacy readers (the old DPN contact-time rows): [from, to, what, 'unconfirmed'?] for a student and day, saved entries only

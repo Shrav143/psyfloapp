@@ -92,6 +92,8 @@ export const hooks = {
     const list = entriesOf(s, { client: ev.client.id, date }).filter(e => e.status === 'saved' && e.confirmed && (e.kind || 'direct') === 'direct');
     const matched = entriesInNoteText(list, ev.values && ev.values['Contact time']);
     for (const e of matched) e.dpn = { key: (e.dpn && e.dpn.key) || dpnKey(e.client, e.date), linked_at: (e.dpn && e.dpn.linked_at) || store.now(), linked_by: (e.dpn && e.dpn.linked_by) || 'bridge', note: note ? note.id : null, session: ev.session || null, documented_at: store.now() };
+    const unconf = entriesInNoteText(entriesOf(s, { client: ev.client.id, date }).filter(e => !(e.status === 'saved' && e.confirmed)), ev.values && ev.values['Contact time']);
+    if (unconf.length) store.event(`Daily note processed in Lauris lists ${unconf.length} time block${unconf.length === 1 ? '' : 's'} nobody confirmed (${unconf.map(e => range12(e.start, e.end)).join(', ')}). They are not counted as direct time and are not linked to the note.`, 'bridge', ev.client.id, { actor_kind: 'bridge' });
     store.event(`Daily note processed in Lauris · ${matched.length} of ${list.length} saved time entr${list.length === 1 ? 'y is' : 'ies are'} listed in its Contact time box`, 'bridge', ev.client.id, { actor_kind: 'bridge' });
   },
   advance({ state }) { for (const id of Object.keys(state.timers || {})) syncBlocks(state, id); }

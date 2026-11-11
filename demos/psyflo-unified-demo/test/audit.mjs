@@ -179,7 +179,8 @@ const PANEL_PAGES = {
 function panelTargets(list) {
   return list.map(([as, p, name]) => ({ id: `panel ${as} · ${name} (400)`, build: page => ({ id: `panel ${as} · ${name} (400)`, role: as, kind: 'panel', scopes: ['#panel'], includeRail: false, expand: false,
     async open() {
-      await page.goto('about:blank'); await page.goto(`${LAURIS}/login?as=${as}&next=${encodeURIComponent(p)}`, { waitUntil: 'domcontentloaded' });
+      for (let i = 0; i < 4; i++) { try { await page.goto('about:blank'); break; } catch { await page.waitForTimeout(500); } }          // the previous click may still be moving the Lauris page
+      await page.goto(`${LAURIS}/login?as=${as}&next=${encodeURIComponent(p)}`, { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => { const f = document.getElementById('psyflo-frame'); return !!f; }, null, { timeout: 15000 }).catch(() => { });
       const t0 = Date.now(); while (Date.now() - t0 < 12000) { const f = page.frames().find(f => f.url().includes('/panel/')); if (f) { const ready = await f.evaluate(() => !!document.querySelector('#panel .body, #panel .ph .pt') && !/Loading/.test((document.querySelector('#panel .pt b') || {}).textContent || '')).catch(() => false); if (ready) return; } await new Promise(r => setTimeout(r, 120)); }
     },

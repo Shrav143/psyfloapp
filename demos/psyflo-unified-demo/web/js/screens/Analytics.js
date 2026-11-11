@@ -76,7 +76,7 @@ register('Analytics', class extends Screen {
     if (st.section === 'payer') head += `<span class="ui-sp"></span><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="guidance">Payer guidance</button>`;
     head += '</div>';
     if (view.unavailable) return head + ui.emptyState({ tone: 'empty', title: 'Aggregates not ready', body: 'Open the presenter dock and reset the demo data to rebuild them.' });
-    const strip = view.strip ? `<div class="a-strip">${ui.statStrip(view.strip.map(x => ({ label: x.label, value: x.value })), { label: title })}</div>` : '';
+    const strip = view.strip ? `<div class="a-strip">${ui.statStrip(view.strip.map(x => ({ label: x.label, value: C.cellText(x.value) })), { label: title })}</div>` : '';
     const notes = (view.notes || []).map(n => `<p class="a-muted">${esc(n)}</p>`).join('');
     const grid = `<div class="a-grid">${(view.panels || []).map(p => renderPanel(p, o)).join('')}</div>`;
     let sample = '';
@@ -193,14 +193,14 @@ register('Analytics', class extends Screen {
     this.fileDialog('School-division report', `<p>${ui.datasetChip(C.PROV.EXPORT)} <span class="a-muted">By school. Schools with fewer than ${min} students are not shown.</span></p>${table}`, `Psyflo_division_report_${C.todayOf(s)}`, head, rows, 'Sample data, illustrative');
   }
   grant() {
-    const s = this.s, actor = this.actor; const F = this.state.f; const st = V.sectionView(s, actor, C.PROV.CASE, 'payer', { period: F.period, site: F.site }).strip || []; const g = id => (st.find(x => x.id === id) || {}).value;
+    const s = this.s, actor = this.actor; const F = this.state.f; const st = V.sectionView(s, actor, C.PROV.CASE, 'payer', { period: F.period, site: F.site }).strip || []; const g = id => C.cellText((st.find(x => x.id === id) || {}).value); const gn = id => { const v = (st.find(x => x.id === id) || {}).value; return typeof v === 'number' ? v : null; };
     const min = C.minN(s); const pop = V.sectionView(s, actor, C.PROV.CASE, 'population', { period: F.period, site: F.site });
     const enrol = ((pop.panels || []).find(p => p.id === 'pop.enrollment') || { rows: [] }).rows.find(r => r.label === 'In service');
     const b = s.analytics_baseline || {}; const m = s.migration || {}; const comp = s.compliance || {};
     const lines = [
       [enrol && typeof enrol.n === 'number' ? `${enrol.n} students are in service in the stored records.` : `Fewer than ${min} students are in service in a group this size, so no count is given.`, C.PROV.CASE, 'Stored client records'],
-      [`${g('submitted') ?? 0} requests were sent and ${g('decided') ?? 0} decided in the period.`, C.PROV.CASE, 'Stored requests'],
-      [(g('decided') || 0) >= min ? `${g('partial')} of ${g('decided')} decided requests were partial.` : `Fewer than ${min} decided requests: no partial share is given.`, C.PROV.CASE, 'Stored requests'],
+      [`${g('submitted')} requests were sent and ${g('decided')} decided in the period.`, C.PROV.CASE, 'Stored requests'],
+      [gn('decided') != null && gn('decided') >= min && gn('partial') != null ? `${g('partial')} of ${g('decided')} decided requests were partial.` : `Fewer than ${min} decided requests: no partial share is given.`, C.PROV.CASE, 'Stored requests'],
       m.active_students != null ? [`${m.active_students} active TDT students in the seeded export.`, C.PROV.EXPORT, 'Sample data, illustrative'] : null,
       comp.incident_reports != null ? [`${comp.incident_reports} incident reports and ${comp.cps_reports ?? 0} CPS reports in the seeded month.`, C.PROV.EXPORT, 'Sample data, illustrative'] : null,
       b.partial != null ? [`${Math.round(b.partial * 100)}% of decided SRAs were partial in the seeded 12 months.`, C.PROV.EXPORT, 'Sample data, illustrative'] : null

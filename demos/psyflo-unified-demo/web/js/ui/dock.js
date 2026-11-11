@@ -28,6 +28,7 @@ export function presenterDock(m = {}) {
       <span class="sh-dock__sp"></span>
       <button type="button" class="sh-dock__b" data-dock="mode" title="${mode === 'explore' ? 'Switch to Presentation mode' : 'Switch to Explore mode'}">${icon('chevR', 14)}<span>${mode === 'explore' ? 'Presentation mode' : 'Explore mode'}</span></button>
       <span class="sh-dock__meta">${esc(m.preset === 'canvas' ? 'Canvas snapshot' : 'Live flows')} · ${esc(m.today || '')}</span>
+      ${m.pinRequired && !m.presenter ? `<button type="button" class="sh-dock__b" data-dock="unlock" title="The controls here need the presenter PIN">${icon('lock', 14)}<span>Unlock with PIN</span></button>` : ''}
       ${mode === 'explore' ? '' : `<button type="button" class="sh-dock__b sh-dock__x" data-dock="hide" aria-label="Hide presenter tools">${icon('close', 15)}</button>`}
     </div></div>`;
 }
@@ -123,6 +124,7 @@ export function mountDock(el, ctx) {
     else if (k === 'mode') ctx.setMode(el.dataset.mode === 'explore' ? 'presentation' : 'explore');
     else if (k === 'maturity') ctx.setMaturity(d.getAttribute('aria-pressed') !== 'true');
     else if (k === 'notes') ctx.openNotes(ctx.current()?.id, { returnFocus: d });
+    else if (k === 'unlock' && ctx.unlock) ctx.unlock();
   });
   return { closeMenu };
 }

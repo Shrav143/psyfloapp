@@ -122,7 +122,7 @@ try {
   await T.test('microphone states are explicit screens: consent first (recorded), then blocked when the browser says no; typing always works and needs no consent', async () => {
     await reset('live');
     const { ctx, p } = await phone('khale', { init: SR_MOCK('not-allowed') }); await go(p, '/MobileDictate?client=MR');
-    let t = await text(p); assert.match(t, /Use the microphone\?/); assert.match(t, /Psyflo keeps the text, not the audio/); assert.eq(await p.locator('#spoken').count(), 1, 'typing is available at once');
+    let t = await text(p); assert.match(t, /Use the microphone\?/); assert.match(t, /Psyflo keeps the text, not the audio/); assert.match(t, /Demo data · nothing is real/, 'the consent screen says the data is synthetic'); assert.eq(await p.locator('#spoken').count(), 1, 'typing is available at once');
     await p.screenshot({ path: SHOTS + '/mobile-9-mic-consent.png' });
     await p.getByRole('link', { name: 'Allow today' }).click(); await p.waitForTimeout(900);
     t = await text(p); assert.match(t, /The microphone is blocked/); assert.match(t, /Try again/); assert.match(t, /Type instead/); await p.screenshot({ path: SHOTS + '/mobile-10-mic-blocked.png' });

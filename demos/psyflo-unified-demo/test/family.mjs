@@ -2,7 +2,7 @@
 // Pending · Completed · Ready to review), the appeal letter states (Draft · Ready to review · Signed · Submitted by staff), the letters in plain words,
 // accessibility of every family screen at 390 px (landmarks, one h1, no horizontal scroll, targets of 44 px, 16 px body) and the pure selectors.
 // Standalone: node test/family.mjs with BASE=... (test/run-all.mjs starts a fresh server).
-import { suite, assert, api, tryApi, state, reset, playwright, errors, BASE, SHOTS } from './lib/index.mjs';
+import { suite, assert, api, tryApi, state, reset, login, playwright, errors, BASE, SHOTS } from './lib/index.mjs';
 import { checklist, sigState, appealView, signForms, referralStatus } from '../web/js/shared/sel/portal.js';
 
 const T = suite('family');
@@ -25,7 +25,7 @@ const phoneAs = async (token, route, lang) => {
 };
 const asGuardianPresenter = async (client, route) => {
   const j = await guardianToken(client); const c = await b.newContext({ viewport: { width: 390, height: 844 } });
-  await c.addInitScript(({ token, actor }) => { try { localStorage.setItem('psyflo_session', JSON.stringify({ token, actor })); } catch { } }, { token: j.token, actor: j.actor });
+  await c.addInitScript(({ token, actor }) => { try { localStorage.setItem('psyflo_session', JSON.stringify({ token, actor })); localStorage.setItem('psyflo_dock', 'open'); } catch { } }, { token: j.token, actor: j.actor });
   const p = await c.newPage(); const e = errors(p);
   await p.goto(`${BASE}/#/${route}`); await p.waitForSelector('#root main', { timeout: 8000 }); await p.waitForTimeout(250);
   return { p, e, c, token: j.token };
@@ -66,6 +66,29 @@ try {
     const j = await guardianToken('EC'); const s = await state({ token: j.token });
     assert.deepEq(s.clients.map(c => c.id), ['EC']); assert.ok(s.requests.some(r => r.id === 'R-0384' && r.stage === 'denied'));
     const d = s.appeal_drafts['R-0384']; assert.ok(d && d.status === 'ready' && !('prepared_by' in d), JSON.stringify(Object.keys(d || {})));
+  });
+
+  // ---------- no link, no page: a bare client id never opens a child's page ----------
+  const FAMILY_ROUTES = ['ParentPortal', 'ParentSign', 'ParentEnroll', 'ParentLetters', 'ParentProgress', 'ParentQuarterly', 'ParentSchedule', 'ParentSurvey', 'FamilyLink', 'AppealLetter'];
+  for (const route of FAMILY_ROUTES) {
+    await T.test(`${route} without a family link (bare ?c=MR, no token, no presenter): the neutral "link not valid" screen, nothing of the child`, async () => {
+      const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage();
+      await p.goto(`${BASE}/#/${route}?c=MR`); await p.waitForSelector('#root main', { timeout: 8000 }); await p.waitForTimeout(500);
+      assert.eq(await p.locator('[data-link-invalid]').count(), 1, 'the invalid-link screen'); const t = await text(p);
+      assert.match(t, /This link is not valid/); assert.noMatch(t, /M\.R\.|Tyler|Ethan|goal|Anthem|units|Done|To do/i, 'no child data');
+      assert.eq(await p.locator('h1').count(), 1); assert.eq(await p.locator('main').count(), 1);
+      await c.close();
+    });
+  }
+  await T.test('a made-up or foreign token is not a page either, and a token never opens another family\'s child', async () => {
+    let r = await phoneAs('not-a-real-token', 'ParentProgress'); assert.eq(await r.p.locator('[data-link-invalid]').count(), 1); assert.noMatch(await text(r.p), /Tyler|M\.R\./); await r.c.close();
+    r = await phoneAs('ar-demo', 'ParentProgress?c=TW'); assert.noMatch(await text(r.p), /Tyler/, "a bare ?c= cannot move a link session to another child"); await r.c.close();
+    const s = await state(AR); assert.ok(!s.clients.some(c => c.id === 'TW'));
+  });
+  await T.test('the presenter\'s view of a child still works when it is deliberate: dock open, or a staff member signed in in this browser', async () => {
+    const g = await asGuardianPresenter('TW', 'ParentProgress'); assert.eq(await g.p.locator('[data-link-invalid]').count(), 0); assert.match(await text(g.p), /Tyler/); await g.c.close();
+    const c = await b.newContext({ viewport: { width: 390, height: 844 } }); const p = await c.newPage(); await login(p, 'jperez', { presenter: true, hash: '/MyWork' });
+    await p.goto(`${BASE}/#/ParentPortal`); await p.waitForSelector('#root .fp'); await p.waitForTimeout(500); assert.eq(await p.locator('[data-link-invalid]').count(), 0); assert.match(await text(p), /Tyler/); await c.close();
   });
 
   // ---------- the checklist and the screens at 390 px ----------

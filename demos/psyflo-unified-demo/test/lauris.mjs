@@ -65,6 +65,21 @@ await T.test('a script that omits the payer or the end date is not refused (the 
   const ok = await lpost('/consumers/3402/authorization', 'jperez', { units: '150', start: '2026-11-01' }); assert.match(ok.loc, /authorization=3402/);
 });
 
+await T.test('units gate: a daily note that enters units is refused (and kept as Saved Session) when none are authorized, none are left, or the authorization ended; a note with no units is not', async () => {
+  for (const [no, who, why] of [[3402, 'jperez', /0 units available/], [3330, 'khale', /No authorization is on file/]]) {
+    const before = (await snap()).consumers.find(c => c.no === no);
+    const r = await lpost(`/consumers/${no}/session/dpn`, who, { action: 'process', f2: '220 min', f3: '2', f9: 'note that should not be processed' });
+    assert.match(r.loc, new RegExp(`/consumers/${no}/session/dpn\\?id=\\d+&blocked=`), 'back to the form with the reason'); const id = r.loc.match(/id=(\d+)/)[1];
+    const pg = (await lget(r.loc, who)).text; assert.eq(flash(pg), 'blocked'); assert.match(decodeURIComponent(r.loc), why); assert.match(pg, /cannot be processed with 2 units/); assert.match(pg, /Your entries are kept in Saved Session/);
+    const d = await snap(); const s = d.sessions.find(x => String(x.id) === id); assert.eq(s.status, 'saved', 'nothing was processed'); assert.eq(s.values['Narrative'], 'note that should not be processed', 'what was typed is kept'); assert.deepEq(d.consumers.find(c => c.no === no).active_file, before.active_file, 'the Active File did not change');
+    assert.eq(d.consumers.find(c => c.no === no).auth?.available, before.auth?.available, 'no units were drawn');
+  }
+  assert.match((await lget('/consumers/3402/session/dpn', 'jperez')).text, /id="no-units-note"/, 'the form says so before anyone presses anything');
+  const ok = await lpost('/consumers/3402/session/dpn', 'jperez', { action: 'process', f9: 'a note that enters no units' }); assert.match(ok.loc, /processed=\d+/, 'no units entered: not refused');
+  const mr = await lpost('/consumers/3310/session/dpn', 'khale', { action: 'process', f2: '220 min', f3: '2', f9: 'with units available' }); assert.match(mr.loc, /processed=\d+/, 'units available: processed');
+  await reset('canvas');
+});
+
 await T.test('the Lauris pages print the demo clock; a day advance moves Lauris with Psyflo (new pages too)', async () => {
   let s = await state('jperez'); const us = d => d.slice(5, 7) + '/' + d.slice(8) + '/' + d.slice(0, 4);
   for (const p of ['/consumers', '/authorizations', '/time', '/consumers/3310?tab=auth']) assert.match((await lget(p, 'jperez')).text, new RegExp(`id="lauris-clock"[^>]*>${us(s.today)} \\d\\d:\\d\\d`), p);

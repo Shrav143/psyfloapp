@@ -43,7 +43,7 @@ const INTENTS = [
 ];
 
 function fromScore(sc, id, f) { const r = sc.rows.find(x => x.id === id); return { text: f(r), panel: { id: 'ask.' + id, title: r.label, kind: 'table', columns: [{ key: 'label', label: 'Detail' }, { key: 'value', label: 'Value', align: 'right' }], rows: [{ label: 'Result', value: r.headline }, ...r.breakdown.map(b => ({ label: b.label, value: b.value }))], definition: r.definition } }; }
-const stripText = v => { const st = v.strip || []; const g = id => (st.find(x => x.id === id) || {}).value; return `${g('requests')} requests in this period: ${g('decided')} decided (${g('partial')} partial, ${g('denied')} denied), ${g('pending')} awaiting a decision.`; };
+const stripText = v => { const st = v.strip || []; const g = id => cellText((st.find(x => x.id === id) || {}).value); return `${g('requests')} requests in this period: ${g('decided')} decided (${g('partial')} partial, ${g('denied')} denied), ${g('pending')} awaiting a decision.`; };
 const unitsText = v => { const p = v.panels.find(x => x.id === 'pay.units'); const g = l => (p.rows.find(r => r.label === l) || {}).v; return `${cellText(g('Units approved'))} units approved of ${cellText(g('Units requested'))} requested on decided requests (${cellText(g('Share approved'))}).`; };
 function pop(v, id) {
   const p = v.panels.find(x => x.id === id); const rows = (p.rows || []).filter(r => !r._small && !isSup(r.n));

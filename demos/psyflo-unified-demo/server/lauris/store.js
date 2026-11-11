@@ -112,7 +112,7 @@ function build(preset) {
   return db;
 }
 
-class LaurisError extends Error { constructor(msg, status = 409) { super(msg); this.status = status; } }
+class LaurisError extends Error { constructor(msg, status = 409, extra = {}) { super(msg); this.status = status; Object.assign(this, extra); } }
 
 class LaurisDB {
   constructor() {
@@ -151,6 +151,15 @@ class LaurisDB {
     if (s && s.status !== 'saved' && s.status !== 'rejected') throw new LaurisError(`This ${FORMS[s.form]?.short || 'session'} is ${s.status === 'approved' ? 'signed' : 'processed'} and read-only. It cannot be changed or processed again.`);
     if (!s) { s = { id: this.db.nextSession++, no: Number(no), form, date: this.db.today, staff, status: 'saved', values: {} }; this.db.sessions.push(s); }
     s.values = values; s.saved_at = this.stamp();
+    // Units gate (Lauris behaviour): a daily note that enters units cannot be processed when the consumer has no authorized units available (no
+    // authorization, none left, or the authorization has ended). What was typed is kept as Saved Session so nothing is lost; nothing is processed.
+    // No clinic rule in seed/extra/rules.json allows processing without units, so there is no override.
+    if (process && form === 'dpn') {
+      const u0 = parseInt(values['Units'], 10) || 0; const k = this.consumer(s.no); const a = k && k.auth;
+      const ended = a && a.end_us && /^\d\d\/\d\d\/\d{4}$/.test(a.end_us) && `${a.end_us.slice(6)}-${a.end_us.slice(0, 2)}-${a.end_us.slice(3, 5)}` < this.db.today;
+      const why = !k || u0 <= 0 ? '' : (!a || a.available == null) ? 'No authorization is on file for this consumer.' : a.available <= 0 ? '0 units available.' : ended ? `The authorization ended ${a.end_us}.` : '';
+      if (why) { this.save(); throw new LaurisError(`This Daily Progress Note cannot be processed with ${u0} unit${u0 === 1 ? '' : 's'}: ${why} Enter an authorization first. Your entries are kept in Saved Session.`, 409, { sessionId: s.id }); }
+    }
     const c = this.consumer(s.no);
     if (c) c.updated = this.db.today;
     if (process) {

@@ -7,7 +7,10 @@ import { textOf, plainText, plural, sectionLabel, approvalLabel, repeatedParagra
 import * as M from '../shared/model.js';
 
 const tone = t => t || 'neutral';
-const chips = it => [it.chip ? ui.chip(it.chip.text, { tone: tone(it.chip.tone), size: 'sm' }) : '', it.rule ? ui.sourceChip(it.rule) : ''].join('');
+// every source chip carries its date: the day it was verified, or "Not verified" (ui.sourceChip itself only puts the date in its tooltip)
+export const asOf = r => r && r.verified_on ? 'Checked ' + M.fmtDate(r.verified_on, { year: true }) : 'Not verified';
+export const withDate = r => r ? `${ui.sourceChip(r)}<span class="mw-asof se-asof">${esc(asOf(r))}</span>` : '';
+const chips = it => [it.chip ? ui.chip(it.chip.text, { tone: tone(it.chip.tone), size: 'sm' }) : '', it.rule ? withDate(it.rule) : ''].join('');
 
 // One line of work. o.resolve(it) -> { href } | { disabled: 'why' } ; the first row of a list may carry the primary button.
 export function rowHtml(it, o = {}) {
@@ -56,9 +59,9 @@ export function dayHtml(v, st, o = {}) {
   else h += `<p class="mw-none">Nothing is waiting for ${v.self ? 'you' : esc(v.short)}.</p>`;
   if (v.behind.length) h += `<section class="mw-group"><h2 class="mw-h2">Behind ${countChip(v.behind.length, 'danger')}<span class="mw-h2__s">${esc(v.behindHead)}</span></h2>${dayRows(v.behind, o, { tone: 'danger' })}${v.late.length ? `<p class="mw-none">Came in late this month: ${esc(v.late.join(', '))}.</p>` : ''}</section>`;
   const dueShown = st.dueAll ? v.due : v.due.slice(0, 4);
-  h += `<section class="mw-group"><h2 class="mw-h2">Due next ${countChip(v.due.length)} ${o.rule24 ? ui.sourceChip(o.rule24) : ''}</h2>${v.due.length ? dayRows(dueShown, o) + (v.due.length > 4 ? `<div class="mw-more"><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="dueAll">${st.dueAll ? 'Show 4' : 'Show all ' + v.due.length}</button></div>` : '') : '<p class="mw-none">Nothing else is due.</p>'}</section>`;
+  h += `<section class="mw-group"><h2 class="mw-h2">Due next ${countChip(v.due.length)} ${o.rule24 ? withDate(o.rule24) : ''}</h2>${v.due.length ? dayRows(dueShown, o) + (v.due.length > 4 ? `<div class="mw-more"><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="dueAll">${st.dueAll ? 'Show 4' : 'Show all ' + v.due.length}</button></div>` : '') : '<p class="mw-none">Nothing else is due.</p>'}</section>`;
   if (v.fixes.length) h += `<section class="mw-group"><h2 class="mw-h2">To fix ${countChip(v.fixes.length, 'warning')}</h2>${dayRows(v.fixes, o, { tone: 'danger' })}<p class="mw-none">${ui.datasetChip('harvest_export')} Rejected-form lines come from sample data, not from Lauris.</p></section>`;
-  h += `<details class="mw-acc"><summary>This month</summary><dl class="ui-dl">${v.quality.map(([l, x]) => `<div class="ui-dl__r"><dt>${esc(l)}</dt><dd>${esc(x)}</dd></div>`).join('')}</dl>${v.hours ? `<p class="mw-none">Daily notes count as on time within ${v.hours} h of the session ${ui.sourceChip(o.rule24)}</p>` : ''}</details>`;
+  h += `<details class="mw-acc"><summary>This month</summary><dl class="ui-dl">${v.quality.map(([l, x]) => `<div class="ui-dl__r"><dt>${esc(l)}</dt><dd>${esc(x)}</dd></div>`).join('')}</dl>${v.hours ? `<p class="mw-none">Daily notes count as on time within ${v.hours} h of the session ${withDate(o.rule24)}</p>` : ''}</details>`;
   if (v.goals.length) h += `<details class="mw-acc"><summary>Goals ${countChip(v.goals.length)}</summary><ul class="mw-goals">${v.goals.map(g => `<li>${ui.progress({ label: g.t, value: g.pct, max: 100, text: g.d })}</li>`).join('')}</ul><p class="mw-none">${ui.datasetChip('harvest_export')}</p></details>`;
   return h;
 }

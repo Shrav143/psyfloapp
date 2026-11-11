@@ -196,7 +196,7 @@ const tag = P => P.map(p => ({ ...p, provenance: PROV.COHORT }));
 export function cohortSection(s, section, rawF) {
   const F = cohortFilters(rawF); const e = env(s, F); const W = cohortPeriod(F);
   const meta = { dataset: PROV.COHORT, period: W, filters: F, asOf: COHORT_AS_OF, source: COHORT_SOURCE, notes: [] };
-  if (section === 'payer') { const R_ = cohortRequests(F); return { ...meta, strip: payerStrip(R_), panels: tag(payerPanels(R_, e)) }; }
+  if (section === 'payer') { const R_ = cohortRequests(F); return { ...meta, strip: payerStrip(R_, e.min), panels: tag(payerPanels(R_, e)) }; }
   const facts = cohortFacts(F);
   return { ...meta, panels: tag(section === 'outcomes' ? outcomePanels(facts, e) : populationPanels(facts, e)), count: facts.length };
 }
