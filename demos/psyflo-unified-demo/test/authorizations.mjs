@@ -2,7 +2,9 @@
 // Standalone: `BASE=http://localhost:4830 node test/authorizations.mjs` (test/run-all.mjs starts a fresh server for it).
 import { suite, assert, api, tryApi, state, reset, bridge, lpost, login, playwright, errors, sleep, BASE, SHOTS } from './lib/index.mjs';
 import { prepTWTo } from './lib/prep.mjs';
-import { authQueue, normalizeParams, GROUP, STAGE_LIST, CHIPS, authCase, unitsView, deadline } from '../web/js/shared/sel/auth.js';
+import { authQueue, normalizeParams, GROUP, STAGE_LIST, CHIPS, authCase, unitsView, deadline, reauthDue } from '../web/js/shared/sel/auth.js';
+import { evidenceIndex } from '../web/js/shared/enhance.js';
+import { addBusinessDays } from '../web/js/shared/dates.js';
 import { STATUS } from '../web/js/ui/chip.js';
 import { draftInitialSRA } from '../web/js/shared/draft.js';
 
@@ -39,6 +41,21 @@ await T.test('deadlines carry a source: day counts from the rules table, Harvest
   const d = deadline(s, s.requests.find(r => r.id === 'R-0399')); assert.eq(d.sev, 'overdue'); assert.match(d.rule.verification, /Harvest-reported/); assert.match(d.text, /^Day \d+/);
   const e = deadline(s, s.requests.find(r => r.id === 'R-0384')); assert.eq(e.kind, 'appeal'); assert.match(e.rule.verification, /Unverified/);
   const u = unitsView(s, s.requests.find(r => r.id === 'R-0395')); assert.eq(u.left, 14); assert.eq(u.daysLeft, 4);
+});
+await T.test('QA2 D6: the case Evidence section reads the same gaps as the Scan & Enhance panel (evidenceIndex), never a fixed "Nothing missing"', async () => {
+  const s = await state('jperez'); const me = await actor('jperez'); const idx = evidenceIndex(s, 'MR');
+  const c = authCase(s, 'R-0411', me); assert.ok(idx.gaps.length > 0, 'the seeded M.R. record has gaps in the default period');
+  assert.eq(c.evidence.gaps.length, idx.gaps.length, 'same count as the panel'); assert.eq(c.evidence.missing.length, idx.gaps.filter(g => g.kind === 'missing').length);
+  assert.eq(c.evidence.gaps.map(g => g.id).join(), idx.gaps.map(g => g.id).join(), 'same gaps, same order');
+  // a role without note text sees only the structural gaps (a withheld text is not "missing")
+  const a = authCase(await state('dowens'), 'R-0411', await actor('dowens')); assert.ok(a.evidence.gaps.every(g => ['days', 'weeks', 'months', 'units'].includes(g.id)), a.evidence.gaps.map(g => g.id).join());
+});
+await T.test('QA2 D10: Reauth due is the end date minus the lead time from the rules table, with its source; the end date is not the due date', async () => {
+  const s = await state('jperez'); const r = s.requests.find(x => x.id === 'R-0411'); const lead = s.rules.find(x => x.key === 'continued_stay.lead_business_days');
+  const end = s.clients.find(x => x.id === 'MR').authorization.end; const want = addBusinessDays(end, -lead.value);
+  const rd = reauthDue(s, r); assert.eq(rd.date, want); assert.ok(rd.date < end, 'earlier than the end date'); assert.match(rd.text, /^Reauth due /);
+  const d = deadline(s, r); assert.eq(d.date, want); assert.match(d.text, /^Reauth (was )?due /); assert.match(d.sub, new RegExp(lead.value + ' business days')); assert.eq(d.rule.key, 'continued_stay.lead_business_days'); assert.match(d.rule.verification || d.rule.category || '', /nverified|UNVERIFIED/i);
+  const c = authCase(s, 'R-0411', await actor('jperez')); assert.ok(c.timeline.some(e => /^(Upcoming · )?Reauth due/.test(e.what) && String(e.at).slice(0, 10) === want), 'the timeline carries the same date');
 });
 await T.test('roles: admin sees status, units and the queue but no evidence text; direct support has no queue', async () => {
   const s = await state('dowens'); const q = authQueue(s, normalizeParams({}), await actor('dowens'));

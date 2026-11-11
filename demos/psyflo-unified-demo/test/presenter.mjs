@@ -148,6 +148,23 @@ const apiActor = page => page.evaluate(async () => { const { api } = await impor
   });
 }
 
+// ------------------------------------------------------------------------------------------------ Sign out (the one control the interaction audit never clicks)
+for (const role of ['clinician', 'supervisor', 'admin', 'direct_support']) {
+  await run(`PRES-10 ${role}: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are`, async () => {
+    const page = await newPage({ who: STAFF[role] });
+    await go(page, '/#/MyWork');
+    const has = await page.locator('#rail [data-signout]').count();
+    if (!has) { await page.ctx.close(); return T.skip(`${role}: no Sign out in the rail on this landing screen`, 'landing is the framed Lauris page'); }
+    await page.click('#rail [data-signout]'); await page.waitForFunction(() => location.hash.startsWith('#/Login'), null, { timeout: 8000 }); await page.waitForFunction(READY, null, { timeout: 8000 });
+    await page.waitForFunction(async () => { const { api } = await import('/js/api.js'); return !api.session(); }, null, { timeout: 6000 }).catch(() => { }); await page.waitForTimeout(400);
+    const a = await apiActor(page); assert.ok(!a, 'the session is gone: ' + JSON.stringify(a));
+    const out = await page.evaluate(() => ({ text: document.getElementById('root').innerText.replace(/\s+/g, ' ').slice(0, 160), rail: !document.getElementById('rail').hidden && document.getElementById('rail').innerText.length > 0 }));
+    assert.ok(!out.rail, 'no rail after sign out'); assert.match(out.text, /sign in|who are you|choose|staff/i);
+    await page.goto(BASE + '/#/Authorizations'); await page.waitForTimeout(800); assert.match(await page.evaluate(() => location.hash), /Login/, 'a protected route sends a signed-out visitor to the sign-in screen');
+    await page.ctx.close();
+  });
+}
+
 // ------------------------------------------------------------------------------------------------ Explore mode
 {
   await run('EXP-01 Explore mode: the dock is always open, the mode label is visible, Ctrl+Shift+P focuses it instead of hiding it, and Presentation mode can be restored', async () => {

@@ -73,6 +73,7 @@ await T.test('a group of fewer than 5 is never shown, in any role, dataset, sect
     for (const period of C.PERIOD_IDS) for (const sec of ['outcomes', 'population']) checkMin(V.sectionView(s, actor, C.PROV.COHORT, sec, { period }).panels, 5, `${who} cohort ${sec} ${period}`);
     for (const p of V.sectionView(s, actor, C.PROV.CASE, 'payer', {}).panels.filter(p => p.id === 'pay.by_payer'))
       for (const r of p.rows) { if (r._total) continue; for (const k of ['n', 'decided', 'approved', 'partial', 'denied']) assert.ok(!num(r[k]) || r[k] >= 5, `${who} payer row ${r.label} ${k}`); }
+    for (const ds of [C.PROV.CASE, C.PROV.COHORT]) for (const x of V.sectionView(s, actorOf(s, who), ds, 'payer', {}).strip) assert.ok(!num(x.value) || x.value === 0 || x.value >= 5, `${who} ${ds} strip ${x.label}=${x.value} is a count under 5`);
   }
   const s = await state('dowens'); const v = V.sectionView(s, actorOf(s, 'dowens'), C.PROV.CASE, 'population', {});
   assert.ok(JSON.stringify(v.panels).includes('"suppressed":true') && JSON.stringify(v.panels.map(p => p.rows.map(r => rowText(p, r)))).includes('Fewer than 5'), 'the thin case-backed records do print "Fewer than 5"');
@@ -246,7 +247,7 @@ try {
       assert.ok(await page.locator('#a-score-h').count() === 1 && await page.locator('.a-tile').count() === 6, 'the pilot scorecard is the first band');
       const n = await interactive(page); assert.ok(n <= 40, `${sec}: ${n} visible actions (target 40)`);
       assert.match(await page.locator('.a-sec__h').innerText(), /Future/, `${sec} carries its maturity chip`);
-      if (sec === 'payer') assert.doesNotMatch ? 0 : 0;
+      if (sec === 'payer') { const t = await page.locator('.a-strip').innerText(); assert.ok(!/\b[1-4]\b/.test(t.replace(/Fewer than 5/g, '')), 'the payer strip prints no count of 1 to 4: ' + t.replace(/\s+/g, ' ')); }
       await page.screenshot({ path: path.join(SHOTS, `analytics-admin-${sec}.png`), fullPage: true });
     }
     assert.deepEq(errs, [], errs.join(' | ')); await ctx.close();

@@ -1,7 +1,7 @@
 // Denial Intelligence in the browser (E3): the queue, the redirects of the old routes, scenario S5 by clicking, the K.T. information reply through
 // the mock Availity page, role limits (admin reads no clinical text), keyboard and dialog basics, no console errors. Screenshots go to $SHOTS.
 // Run: BASE=http://localhost:4840 node test/denials-ui.mjs
-import { suite, assert, login, errors, playwright, reset, state, BASE, SHOTS } from './lib/index.mjs';
+import { suite, assert, login, errors, playwright, reset, state, api, BASE, SHOTS } from './lib/index.mjs';
 
 const T = suite('denials-ui');
 const { chromium } = playwright();
@@ -79,6 +79,28 @@ await T.test('K.T. information reply: Evidence-missing blocks review, an edit cl
   await p.bringToFront(); await p.waitForTimeout(1500);
   const s = await state('jperez'); assert.eq(s.requests.find(r => r.id === 'R-0408').stage, 'submitted'); const d = s.disputes.find(x => x.request === 'R-0408'); assert.ok(d.closed); assert.eq(d.status, 'resolved');
   assert.match(await txt(p), /Resolved|Closed/); await shot(p, 'kt-sent-1440'); assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();
+});
+
+await T.test('E.C. appeal on Availity: Mark ready for upload reads "Ready to upload", never "Sent"; the send appears only after the Availity page confirms (QA2 D3)', async () => {
+  await reset('canvas');
+  const p = await open('jperez'); await p.goto(BASE + '/#/DenialCase?id=R-0384&section=action&action=appeal'); await p.waitForSelector('#d-h-app');
+  await p.getByRole('button', { name: 'Draft again from records' }).click(); await p.waitForTimeout(800);
+  for (let i = 0; i < 6 && (await p.getByRole('button', { name: 'Mark reviewed' }).isDisabled().catch(() => false)); i++) { const ed = p.locator('.d-secdoc').filter({ hasText: /Evidence missing/ }).first().getByRole('button', { name: 'Edit' }); if (!(await ed.count())) break; await ed.click(); const ta = p.locator('.d-edit textarea'); await ta.fill((await ta.inputValue()).replace(/\[Evidence missing[^\]]*\]/g, 'The clinician adds the dated record before this goes out.')); await p.getByRole('button', { name: 'Save section' }).click(); await p.waitForTimeout(500); }
+  await p.getByRole('button', { name: 'Mark reviewed' }).click(); await p.waitForTimeout(600);
+  const gr = await fetch(BASE + '/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ portalClient: 'EC', presenter: true }) }); const gt = { token: (await gr.json()).token };
+  await api('request.appealSign', { id: 'R-0384', text: (await state(gt)).appeal_drafts['R-0384'].en }, gt);
+  await p.goto(BASE + '/#/DenialCase?id=R-0384&section=action&action=appeal'); await p.waitForSelector('#d-h-app');
+  await p.getByRole('button', { name: /Mark ready for upload/ }).first().click(); await p.getByRole('dialog').getByRole('button', { name: 'Mark ready' }).click(); await p.waitForTimeout(900);
+  const s1 = await state('jperez'); const r1 = s1.requests.find(r => r.id === 'R-0384'); assert.eq(r1.stage, 'denied'); assert.eq(r1.appeal.status, 'ready_to_upload'); assert.ok(!r1.appeal.sent_at && !r1.appeal.ref);
+  const t1 = await txt(p); assert.match(t1, /Ready to upload/); assert.match(t1, /Not sent yet/); assert.match(t1, /Upload the signed letter in Availity/);
+  assert.ok(!/Sent in Availity|Sent through|portal-upload|Record the payer answer|Submitted/.test(t1), 'nothing says sent before the portal page confirms: ' + t1.match(/.{0,40}(Sent in|Sent through|portal-upload|Submitted).{0,40}/));
+  assert.ok(!(await p.getByRole('button', { name: /Mark ready for upload/ }).count()), 'the button is gone, it cannot be pressed twice'); assert.ok(!(await p.locator('.d-next').getByRole('button').count()), 'the next-action bar offers no Send while the upload is pending'); await shot(p, 'ec-ready-to-upload-1440');
+  const [popup] = await Promise.all([p.context().waitForEvent('page'), p.getByRole('link', { name: /Open Availity/ }).click()]);
+  await popup.waitForLoadState(); assert.match(popup.url(), /kind=appeal/); await popup.waitForSelector('#portal-form'); await popup.click('button[type=submit]'); await popup.waitForSelector('#portal-confirmation');
+  const ref = await popup.locator('#confirmation-number').innerText(); await p.bringToFront(); await p.waitForTimeout(1800);
+  const s2 = await state('jperez'); const r2 = s2.requests.find(r => r.id === 'R-0384'); assert.eq(r2.stage, 'appeal_sent'); assert.eq(r2.appeal.ref, ref, 'the reference is the number the Availity page showed'); assert.eq(r2.appeal.status, 'sent');
+  const t2 = await txt(p); assert.match(t2, new RegExp('Sent in Availity · confirmation ' + ref)); assert.match(t2, /Record the payer answer/); assert.ok(!/Ready to upload/.test(t2));
+  await shot(p, 'ec-sent-1440'); assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();
 });
 
 await T.test('admin: the queue and the case show status and deadlines; no clinical text reaches the page', async () => {

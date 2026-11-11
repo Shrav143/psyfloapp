@@ -1,7 +1,11 @@
 // Roles and authority (review/05 section 5 and 12): every role against every capability and route, every action has a capability entry,
 // anonymous calls are refused, /api/state is projected per role, a role switch changes what the API returns.
 import fs from 'node:fs';
-import { suite, assert, api, tryApi, state, reset, session, BASE, LAURIS, lget } from './lib/index.mjs';
+import os from 'node:os';
+import path from 'node:path';
+import { suite, assert, api, tryApi, state, reset, session, BASE, LAURIS, lget, login, playwright, sleep } from './lib/index.mjs';
+import { startInstance, stopInstance } from './lib/server.mjs';
+import { createSession } from '../server/psyflo/session.js';
 import { CAPS, CAP_LIST, ROLES, MATRIX, can, routeAllowed, ROUTE_CAPS, NAV_FOR } from '../web/js/shared/permissions.js';
 import { SCREENS } from '../web/js/registry.js';
 import { AUTHZ } from '../server/psyflo/authz.js';
@@ -197,5 +201,81 @@ await T.test('presenter PIN and DEMO_PRESENTER are honoured by sign-in', async (
   const cfg = await fetch(BASE + '/api/config').then(r => r.json());
   assert.ok('presenter' in cfg);
 });
+
+// ---------------- presenter is an explicit elevation (QA2 D1: URA-05, URA-06, URA-10, SVR-09) ----------------
+const post = (path, body, token) => fetch(BASE + path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { 'X-Psyflo-Session': token } : {}) }, body: JSON.stringify(body) }).then(async r => ({ status: r.status, ...(await r.json().catch(() => ({}))) }));
+
+await T.test('a plain sign-in is never a presenter; the public roster says whether presenter mode exists and needs a PIN, and never carries the PIN', async () => {
+  for (const id of ['jperez', 'cdiaz', 'khale', 'dowens']) { const j = await post('/api/session', { staffId: id }); assert.ok(j.ok && j.actor.presenter === false, id + ' presenter by default'); }
+  const j = await post('/api/session', { staffId: 'khale', presenter: false }); assert.eq(j.actor.presenter, false);
+  const roster = await fetch(BASE + '/api/roster').then(r => r.json());
+  assert.ok(roster.presenter && typeof roster.presenter.enabled === 'boolean' && typeof roster.presenter.pin_required === 'boolean', 'roster.presenter {enabled, pin_required}: ' + JSON.stringify(roster.presenter));
+  assert.ok(!/PRESENTER_PIN|"pin":"/.test(JSON.stringify(roster)), 'the PIN is never published');
+});
+
+await T.test('createSession: PIN required when PRESENTER_PIN is set (wrong or missing is 403 with pin flag), the right PIN elevates, DEMO_PRESENTER=0 never does', () => {
+  const st = { staff: [{ id: 'khale', role: 'direct_support', name: 'K', sites: [] }], clients: [], family_links: [], school_users: [], requests: [], referrals: [] };
+  const env = { PRESENTER_PIN: '4242', DEMO_PRESENTER: '1' };
+  let e; try { createSession(st, { staffId: 'khale', presenter: true }, { env }); } catch (x) { e = x; } assert.ok(e && e.status === 403 && e.pin === true, 'missing pin');
+  e = null; try { createSession(st, { staffId: 'khale', presenter: true, pin: '0000' }, { env }); } catch (x) { e = x; } assert.ok(e && e.status === 403 && e.pin === true, 'wrong pin');
+  assert.eq(createSession(st, { staffId: 'khale', presenter: true, pin: '4242' }, { env }).actor.presenter, true);
+  assert.eq(createSession(st, { staffId: 'khale', pin: '4242' }, { env }).actor.presenter, false);   // a PIN without asking for presenter changes nothing
+  assert.eq(createSession(st, { staffId: 'khale', presenter: true }, { env: { DEMO_PRESENTER: '0' } }).actor.presenter, false);
+});
+
+const pw = playwright();
+const browser = await pw.chromium.launch();
+const demoCalls = (token) => Promise.all([['demo.advanceDay', { days: 0 }], ['demo.reset', { preset: 'live' }], ['request.demoReply', { id: 'R-0408', kind: 'approved' }], ['demo.scenario', { id: 's1' }], ['user.update', { id: 'khale', patch: { role: 'admin' } }]]
+  .map(async ([action, args]) => [action, (await post('/api/do', { action, args }, token)).status]));
+
+await T.test('regression (URA-05/06/10): writing localStorage.psyflo_user, or reloading, never turns a role session into another person or a presenter', async () => {
+  await reset('live');
+  const ctx = await browser.newContext(); const p = await ctx.newPage();
+  try {
+    await login(p, 'khale', { presenter: false });
+    const who = () => p.evaluate(() => ({ id: window.psyflo.session.actor.id, role: window.psyflo.session.actor.role, presenter: !!window.psyflo.session.actor.presenter }));
+    assert.deepEq(await who(), { id: 'khale', role: 'direct_support', presenter: false });
+    await p.evaluate(() => localStorage.setItem('psyflo_user', 'dowens')); await sleep(1800);
+    assert.deepEq(await who(), { id: 'khale', role: 'direct_support', presenter: false }, 'a write to psyflo_user replaced the session');
+    await p.reload(); await p.waitForFunction(() => window.psyflo && window.psyflo.session && window.psyflo.session.actor, null, { timeout: 8000 }); await sleep(800);
+    assert.deepEq(await who(), { id: 'khale', role: 'direct_support', presenter: false }, 'a reload minted a presenter or another person');
+    const tok = await p.evaluate(() => JSON.parse(localStorage.getItem('psyflo_session')).token);
+    const codes = await demoCalls(tok); assert.ok(codes.every(([, c]) => c === 403), 'demo controls and role changes are refused: ' + JSON.stringify(codes));
+    assert.eq(((await state('dowens')).staff.find(x => x.id === 'khale') || {}).role, 'direct_support');
+    // a page with no session that finds a legacy psyflo_user signs in as that person, still not as a presenter
+    const c2 = await browser.newContext(); const q = await c2.newPage(); await q.goto(BASE + '/#/Login'); await q.evaluate(() => localStorage.setItem('psyflo_user', 'jperez')); await q.reload(); await sleep(1500);
+    const a2 = await q.evaluate(() => ({ id: window.psyflo.session.actor && window.psyflo.session.actor.id, presenter: !!(window.psyflo.session.actor && window.psyflo.session.actor.presenter) }));
+    assert.deepEq(a2, { id: 'jperez', presenter: false }, 'legacy sign-in must be a plain session'); await c2.close();
+    // the Login screen's role cards sign in as plain sessions too
+    const c3 = await browser.newContext(); const r = await c3.newPage(); await r.goto(BASE + '/#/Login'); await r.waitForSelector('[data-signin]'); await r.locator('[data-signin]').first().click(); await sleep(1500);
+    const a3 = await r.evaluate(() => window.psyflo.session.actor); assert.ok(a3 && a3.presenter === false, 'Login role card: ' + JSON.stringify(a3)); await c3.close();
+  } finally { await ctx.close(); await reset('live'); }
+});
+
+await T.test('with PRESENTER_PIN set: the server and the dock ask for the PIN, a wrong PIN is refused, the right PIN unlocks the presenter tools (own server)', async () => {
+  const base = +new URL(BASE).port + 3;   // app +3, Lauris +4, portals +5: between this runner instance and the next (they are 10 apart)
+   const inst = await startInstance({ index: 0, base, dataDir: path.join(os.tmpdir(), 'psyflo-roles-pin-' + process.pid), env: { PRESENTER_PIN: '4242' } });
+  const APP = inst.urls.APP;
+  const P = (pth, body, token) => fetch(APP + pth, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { 'X-Psyflo-Session': token } : {}) }, body: JSON.stringify(body) }).then(async r => ({ status: r.status, ...(await r.json().catch(() => ({}))) }));
+  try {
+    const roster = await fetch(APP + '/api/roster').then(r => r.json()); assert.deepEq(roster.presenter, { enabled: true, pin_required: true });
+    const miss = await P('/api/session', { staffId: 'jperez', presenter: true }); assert.ok(miss.status === 403 && miss.pin_required === true, 'missing pin: ' + JSON.stringify(miss));
+    const bad = await P('/api/session', { staffId: 'jperez', presenter: true, pin: '1111' }); assert.ok(bad.status === 403 && bad.pin_required === true, 'wrong pin');
+    const plain = await P('/api/session', { staffId: 'jperez' }); assert.ok(plain.ok && !plain.actor.presenter, 'a plain sign-in needs no pin and is no presenter');
+    assert.eq((await P('/api/do', { action: 'demo.advanceDay', args: { days: 0 } }, plain.token)).status, 403);
+    const good = await P('/api/session', { staffId: 'jperez', presenter: true, pin: '4242' }); assert.ok(good.ok && good.actor.presenter === true);
+    assert.eq((await P('/api/do', { action: 'demo.advanceDay', args: { days: 0 } }, good.token)).status, 200);
+    // the dock
+    const ctx = await browser.newContext(); const page = await ctx.newPage();
+    await page.goto(APP + '/#/Login'); await page.evaluate(async ({ tok, actor }) => { localStorage.setItem('psyflo_session', JSON.stringify({ token: tok, actor })); localStorage.setItem('psyflo_user', 'jperez'); }, { tok: plain.token, actor: plain.actor });
+    await page.goto(APP + '/?present=1#/MyWork'); await page.waitForSelector('#dock [data-dock="unlock"]', { timeout: 10000 });
+    await page.click('#dock [data-dock="unlock"]'); await page.waitForSelector('#presenter-pin');
+    await page.fill('#presenter-pin', '0000'); await page.click('[data-ui-action="1"]'); await page.waitForFunction(() => /did not match/.test((document.querySelector('[role=dialog]') || {}).innerText || ''), null, { timeout: 8000 });
+    await page.fill('#presenter-pin', '4242'); await page.click('[data-ui-action="1"]');
+    await page.waitForFunction(() => window.psyflo.session.actor && window.psyflo.session.actor.presenter === true, null, { timeout: 8000 });
+    assert.eq(await page.locator('#dock [data-dock="unlock"]').count(), 0, 'the unlock button goes once unlocked'); await ctx.close();
+  } finally { await stopInstance(inst); }
+});
+await browser.close();
 
 await T.done();

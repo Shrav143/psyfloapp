@@ -95,7 +95,7 @@
      "lauris_no": 4441
     },
     "verdict": "match, value conflicts",
-    "note": "65 awarded, peer-to-peer Dec 9 in both. v3: 9 units left to Nov 20; master: 0 left, exhausted Nov 24. v3 puts T.N. on K. Hale's caseload; master does not."
+    "note": "65 awarded, peer-to-peer Dec 9 in both. v3: 9 units left to Nov 20; master: 0 left, exhausted Oct 28 (assumed: the master's earlier \"Nov 24\" was in the future while 65 of 65 were already used). v3 puts T.N. on K. Hale's caseload; master does not."
    },
    {
     "master": {
@@ -176,7 +176,7 @@
    {
     "id": "X-4",
     "topic": "T.N. and R-0391",
-    "master": "T.N. 0 units left (exhausted Nov 24); R-0391 submitted",
+    "master": "T.N. 0 units left (exhausted Oct 28, assumed: 65 of 65 used, so never a future date); R-0391 submitted",
     "v3": "T.N. 9 left to Nov 20; R-0391 partial 110 offered",
     "resolution": "Master canonical; v3 numbers not imported."
    },

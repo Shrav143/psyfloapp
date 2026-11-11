@@ -163,13 +163,13 @@ await T.test('E.C. appeal (Availity): seeded sample cannot be reviewed; the guar
   // Availity payer: "Mark ready for upload" is a person's note, NOT a send. Sent only after the portal page confirms (QA2 D3).
   const sent = await api('dispute.send', { id: 'R-0384', doc: 'appeal' }, 'jperez'); assert.ok(sent.ready && !sent.ref, 'marking ready returns no reference: ' + JSON.stringify(sent));
   r = await request('R-0384'); assert.eq(r.stage, 'denied', 'still denied: nothing was uploaded'); assert.eq(r.appeal.status, 'ready_to_upload'); assert.ok(!r.appeal.sent_at && !r.appeal.ref, 'no sent time and no reference before the portal confirms');
-  d = await dispute('R-0384'); assert.eq(d.status, 'appeal-prep'); assert.ok(d.docs.appeal.ready && !d.docs.appeal.sent); assert.match(nextAction(await state('jperez'), d, r).label, /Upload the signed letter in Availity/);
+  d = await dispute('R-0384'); assert.eq(d.status, 'appeal-prep'); assert.ok(d.docs.appeal.ready && !d.docs.appeal.sent); const na = nextAction(await state('jperez'), d, r); assert.match(na.label, /Upload the signed letter in Availity/); assert.eq(na.group, 'wait', 'no Send button while the upload is pending');
   let evs = (await state('jperez')).events.filter(e => e.record === 'R-0384'); const rdy = evs.filter(e => /Appeal letter ready for the clinician to upload in Availity/.test(e.what));
   assert.ok(rdy.length === 1 && rdy[0].sim === true && rdy[0].who === 'jperez', 'one simulated event by the person who pressed it'); assert.ok(!evs.some(e => /Appeal uploaded|Sfax|faxed/.test(e.what)), 'no sent language before the confirmation');
   assert.eq((await gview(gt)).status, 'signed', 'the guardian page still says Signed, not Submitted by staff');
   await assert.refused(tryApi('dispute.send', { id: 'R-0384', doc: 'appeal' }, 'jperez'), /already marked ready/, 409);
   await assert.refused(tryApi('dispute.editDoc', { id: 'R-0384', doc: 'appeal', section: d.docs.appeal.sections[0].key, text: 'late' }, 'jperez'), /marked ready to upload/, 409);
-  await assert.refused(tryApi('dispute.resolve', { id: 'R-0384', outcome: 'approved', units: 90, doc_ref: 'x' }, 'jperez'), /in progress/, 422);
+  await assert.refused(tryApi('dispute.resolve', { id: 'R-0384', outcome: 'approved', units: 90, doc_ref: 'x' }, 'jperez'), /in progress/, 409);
   // the confirmation must be one the portal issued, for this request and for an appeal
   const issue = async (request, kind) => { const pr = await fetch(EXT + '/availity/upload', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ request, kind, member: 'x' }) }); const m = (await pr.text()).match(/data-ref="(AV-\d+)"/); assert.ok(m, 'the mock portal issued a confirmation'); return m[1]; };
   let ob = await bridge('portal.observed', { event: 'confirmation', request: 'R-0384', ref: 'AV-000000', kind: 'appeal' }); assert.ok(!ob.ok && /not issued/.test(ob.error), 'a made-up reference is not believed: ' + ob.error);

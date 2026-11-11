@@ -14,15 +14,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 // Scenario table (seed/extra/scenarios.json -> state.scenarios). Tweaks reshape the preset for one scenario.
 const TWEAKS = {
-  // s3: the initial SRA for T.W. is drafted but not yet processed, approved, signed or sent (canvas snapshot minus its tail)
-  's3-draft'(store, s) {
-    const r = byId(s.requests, 'R-0416'); if (!r) return;
-    for (const k of ['sent', 'fax_ref', 'decision_due', 'decision_basis', 'receipt_check', 'receipt_confirmed', 'receipt_by', 'delivery_receipt', 'signed_at', 'signed_by', 'signed_credential', 'signed_session', 'signed_pdf', 'signed_name', 'pages', 'approval', 'approved_by', 'approved_at', 'processed_at', 'lauris_session', 'lauris_consumer', 'processed_by', 'sent_by', 'send_pressed_at', 'signature_hold_event', 'signature_flag']) delete r[k];
-    r.stage = 'draft_ready'; r.drafted_at = store.now();
-    s.events = s.events.filter(e => !(e.record === 'R-0416' && /processed|Signed|signed|Send pressed|Sfax|receipt|Receipt|Packet assembled|Approved/i.test(e.what)));
-    const c = byId(s.clients, 'TW'); if (c && c.timeline) { delete c.timeline.sra_processed; delete c.timeline.sra_signed; delete c.timeline.sent; }
-    store.event('Initial SRA drafted from the record (scenario start)', 'Psyflo', 'R-0416', { actor_kind: 'system' });
-  }
+  // (no tweaks are needed today: s3 starts from the tw-isp-ready fixture, see "from_fixture" in seed/extra/scenarios.json)
 };
 
 
@@ -106,12 +98,14 @@ export default {
     const sc = (s.scenarios || []).find(x => x.id === id);
     if (!sc) throw new Error('Unknown scenario: ' + id);
     // the table lives in state, which reset rebuilds from the seed: keep a reference first
-    this.reset(sc.preset || 'live');
+    // from_fixture: the scenario starts from the SAME state the fixture and the UI path produce (T.W.'s request dates come from the clock there,
+    // not from a canvas snapshot dated before today); otherwise the preset plus its tweaks
+    if (sc.from_fixture && FIXTURE_IDS.includes(sc.from_fixture)) applyFixture(this, sc.from_fixture); else this.reset(sc.preset || 'live');
     const st = this.state;
     for (const t of sc.tweaks || []) if (TWEAKS[t]) TWEAKS[t](this, st);
     this.hooks.run('scenario', { id, preset: st.preset, state: st });
     this.event(`Demo: scenario ${id} started · ${sc.title}`, this.who(), 'scenario', { demo: true, sim: true, actor_kind: 'demo' });
-    return { id, title: sc.title, role: sc.role, staff: sc.staff, surface: sc.surface, route: sc.route, client: sc.case && sc.case.client || null, case: sc.case || null, preset: sc.preset, steps: sc.steps };
+    return { id, title: sc.title, role: sc.role, staff: sc.staff, surface: sc.surface, route: sc.route, client: sc.case && sc.case.client || null, case: sc.case || null, preset: st.preset, steps: sc.steps };
   },
 
   // Edit a row of the rules table. Audited; applies forward only (stored dates are not recomputed). value must keep the type of the default.

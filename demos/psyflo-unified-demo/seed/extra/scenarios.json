@@ -1,5 +1,5 @@
 {
- "_about": "Presenter scenarios (prompt Part 14.2, run sheet review/06-demo-and-qa.md a3). demo.scenario {id} resets to the preset, applies the tweaks and returns {route, role, staff, client, steps}. The presenter dock and the QA harness read this table. login: how the dock signs in (staffId by default). clock: the beat's place in the 14-minute walkthrough. message: what the audience should conclude (prompt Part 14.2). fixture: the checkpoint demo.scenario can reload in about ten seconds if a beat fails. Steps are click paths, one action each; a person presses Process Form, Get Signature and Send.",
+ "_about": "Presenter scenarios (prompt Part 14.2, run sheet review/06-demo-and-qa.md a3). demo.scenario {id} resets to the preset, applies the tweaks (or, with from_fixture, builds that checkpoint through the same internal actions the UI path runs) and returns {route, role, staff, client, steps}. The presenter dock and the QA harness read this table. login: how the dock signs in (staffId by default). clock: the beat's place in the 14-minute walkthrough. message: what the audience should conclude (prompt Part 14.2). fixture: the checkpoint demo.scenario can reload in about ten seconds if a beat fails. Steps are click paths, one action each; a person presses Process Form, Get Signature and Send.",
  "scenarios": [
   {
    "id": "s1",
@@ -74,10 +74,9 @@
     "label": "T.W."
    },
    "route": "Authorization?id=R-0416&section=submission",
-   "preset": "canvas",
-   "tweaks": [
-    "s3-draft"
-   ],
+   "preset": "live",
+   "tweaks": [],
+   "from_fixture": "tw-isp-ready",
    "steps": [
     "Review the treatment plan (checkpoint: plan ready)",
     "Open the initial request draft in the panel",

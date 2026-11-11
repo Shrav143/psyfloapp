@@ -66,6 +66,7 @@ await T.test('a script that omits the payer or the end date is not refused (the 
 });
 
 await T.test('units gate: a daily note that enters units is refused (and kept as Saved Session) when none are authorized, none are left, or the authorization ended; a note with no units is not', async () => {
+  await reset('canvas');   // T.N. is back to 0 of 65 (an earlier test entered units for T.N.)
   for (const [no, who, why] of [[3402, 'jperez', /0 units available/], [3330, 'khale', /No authorization is on file/]]) {
     const before = (await snap()).consumers.find(c => c.no === no);
     const r = await lpost(`/consumers/${no}/session/dpn`, who, { action: 'process', f2: '220 min', f3: '2', f9: 'note that should not be processed' });
