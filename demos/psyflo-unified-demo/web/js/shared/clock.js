@@ -11,7 +11,10 @@
 // today(s) -> 'YYYY-MM-DD'      now(s) -> 'YYYY-MM-DDTHH:MM'      nowFull(s) -> 'YYYY-MM-DDTHH:MM:SS'
 import { addDays, isSchoolDay } from './dates.js';
 
-export const DEFAULT_TIME = '09:00';
+// Presets start at 3:30 pm on the story date (after the seeded Oct 29 events: notes processed 3:11-3:19 pm, the 1:52 pm timer);
+// a day advance starts the next school day at 9:00 am.
+export const DEFAULT_TIME = '15:30';
+export const DAY_START = '09:00';
 const hm = t => { const [h, m] = String(t || DEFAULT_TIME).split(':').map(Number); return (h || 0) * 60 + (m || 0); };
 const p2 = n => String(n).padStart(2, '0');
 

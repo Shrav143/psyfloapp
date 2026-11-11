@@ -11,7 +11,8 @@ import { fmtDate, fmtTime, daysBetween, fmtDuration } from '../js/shared/dates.j
 const root = document.getElementById('panel');
 const P = { page: null, event: null, ui: {}, rec: null, logo: '' };
 const FORM_NAME = { screening: 'Admission screening', cna: 'Intake (CNA)', isp: 'Treatment plan (ISP)', dpn: 'Daily note', weekly: 'Weekly guardian call', collateral: 'Monthly collateral', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'Initial request (SRA)', 'sra-continued': 'Continued stay', discharge: 'Discharge summary' };
-const LEVEL = { direct_support: 1, supervisor: 2, clinician: 3, admin: 4 };
+// admin has NO clinical-record access (review/05 section 5): level 0, the panel shows nothing clinical to the administrator role
+const LEVEL = { direct_support: 1, supervisor: 2, clinician: 3, admin: 0 };
 // what direct support records from the extension (product review, Nov 2026); the timer is optional
 const DS_TASKS = [['dpn', 'Daily note'], ['weekly', 'Weekly guardian call'], ['collateral', 'Monthly collateral call'], ['incident', 'Incident report']];
 const CLIN_FORMS = ['screening', 'cna', 'isp', 'sra-initial', 'sra-continued', 'quarterly', 'discharge'];
@@ -140,6 +141,7 @@ function viewHTML() {
   if (!framed) return header('Psyflo · extension panel', false) + `<div class="body"><p>This is the Psyflo panel. It runs beside a Lauris page: open the mock Lauris (${esc(api.config.laurisURL)}) — the panel appears at the right — or install the extension from <code>extension/</code> and open its side panel.</p><a class="btn p" href="${esc(api.config.laurisURL)}/login?as=jperez">Open the mock Lauris</a></div>`;
   const p = P.page;
   if (p && p.user && !api.session()) return header('Psyflo · no access', false) + `<div class="body"><div class="banner n">${I.no}<div><b>${esc(meFromPage().name)} is not a Psyflo user.</b> Nothing is read, drafted or typed. Ask an administrator to add you on Users.</div></div></div>` + foot();
+  if (p && meFromPage().role === 'admin') return header('Psyflo · no access', false) + `<div class="body"><div class="banner n">${I.no}<div><b>Not permitted.</b> The administrator role has no clinical-record access. The panel reads and drafts nothing from this page.</div></div></div>` + foot();
   { const stop = p && identityStop(); if (stop) return header('Psyflo · stop', false) + `<div class="body"><div class="banner n">${I.no}<div><b>Wrong student?</b> Harvest # ${esc(p.consumer.no)} is <b>${esc(stop.initials)}</b> in Psyflo, but this page shows <b>${esc(p.consumer.initials)}</b>. Nothing was read, drafted or typed. Check the Harvest # and the student before you go on.</div></div></div>` + foot(); }
   if (!p) return header('Psyflo · reading this page', false) + `<div class="body"><div class="banner n">${I.open}<div>Waiting for the page… If this stays, reload the Lauris tab.</div></div></div>`;
   if (p.kind === 'portal-form' || p.kind === 'portal-confirmation') return portalView();

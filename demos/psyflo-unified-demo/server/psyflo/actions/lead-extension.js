@@ -5,6 +5,7 @@ import { addDays, fmtDate } from '../../../web/js/shared/dates.js';
 import { rule, ruleValue } from '../../../web/js/shared/rules.js';
 import { screeningFacts, draftScreening } from '../../../web/js/shared/draft.js';
 import { refuse, staffFromLauris } from '../gates.js';
+import { closeUnitTasks } from './core.js';
 import { attest } from '../../attest.js';
 
 const byId = (arr, id) => arr.find(x => x.id === id);
@@ -30,7 +31,7 @@ export function matchClient(s, consumer) { const r = identity(s, consumer); retu
 
 // What the bridge reports is checked before Psyflo believes it (server/attest.js: demo-grade stand-in for a Lauris page session).
 export function validateBridgeEvent(store, s, a) {
-  if (!['created', 'saved', 'processed', 'signed', 'rejected'].includes(a.event)) refuse('Unknown page event.', { status: 422, audit: false });
+  if (!['created', 'saved', 'processed', 'signed', 'rejected', 'authorization'].includes(a.event)) refuse('Unknown page event.', { status: 422, audit: false });
   if (!a.user) refuse('The page bridge did not report the Lauris user. Nothing was recorded.', { code: 'no_user' });
   const staff = staffFromLauris(s, a.user);
   if (!staff) refuse(`The Lauris user "${a.user}" is not a Psyflo user. Nothing was recorded.`, { code: 'unknown_user' });
@@ -59,10 +60,16 @@ export default {
     const v = a.values || {};
     const out = { client: c?.id };
     const info = { type: 'lauris', event: a.event, form: a.form, session: a.session, consumer: a.consumer, user: a.user, values: v, staff, client: c || null };
-    const done = () => { info.request = out.request; info.note = out.note; this.hooks.run('observed', this, s, info, out); return out; };
+    const done = () => {
+      info.request = out.request; info.note = out.note;
+      // any page showing "N units available" for this student can close the "enter the units in Lauris" task (a person entered them)
+      if (c && a.consumer && a.consumer.units) { const n = closeUnitTasks(this, s, c.id, a.consumer.units, who); if (n) out.units_task_closed = n; }
+      this.hooks.run('observed', this, s, info, out); return out;
+    };
     const asBridge = { actor_kind: 'bridge' };
 
     if (!c) return { ignored: idn.reason };   // not a Psyflo student: nothing is read or recorded
+    if (a.event === 'authorization') { this.event(`Authorization saved in Lauris by a person · ${a.consumer.units || ''} (seen by the extension)`, who, rec, asBridge); return done(); }
     if (a.event === 'created') {
       c.lauris_no = Number(a.consumer.no); this.event(`Consumer created in Lauris by a person · Harvest # ${a.consumer.no} (seen by the extension)`, who, c.referral || c.id, asBridge);
       return done();

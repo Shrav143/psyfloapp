@@ -75,6 +75,14 @@ await T.test('anonymous: /api/state, /api/do (admin and plain actions), /files a
   assert.ok(roster.staff.length >= 7 && roster.clients.length === 0 && roster.notes.length === 0, 'roster only: no records');
 });
 
+await T.test('no screening transcript reaches an unauthenticated caller: /api/state is 401, the roster is empty, the scripted call needs a session', async () => {
+  assert.eq((await fetch(BASE + '/api/state')).status, 401);
+  const roster = JSON.stringify(await fetch(BASE + '/api/roster').then(r => r.json()));
+  assert.noMatch(roster, /transcript|Piedmont|grandmother/i); assert.eq((await fetch(BASE + '/api/roster').then(r => r.json())).screenings.length, 0);
+  assert.eq((await fetch(BASE + '/seed/scripts/screening_TW.txt')).status, 401);
+  const s = await session('jperez'); assert.eq((await fetch(BASE + '/seed/scripts/screening_TW.txt', { headers: { 'X-Psyflo-Session': s.token } })).status, 200);
+});
+
 await T.test('a made-up or tampered token is the same as no token', async () => {
   await assert.refused(tryApi('timer.stop', {}, { token: 'not-a-token' }), /Sign in/, 401);
   const r = await fetch(BASE + '/api/state', { headers: { 'X-Psyflo-Session': 'nope' } }); assert.eq(r.status, 401);

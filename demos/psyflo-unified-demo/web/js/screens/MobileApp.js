@@ -4,6 +4,7 @@
 // Also exports the phone helpers MobileDictate and MobileAssess share.
 import { register, Screen, M, session, toast, go, api, app } from '../app.js';
 import { clock12, mins, fmtDuration } from '../shared/dates.js';
+import { nowFull } from '../shared/clock.js';
 
 // ---------- shared phone helpers ----------
 // the phone acts as the person signed in: no fallback to another staff member (the server also checks the caseload and the role)
@@ -15,18 +16,13 @@ export function dueAssessments(s, uid) {
   return (s.assessments_due || []).filter(d => d.staff === uid || !d.staff)
     .filter(d => !s.assessments.some(a => a.client === d.client && a.instrument === d.instrument && a.date === s.today));
 }
-// seconds since the timer started, on the story day. The seed's 13:52 start can be "in the future" against the
-// wall clock (or hours stale); then count from when this browser first saw that start, never negative.
+// seconds since the timer started, from the demo clock (store.clock via shared/clock.js): never the machine's clock
 export function elapsedSec(s, started) {
   if (!started) return 0;
-  const now = new Date(); const t = started.slice(11, 19).split(':').map(Number);
-  let sec = (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) - (t[0] * 3600 + t[1] * 60 + (t[2] || 0));
-  if (started.slice(0, 10) !== s.today) sec = -1;
-  if (sec >= 0 && sec < 8 * 3600) return sec;
-  const key = 'psyflo_timer_anchor_' + started;
-  let a = null; try { a = +localStorage.getItem(key) || null; } catch { }
-  if (!a) { a = Date.now() - (23 * 60 + 41) * 1000; try { localStorage.setItem(key, String(a)); } catch { } }
-  return Math.max(0, Math.round((Date.now() - a) / 1000));
+  const t = nowFull(s);
+  if (started.slice(0, 10) !== t.slice(0, 10)) return 0;
+  const sec = x => { const [h, m, z] = x.slice(11, 19).split(':').map(Number); return h * 3600 + m * 60 + (z || 0); };
+  return Math.max(0, sec(t) - sec(started));
 }
 export function fmtElapsed(sec) { const h = Math.floor(sec / 3600), m = Math.floor(sec / 60) % 60, x = sec % 60; const p = n => String(n).padStart(2, '0'); return h ? `${h}:${p(m)}:${p(x)}` : `${m}:${p(x)}`; }
 export function blockLabel(s, b) { const c = M.byId(s.clients, b[2]); return c ? c.initials : (b[2] || ''); }

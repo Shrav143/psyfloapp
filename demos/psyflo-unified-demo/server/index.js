@@ -43,6 +43,7 @@ store.hooks.on('reset', ({ preset }) => { lauris.reset(preset); attest.reset(); 
 store.hooks.on('advance', () => lauris.syncToday());
 store.hooks.on('scenario', ({ id }) => lauris.scenario(id));
 attest.lauris = ev => lauris.verify(ev);
+store.laurisFixture = lauris;   // fixtures (demo.scenario) build both stores through the same internal actions the UI path runs
 lauris.syncToday();
 
 // the extension ships its own copy of the page bridge (content scripts must be packaged files)
@@ -131,7 +132,8 @@ const app = http.createServer(async (req, res) => {
       return fs.createReadStream(full).pipe(res);
     }
     if (p === '/seed/notes.md') { res.writeHead(200, { 'Content-Type': 'text/markdown; charset=utf-8', 'Cache-Control': 'no-store' }); return res.end(notesMarkdown()); }
-    if (p.startsWith('/seed/scripts/')) return serveStatic(res, path.join(ROOT, 'seed'), p.slice(5));
+    // the scripted screening call is a transcript: signed-in staff only (header or the session cookie)
+    if (p.startsWith('/seed/scripts/')) { if (!actorFromToken(store.state, tokenFrom(req))) { res.writeHead(401, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('Sign in first.'); } return serveStatic(res, path.join(ROOT, 'seed'), p.slice(5)); }
     // portal and phone deep links are routes inside the single-page app
     if (/^\/(app|f|parent|school|phone)(\/|$)/.test(p)) return serveStatic(res, WEB, '/index.html');
     return serveStatic(res, WEB, p);

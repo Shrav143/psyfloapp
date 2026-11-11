@@ -65,7 +65,7 @@ export const MATRIX = Object.fromEntries(Object.keys(IDX).map(role => [role,
 
 // Route id -> capability (null = public: needs no sign-in). Every route in web/js/registry.js plus the new routes.
 export const ROUTE_CAPS = {
-  Login: null, WhereThingsLive: null, UiKit: 'myWork',
+  Login: null, WhereThingsLive: null, UiKit: 'demo.controls',   // presenter-only gallery (a session needs presenter:true)
   // staff app
   MyWork: 'myWork', DoNext: 'myWork', ReviewQueue: 'notes.review', StaffDashboard: 'myWork',
   Authorizations: 'authorizations', Authorization: 'authorizations', EarlyDischarge: 'authorizations',

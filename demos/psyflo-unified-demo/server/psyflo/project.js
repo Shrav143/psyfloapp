@@ -81,6 +81,9 @@ export function projectState(s, actor) {
     reminders: v => staffLike ? (role === 'clinician' ? v : (v || []).filter(r => r.for === actor.id)) : [],
     files: v => (v || []).filter(f => canReadFile(f)),
     review: v => staffLike && (role === 'clinician' || role === 'supervisor') ? v : [],
+    provenance: v => actor ? v : {},
+    designations: v => staffLike && (can(actor, 'admin.users') || role === 'clinician') ? v : [],
+    lauris_tasks: v => staffLike && role !== 'direct_support' && can(actor, 'auth.status') ? v : [],
 
     // office and aggregates
     settings: v => staffLike ? v : actor && actor.role === 'guardian' ? pick(v || {}, ['family_link']) : {},

@@ -156,7 +156,7 @@
     const p = readPage();
     let pending = null; try { pending = JSON.parse(sessionStorage.getItem('psyflo_pending') || 'null'); } catch (e) { }
     let event = null;
-    if (p.flash && ['processed', 'signed', 'rejected', 'saved', 'created'].includes(p.flash.event)) {
+    if (p.flash && ['processed', 'signed', 'rejected', 'saved', 'created', 'authorization'].includes(p.flash.event)) {
       event = { event: p.flash.event, session: p.flash.session, form: p.flash.form || (pending && pending.form), consumer: Object.assign({ no: p.flash.consumer }, p.consumer || {}), values: pending ? pending.values : null, typed: pending ? pending.typed : null, preview: p.preview || null, user: p.user };
       if (p.flash.event === 'created' && pending) event.values = pending.values;
       try { sessionStorage.removeItem('psyflo_pending'); } catch (e) { }

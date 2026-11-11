@@ -90,8 +90,7 @@ export const api = {
     this.token = j.token; this.actor = j.actor || null;
     save({ token: j.token, actor: j.actor });
     await this.refresh(true);
-    if (!quiet) for (const l of listeners) l(this.state);
-    else for (const l of listeners) l(this.state);
+    for (const l of listeners) l(this.state);   // repaint whoever is listening (the shell, the panel)
     return this.actor;
   },
   async signIn(staffId, { presenter = false, pin, quiet } = {}) {

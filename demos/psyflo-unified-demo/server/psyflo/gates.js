@@ -63,3 +63,12 @@ export function linkExpired(s, fl) {
   if (days == null) return false;
   return clockToday(s) > addDays(fl.sent_at.slice(0, 10), days);
 }
+
+// ---- seeded randomness for tests (DEMO_TEST=1): fax references and link tokens repeat from a fixture or preset id ----
+let seedState = 1;
+export function seedRng(key) { let h = 2166136261; for (const c of String(key)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } seedState = (h >>> 0) || 1; }
+export function rand() {
+  if (process.env.DEMO_TEST !== '1') return Math.random();
+  seedState ^= seedState << 13; seedState >>>= 0; seedState ^= seedState >>> 17; seedState ^= seedState << 5; seedState >>>= 0;
+  return seedState / 4294967296;
+}

@@ -92,6 +92,10 @@ export async function login(page, staffId, { presenter = true, hash = '/Login' }
     localStorage.setItem('psyflo_session', JSON.stringify({ token: j.token, actor: j.actor }));
     localStorage.setItem('psyflo_user', id);   // the old shell reads this key; the new shell reads psyflo_session
   }, { id: staffId, presenter });
+  // the running page still holds the signed-out roster; reload so api.init() adopts the stored token and loads the projected state BEFORE
+  // any route renders (without it a following hash navigation can paint a screen from the roster: "reading 'initials'" on the phone)
+  await page.reload();
+  await page.waitForFunction(() => window.psyflo && window.psyflo.session && window.psyflo.session.user, null, { timeout: 10000 }).catch(() => { });
   return page;
 }
 // page errors and unexpected failed requests (the controllers for screens that have none, js/screens/Ext*.js, 404 by design)

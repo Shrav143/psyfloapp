@@ -168,6 +168,7 @@ ${s.status === 'approved' ? `<div class="row"><b>Signature</b><div id="lauris-si
 }
 
 const flash = (q) => {
+  if (q.get('authorization')) { const c = lauris.consumer(q.get('authorization')); if (c) return `<div class="flash" role="status" id="lauris-flash" data-event="authorization" data-consumer="${c.no}">Authorization saved · ${c.auth && c.auth.available != null ? c.auth.available + ' units available' : 'no units'}</div>`; }
   if (q.get('denied')) return `<div class="flash r" role="status" id="lauris-flash" data-event="denied" data-session="${esc(q.get('session') || '')}">${esc(q.get('denied'))}</div>`;
   if (q.get('blocked')) return `<div class="flash r" role="status" id="lauris-flash" data-event="blocked">${esc(q.get('blocked'))}</div>`;
   if (q.get('processed')) { const s = lauris.session(q.get('processed')); if (s) return `<div class="flash${s.warn ? ' w' : ''}" role="status" id="lauris-flash" data-event="processed" data-session="${s.id}" data-form="${s.form}" data-consumer="${s.no}">${esc(FORMS[s.form].title)} processed ${US(s.processed_at)} ${s.processed_at.slice(11, 16)}${s.approve ? ' · sent to Forms to Approve' : ' · copied to the Active File'}${s.warn ? ' · ' + esc(s.warn) : ''}</div>`; }
@@ -196,6 +197,10 @@ export async function laurisHandler(req, res) {
     return html(res, shell(req, { title: 'Sign in', body: loginBody() }));
   }
   if (p === '/logout') { res.setHeader('Set-Cookie', 'lauris_user=; Path=/; Max-Age=0'); return redirect(res, '/login'); }
+  if (p === '/__test/lauris') {   // DEMO_TEST=1 only: the whole mock database, for tests (they model the auditor)
+    if (process.env.DEMO_TEST !== '1') return notFound(res);
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' }); return res.end(JSON.stringify(lauris.snapshot()));
+  }
   if (p === '/__reset' && req.method === 'POST') { const f = await readForm(req); lauris.reset(f.preset || 'live'); res.writeHead(204); return res.end(); }
   if (!user) return redirect(res, '/login?next=' + encodeURIComponent(req.url));
   const page = (title, nav, body) => html(res, shell(req, { title, nav, body, user }));
@@ -250,6 +255,15 @@ ${c.goals?.length ? `<span class="lbl">ISP goals</span>${c.goals.map(g => `<div 
     if (tab === 'active') body = `<table class="list"><tr><th>Date</th><th>Form</th><th>Status</th><th></th></tr>${lauris.db.sessions.filter(s => s.no === c.no).sort((a, b) => b.id - a.id).map(s => `<tr><td>${US(s.date)}</td><td>${esc(FORMS[s.form].title)}</td><td>${s.status}</td><td>${s.status === 'saved' ? `<a href="/consumers/${c.no}/session/${s.form}?id=${s.id}">Open</a>` : s.status === 'processed' && s.approve ? `<a href="/approvals/${s.id}">Preview</a>` : `<a href="/sessions/${s.id}">View</a>`}</td></tr>`).join('')}</table>`;
     if (tab === 'medications' || tab === 'allergies') body = `<div class="card muted">Nothing recorded in the mock.</div>`;
     return page(c.initials, 'consumers', `${flash(q)}${consumerHeader(c)}${tabs(c, tab)}${body}`);
+  }
+
+  // A person enters an authorization (units and dates) for a consumer. Minimal form handler; the Authorizations page UI is E7's.
+  m = p.match(/^\/consumers\/(\d+)\/authorization$/);
+  if (m && req.method === 'POST') {
+    const c = lauris.consumer(m[1]); if (!c) return notFound(res);
+    const f = await readForm(req);
+    try { lauris.setAuthorization(c.no, { units: f.units, payer: f.payer, start: f.start, end: f.end }); } catch (e) { if (e instanceof LaurisError) return redirect(res, `/consumers/${c.no}?tab=auth&blocked=${encodeURIComponent(e.message)}`); throw e; }
+    return redirect(res, `/consumers/${c.no}?tab=auth&authorization=${c.no}`);
   }
 
   m = p.match(/^\/consumers\/(\d+)\/session$/);

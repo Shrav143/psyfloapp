@@ -5,7 +5,7 @@
 import { addDays, fmtDate, fmtDateTime } from '../../../web/js/shared/dates.js';
 import { ruleValue } from '../../../web/js/shared/rules.js';
 import { refuse, needUnits, needDocRef } from '../gates.js';
-import { recordDecision } from './core.js';
+import { recordDecision, applyAward } from './core.js';
 
 const byId = (arr, id) => (arr || []).find(x => x.id === id);
 const need = (x, what) => { if (!x) throw new Error(what + ' not found'); return x; };
@@ -25,13 +25,13 @@ export default {
     const pf = payerShort(s, r.payer);
     r.decision = { door: choice, at: this.now(), by, plan };
     if (choice === 'stretch') {
-      r.stage = 'active'; r.units_awarded = units;
+      r.stage = 'active'; r.units_awarded = units; applyAward(this, s, r, units, 'partial accepted · stretch');
       r.stretch = { units, until: plan.until || null, per_week: plan.per_week || null, per_day: plan.per_day || null };
       this.event(`Decision logged: accept ${units} units and stretch them to ${plan.until ? fmtDate(plan.until) : 'the end date'}${plan.per_week ? ' · about ' + plan.per_week + ' units a week' : ''} · not sent to ${pf}`, by, id);
       return { stage: r.stage };
     }
     if (choice === 'use_up') {
-      r.stage = 'early_discharge'; r.units_awarded = units;
+      r.stage = 'early_discharge'; r.units_awarded = units; applyAward(this, s, r, units, 'partial accepted · use them up');
       this.event(`Decision logged: accept ${units} units, keep the same care, use them up${plan.runout ? ' (about ' + fmtDate(plan.runout) + ')' : ''}, then discharge and start a new initial · not sent to ${pf}`, by, id);
       return { stage: r.stage };
     }
@@ -85,6 +85,7 @@ export default {
       this.event(`Peer-to-peer call held · awaiting ${pf}'s decision${tail}`, by, id);
     } else if (outcome === 'approved' || outcome === 'partial') {
       r.stage = 'active'; r.units_awarded = units || (outcome === 'approved' ? r.units_requested : r.units_awarded || r.units_offered);
+      applyAward(this, s, r, r.units_awarded, 'peer-to-peer');
       this.event(`Peer-to-peer outcome logged · ${outcome === 'approved' ? 'approved' : 'approved in part'} · ${r.units_awarded} units · document ${ref}${tail}`, by, id);
     } else {
       r.stage = 'denied'; r.denied_on = s.today; r.notice_date = r.notice_date || s.today; r.denial_reason = r.denial_reason || 'upheld after the peer-to-peer';

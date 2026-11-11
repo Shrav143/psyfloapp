@@ -45,7 +45,7 @@ await T.test('the time of day is not the machine clock and is never silently pin
 });
 await T.test('PDU-02 an information request that is not answered becomes "missed" (no 08:40 fudge); the reply-due time is shown', async () => {
   await reset('canvas'); let s = await state('jperez'); const r = s.requests.find(x => x.id === 'R-0408');
-  const c0 = M.requestClock(s, r); assert.match(c0.text, /h left of 24 · due Thu Oct 29/); assert.match(c0.text, /^9 h left/, 'at 09:00: 17:40 is 8 h 40 min away');
+  const c0 = M.requestClock(s, r); assert.match(c0.text, /h left of 24 · due Thu Oct 29/); assert.match(c0.text, /^2 h left/, 'at 15:30 the 17:40 reply is 2 h 10 min away');
   await advance(); s = await state('jperez'); const c1 = M.requestClock(s, s.requests.find(x => x.id === 'R-0408'));
   assert.match(c1.text, /reply missed · was due Thu Oct 29/); assert.eq(c1.sev, 'r');
 });

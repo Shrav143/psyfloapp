@@ -11,7 +11,7 @@
 import { addDays, addHours, addBusinessDays, fmtDate, fmtDateTime, daysBetween } from '../../../web/js/shared/dates.js';
 import { rule, ruleValue, deadline, unitsFor, signatureMode } from '../../../web/js/shared/rules.js';
 import { makePdf, jpegSize } from '../../pdf.js';
-import { Refusal, refuse, needUnits, needDocRef, isLmhpCredential } from '../gates.js';
+import { Refusal, refuse, needUnits, needDocRef, isLmhpCredential, rand } from '../gates.js';
 
 const byId = (arr, id) => arr.find(x => x.id === id);
 const need = (x, what) => { if (!x) throw new Error(what + ' not found'); return x; };
@@ -19,7 +19,7 @@ export const payerName = (s, id) => (byId(s.payers, id) || {}).name || id;
 const staffName = (s, id) => (byId(s.staff, id) || {}).name || id;
 const sim = { sim: true };
 const withCred = (name, cred) => cred && !String(name).includes(cred) ? `${name}, ${cred}` : name;
-const faxRef = () => 'F-' + (2300 + Math.floor(Math.random() * 600));
+const faxRef = () => 'F-' + (2300 + Math.floor(rand() * 600));
 
 // which rule governs a guardian signature on a document
 const docTypeOf = form => /consent/i.test(form) ? 'consent' : /release/i.test(form) ? 'release' : /quarterly/i.test(form) ? 'quarterly' : /appeal/i.test(form) ? 'appeal' : 'enrollment';
@@ -45,6 +45,39 @@ export function recordDecision(store, s, r, { kind, outcome, units, doc_ref, not
   if (prior) prior.superseded_by = row.id;
   r.decision_log.push(row);
   return row;
+}
+
+// An approved decision (or an accepted partial) sets the client's authorization in PSYFLO's tracker: the awarded units and the window.
+// Psyflo never writes units into Lauris: a human enters them on the Lauris Authorizations page, and the task below is closed only by a
+// bridge observation showing the units there (lauris.observed -> closeUnitTasks). The previous authorization is kept in authorization_history.
+export function applyAward(store, s, r, units, how = 'approved') {
+  const c = byId(s.clients, r.client); if (!c || !(units > 0)) return null;
+  const prev = c.authorization && c.authorization.units ? { ...c.authorization } : null;
+  const [d0, d1] = String(r.dates || '').split(' to ');
+  const iso = d => /^\d{4}-\d{2}-\d{2}$/.test(String(d || ''));
+  const start = iso(d0) ? d0 : s.today;
+  const end = iso(d1) ? d1 : addDays(start, 89);
+  c.authorization_history = (c.authorization_history || []).concat(prev ? [{ ...prev, closed_on: s.today, replaced_by: r.id }] : []);
+  c.authorization = { payer: r.payer, service: prev && prev.service || undefined, units, used: 0, start, end, award: r.id, status: 'awarded', in_lauris: false };
+  if (['request_pending', 'denied_appeal', 'in_service_unpaid', 'early_discharge_new_initial', 'intake', 'referral'].includes(c.stage)) c.stage = 'in_service';
+  s.lauris_tasks = s.lauris_tasks || [];
+  for (const t of s.lauris_tasks) if (t.client === c.id && t.status === 'open') { t.status = 'superseded'; t.closed_by = r.id; }
+  s.lauris_tasks.push({ id: 'lt-' + (s.lauris_tasks.length + 1), kind: 'enter_units_in_lauris', client: c.id, consumer: c.lauris_no || c.harvest_no || null, request: r.id, units, start, end, status: 'open', opened_at: store.now(), opened_by: store.who(), text: `Enter ${units} units (${fmtDate(start)} to ${fmtDate(end)}) on the Lauris Authorizations page for ${c.initials}` });
+  store.event(`Award recorded in Psyflo: ${units} units, ${fmtDate(start)} to ${fmtDate(end)} (${how}) · task: enter the units in Lauris (a person does it; Psyflo does not write units)`, store.who(), r.id);
+  return c.authorization;
+}
+// the page bridge showed a consumer header with "N units available": close the open task if the units are there
+export function closeUnitTasks(store, s, clientId, unitsText, byWho) {
+  const m = String(unitsText || '').match(/(\d+)\s+units? available/i); if (!m) return 0;
+  const avail = +m[1]; let n = 0;
+  for (const t of (s.lauris_tasks || []).filter(t => t.client === clientId && t.status === 'open')) {
+    if (avail >= t.units) {
+      t.status = 'done'; t.closed_at = store.now(); t.closed_by = byWho || 'bridge'; t.observed_available = avail; n++;
+      const c = byId(s.clients, clientId); if (c && c.authorization && c.authorization.award === t.request) { c.authorization.in_lauris = true; c.authorization.status = 'active'; }
+      store.event(`Units seen in Lauris: ${avail} available (observed on the open page) · task closed`, byWho || 'bridge', t.request, { actor_kind: 'bridge' });
+    }
+  }
+  return n;
 }
 
 export default {
@@ -107,7 +140,7 @@ export default {
     const r = need(byId(s.referrals, referral), 'Referral');
     let fl = s.family_links.find(f => f.referral === referral);
     if (!fl) {
-      fl = { referral, client: r.client, token: (r.client === 'TW' ? 'tw-' : 'fl-') + Math.random().toString(36).slice(2, 8), steps: {}, answers: {} };
+      fl = { referral, client: r.client, token: (r.client === 'TW' ? 'tw-' : 'fl-') + rand().toString(36).slice(2, 8), steps: {}, answers: {} };
       s.family_links.push(fl);
     }
     fl.sent_at = this.now();
@@ -286,8 +319,8 @@ export default {
     if (r.channel === 'fax') {
       r.stage = 'sending';
       this.event('Send pressed · faxing through Harvest\'s Sfax account (simulated)', by, id, { sim: true });
-      const ref = faxRef(); const st = this;
-      setTimeout(() => {
+      const ref = faxRef(); const st = this; const instant = !!(this.ctx && this.ctx.instant);   // fixtures finish the stub at once
+      const finish = () => {
         const state = st.state; const q = byId(state.requests, id); if (!q || q.stage !== 'sending') return;
         const sentAt = st.now();
         const dd = deadline(state, 'decision.overdue_after_days', sentAt.slice(0, 10), { unit: 'days' });
@@ -298,8 +331,9 @@ export default {
         const f = st.writeFile(`${id}_sent_fax_${ref}.pdf`, makePdf([{ text: 'Sfax delivery receipt (SIMULATED)', size: 14, bold: true }, { text: 'Reference ' + ref + ' · ' + fmtDateTime(sentAt, { year: true }) }, { text: 'To: ' + payerName(state, q.payer) + ' · utilization management fax (demo)' }, { text: 'Pages: ' + (q.pages || 11) }, { text: 'Sent by ' + staffName(state, by) }], { title: 'Sfax receipt ' + ref }));
         state.files.push({ ...f, kind: 'fax_receipt', record: id, at: sentAt });
         q.delivery_receipt = f.url;
-        st.changed();
-      }, 3000);
+        if (!instant) st.changed();
+      };
+      if (instant) finish(); else setTimeout(finish, 3000);
       return { channel: 'fax' };
     }
     // portal payers: the click opens the portal in the clinician's own login with the packet ready
@@ -356,12 +390,14 @@ export default {
   // Demo-only: payer replies cannot arrive during a demo. Presenter mode; recorded as simulated with a demo document reference.
   'request.demoReply'(s, { id, kind, units }) {
     const r = need(byId(s.requests, id), 'Request');
+    // a payer cannot reply to something that was never sent: never approves a draft, a signed packet or a sending request
+    if (!['submitted', 'overdue', 'info_requested', 'partial_decide', 'peer_to_peer_requested', 'peer_to_peer_booked', 'p2p_awaiting', 'appeal_sent', 'denied'].includes(r.stage)) refuse(`${id} is ${r.stage.replace(/_/g, ' ')}: the demo payer replies only to a request that was sent (nothing was recorded).`, { record: id, code: 'not_sent', status: 409 });
     const at = this.now(); const who = this.who();
     const dref = `DEMO-${id}-${(r.decision_log || []).length + 1}`;
     if (kind === 'approved') {
       const u = needUnits(units ?? r.units_requested, { max: r.units_requested, what: 'Units' });
       recordDecision(this, s, r, { kind: 'initial', outcome: 'approved', units: u, doc_ref: dref, simulated: true });
-      r.stage = 'active'; r.units_awarded = u; this.event(`Demo: approved · ${u} units`, who, id, { demo: true, sim: true, actor_kind: 'demo' });
+      r.stage = 'active'; r.units_awarded = u; this.event(`Demo: approved · ${u} units`, who, id, { demo: true, sim: true, actor_kind: 'demo' }); applyAward(this, s, r, u, 'demo reply');
     } else if (kind === 'partial') {
       const u = needUnits(units ?? (Math.round(r.units_requested * 0.6 / 5) * 5 || 90), { min: 1, max: r.units_requested - 1, what: 'Offered units' });
       recordDecision(this, s, r, { kind: 'initial', outcome: 'partial', units: u, doc_ref: dref, simulated: true });
@@ -381,10 +417,10 @@ export default {
     const r = need(byId(s.requests, id), 'Request'); const by = this.who();
     if (r.stage !== 'partial_decide') refuse(`${id} is ${r.stage.replace(/_/g, ' ')}; only an open partial award can be decided.`, { record: id, code: 'bad_stage' });
     r.decision = { door, at: this.now(), by, plan };
-    if (door === 'accept') { r.stage = 'active'; r.units_awarded = r.units_offered; this.event(`Accepted ${r.units_offered} units`, by, id); }
+    if (door === 'accept') { r.stage = 'active'; r.units_awarded = r.units_offered; this.event(`Accepted ${r.units_offered} units`, by, id); applyAward(this, s, r, r.units_awarded, 'partial accepted'); }
     else if (door === 'info') { r.stage = 'info_requested'; r.info_requested_at = this.now(); r.reply_due = addHours(this.now(), ruleValue(s, 'info_request.hours', 24)); this.event('Chose to add information (the payer asked)', by, id); }
     else if (door === 'p2p') { r.stage = 'peer_to_peer_booked'; r.p2p_at = plan?.when || addDays(s.today, 14) + 'T14:00'; this.event('Peer-to-peer requested · call ' + fmtDateTime(r.p2p_at, { dow: true }), by, id); }
-    else if (door === 'early_discharge') { r.stage = 'early_discharge'; r.units_awarded = r.units_offered; this.event(`Accepted ${r.units_offered} units with an early-discharge plan`, by, id); }
+    else if (door === 'early_discharge') { r.stage = 'early_discharge'; r.units_awarded = r.units_offered; this.event(`Accepted ${r.units_offered} units with an early-discharge plan`, by, id); applyAward(this, s, r, r.units_awarded, 'partial accepted'); }
     else throw new Error('Unknown choice: ' + door);
   },
   // peer-to-peer outcome with its document reference (write-once; a correction needs a reason)
@@ -399,6 +435,7 @@ export default {
     else if (outcome === 'partial') { r.stage = 'active'; r.units_awarded = u; }
     else { r.stage = 'denied'; r.denied_on = s.today; r.notice_date = r.notice_date || s.today; r.appeal_deadline = r.appeal_deadline || addDays(r.notice_date, ruleValue(s, 'appeal.window_days', 60)); }
     this.event('Peer-to-peer outcome logged · ' + outcome + (u ? ' · ' + u + ' units' : '') + ' · document ' + ref, by, id);
+    if (u && r.stage === 'active') applyAward(this, s, r, u, 'peer-to-peer');
   },
   // information reply: the draft may be edited until it is sent; a sent reply is write-once
   'request.infoReply'(s, { id, text }) {
@@ -618,7 +655,7 @@ export const hooks = {
     }
   }
 };
-function nowStamp(state) { return `${state.today}T${state.clock?.fixed || '09:00'}:00`; }
+function nowStamp(state) { return `${state.today}T${state.clock?.fixed || state.clock?.anchor_time || '09:00'}:00`; }
 
 function staffShort(s, id) { const p = byId(s.staff, id); return p ? p.name.replace(/^(\w)\w+ /, '$1. ') : id; }
 function clientLabel(s, id) { const c = byId(s.clients, id); return c ? c.initials : id; }

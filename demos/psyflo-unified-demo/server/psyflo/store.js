@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { draftScreening } from '../../web/js/shared/draft.js';
-import { newClock, nowFull, nextDay, today as clockToday } from '../../web/js/shared/clock.js';
+import { newClock, nowFull, nextDay, today as clockToday, DAY_START, DEFAULT_TIME } from '../../web/js/shared/clock.js';
 import { Refusal } from './gates.js';
 import { registerAuthz } from './authz.js';
 
@@ -56,7 +56,7 @@ export function buildState(preset = 'live') {
     portal_tasks: seed.portal_tasks || [], screenings: seed.screenings || [], exports: seed.exports || [],
     settings: seed.settings || {}, library: seed.library || [], review: seed.review || [], school_numbers: seed.school_numbers || {},
     drafts: seed.drafts || [], appeals: seed.appeals || [],
-    events: seed.events || []
+    events: seed.events || [], lauris_tasks: seed.lauris_tasks || []
   };
   // any other top-level keys from seed/extra/*.json pass straight through
   for (const [k, v] of Object.entries(seed)) if (!(k in s) && !k.startsWith('_') && !['school_checkins', 'guardian_checkins'].includes(k)) s[k] = v;
@@ -155,7 +155,7 @@ class Store {
   migrate() {
     const st = this.state;
     if (!st.clock) st.clock = newClock(st.today || loadSeed().today, { fixed: process.env.DEMO_TIME || null });
-    else { st.clock.anchor_wall = Date.now(); st.clock.fixed = process.env.DEMO_TIME || st.clock.fixed || null; if (st.clock.anchor_time == null) st.clock.anchor_time = '09:00'; }
+    else { st.clock.anchor_wall = Date.now(); st.clock.fixed = process.env.DEMO_TIME || st.clock.fixed || null; if (st.clock.anchor_time == null) st.clock.anchor_time = DEFAULT_TIME; }
     st.today = st.clock.date;
     if (!st.rules) { try { st.rules = loadSeed().rules || []; } catch { st.rules = []; } }
   }
@@ -182,7 +182,7 @@ class Store {
   advanceClock({ days = 1, calendar = false } = {}) {
     const from = clockToday(this.state);
     const to = nextDay(from, { days, calendar });
-    this.state.clock = newClock(to, { fixed: process.env.DEMO_TIME || null });
+    this.state.clock = newClock(to, { time: DAY_START, fixed: process.env.DEMO_TIME || null });
     this.state.today = to;
     this.hooks.run('advance', { from, to, days, state: this.state });
     return { from, to };

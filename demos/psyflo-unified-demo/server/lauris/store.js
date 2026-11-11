@@ -164,6 +164,7 @@ class LaurisDB {
     const c = this.consumer(ev.consumer && ev.consumer.no);
     if (!c) return { ok: false, reason: `no consumer ${ev.consumer && ev.consumer.no}` };
     if (ev.event === 'created') return { ok: true };
+    if (ev.event === 'authorization') { const m = String(ev.consumer.units || '').match(/(\d+)\s+units? available/i); return c.auth && m && +m[1] === +c.auth.available ? { ok: true } : { ok: false, reason: 'the consumer header does not show those units' }; }
     const s = this.session(ev.session);
     if (!s) return { ok: false, reason: `no session ${ev.session}` };
     if (String(s.no) !== String(c.no)) return { ok: false, reason: 'the session belongs to another consumer' };
@@ -183,6 +184,16 @@ class LaurisDB {
     if (ev.event === 'rejected') return s.status === 'rejected' ? { ok: true, session: s } : { ok: false, reason: 'the session is not rejected' };
     return { ok: false, reason: 'unknown event' };
   }
+  // A person enters an authorization on the Lauris Authorizations page (the mock page, built by E7, calls this). Psyflo never calls it.
+  setAuthorization(no, { units, payer, start, end }) {
+    const c = this.consumer(no); if (!c) throw new LaurisError('No such consumer', 404);
+    const n = parseInt(units, 10); if (!(n > 0)) throw new LaurisError('Enter the number of units.');
+    const pn = payer || c.auth?.payer || '';
+    c.auth = { payer: pn, payer_name: PAYER[pn] || pn, units: n, used: 0, available: n, start_us: US(start || this.db.today), end_us: US(end || '') };
+    c.updated = this.db.today; this.save(); return c;
+  }
+  // whole mock database for tests (DEMO_TEST=1 only; the route refuses otherwise)
+  snapshot() { return JSON.parse(JSON.stringify(this.db)); }
   // scenario hook: s3 puts T.W.'s initial SRA back to "not yet processed"
   scenario(id) {
     if (id === 's3') {
