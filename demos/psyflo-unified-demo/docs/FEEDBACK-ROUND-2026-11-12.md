@@ -47,4 +47,4 @@ Source: the product owner's dictated walkthrough on the administrator login (Nov
 
 ## Tests
 
-See `docs/deliverables/07-test-results.md` for the run at the end of this round.
+49 of 49 suites pass on the final run (1,588 tests, 1 skipped); see `docs/deliverables/07-test-results.md`. Not yet done: showing these screens to the staff who asked for them.

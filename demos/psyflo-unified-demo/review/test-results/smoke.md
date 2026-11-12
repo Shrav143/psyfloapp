@@ -1,6 +1,6 @@
 # smoke · PASS
 
-Run 2026-11-12T02-13-46Z · 52420 ms · instance 2 · exit 0
+Run 2026-11-12T02-59-17Z · 51887 ms · instance 2 · exit 0
 
 | Result | Test | Note |
 |---|---|---|

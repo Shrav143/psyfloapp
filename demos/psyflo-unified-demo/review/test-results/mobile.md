@@ -1,6 +1,6 @@
 # mobile · PASS
 
-Run 2026-11-12T02-38-24Z · 71808 ms · instance 2 · exit 0
+Run 2026-11-12T02-59-17Z · 68818 ms · instance 1 · exit 0
 
 | Result | Test | Note |
 |---|---|---|

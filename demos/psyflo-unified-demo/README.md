@@ -1,6 +1,6 @@
 # Psyflo × Harvest · unified demo
 
-A working demo of Psyflo for Harvest Outreach Center, rebuilt on Nov 11, 2026 from the Nov 8 master and the secondary TDT authorization demo. One application, one dataset, five surfaces: the management **platform**, the **Lauris extension panel** beside a mock Lauris, a **phone** app for staff, a **family** portal and a **school** portal. **Synthetic data only. Nothing is real.**
+A working demo of Psyflo for Harvest Outreach Center, rebuilt on Nov 11, 2026 from the Nov 8 master and the secondary TDT authorization demo, and revised on Nov 12 (navy rail and DM Sans from the Nov 8 look; Authorizations, Denial Intelligence and Analytics laid out as in the product owner's earlier artifact; flags, a bell and the FLO assistant on every page; a 10, 25, 50 or 100 rows pager at the foot of every table). One application, one dataset, five surfaces: the management **platform**, the **Lauris extension panel** beside a mock Lauris, a **phone** app for staff, a **family** portal and a **school** portal. **Synthetic data only. Nothing is real.**
 
 What it shows: a person says what happened, Psyflo drafts from the stored record with a source on every statement, and a person reviews, presses Process Form, Get Signature and Send. Psyflo records and tracks; it never signs, never stores credentials, never submits unattended.
 
@@ -98,7 +98,7 @@ npm test                                    # drafting unit tests only
 node test/smoke.mjs [ScreenId]              # one screen or all, per role
 ```
 
-The runner starts the servers on given ports with a fresh data directory per suite, runs 41 suites in isolation (unit, screens, flows A to D, safety, areas, scenarios S1 to S6, presenter, hosted) and writes `review/test-results/<suite>.md` and `summary.md`. Browser suites use Playwright; set `PW=/path/to/playwright` if it is not in the usual place. Results change while QA works: read `summary.md`, not this file.
+The runner starts the servers on given ports with a fresh data directory per suite, runs 49 suites in isolation (unit, screens, flows A to D, safety, areas, scenarios S1 to S6, presenter, hosted) and writes `review/test-results/<suite>.md` and `summary.md`. Browser suites use Playwright; set `PW=/path/to/playwright` if it is not in the usual place. Results change while QA works: read `summary.md`, not this file.
 
 ## Hosted single-file build
 
@@ -128,6 +128,7 @@ The "How the data gets in" note for any screen is in `seed/notes/*.md` and in th
 
 - **Synthetic data.** Initials and invented names. Seeded figures labelled "Sample data, illustrative" are not Harvest's numbers.
 - **Simulated integrations.** The mock Lauris is our approximation, with its own store; field labels are a best reading. Sfax, SMS, DMAS, Availity, the UHC portal and the state portal are stubs or one-page mocks. Signatures are a name read from the mock Lauris event.
+- **FLO and the voice agent are Simulated.** FLO answers from the records a role can already see and links to them; the "Call payer" step never dials, uses invented opening hours labelled as an assumption, and saves only what a clinician types. Both are labelled Simulated, and neither does anything unattended.
 - **Rule-based drafting, no language model.** Every statement traces to a stored record or says "Evidence missing — verify …".
 - **Rules are not law.** Deadlines, clocks, unit bands and signature modes come from a table with a source and a verification label. Several are Harvest-reported or unverified, and say so.
 - **Not run:** the MV3 extension in real Chrome; the live microphone and Web Speech; Safari and Firefox; a venue network; a published host for the hosted file. The in-page panel and the mock Lauris pass the automated suites in headless Chromium.
@@ -135,4 +136,4 @@ The "How the data gets in" note for any screen is in `seed/notes/*.md` and in th
 - **Known defect:** a drawer stays open if the address hash changes under it (browser Back); Escape closes it.
 - **Open questions for Harvest** are in `docs/deliverables/08-unresolved-decision-register.md`.
 
-Fonts: DM Sans from Google Fonts (the only network request). Without it the pages use the system sans.
+Fonts: DM Sans is embedded in the stylesheet, so the pages make no font request. Nothing here reaches a network service.

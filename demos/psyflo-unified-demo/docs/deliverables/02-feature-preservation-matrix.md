@@ -151,7 +151,7 @@ Every functioning feature of the two original demos (191 rows from the Nov 8 mas
 | M-089 | Single global store + persistence | Keep + hooks | PRESERVED | state key rev · code: persistence file · code: store hooks | server/psyflo/store.js; server/index.js server/psyflo/actions/core.js |
 | M-090 | SSE sync | Keep | PRESERVED | GET /api/stream answers | 200 |
 | M-091 | Presets live / canvas | Presenter | MOVED | action demo.reset registered with a capability entry · presets live and canvas · suite ui-kit PASS, fixtures PASS | canvas |
-| M-092 | Seed merge | Keep | PRESERVED | code: seed merge from seed/extra | web/js/shared/rules.js server/lauris/store.js |
+| M-092 | Seed merge | Keep | PRESERVED | code: seed merge from seed/extra | web/js/screens/DenialCase.js web/js/shared/rules.js |
 | M-093 | Audit events | Extend (actor kind) | MOVED | every audit event has actor_kind |  |
 | M-094 | PDF writer | Extend raw-bytes path | MOVED | file server/pdf.js |  |
 | M-095 | File store | Keep | PRESERVED | code: file store route | web/js/screens/Submission.js web/js/screens/UiKit.js |
@@ -256,7 +256,7 @@ Every functioning feature of the two original demos (191 rows from the Nov 8 mas
 | V-003 | Family-link settings | PORT → Settings › Family link (fills M-107 orphan) | MOVED | route /Settings as dowens · suite family PASS, flowD PASS | lands on #/Settings?tab=family |
 | V-004 | Referral review and home | **Do not port** (removes Referrals) | DROPPED-WITH-REASON | suite referrals PASS, flowD PASS | v3 referral review would remove Referrals; Referrals is never redirected [00 decision #3 and §4.1] |
 | V-005 | All Authorizations list | PORT → Authorizations queue | MOVED | route /Authorizations as jperez · suite authorizations PASS, flowC PASS | lands on #/Authorizations |
-| V-006 | Authorization detail | PORT → Authorization case shell | MOVED | route /Authorization as jperez · suite authorizations PASS, flowC PASS | lands on #/Authorization?id=R-0416&section=timeline |
+| V-006 | Authorization detail | PORT → Authorization case shell | MOVED | route /Authorization as jperez · suite authorizations PASS, flowC PASS | lands on #/Authorization?id=R-0416 |
 | V-007 | Draft mirrors | PORT → case › Documentation | MOVED | route /Authorization as jperez · suite authorizations PASS, flowC PASS | lands on #/Authorization?id=R-0416&section=documents |
 | V-008 | Delivery trail | REPLACE with master Submission | REPLACED-BY | route /Authorization as jperez · suite authorizations PASS, flowC PASS | lands on #/Authorization?id=R-0416&section=submission |
 | V-009 | Denial Intelligence queue | PORT → Denial Intelligence queue | MOVED | route /DenialIntelligence as jperez · suite denials PASS, denials-ui PASS, rules PASS | lands on #/DenialIntelligence |
@@ -314,7 +314,7 @@ Every functioning feature of the two original demos (191 rows from the Nov 8 mas
 | V-061 | Original vs enhanced and approve | PORT | MOVED | action enhance.decide, enhance.approve registered with a capability entry · suite scribe PASS, enhance PASS |  |
 | V-062 | CNA scan | PORT | MOVED | code: CNA scan · suite scribe PASS, enhance PASS | web/js/ext-composite.js web/js/registry.js |
 | V-063 | SRA required fields to submission | Replace submit with master human Send; keep validation | REPLACED-BY | action request.send registered with a capability entry · code: human Send · suite scribe PASS, enhance PASS | web/js/screens/Authorization.js web/js/screens/SettingsData.js |
-| V-064 | Recommended actions per case | REFACTOR → missing-evidence list | MOVED | code: missing-evidence list · suite scribe PASS, enhance PASS | web/js/screens/DenialCaseViews.js web/js/shared/analytics/ask.js |
+| V-064 | Recommended actions per case | REFACTOR → missing-evidence list | MOVED | code: missing-evidence list · suite scribe PASS, enhance PASS | web/js/screens/DenialCase.js web/js/screens/DenialCaseViews.js |
 | V-065 | Extension view switching | clinical | MOVED | panel on Lauris #3310 as jperez |  |
 | V-066 | Consumers list | Drop (master M-073) | DROPPED-WITH-REASON |  | duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)] |
 | V-067 | Consumer file (6 tabs) | Drop | DROPPED-WITH-REASON |  | duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)] |
@@ -337,7 +337,7 @@ Every functioning feature of the two original demos (191 rows from the Nov 8 mas
 | V-084 | S1 DSS creates a progress note | Spec Scenario 1 (master flow B) | MOVED | route /MobileApp as khale · code: scenario s1 · suite ui-kit PASS, fixtures PASS | lands on #/MobileApp; seed/extra/scenarios.json |
 | V-085 | S2 DSS tracks interventions | Remove: removed by feedback Nov 11 (Track Time) | DROPPED-WITH-REASON | suite ui-kit PASS, fixtures PASS | Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register] |
 | V-086 | S3 Clinician enhances a progress note | Enhance Mode A | MOVED | action enhance.scan registered with a capability entry · suite ui-kit PASS, fixtures PASS |  |
-| V-087 | S4 Clinician enhances an SRA | Spec Scenario 3 | MOVED | route /Authorization as jperez · suite ui-kit PASS, fixtures PASS | lands on #/Authorization?id=R-0416&section=timeline |
+| V-087 | S4 Clinician enhances an SRA | Spec Scenario 3 | MOVED | route /Authorization as jperez · suite ui-kit PASS, fixtures PASS | lands on #/Authorization?id=R-0416 |
 | V-088 | S5 Admin tracks authorizations | Authorizations demo | MOVED | route /Authorizations as jperez · suite ui-kit PASS, fixtures PASS | lands on #/Authorizations |
 | V-089 | S6 Clinician manages a denial | Spec Scenario 5 | MOVED | route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS | lands on #/DenialIntelligence |
 | V-090 | S7 Clinician prepares peer-to-peer | Spec Scenario 5 | MOVED | route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS | lands on #/DenialIntelligence |
