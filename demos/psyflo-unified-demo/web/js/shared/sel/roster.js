@@ -6,14 +6,19 @@
 //   clientsInScope(s, actor)             -> the clients this person is responsible for (never a default user: no actor, no clients)
 //   outstandingByClient(s, actor)        -> Map<clientId, Item[]>   what is owed now, from notes, forms and the authorization worklist
 //   rosterRows(s, actor, filters)        -> { rows, total, shown, counts, options, filters }    the Dashboard table
-//   documentRows(s, actor, filters)      -> { rows, total, shown, counts, options, filters }    the Documentation table (notes + forms)
+//   documentRows(s, actor, filters)      -> { rows, total, shown, counts, options, filters }    the Documents view of the Dashboard (notes + forms)
+//   viewFor(actor, view)                 -> 'patients' | 'documents' | 'staff'   the Dashboard view this role may open (direct support: patients only)
+//   laurisPath(harvestNo, type, session) -> the mock Lauris page where that document is edited ('' without a Lauris number)
 //   patientChart(s, actor, clientId)     -> { header, docs, auth, items, can } | null            the Patient chart
 //   authSummary(s, actor, clientId)      -> { requestId, stage, units:{total,used,left,pctUsed,warn}, end, endSev, ... } | null
 //   normalizeRoster(params) / normalizeDocs(params)   -> canonical filters from a query string
 //
-// ITEM = { id, client, kind:'note'|'review'|'form'|'auth'|'fix', type, title, due, dueText, sev:'r'|'y'|'n', verb, to, ops, rank }
+// ITEM = { id, client, kind:'note'|'review'|'form'|'auth'|'referral'|'fix', type, title, due, dueText, sev:'r'|'y'|'n', verb, to, lauris, ops, rank }
 //   sev r = past due or blocked, y = due soon or waiting on a review, n = on the way. `to` is an old-style target the screen runs through hrefFor.
-// DOC  = { id, client, label, lauris, group:'note'|'form', type, typeLabel, date, due, dueText, status, statusLabel, sev, staff, staffShort, owner, reviewer, site, noteId?, to }
+//   lauris = the Lauris page where this work is done ('' for an authorization or referral step, which stay in Psyflo). Every note, form, CNA, plan,
+//   rejected note and assessment is EHR work (R4): the Dashboard turns it into an "Open in Lauris" icon for the roles that hold ext.use.
+// DOC  = { id, client, label, lauris, laurisNo, group:'note'|'form', type, typeLabel, date, due, dueText, status, statusLabel, sev, staff, staffShort, owner, reviewer, site, noteId?, to }
+//   lauris = the Lauris page path of the document; laurisNo = the consumer's Lauris (Harvest) number, the text a person reads
 //   status: behind | due | in_progress | pending_review | returned | late | done   (late = filed after it was due; done = filed on time)
 // Display strings come back as data; screens turn them into UI-kit fragments. Every date comes from the clock service; every number that is
 // a rule comes from the rules table (units.warn_used_pct, notes.daily_due_hours, ...).
@@ -37,9 +42,21 @@ export const NOTE_TYPES = ['daily', 'weekly_guardian', 'monthly_collateral'];
 export const docLabel = t => DOC_LABEL[t] || t;
 const WRITE = { daily: 'ExtDPN.dc.html?client=', weekly_guardian: 'ExtWeekly.dc.html?client=', monthly_collateral: 'ExtMonthly.dc.html?client=' };
 const FORM_HREF = { intake: 'ExtCNA.dc.html?client=', cna: 'ExtCNA.dc.html?client=', isp: 'ExtISP.dc.html?client=', quarterly: 'ExtQuarterly.dc.html?client=', discharge: 'ExtDischarge.dc.html?client=' };
-// Where a document is edited: Lauris is the record; Psyflo only reads, enhances and tracks (feedback Nov 12). Returns the mock Lauris path.
-const LAURIS_FORM = { daily: 'dpn', weekly_guardian: 'weekly', monthly_collateral: 'collateral', intake: 'cna', cna: 'cna', isp: 'isp', quarterly: 'quarterly', discharge: 'discharge' };
+// Where a document is edited: Lauris is the record; Psyflo only reads, enhances and tracks (feedback Nov 12, R4). The mock Lauris form keys are
+// screening, cna, isp, dpn, weekly, collateral, quarterly, incident, sra-initial, sra-continued, discharge; a Psyflo document type maps to one of
+// them (an intake form is the Admission Screening), and a Lauris key maps to itself. Returns the mock Lauris path:
+//   an existing note by its Lauris session      /sessions/<id>
+//   a document by its type                      /consumers/<harvest no>/session/<form>
+//   anything else (an assessment, a lookup)     the consumer's Active File: /consumers/<harvest no>?tab=active
+export const LAURIS_FORM = { daily: 'dpn', weekly_guardian: 'weekly', monthly_collateral: 'collateral', incident: 'incident', intake: 'screening', cna: 'cna', isp: 'isp', quarterly: 'quarterly', discharge: 'discharge',
+  screening: 'screening', dpn: 'dpn', weekly: 'weekly', collateral: 'collateral', 'sra-initial': 'sra-initial', 'sra-continued': 'sra-continued' };
 export const laurisPath = (harvestNo, type, session) => !harvestNo ? '' : session ? '/sessions/' + session : LAURIS_FORM[type] ? `/consumers/${harvestNo}/session/${LAURIS_FORM[type]}` : `/consumers/${harvestNo}?tab=active`;
+// a note that is already filed (waiting for a review, or approved): by its Lauris session when Psyflo has one, else the consumer's Active File
+export const laurisNotePath = (harvestNo, note) => !harvestNo ? '' : note && note.session ? '/sessions/' + note.session : `/consumers/${harvestNo}?tab=active`;
+// the staff dashboard's rejected rows name the form in words ("daily note", "weekly call"): the same mapping by words
+const formKeyOf = text => { const t = String(text || '').toLowerCase(); return /daily|dpn|progress/.test(t) ? 'daily' : /weekly|guardian/.test(t) ? 'weekly_guardian' : /collateral|monthly/.test(t) ? 'monthly_collateral' : /intake|screening/.test(t) ? 'intake' : /cna|needs assess/.test(t) ? 'cna' : /plan|isp/.test(t) ? 'isp' : /quarterly/.test(t) ? 'quarterly' : /discharge/.test(t) ? 'discharge' : /incident/.test(t) ? 'incident' : ''; };
+// the Dashboard has two more views next to the roster; a role needs the documentation capability for them (direct support has neither)
+export const viewFor = (actor, view) => (view === 'documents' || view === 'staff') && actor && actor.role && can(actor, 'documentation') ? view : 'patients';
 export const chartHref = (id, section) => `#/Patient?id=${encodeURIComponent(id)}${section ? '&section=' + section : ''}`;
 
 // ---------------------------------------------------------------------------------------------------------------- scope
@@ -116,38 +133,39 @@ export function outstandingByClient(s, actor) {
   const add = it => { if (!scope.has(it.client)) return; const x = { ops: true, rank: 50, sev: 'n', ...it, id: it.id || `${it.kind}:${it.client}:${++seq}` }; (map.get(x.client) || map.set(x.client, []).get(x.client)).push(x); };
   const isDS = actor.role === 'direct_support';
   const writes = can(actor, 'notes.own') && isDS;   // only the staffer writes the note; a reviewer opens the chart
+  const hn = id => (M.byId(s.clients, id) || {}).harvest_no || '';   // the Lauris number: every EHR item carries the Lauris page where the work is done
 
   // notes: missing and past due, missing and not yet due
   for (const m of noteMisses(s, actor, scope)) {
     const lbl = DOC_LABEL[m.type];
-    add({ client: m.client, kind: 'note', type: m.type, title: lbl, sub: periodLabel(m.type, m.date), due: m.dueAt.slice(0, 10), dueText: dueText(m.dueAt, t), sev: m.behind ? 'r' : sevOfDue(m.dueAt, t), status: m.behind ? 'behind' : 'due', rank: m.behind ? 10 : 40, verb: writes ? 'Write note' : 'Open', to: writes ? WRITE[m.type] + m.client : chartHref(m.client, 'documentation'), who: M.staffShort(s, m.staff) });
+    add({ client: m.client, kind: 'note', type: m.type, title: lbl, sub: periodLabel(m.type, m.date), due: m.dueAt.slice(0, 10), dueText: dueText(m.dueAt, t), sev: m.behind ? 'r' : sevOfDue(m.dueAt, t), status: m.behind ? 'behind' : 'due', rank: m.behind ? 10 : 40, verb: writes ? 'Write note' : 'Open', to: writes ? WRITE[m.type] + m.client : chartHref(m.client, 'documentation'), lauris: laurisPath(hn(m.client), m.type), who: M.staffShort(s, m.staff) });
   }
   // notes waiting for a review and notes sent back
   const mayReview = can(actor, 'notes.review'); const pendingIds = new Set(pendingFor(s, actor).map(n => n.id));
   for (const n of s.notes || []) {
     if (!scope.has(n.client)) continue;
     if (n.review === 'pending' && (pendingIds.has(n.id) || (isDS && n.staff === actor.id) || actor.role === 'admin')) {
-      add({ client: n.client, kind: 'review', type: n.type, title: DOC_LABEL[n.type] || 'Note', sub: periodLabel(n.type, n.date), due: '', dueText: '', sev: 'y', status: 'pending_review'   /* a note waiting for review has no due date of its own: its session date is in the sub line, and it must not drive the Next date column */, rank: 20, verb: mayReview ? 'Review' : 'Open', to: mayReview ? 'MyWork.dc.html?section=review&id=' + n.id : chartHref(n.client, 'documentation'), noteId: n.id, who: M.staffShort(s, n.staff) });
+      add({ client: n.client, kind: 'review', type: n.type, title: DOC_LABEL[n.type] || 'Note', sub: periodLabel(n.type, n.date), due: '', dueText: '', sev: 'y', status: 'pending_review'   /* a note waiting for review has no due date of its own: its session date is in the sub line, and it must not drive the Next date column */, rank: 20, verb: mayReview ? 'Review' : 'Open', to: mayReview ? 'Dashboard.dc.html?view=documents&status=pending_review&id=' + n.id : chartHref(n.client, 'documentation'), noteId: n.id, canReview: mayReview && pendingIds.has(n.id), lauris: laurisNotePath(hn(n.client), n), who: M.staffShort(s, n.staff) });
     } else if (['returned', 'flagged'].includes(n.review) && (isDS ? n.staff === actor.id : true)) {
-      add({ client: n.client, kind: 'fix', type: n.type, title: (n.review === 'flagged' ? 'Flagged · ' : 'Returned · ') + (DOC_LABEL[n.type] || 'note'), sub: periodLabel(n.type, n.date), due: '', dueText: '', sev: 'r', status: 'returned', rank: 12, verb: isDS ? 'Fix note' : 'Open', to: isDS ? (WRITE[n.type] || WRITE.daily) + n.client : chartHref(n.client, 'documentation'), noteId: n.id, who: M.staffShort(s, n.staff) });
+      add({ client: n.client, kind: 'fix', type: n.type, title: (n.review === 'flagged' ? 'Flagged · ' : 'Returned · ') + (DOC_LABEL[n.type] || 'note'), sub: periodLabel(n.type, n.date), due: '', dueText: '', sev: 'r', status: 'returned', rank: 12, verb: isDS ? 'Fix note' : 'Open', to: isDS ? (WRITE[n.type] || WRITE.daily) + n.client : chartHref(n.client, 'documentation'), noteId: n.id, lauris: laurisPath(hn(n.client), n.type, n.session), who: M.staffShort(s, n.staff) });
     }
   }
   // rejected in Lauris (the reviewer's own words stay in Lauris; Psyflo shows that it happened)
   const sd = (s.staff_dashboard || {}).staff || {};
   for (const [sid, conf] of Object.entries(sd)) for (const r of conf.rejected || []) {
     if (isDS && sid !== actor.id) continue;
-    add({ client: r.client, kind: 'fix', type: 'rejected', title: 'Rejected in Lauris', sub: `${r.form} · ${fmtDate(r.date)}`, due: '', dueText: '', sev: 'r', status: 'returned', rank: 11, verb: isDS ? 'Fix it' : 'Open', to: isDS ? r.href : chartHref(r.client, 'documentation'), who: M.staffShort(s, sid) });
+    add({ client: r.client, kind: 'fix', type: 'rejected', title: 'Rejected in Lauris', sub: `${r.form} · ${fmtDate(r.date)}`, due: '', dueText: '', sev: 'r', status: 'returned', rank: 11, verb: isDS ? 'Fix it' : 'Open', to: isDS ? r.href : chartHref(r.client, 'documentation'), lauris: laurisPath(hn(r.client), formKeyOf(r.form)), who: M.staffShort(s, sid) });
   }
   // assessments the staffer asks (SUDS, DSM cross-cutting)
   for (const a of s.assessments_due || []) {
     if (isDS && a.staff !== actor.id) continue;
-    add({ client: a.client, kind: 'form', type: 'assessment', title: a.instrument, sub: '', due: a.due, dueText: dueText(a.due, t), sev: sevOfDue(a.due, t), status: a.due < t ? 'behind' : 'due', rank: 45, verb: isDS ? 'Ask' : 'Open', to: isDS ? 'MobileAssess.dc.html?client=' + a.client : chartHref(a.client, 'documentation'), who: M.staffShort(s, a.staff) });
+    add({ client: a.client, kind: 'form', type: 'assessment', title: a.instrument, sub: '', due: a.due, dueText: dueText(a.due, t), sev: sevOfDue(a.due, t), status: a.due < t ? 'behind' : 'due', rank: 45, verb: isDS ? 'Ask' : 'Open', to: isDS ? 'MobileAssess.dc.html?client=' + a.client : chartHref(a.client, 'documentation'), lauris: laurisPath(hn(a.client), 'assessment'), who: M.staffShort(s, a.staff) });
   }
   // intake forms, CNAs, treatment plans, quarterly reports, discharge summaries that are not done
   if (!isDS) for (const d of s.documents || []) {
     if (d.status === 'done') continue;
     const behind = d.due < t; const sev = behind ? 'r' : d.status === 'needs_review' ? 'y' : sevOfDue(d.due, t);
-    add({ client: d.client, kind: 'form', type: d.kind, title: DOC_LABEL[d.kind], sub: d.status === 'in_progress' ? 'Draft open in Lauris' : d.status === 'needs_review' ? 'Processed, waiting for a review' : 'Not started', due: d.due, dueText: dueText(d.due, t), sev, status: d.status === 'needs_review' ? 'pending_review' : behind ? 'behind' : d.status, rank: behind ? 15 : 35, verb: 'Open', to: chartHref(d.client, 'documentation'), who: d.owner ? M.staffShort(s, d.owner) : '' });
+    add({ client: d.client, kind: 'form', type: d.kind, title: DOC_LABEL[d.kind], sub: d.status === 'in_progress' ? 'Draft open in Lauris' : d.status === 'needs_review' ? 'Processed, waiting for a review' : 'Not started', due: d.due, dueText: dueText(d.due, t), sev, status: d.status === 'needs_review' ? 'pending_review' : behind ? 'behind' : d.status, rank: behind ? 15 : 35, verb: 'Open', to: chartHref(d.client, 'documentation'), lauris: laurisPath(hn(d.client), d.kind), phase: d.status, who: d.owner ? M.staffShort(s, d.owner) : '' });
   }
   // the authorization worklist, by client: what this person can act on now or this week (what waits on other people stays on the chart)
   if (!isDS) {
@@ -159,7 +177,7 @@ export function outstandingByClient(s, actor) {
       const client = it.client || (REFERRAL.includes(it.kind) ? refClient(it.record) : null);
       if (!client || it.group === 'waiting' || !(AUTH.includes(it.kind) || REFERRAL.includes(it.kind))) continue;
       const lbl = M.clientLabel(s, client);
-      add({ client, kind: REFERRAL.includes(it.kind) ? 'referral' : 'auth', type: it.kind, title: String(it.title).replace(new RegExp(` · ${lbl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`), ''), sub: it.sub || '', due: '', dueText: it.when || '', sev: it.urgent ? 'r' : tone(it.chip && it.chip.tone), status: 'action', rank: it.rank || 50, verb: it.verb || 'Open', to: it.to || '', record: it.record, ops: it.ops !== false, rule: it.rule });
+      add({ client, kind: REFERRAL.includes(it.kind) ? 'referral' : 'auth', type: it.kind, title: String(it.title).replace(new RegExp(` · ${lbl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`), ''), sub: it.sub || '', due: '', dueText: it.when || '', sev: it.urgent ? 'r' : tone(it.chip && it.chip.tone), status: 'action', rank: it.rank || 50, verb: it.verb || 'Open', to: it.to || '', lauris: '', record: it.record, ops: it.ops !== false, rule: it.rule });   // an authorization or referral step is Psyflo work, not EHR work
     }
   }
   for (const list of map.values()) list.sort((a, b) => (SEV_N[a.sev] - SEV_N[b.sev]) || (a.rank - b.rank) || String(a.due || '9999').localeCompare(String(b.due || '9999')));
@@ -268,14 +286,14 @@ export function allDocs(s, actor) {
   if (!s || !actor || !actor.role) return [];
   const t = clockToday(s); const scope = inScopeSet(s, actor); const hours = ruleValue(s, 'notes.daily_due_hours', 24);
   const out = []; const lbl = id => M.clientLabel(s, id, false); const cl = id => M.byId(s.clients, id) || {};
-  const base = (c, over) => ({ client: c, label: lbl(c), lauris: cl(c).harvest_no || '', site: siteShort(s, cl(c).school), siteId: cl(c).school, ...over });
+  const base = (c, over) => ({ client: c, label: lbl(c), laurisNo: cl(c).harvest_no || '', lauris: '', site: siteShort(s, cl(c).school), siteId: cl(c).school, ...over });
   // filed notes
   for (const n of s.notes || []) {
     if (!scope.has(n.client) || !NOTE_TYPES.includes(n.type)) continue;
     const dueAt = n.type === 'daily' ? addDaysHour(n.date, hours) : n.type === 'weekly_guardian' ? addDays(mondayOf(n.date), 4) + 'T23:59' : monthEnd(n.date) + 'T23:59';
     const late = !!n.processed_at && n.processed_at > dueAt;
     const st = n.review === 'pending' ? 'pending_review' : ['returned', 'flagged'].includes(n.review) ? 'returned' : late ? 'late' : 'done';
-    out.push(base(n.client, { id: 'note:' + n.id, noteId: n.id, group: 'note', type: n.type, typeLabel: DOC_LABEL[n.type], date: n.date, dateText: periodLabel(n.type, n.date), due: dueAt.slice(0, 10), dueText: fmtDate(dueAt.slice(0, 10)), status: st, statusLabel: STATUS_LABEL[st], sev: STATUS_SEV[st], staff: n.staff, staffShort: M.staffShort(s, n.staff), reviewer: n.reviewed_by ? M.staffShort(s, n.reviewed_by) : '', filedAt: n.processed_at || '', lauris: laurisPath(cl(n.client).harvest_no, n.type, n.session) || (cl(n.client).harvest_no ? `/consumers/${cl(n.client).harvest_no}?tab=active` : ''), to: chartHref(n.client, 'documentation') }));
+    out.push(base(n.client, { id: 'note:' + n.id, noteId: n.id, group: 'note', type: n.type, typeLabel: DOC_LABEL[n.type], date: n.date, dateText: periodLabel(n.type, n.date), due: dueAt.slice(0, 10), dueText: fmtDate(dueAt.slice(0, 10)), status: st, statusLabel: STATUS_LABEL[st], sev: STATUS_SEV[st], staff: n.staff, staffShort: M.staffShort(s, n.staff), reviewer: n.reviewed_by ? M.staffShort(s, n.reviewed_by) : '', filedAt: n.processed_at || '', lauris: st === 'returned' ? laurisPath(cl(n.client).harvest_no, n.type, n.session) : laurisNotePath(cl(n.client).harvest_no, n), to: chartHref(n.client, 'documentation') }));   // a filed note is in the Active File (or by its session); a returned one opens its form to be fixed
   }
   // notes that are missing: behind or due
   for (const m of noteMisses(s, actor, scope)) {
@@ -296,7 +314,7 @@ const addDaysHour = (d, hours) => { const x = new Date(d + 'T15:30:00Z'); x.setU
 
 const OPEN = ['behind', 'due', 'in_progress', 'pending_review', 'returned'];
 function matchDoc(s, d, f) {
-  if (f.q) { const q = f.q.toLowerCase(); if (![d.label, String(d.lauris), d.typeLabel, d.staffShort, d.site].join(' ').toLowerCase().includes(q)) return false; }
+  if (f.q) { const q = f.q.toLowerCase(); if (![d.label, String(d.laurisNo), d.typeLabel, d.staffShort, d.site].join(' ').toLowerCase().includes(q)) return false; }
   if (f.group && d.group !== f.group) return false;
   if (f.type && d.type !== f.type) return false;
   if (f.status === 'open' ? !OPEN.includes(d.status) : f.status && d.status !== f.status) return false;

@@ -128,6 +128,28 @@ if (on('shell')) {
     const r = await page.evaluate(() => { window.psyflo.toast('Saved the thing'); window.psyflo.toast('Could not do the thing', 'err'); const t = document.getElementById('toasts'); const s = document.querySelectorAll('#toasts [role=status]').length, a = document.querySelectorAll('#toasts [role=alert]').length; return { live: t.getAttribute('aria-live'), s, a, announce: { role: document.getElementById('sh-announce').getAttribute('role'), text: document.getElementById('sh-announce').textContent } }; });
     assert.eq(r.live, 'polite'); assert.ok(r.s >= 1, 'status toast'); assert.ok(r.a >= 1, 'alert toast'); assert.eq(r.announce.role, 'status'); assert.match(r.announce.text, /Dashboard/);
   });
+  await run('A11Y-05b R4 Dashboard icons: every icon control has an accessible name, is 24 px or more, and shows its definition on keyboard focus (Escape hides it); the view switch is a labelled nav with one current page; no title-only meaning', async () => {
+    const out = [];
+    for (const path of [['Dashboard', { open: 'all' }], ['Dashboard', { view: 'documents' }], ['Dashboard', { view: 'staff' }]]) {
+      await page.setViewportSize({ width: 1440, height: 900 }); await openAt(page, path[0], path[1]);
+      const r = await page.evaluate(() => {
+        const hints = [...document.querySelectorAll('#root .ui-hint__b')];
+        const noName = hints.filter(b => !(b.getAttribute('aria-label') || '').trim()).length, small = hints.filter(b => { const r = b.getBoundingClientRect(); return r.width && (r.width < 24 || r.height < 24); }).length;
+        const titleOnly = [...document.querySelectorAll('#root a[title], #root button[title], #root [role=img][title]')].filter(e => !(e.getAttribute('aria-label') || '').trim() && !e.textContent.trim()).length;
+        const nav = document.querySelector('#root nav.d-view'); const cur = nav ? nav.querySelectorAll('[aria-current="page"]').length : -1;
+        return { n: hints.length, noName, small, titleOnly, nav: nav ? nav.getAttribute('aria-label') : null, cur, h1: document.querySelectorAll('#root h1').length };
+      });
+      const tag = JSON.stringify(path[1]);
+      if (r.n < (path[1].view === 'staff' ? 1 : 5)) out.push(`${tag}: only ${r.n} icon controls`); if (r.noName) out.push(`${tag}: ${r.noName} icon controls without a name`); if (r.small) out.push(`${tag}: ${r.small} icon controls under 24 px`); if (r.titleOnly) out.push(`${tag}: ${r.titleOnly} controls named by title only`);
+      if (r.nav !== 'Dashboard views' || r.cur !== 1) out.push(`${tag}: the view switch is "${r.nav}" with ${r.cur} current pages`); if (r.h1 !== 1) out.push(`${tag}: ${r.h1} h1`);
+    }
+    await openAt(page, 'Dashboard', { open: 'all' });
+    const b = page.locator('#root .d-item a[data-lauris]').first(); await b.focus(); await page.waitForTimeout(120);
+    const on = await page.evaluate(() => { const t = document.querySelector('.ui-hint__t[data-on]'); return t ? t.textContent : null; });
+    if (!on || !/^Open in Lauris/.test(on)) out.push('the definition does not show on keyboard focus: ' + on);
+    await page.keyboard.press('Escape'); const off = await page.evaluate(() => document.querySelectorAll('.ui-hint__t[data-on]').length); if (off) out.push('Escape does not hide the definition');
+    verdict(out);
+  });
   for (const w of [1024, 700, 400]) await run(`A11Y-06 sign out, Help and the "Demo data · nothing is real" line stay available at ${w} px`, async () => {
     await page.setViewportSize({ width: w, height: 800 }); await openAt(page, 'Dashboard', {});
     const v = await page.evaluate(() => { const vis = e => !!e && e.getClientRects().length > 0 && getComputedStyle(e).visibility !== 'hidden' && (!e.checkVisibility || e.checkVisibility()); const t = [...document.querySelectorAll('#rail *')].find(e => e.children.length === 0 && /Demo data · nothing is real/.test(e.textContent)); return { signout: vis(document.querySelector('#rail [data-signout]')), help: vis(document.querySelector('#rail [data-sh=help]')), demo: vis(t) }; });

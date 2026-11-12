@@ -79,13 +79,17 @@ export const isLive = id => !(id in ROUTES_LIVE) || ROUTES_LIVE[id] === true;
 // Never redirect Referrals, Referral or Eligibility away from the referral workspace; AppealLetter stays a guardian route.
 const pick = (p, keys = []) => Object.fromEntries(keys.filter(k => p && p[k] != null && p[k] !== '').map(k => [k, p[k]]));
 const rename = (p, m = {}) => Object.fromEntries(Object.entries(m).filter(([o]) => p && p[o] != null && p[o] !== '').map(([o, n]) => [n, p[o]]));
+// the filters the Documentation tab read; they travel with the redirect to Dashboard?view=documents
+const DOC_PARAMS = ['status', 'type', 'group', 'staff', 'q', 'site', 'due', 'from', 'to', 'sort', 'dir', 'id', 'page', 'size'];
 export const REDIRECTS = [
-  // My Work became the patient roster (Dashboard) and the documentation queue (Documentation); the old ids and My Work sections land on them
+  // My Work became the patient roster (Dashboard) and the documentation queue; in R4 the Documentation tab became the Dashboard's Documents view
+  // (?view=documents; By staff is ?view=staff), so Documentation, ReviewQueue and My Work's review and team sections all land on the Dashboard
   { from: 'DoNext', to: 'Dashboard', flag: 'DoNext' },
-  { from: 'ReviewQueue', to: 'Documentation', flag: 'ReviewQueue', params: { status: 'pending_review' } },
+  { from: 'Documentation', to: 'Dashboard', flag: 'Documentation', map: p => ({ ...pick(p, DOC_PARAMS), view: p.view === 'staff' ? 'staff' : 'documents' }) },
+  { from: 'ReviewQueue', to: 'Dashboard', flag: 'ReviewQueue', params: { view: 'documents', status: 'pending_review' } },
   { from: 'StaffDashboard', to: 'Dashboard', flag: 'StaffDashboard', map: p => pick(p, ['staff']) },
   { from: 'MyWork', to: 'Referrals', flag: 'MyWork', when: p => p.section === 'referrals' },
-  { from: 'MyWork', to: 'Documentation', flag: 'MyWork', when: p => p.section === 'review' || p.section === 'team', map: p => ({ ...pick(p, ['id', 'staff']), ...(p.section === 'team' ? { view: 'staff' } : { status: 'pending_review' }) }) },
+  { from: 'MyWork', to: 'Dashboard', flag: 'MyWork', when: p => p.section === 'review' || p.section === 'team', map: p => ({ ...pick(p, ['id', 'staff']), ...(p.section === 'team' ? { view: 'staff' } : { view: 'documents', status: 'pending_review' }) }) },
   { from: 'MyWork', to: 'Dashboard', flag: 'MyWork', map: p => pick(p, ['staff']) },
   { from: 'Users', to: 'Settings', flag: 'Users', params: { tab: 'people' } },
   { from: 'Authorizations', to: 'Authorization', flag: 'Authorizations', when: p => !!p.id, carry: ['id'] },

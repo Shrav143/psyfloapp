@@ -10,6 +10,7 @@ import * as V from './DenialCaseViews.js';
 import { payerGuidance, payerGuidanceBody } from '../shared/payer-guidance.js';
 import { fmtDate, fmtDateTime } from '../shared/dates.js';
 import { rule } from '../shared/rules.js';
+import { srcHint } from './a-fmt.js';
 import { can } from '../shared/permissions.js';
 
 const esc = ui.esc;
@@ -47,7 +48,7 @@ register('DenialCase', class extends Screen {
   }
   renderVals() {
     const s = this.s; const r = M.byId(s.requests, this.reqId);
-    const empty = html => ({ head: raw(`<nav class="d-crumb" aria-label="Breadcrumb"><a href="#/DenialIntelligence">Denial Intelligence</a></nav><h1>Denial case</h1>`), menu: raw(''), body: raw(html), hist: raw('') });
+    const empty = html => ({ head: raw(`<nav class="ui-crumb" aria-label="Breadcrumb"><a href="#/DenialIntelligence">Denial Intelligence</a></nav><h1>Denial case</h1>`), menu: raw(''), body: raw(html), hist: raw('') });
     if (!r) return empty(ui.emptyState({ tone: 'error', title: 'Case not found', body: `There is no request ${this.reqId || ''}.`, action: { label: 'Back to Denial Intelligence', href: '#/DenialIntelligence' } }));
     const c = this.ctx(); const cv = c.cv;
     if (!cv.d) return empty(ui.emptyState({ title: `${r.id} is ${M.STAGE_LABEL[r.stage] || r.stage}`, body: 'Denial Intelligence works requests that need a payer-decision response: a partial offer, an information request, a peer-to-peer, a denial or an appeal.', action: { label: 'Open the authorization', href: hrefFor('Authorizations.dc.html?id=' + r.id) } }));
@@ -144,7 +145,7 @@ register('DenialCase', class extends Screen {
   // a closed line cannot be called (the server refuses too). Nothing is saved unless the person presses "Save the call record".
   callFlow(el) {
     const c = this.ctx(); const cv = c.cv; const d = cv.d; const r = cv.r; const pf = cv.payer.first; const ln = cv.line; const now = M.now(this.s);
-    const hours = `<dl class="d-hours"><div><dt>Line</dt><dd>${esc(pf)} ${esc((ln.line || 'provider services').toLowerCase())}</dd></div><div><dt>Hours</dt><dd>${esc(ln.summary)} (Eastern) ${ui.sourceChip({ category: ln.category, source: ln.source, verified_on: ln.verified_on })}</dd></div><div><dt>Right now</dt><dd>${ln.open ? ui.chip('Open now', { tone: 'success', icon: 'check' }) : ui.chip('Closed now', { tone: 'warning', icon: 'clock' })} <span class="d-sm ui-muted">Demo clock ${esc(fmtDateTime(now, { dow: true }))}${!ln.open && ln.nextOpen ? ' · opens ' + esc(ln.nextOpen.label) : ''}${!ln.known ? ' · no hours on file' : ''}</span></dd></div></dl>`;
+    const hours = `<dl class="d-hours"><div><dt>Line</dt><dd>${esc(pf)} ${esc((ln.line || 'provider services').toLowerCase())}</dd></div><div><dt>Hours</dt><dd>${esc(ln.summary)} (Eastern) ${srcHint({ category: ln.category, source: ln.source, verified_on: ln.verified_on })}</dd></div><div><dt>Right now</dt><dd>${ln.open ? ui.chip('Open now', { tone: 'success', icon: 'check' }) : ui.chip('Closed now', { tone: 'warning', icon: 'clock' })} <span class="d-sm ui-muted">Demo clock ${esc(fmtDateTime(now, { dow: true }))}${!ln.open && ln.nextOpen ? ' · opens ' + esc(ln.nextOpen.label) : ''}${!ln.known ? ' · no hours on file' : ''}</span></dd></div></dl>`;
     const earlier = (d.calls || []).length ? `<h3 class="d-sm">Earlier call records (${d.calls.length})</h3><ul class="d-calls">${d.calls.slice().reverse().map(x => `<li><b>${esc(fmtDateTime(x.at))}</b> · ${esc(x.purpose_label)} · ${esc(M.staff(this.s, x.by).name)}${x.ref ? ' · ref ' + esc(x.ref) : ''}<br><span class="d-sm">${esc(x.outcome)}</span></li>`).join('')}</ul>` : '';
     const body = `<div class="d-call"><p class="d-modal-note">${ui.chip('Simulated', { tone: 'outline', className: 'ui-chip--sim' })} Nothing is dialled and no payer is contacted. The call runs from a script built from this case. You record what the payer said; nothing is saved until you do. A call is never a payer decision.</p>${hours}
       <fieldset class="d-radios"><legend>What is the call about?</legend>${D.CALL_PURPOSES.map(([k, l], i) => `<label><input type="radio" name="d-cp" value="${k}"${i === 0 ? ' checked' : ''}> ${esc(l)}</label>`).join('')}</fieldset>

@@ -10,6 +10,7 @@ import { authCase, HIST_ACTORS, HIST_ORDER, HIST_ENTRY_KINDS } from '../shared/s
 import { fmtDate, fmtDateTime, daysBetween } from '../shared/dates.js';
 import { decisionDay, rule } from '../shared/rules.js';
 import { openPortal, diHref } from './Authorizations.js';
+import { srcHint, lockHint, missHint, ownerControl } from './a-fmt.js';
 import { A_CSS } from './a-css.js';
 import { openFlagDialog, flagButton } from './a-flag.js';
 
@@ -52,14 +53,13 @@ register('Authorization', class extends Screen {
     const left = LEFT.map(k => this.card(c, k)).join(''); const right = [this.deadlinesCard(c), this.renewalCard(c), this.card(c, 'submission'), this.card(c, 'payer')].join('');
     return { body: raw(`<div class="a-case">${this.crumb(c)}${this.header(c)}${this.flagBanner(c)}${this.nextPanel(c)}<div class="a-grid2"><div class="a-col">${left}</div><div class="a-col">${right}</div></div>${this.historyBlock(c)}</div>`) };
   }
-  crumb(c) { return `<nav class="a-crumb" aria-label="Breadcrumb"><a href="#/Authorizations">Authorizations</a><span aria-hidden="true">/</span><span aria-current="page">${esc(c.id)}</span></nav>`; }
+  crumb(c) { return `<nav class="ui-crumb" aria-label="Breadcrumb"><a href="#/Authorizations">Authorizations</a><span aria-hidden="true">/</span><span aria-current="page">${esc(c.id)}</span></nav>`; }
   header(c) {
-    const meta = `<span>${esc([c.typeLabel, c.service + (c.serviceCode ? ' ' + c.serviceCode : ''), c.payer, c.school, c.laurisNo ? `Lauris # ${c.laurisNo}` : c.harvestNo ? `Harvest # ${c.harvestNo}` : ''].filter(Boolean).join(' · '))}</span>`;
+    const meta = esc([c.typeLabel, c.service + (c.serviceCode ? ' ' + c.serviceCode : ''), c.payer, c.school, c.laurisNo ? `Lauris # ${c.laurisNo}` : c.harvestNo ? `Harvest # ${c.harvestNo}` : ''].filter(Boolean).join(' · '));
     const own = c.owner;
-    return `<header class="a-chead"><div class="a-chead__main"><h1 class="a-h1">${esc(c.label)} <span class="a-id">${esc(c.id)}</span></h1><div class="a-chead__meta">${meta}</div></div>
-      <div class="a-chead__r">${ui.statusChip(c.stage)}${ui.maturity('route.Authorization')}${c.inDI ? (canOpen('DenialCase') || canOpen('Partials') ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(diHref(c.req))}">In Denial Intelligence</a>` : ui.chip('In Denial Intelligence · clinician only', { tone: 'outline' })) : ''}
-      ${c.caps.flag ? flagButton({ id: c.id, label: c.label, flag: c.flag }) : ''}
-      <span class="a-owner"><span class="a-owner__l">Owner</span> <b>${esc(own.short)}</b>${own.backup ? ` <span class="a-sub">backup ${esc(own.backup.short)}</span>` : ''}<button type="button" class="ui-linkbtn" data-x="assign" data-ui-return="assign">Change</button></span></div></header>`;
+    const di = c.inDI ? (canOpen('DenialCase') || canOpen('Partials') ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(diHref(c.req))}">In Denial Intelligence</a>` : ui.chip('In Denial Intelligence · clinician only', { tone: 'outline' })) : '';
+    return `<header class="ui-hcard"><div class="ui-hcard__t"><div class="ui-hcard__l"><h1>${esc(c.label)} <span class="ui-hcard__id">${esc(c.id)}</span></h1></div><div class="ui-hcard__a">${di}${c.caps.flag ? flagButton({ id: c.id, label: c.label, flag: c.flag }) : ''}</div></div>
+      <div class="ui-hcard__c">${ui.statusChip(c.stage)}${ui.maturity('route.Authorization')}${ownerControl(own.short, own.backup && own.backup.short)}</div><p class="ui-hcard__s">${meta}</p></header>`;
   }
 
   // ---- the one primary panel
@@ -122,7 +122,7 @@ register('Authorization', class extends Screen {
   }
   nextPanel(c) {
     const p = this.primary(c); const d = c.deadline;
-    const dl = d.kind !== 'none' ? `<div class="a-next__dl"><span class="a-dl__t a-dl--${d.sev}">${esc(d.text)}</span>${d.sub ? `<span class="a-sub">${esc(d.sub)}</span>` : ''}${d.sev === 'overdue' || d.sev === 'soon' ? ui.statusChip(d.sev, { kind: 'clock' }) : ''}${d.rule ? ui.sourceChip(d.rule) : ''}</div>` : '';
+    const dl = d.kind !== 'none' ? `<div class="a-next__dl"><span class="a-dl__t a-dl--${d.sev}">${esc(d.text)}</span>${d.sub ? `<span class="a-sub">${esc(d.sub)}</span>` : ''}${d.sev === 'overdue' || d.sev === 'soon' ? ui.statusChip(d.sev, { kind: 'clock' }) : ''}${d.rule ? srcHint(d.rule) : ''}</div>` : '';
     return `<section class="a-card a-next" aria-labelledby="a-next-h"><div class="a-next__h"><h2 id="a-next-h">Next step</h2>${p.info ? ui.infoPopover({ label: 'How this step works', title: p.title, html: `<p>${esc(p.info)}</p>` }) : ''}</div>${this.flow(c)}
       <div class="a-next__b"><div class="a-next__t">${esc(p.title)}</div>${p.chips}${dl}${p.note}<div class="a-btnrow">${p.buttons.filter(Boolean).join('')}</div></div></section>`;
   }
@@ -130,14 +130,14 @@ register('Authorization', class extends Screen {
   // ---- sections (accordions; the open state survives a repaint)
   card(c, key) {
     const { sum, body, chip } = this['sec_' + key](c);
-    return `<section class="a-pcard" data-sec="${key}" id="sec-${key}"><div class="a-pcard__h"><h2>${esc(TITLES[key])}</h2>${chip || ''}<span class="a-sec__s">${esc(sum)}</span></div>${body}</section>`;
+    return `<section class="ui-scard" data-sec="${key}" id="sec-${key}"><div class="ui-scard__h"><h2>${esc(TITLES[key])}</h2>${chip || ''}<span class="ui-scard__r">${esc(sum)}</span></div>${body}</section>`;
   }
   flagBanner(c) {
     const f = c.flag; if (!f) return '';
     const note = f.note ? ` · “${esc(f.note)}”` : '';
     return `<div class="a-fban" role="status" id="a-fban"><span class="a-fban__t"><b>Flagged for attention</b> · ${esc(f.reasonLabel || '')} · by ${esc(f.byName || f.byShort || f.by)}, ${esc(fmtDateTime(f.at))}${note}</span><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-flag="${esc(c.id)}">Review flag</button></div>`;
   }
-  dl(rows) { return `<dl class="a-dl2">${rows.filter(Boolean).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join('')}</dl>`; }
+  dl(rows) { return `<dl class="ui-sdl">${rows.filter(Boolean).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join('')}</dl>`; }
   sec_documents(c) {
     const items = c.docs.map(d => {
       const open = d.href ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(d.href)}" target="_blank" rel="noopener">Open${icon('external')}</a>` : d.lauris && this.c.caps.clinical ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(this.laurisHref(`/consumers/${d.lauris.no}/session/${d.lauris.form}`))}" target="_blank" rel="noopener">Open in Lauris${icon('external')}</a>` : '';
@@ -148,14 +148,14 @@ register('Authorization', class extends Screen {
   sec_evidence(c) {
     const e = c.evidence;
     const chips = e.sources.map((x, i) => ui.evidenceChip({ n: i + 1, label: x.label, date: x.date, source: x.source, state: e.clinical ? 'sourced' : 'sensitive', reason: e.clinical ? '' : 'Text needs the clinical-records permission' })).join('');
-    const list = (arr, state) => `<ul class="a-ass">${arr.map(m => `<li>${ui.evidenceChip({ state, label: m.label })}</li>`).join('')}</ul>`;
-    const counts = e.counts && c.type !== 'initial' && c.type !== 'early_discharge_new_initial' ? this.dl([['Daily notes', `${e.counts.daily} stored · ${e.counts.dailyWindow} in the last ${e.window} days ${ui.sourceChip(e.windowRule)}`], ['Weekly calls', String(e.counts.weekly)], ['Monthly collateral', String(e.counts.monthly)]]) : '';
+    const list = arr => `<ul class="a-ass">${arr.map(m => `<li>${ui.icon('alert', 14)}<span>${esc(m.label)}</span></li>`).join('')}</ul>`;
+    const counts = e.counts && c.type !== 'initial' && c.type !== 'early_discharge_new_initial' ? this.dl([['Daily notes', `${e.counts.daily} stored · ${e.counts.dailyWindow} in the last ${e.window} days ${srcHint(e.windowRule)}`], ['Weekly calls', String(e.counts.weekly)], ['Monthly collateral', String(e.counts.monthly)]]) : '';
     const period = e.period ? `<p class="a-sub">The same list the Scan &amp; Enhance panel prints for ${esc(fmtDate(e.period.from))} to ${esc(fmtDate(e.period.to))}.</p>` : '';
-    const missing = e.missing.length ? `<h3 class="a-h3">Missing evidence (${e.missing.length})</h3>${list(e.missing, 'missing')}` : '<h3 class="a-h3">Missing evidence</h3><span class="ui-muted">None found in the stored record for this period</span>';
-    const future = e.future && e.future.length ? `<h3 class="a-h3">To fix in future notes (${e.future.length})</h3><ul class="a-ass">${e.future.map(m => `<li>${esc(m.label)}</li>`).join('')}</ul>` : '';
-    const body = `${e.clinical ? '' : `<div class="a-chips">${ui.chip('Clinical text hidden for your role', { tone: 'outline', icon: 'lock' })}</div>`}${counts}<h3 class="a-h3">Sources</h3><div class="a-chips a-chips--wrap">${chips || '<span class="ui-muted">None stored</span>'}</div>${period}${missing}${future}`;
+    const missing = e.missing.length ? `<h3>Missing evidence (${e.missing.length})</h3>${list(e.missing)}` : '<h3>Missing evidence</h3><span class="ui-muted">None found in the stored record for this period</span>';
+    const future = e.future && e.future.length ? `<h3>To fix in future notes (${e.future.length})</h3><ul class="a-ass">${e.future.map(m => `<li>${esc(m.label)}</li>`).join('')}</ul>` : '';
+    const body = `${e.clinical ? '' : `<div class="a-chips">${lockHint('Clinical text hidden for your role: your role sees the sources and counts, not the note text.', { label: 'Clinical text hidden for your role' })}</div>`}${counts}<h3>Sources</h3><div class="a-chips a-chips--wrap">${chips || '<span class="ui-muted">None stored</span>'}</div>${period}${missing}${future}`;
     const total = e.missing.length + (e.future ? e.future.length : 0);
-    return { sum: `${e.sources.length} source${e.sources.length === 1 ? '' : 's'} · ${total} gap${total === 1 ? '' : 's'}${e.missing.length ? ` (${e.missing.length} missing)` : ''}`, body, chip: e.missing.length ? ui.chip(`${e.missing.length} missing`, { tone: 'warning', size: 'sm', icon: 'alert' }) : '' };
+    return { sum: `${e.sources.length} source${e.sources.length === 1 ? '' : 's'} · ${total} gap${total === 1 ? '' : 's'}${e.missing.length ? ` (${e.missing.length} missing)` : ''}`, body, chip: missHint(e.missing.map(m => m.label)) };
   }
   sec_submission(c) {
     const sub = c.submission; const k = c.caps;
@@ -175,11 +175,11 @@ register('Authorization', class extends Screen {
     const stat = (v, l, cls = '') => `<div class="a-stat${cls ? ' ' + cls : ''}"><b class="ui-num">${v == null ? '—' : esc(String(v))}</b><span>${esc(l)}</span></div>`;
     const stats = `<div class="a-stats" data-psy="units">${stat(u.requested, 'requested')}${stat(appr, word)}${not ? stat(not, 'not approved', 'is-r') : ''}${stat(u.left, 'remaining')}</div>`;
     const bal = u.total ? ui.unitsBar({ total: u.total, used: u.used, left: u.left, warn: u.warn, warnPct: u.warnPct }) : '<p class="ui-muted">No authorization is recorded in the tracker yet.</p>';
-    const rate = u.rate ? `${u.left != null ? `about ${u.daysLeft} school days at ${u.rate.value} a day` : `${u.rate.value} a day`} ${ui.sourceChip(u.rate.rule)}` : 'Not computed for this service';
+    const rate = u.rate ? `${u.left != null ? `about ${u.daysLeft} school days at ${u.rate.value} a day` : `${u.rate.value} a day`} ${srcHint(u.rate.rule)}` : 'Not computed for this service';
     const per = c.period && c.period.start && c.period.end ? `${fmtDate(c.period.start)} – ${fmtDate(c.period.end)}` : c.period && c.period.end ? `ends ${fmtDate(c.period.end)}` : '—';
     const ref = c.req.fax_ref || c.req.portal_ref || '';
     const rows = [['Authorization period', `<b>${esc(per)}</b>`], u.total ? ['Units used', `${esc(String(u.used))} of ${esc(String(u.total))} · ${esc(String(u.left))} left`] : null, ['Request', esc(`${KIND_L[c.type] || c.typeLabel}${ref ? ' · ' + ref : ''}`)], ['Service', esc(c.serviceFull || c.service)],
-      ['How units count', `${esc(ur.text)} ${ui.sourceChip(ur.rules.bands)}`], ['Payer', esc(c.payerFull)], ['Assigned clinician', esc(c.owner.name)],
+      ['How units count', `${esc(ur.text)} ${srcHint(ur.rules.bands)}`], ['Payer', esc(c.payerFull)], ['Assigned clinician', esc(c.owner.name)],
       u.total ? ['Pace', rate] : null,
       u.total ? ['In Lauris', esc(u.inLauris === false ? 'Not yet · a person enters them' : u.inLauris ? 'Yes · seen on the open page' : 'Recorded before this tracker')] : null];
     const tk = task ? `<div class="a-task a-task--open">${this.taskBody(task, c)}</div>` : doneTask ? `<div class="a-task a-task--done">${this.taskBody(doneTask.task, c)}</div>` : '';
@@ -198,14 +198,14 @@ register('Authorization', class extends Screen {
   }
   deadlinesCard(c) {
     const items = []; const d = c.deadline; const u = c.units; const rn = c.renewal; const today = this.s.today;
-    if (d.kind !== 'none') items.push(this.dli(d.text, d.sub, d.date, d.sev, d.rule ? ui.sourceChip(d.rule) : ''));
+    if (d.kind !== 'none') items.push(this.dli(d.text, d.sub, d.date, d.sev, d.rule ? srcHint(d.rule) : ''));
     if (u.end && ['active', 'early_discharge'].includes(c.stage) && d.kind !== 'auth_end' && d.kind !== 'renewal') {
-      const n = daysBetween(today, u.end); items.push(this.dli('Authorization ends', n < 0 ? `ended ${fmtDate(u.end)}` : `${n} days left · ends ${fmtDate(u.end)}`, u.end, n < 0 ? 'overdue' : n <= 7 ? 'soon' : 'ok', ui.chip('Payer-specific', { tone: 'outline', size: 'sm' })));
+      const n = daysBetween(today, u.end); items.push(this.dli('Authorization ends', n < 0 ? `ended ${fmtDate(u.end)}` : `${n} days left · ends ${fmtDate(u.end)}`, u.end, n < 0 ? 'overdue' : n <= 7 ? 'soon' : 'ok', srcHint('payer')));
     }
-    if (rn && rn.dueBy && d.kind !== 'renewal') items.push(this.dli(`Reauth due ${fmtDate(rn.dueBy)}`, `${rn.lead} business days before the current one ends ${fmtDate(rn.end)}`, rn.dueBy, rn.due ? 'soon' : 'ok', rn.rule ? ui.sourceChip(rn.rule) : ''));
+    if (rn && rn.dueBy && d.kind !== 'renewal') items.push(this.dli(`Reauth due ${fmtDate(rn.dueBy)}`, `${rn.lead} business days before the current one ends ${fmtDate(rn.end)}`, rn.dueBy, rn.due ? 'soon' : 'ok', rn.rule ? srcHint(rn.rule) : ''));
     if (!items.length) items.push('<p class="ui-muted">No deadline on this authorization right now.</p>');
     const flagged = c.flag ? ui.chip('Flagged', { tone: 'warning', size: 'sm', icon: 'flag' }) : '';
-    return `<section class="a-pcard" data-sec="deadlines" id="sec-deadlines"><div class="a-pcard__h"><h2>Deadlines</h2>${flagged}</div><div class="a-dlr">${items.join('')}</div></section>`;
+    return `<section class="ui-scard" data-sec="deadlines" id="sec-deadlines"><div class="ui-scard__h"><h2>Deadlines</h2>${flagged}</div><div class="a-dlr">${items.join('')}</div></section>`;
   }
   renewalCard(c) {
     const rn = c.renewal; const st = c.stage; let chip, lines = [];
@@ -213,10 +213,10 @@ register('Authorization', class extends Screen {
     else if (rn.due) chip = ui.chip(rn.byUnits && !rn.byDate ? 'Due · units are low' : 'Due now', { tone: 'warning', icon: 'alert' });
     else chip = ui.chip('Not due yet', { tone: 'success', icon: 'check' });
     if (rn) {
-      lines = [['Current ends', rn.end ? esc(fmtDate(rn.end)) : '—'], ['Reauth due by', rn.dueBy ? esc(fmtDate(rn.dueBy)) : '—'], ['Lead time', `${esc(String(rn.lead))} business days ${rn.rule ? ui.sourceChip(rn.rule) : ''}`]];
+      lines = [['Current ends', rn.end ? esc(fmtDate(rn.end)) : '—'], ['Reauth due by', rn.dueBy ? esc(fmtDate(rn.dueBy)) : '—'], ['Lead time', `${esc(String(rn.lead))} business days ${rn.rule ? srcHint(rn.rule) : ''}`]];
       if (rn.byUnits && rn.daysLeft != null) lines.splice(2, 0, ['Units last', `about ${esc(String(rn.daysLeft))} school days`]);
     }
-    return `<section class="a-pcard" data-sec="renewal" id="sec-renewal"><div class="a-pcard__h"><h2>Renewal status</h2></div><div class="a-chips">${chip}</div>${lines.length ? this.dl(lines) : ''}</section>`;
+    return `<section class="ui-scard" data-sec="renewal" id="sec-renewal"><div class="ui-scard__h"><h2>Renewal status</h2></div><div class="a-chips">${chip}</div>${lines.length ? this.dl(lines) : ''}</section>`;
   }
 
   // ---- History: every step with who did it, filterable by who, each row opening its facts (the artifact's History block)
@@ -251,18 +251,18 @@ register('Authorization', class extends Screen {
     const r = c.req; const k = c.caps; const s = this.s;
     const log = c.payerLog.map(x => `<li><time datetime="${esc(x.at)}">${esc(dt(x.at))}</time><span>${esc(x.what)}${x.doc ? ' · document ' + esc(x.doc) : ''}</span><span class="a-sub">${esc(x.who || '')}${x.sim ? ' · simulated' : ''}</span></li>`).join('');
     const win = [['Channel', `${esc(c.channelLabel)}${r.channel === 'fax' ? ' · Sfax (simulated)' : ' · your own login'}`],
-      ['Follow-up call', `Day ${rule(s, 'decision.followup_day', r.payer).value} ${ui.sourceChip(rule(s, 'decision.followup_day', r.payer))}`],
-      ['Overdue after', `Day ${rule(s, 'decision.overdue_after_days', r.payer).value} ${ui.sourceChip(rule(s, 'decision.overdue_after_days', r.payer))}`],
-      ['Public standard', `${rule(s, 'decision.public_standard_days').value} days, reference only ${ui.sourceChip(rule(s, 'decision.public_standard_days'))}`]];
+      ['Follow-up call', `Day ${rule(s, 'decision.followup_day', r.payer).value} ${srcHint(rule(s, 'decision.followup_day', r.payer))}`],
+      ['Overdue after', `Day ${rule(s, 'decision.overdue_after_days', r.payer).value} ${srcHint(rule(s, 'decision.overdue_after_days', r.payer))}`],
+      ['Public standard', `${rule(s, 'decision.public_standard_days').value} days, reference only ${srcHint(rule(s, 'decision.public_standard_days'))}`]];
     const sub = c.submission;
     const acts = [sub.canCall ? (k.send ? this.btn('log-call', 'Log call', { tone: 'secondary', sm: true }) : '') : '', sub.canDecide ? (k.decide ? this.btn('record-decision', 'Record decision', { tone: 'secondary', sm: true }) : this.why('Needs clinician')) : ''].filter(Boolean).join('');
-    return { sum: c.payerLog.length ? `${c.payerLog.length} entr${c.payerLog.length === 1 ? 'y' : 'ies'}` : 'No entries', body: `${this.dl(win.map(([a, b]) => [a, b]))}<h3 class="a-h3">Calls and decisions</h3>${log ? `<ul class="a-plog">${log}</ul>` : '<p class="ui-muted">Nothing recorded yet.</p>'}${acts ? `<div class="a-btnrow">${acts}</div>` : ''}` };
+    return { sum: c.payerLog.length ? `${c.payerLog.length} entr${c.payerLog.length === 1 ? 'y' : 'ies'}` : 'No entries', body: `${this.dl(win.map(([a, b]) => [a, b]))}<h3>Calls and decisions</h3>${log ? `<ul class="a-plog">${log}</ul>` : '<p class="ui-muted">Nothing recorded yet.</p>'}${acts ? `<div class="a-btnrow">${acts}</div>` : ''}` };
   }
   sec_tasks(c) {
     const open = c.tasks.filter(t => t.state === 'open').length;
     const items = c.tasks.map(t => {
       const st = t.state === 'open' ? ui.chip('Open', { tone: 'warning', size: 'sm' }) : t.state === 'done' ? ui.chip('Done', { tone: 'success', size: 'sm' }) : ui.chip(t.state, { tone: 'neutral', size: 'sm' });
-      return `<li class="a-trow"><div><b>${esc(t.text)}</b> ${st}${t.bridge ? ui.chip('Closed only by the open Lauris page', { tone: 'outline', size: 'sm' }) : ''}<div class="a-sub">${esc([t.who, t.owner ? 'owner ' + t.owner : '', t.due ? 'due ' + fmtDate(String(t.due).slice(0, 10)) : '', t.detail].filter(Boolean).join(' · '))}</div></div>${t.rule ? ui.sourceChip(t.rule) : ''}</li>`;
+      return `<li class="a-trow"><div><b>${esc(t.text)}</b> ${st}${t.bridge ? ui.hint('eye', 'Closed only by the open Lauris page, never by Psyflo', { tone: 'n' }) : ''}<div class="a-sub">${esc([t.who, t.owner ? 'owner ' + t.owner : '', t.due ? 'due ' + fmtDate(String(t.due).slice(0, 10)) : '', t.detail].filter(Boolean).join(' · '))}</div></div>${t.rule ? srcHint(t.rule) : ''}</li>`;
     }).join('');
     return { sum: c.tasks.length ? `${open} open of ${c.tasks.length}` : 'None', chip: open ? ui.chip(`${open} open`, { tone: 'info', size: 'sm' }) : '', body: items ? `<ul class="a-tasks">${items}</ul>` : ui.emptyState({ title: 'No open tasks' }) };
   }
@@ -272,7 +272,7 @@ register('Authorization', class extends Screen {
     const p = t.plan; const pl = this.state.plan || (this.state.plan = { discharge: p.discharge, intake: p.intake, new_initial: p.earliest });
     const rows = [['Units run out', fmtDate(p.runout), p.exhausted ? 'from the units log' : `${p.units} at ${p.perDay} a school day from ${fmtDate(p.start)}`], ['Earliest new initial', fmtDate(p.earliest), `30 days after ${fmtDate(p.accepted)}`], ['Discharge', fmtDate(p.discharge), p.discharge === p.runout ? 'the day units end' : 'the Friday before units end'], ['New intake', fmtDate(p.intake), 'next school day'], ['Send new initial', fmtDate(p.send), `decision window ends ${fmtDate(p.decision)}`], ['Gap in service', `${p.gapDays} day${p.gapDays === 1 ? '' : 's'}`, 'school days between discharge and intake']];
     const grid = `<div class="a-kd">${rows.map(([l, v, b]) => `<div class="a-kd__c"><div class="a-kd__l">${esc(l)}</div><div class="a-kd__v">${esc(v)}</div><div class="a-sub">${esc(b)}</div></div>`).join('')}</div>`;
-    const ass = `<h3 class="a-h3">Assumptions</h3><ul class="a-ass">${t.assumptions.map(a => `<li>${esc(a.text)} ${ui.sourceChip(a.rule)}</li>`).join('')}</ul>`;
+    const ass = `<h3>Assumptions</h3><ul class="a-ass">${t.assumptions.map(a => `<li>${esc(a.text)} ${srcHint(a.rule)}</li>`).join('')}</ul>`;
     const edit = k.reply ? `<div class="a-plan"><label class="ui-field"><span class="ui-field__l">Discharge</span><input class="ui-input" type="date" id="a-pl-d" value="${esc(pl.discharge)}"></label><label class="ui-field"><span class="ui-field__l">New intake</span><input class="ui-input" type="date" id="a-pl-i" value="${esc(pl.intake)}"></label><label class="ui-field"><span class="ui-field__l">New initial from</span><input class="ui-input" type="date" id="a-pl-n" value="${esc(pl.new_initial)}"></label>${this.btn('plan', p.saved ? 'Update plan' : 'Set plan', { sm: false })}</div>` : this.why('Needs clinician');
     const di = c.inDI ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(diHref(c.req))}">In Denial Intelligence</a>` : '';
     return { sum: p.saved ? `Plan set · discharge ${fmtDate(p.saved.discharge)}` : 'Proposed', chip: ui.maturity('route.EarlyDischarge'), body: `${grid}${ass}${edit}${di ? `<div class="a-btnrow">${di}</div>` : ''}${p.saved ? `<div class="a-sub">Plan set ${esc(dt(p.saved.at))}. Human-reviewed: Psyflo proposes the dates; a clinician sets them.</div>` : ''}` };
@@ -326,7 +326,7 @@ register('Authorization', class extends Screen {
     const sent = r.overdue_notice_sent;
     const text = `To: ${c.payerFull} · Utilization Management\nRe: ${c.typeLabel} for member ${c.label} · Medicaid ID on file · ${c.serviceFull}\n\nOur records show this request was submitted on ${r.sent ? fmtDate(r.sent, { year: true }) : 'the date on file'}${r.fax_ref ? ` by fax (Sfax reference ${r.fax_ref})` : r.portal_ref ? ` through the portal (confirmation ${r.portal_ref})` : ''}${r.receipt_confirmed ? `, and receipt was confirmed by phone on ${fmtDate(r.receipt_confirmed, { year: true })}` : ''}. We have not received a decision. Please issue a decision or tell us what is missing.\n\n${me ? me.name + (me.credential ? ', ' + me.credential : '') : 'Harvest staff'} · Harvest Outreach Center`;
     this.form({ title: sent ? `Overdue notice · sent ${fmtDateTime(sent)}` : 'Overdue notice', label: 'Send notice', cancel: sent ? 'Close' : 'Not now', size: 'lg',
-      body: `<div class="a-letter">${esc(text)}</div><p class="a-sub">${dd ? `Day ${dd.day}. Harvest tracks day ${dd.overdue_after} for this payer ${ui.sourceChip(rule(s, 'decision.overdue_after_days', r.payer))}. The notice does not cite a legal standard.` : ''}</p><p class="ui-muted">A person reads it and presses Send. The demo runs the send stub (Simulated).</p>`,
+      body: `<div class="a-letter">${esc(text)}</div><p class="a-sub">${dd ? `Day ${dd.day}. Harvest tracks day ${dd.overdue_after} for this payer ${srcHint(rule(s, 'decision.overdue_after_days', r.payer))}. The notice does not cite a legal standard.` : ''}</p><p class="ui-muted">A person reads it and presses Send. The demo runs the send stub (Simulated).</p>`,
       run: async () => { if (sent) return undefined; const x = await this.run('request.overdueNotice', { id: c.id }, 'Overdue notice sent through the simulated Sfax · logged'); return x ? undefined : false; } });
   }
   logCall() {

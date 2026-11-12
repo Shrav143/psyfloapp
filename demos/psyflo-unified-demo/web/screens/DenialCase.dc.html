@@ -9,9 +9,6 @@
 <helmet>
 <style>
 /* Denial case workspace (E3). Classes use the d- prefix; tokens from web/css/tokens.css. */
-.d-page{padding:var(--sp-4) var(--gutter) var(--sp-6);max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:var(--sp-3)}
-.d-crumb{display:flex;gap:8px;align-items:center;font-size:var(--fs-13);color:var(--muted-700)}
-.d-crumb a{color:var(--teal-700);text-decoration:none;font-weight:600}.d-crumb a:hover{text-decoration:underline}
 .d-dlchip{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
 .d-next{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;background:var(--teal-tint);border:1px solid var(--teal-300);border-radius:var(--r-3);padding:10px 14px}
 .d-next--done{background:var(--success-bg);border-color:var(--success-fg)}
@@ -19,10 +16,6 @@
 .d-next--done .d-next__l{color:var(--success-fg)}
 .d-next b{font-weight:600;margin-right:auto}
 .d-col{display:flex;flex-direction:column;gap:var(--sp-3)}
-.d-sect{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:var(--sp-4) var(--sp-5)}
-.d-sect h2{margin:0 0 var(--sp-2);font-size:var(--fs-22);line-height:var(--lh-22);font-weight:600}
-.d-sect h3{margin:var(--sp-4) 0 6px;font-size:var(--fs-14);line-height:var(--lh-14);font-weight:700}
-.d-sect__h{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-bottom:var(--sp-2)}.d-sect__h h2{margin:0}
 .d-sm{font-size:var(--fs-13);line-height:var(--lh-13)}
 .d-n{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--sand-100);font-size:var(--fs-12);text-align:center;margin-right:2px;font-weight:600}
 .d-need{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;background:var(--neutral-bg);color:var(--neutral-fg);font-size:var(--fs-12);font-weight:600}
@@ -71,13 +64,6 @@ mark.d-miss{background:var(--warning-bg);color:var(--warning-fg);border-radius:4
 .d-radios{display:flex;flex-direction:column;gap:6px;border:0;padding:0;margin:8px 0}.d-radios label{display:flex;gap:8px;align-items:center;font-weight:400;min-height:32px}
 .d-modal-note{color:var(--muted-700);font-size:var(--fs-13);margin:6px 0 0}
 /* header card, process line, left menu, overview (artifact layout; tokens only) */
-.d-hd{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:var(--sp-4) var(--sp-5);display:flex;flex-direction:column;gap:10px}
-.d-hd__t{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
-.d-hd__l{display:flex;flex-wrap:wrap;gap:10px;align-items:center;min-width:0}
-.d-hd h1{margin:0;font-size:var(--fs-28);line-height:var(--lh-28);font-weight:600;letter-spacing:-.01em}
-.d-hd__a{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.d-hd__c{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
-.d-hd__s{margin:0;color:var(--muted-700);font-size:var(--fs-13);line-height:var(--lh-13)}
 .d-auth{display:inline-flex;gap:6px;align-items:center;font-size:var(--fs-13)}
 .d-dlchip{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
 .d-steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));list-style:none;margin:6px 0 0;padding:12px 0 0;border-top:1px solid var(--line-200);counter-reset:none}
@@ -105,7 +91,6 @@ mark.d-miss{background:var(--warning-bg);color:var(--warning-fg);border-radius:4
 .d-menu a:hover{background:var(--sand-50)}
 .d-menu a[aria-current=page]{background:var(--teal-tint);border-left-color:var(--teal-600)}.d-menu a[aria-current=page] b{font-weight:600;color:var(--teal-700)}
 .d-body{min-width:0}
-.d-sect__r{margin-left:auto;display:inline-flex;gap:6px;align-items:center}
 .d-acts{list-style:none;margin:var(--sp-2) 0 0;padding:0}
 .d-act{border-top:1px solid var(--line-200)}.d-act:first-child{border-top:0}
 .d-act__b{display:flex;gap:12px;align-items:center;width:100%;background:none;border:0;padding:10px 4px;font:inherit;color:var(--ink-900);text-align:left;cursor:pointer;min-height:44px;border-radius:var(--r-2)}
@@ -146,16 +131,16 @@ mark.d-miss{background:var(--warning-bg);color:var(--warning-fg);border-radius:4
 .d-script__l--payer{background:var(--sand-50);align-self:flex-end;border-style:dashed}
 .d-script__w{font-size:var(--fs-12);font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted-700)}
 @media (max-width:1000px){.d-layout{grid-template-columns:1fr}.d-menu{position:static}.d-menu ul{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:4px}.d-menu__g{margin-left:2px}.d-menu a{border-left:0;border-bottom:3px solid transparent;padding:6px 10px}.d-menu a[aria-current=page]{border-bottom-color:var(--teal-600)}}
-@media (max-width:760px){.d-hd{padding:12px}.d-steps{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:12px}.d-steps li:nth-child(4)::before{display:none}.d-upd__p{left:0;right:auto;min-width:min(260px,80vw)}.d-hd h1{font-size:var(--fs-22);line-height:var(--lh-22)}.d-script__l{max-width:100%}}
+@media (max-width:760px){.ui-hcard{padding:12px}.d-steps{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:12px}.d-steps li:nth-child(4)::before{display:none}.d-upd__p{left:0;right:auto;min-width:min(260px,80vw)}.ui-hcard h1{font-size:var(--fs-22);line-height:var(--lh-22)}.d-script__l{max-width:100%}}
 /* long chips wrap instead of forcing a horizontal scroll (390 px) */
-.d-page{min-width:0}.d-sect,.d-card,.d-opt{min-width:0;overflow-wrap:anywhere}
-.d-sect .ui-evidence,.d-card .ui-evidence,.d-doc .ui-evidence{white-space:normal;text-align:left;max-width:100%;height:auto;min-height:28px}
-.d-sect .ui-chip,.d-card .ui-chip{max-width:100%}
-.d-sect .ui-evidence__t,.d-card .ui-evidence__t,.d-doc .ui-evidence__t{white-space:normal;overflow:visible;text-overflow:clip}
-@media (max-width:760px){.d-sect{padding:12px}.d-ev{grid-template-columns:70px minmax(0,1fr)}.d-ev__c,.d-ev__a{grid-column:2}.d-opt{flex-direction:column;align-items:flex-start}}
+.d-case{min-width:0}.ui-scard,.d-card,.d-opt{min-width:0;overflow-wrap:anywhere}
+.ui-scard .ui-evidence,.d-card .ui-evidence,.d-doc .ui-evidence{white-space:normal;text-align:left;max-width:100%;height:auto;min-height:28px}
+.ui-scard .ui-chip,.d-card .ui-chip{max-width:100%}
+.ui-scard .ui-evidence__t,.d-card .ui-evidence__t,.d-doc .ui-evidence__t{white-space:normal;overflow:visible;text-overflow:clip}
+@media (max-width:760px){.ui-scard{padding:12px}.d-ev{grid-template-columns:70px minmax(0,1fr)}.d-ev__c,.d-ev__a{grid-column:2}.d-opt{flex-direction:column;align-items:flex-start}}
 </style>
 </helmet>
-<main class="d-page d-case">
+<main class="ui-page ui-page--case d-case">
   {{head}}
   <div class="d-layout">
     {{menu}}

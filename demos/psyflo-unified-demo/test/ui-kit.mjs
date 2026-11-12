@@ -247,6 +247,7 @@ await T.test('rail by role follows the permission table (supervisor, clinician, 
     const page = await open(u, u === 'khale' ? '/#/StaffDashboard' : u === 'cdiaz' ? '/#/ReviewQueue' : u === 'jperez' ? '/#/DoNext' : '/#/Authorizations');
     const items = await page.evaluate(() => [...document.querySelectorAll('#rail .sh-nav__i')].map(a => a.getAttribute('title')));
     for (const m of must) assert.ok(items.includes(m), `${u} sees ${m} (has ${items.join(', ')})`);
+    assert.ok(items.includes('Dashboard') && !items.some(i => /Documentation/.test(i)), `${u}: one Dashboard item and no Documentation item (R4: Documents is a view of the Dashboard); has ${items.join(', ')}`);
     if (u === 'khale') assert.ok(!items.some(i => /Authorizations|Analytics|Denial|Referrals|Settings/.test(i)), 'direct support sees none of the management tabs');
     if (u === 'dowens') assert.ok(!items.includes('Referrals'), 'admin has no Referrals by default');
     await page.close();

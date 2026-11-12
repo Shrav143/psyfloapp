@@ -1,4 +1,5 @@
-// 29 · Authorizations — the work queue over request.stage (E2), laid out like the artifact's All Authorizations (R3): a period card, one grid of
+// 29 · Authorizations — the work queue over request.stage (E2), laid out like the artifact's All Authorizations (R3) and formatted like Denial Intelligence (R4:
+// ui.dateCard, the shared page, filter grid, table and cells; sources and lines are icons with a hover definition): a period card, one grid of
 // ten filters, one table (Consumer · Service · Payer · Assigned clinician · Authorization period · Requested · Approved · Remaining · Status ·
 // Next action), the pager at the bottom. Selectors: shared/sel/auth.js. One row per request; the row opens the case.
 // Also exports small helpers shared by the other request screens (Sent, Info request, Partials, Early discharge, Peer-to-peer)
@@ -9,7 +10,7 @@ import { can } from '../shared/permissions.js';
 import { authQueue, queueOptions, normalizeParams, LEGACY_KEYS, CHIPS } from '../shared/sel/auth.js';
 import { openFlagDialog, flagButton } from './a-flag.js';
 import { A_CSS } from './a-css.js';
-import { verificationLabel } from '../shared/rules.js';
+import { deadlineCell, ownerCell, svcShort } from './a-fmt.js';
 
 // ---------- shared request helpers ----------
 export const details = (s, id) => (s.request_details && s.request_details[id]) || {};
@@ -124,31 +125,34 @@ register('Authorizations', class extends Screen {
     });
     const rows = ui.pager.slice(q.rows, { size: st.size, page: st.page });
     const cols = [
-      { key: 'case', label: 'Consumer', sort: true, primary: true, width: '9%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.initials)}</b></span>${r.lauris ? `<span class="a-sub a-nw">Lauris #${esc(r.lauris)}</span>` : ''}` },
-      { key: 'service', label: 'Service', sort: true, hideBelow: 1024, width: '7%', render: r => `${esc(r.serviceLabel)}${r.serviceCode ? `<span class="a-sub">${esc(r.serviceCode)}</span>` : ''}` },
-      { key: 'payer', label: 'Payer', sort: true, hideBelow: 768, width: '11%', render: r => `<span title="${esc(r.payerFull)}">${esc(r.payerId === 'uhc' ? 'UHC' : r.payer)}</span>` },
-      { key: 'owner', label: 'Assigned clinician', sort: true, hideBelow: 1280, width: '7%', render: r => `<span title="${esc(r.owner.backup ? 'Backup: ' + r.owner.backup.name : 'No backup set')}">${esc(r.owner.short)}</span>` },
-      { key: 'period', label: 'Authorization period', sort: true, hideBelow: 1024, width: '10%', render: r => `${r.periodText ? `<span class="a-nw">${esc(r.periodText)}</span>` : '<span class="ui-muted">—</span>'}<span class="a-sub">${esc(KIND[r.type] || r.typeLabel)}</span>` },
-      { key: 'requested', label: 'Requested', sort: true, align: 'right', hideBelow: 768, width: '7.5%', render: r => this.num(r.units.requested) },
-      { key: 'approved', label: 'Approved', sort: true, align: 'right', hideBelow: 768, width: '7.5%', render: r => r.units.awarded != null ? this.num(r.units.awarded) : r.units.offered != null ? `${this.num(r.units.offered)}<span class="a-sub">offered</span>` : this.num(null) },
-      { key: 'units', label: 'Remaining', sort: true, width: '12%', className: 'a-c-units', render: r => this.unitsCell(r) },
-      { key: 'status', label: 'Status', sort: true, width: '12.5%', render: r => ui.statusChip(r.stage) },
+      { key: 'case', label: 'Consumer', sort: true, primary: true, width: '8%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.initials)}</b></span>${r.lauris ? `<span class="ui-sub ui-nw">Lauris #${esc(r.lauris)}</span>` : ''}` },
+      { key: 'service', label: 'Service', sort: true, hideBelow: 1024, width: '6%', render: r => `${esc(svcShort(r.serviceLabel))}${r.serviceCode ? `<span class="ui-sub">${esc(r.serviceCode)}</span>` : ''}` },
+      { key: 'payer', label: 'Payer', sort: true, hideBelow: 768, width: '10%', render: r => `<span title="${esc(r.payerFull)}">${esc(r.payerId === 'uhc' ? 'UHC' : r.payer)}</span>` },
+      { key: 'owner', label: 'Assigned clinician', sort: true, hideBelow: 1280, width: '9%', render: r => ownerCell(r.owner.short, r.owner.backup && r.owner.backup.name) },
+      { key: 'period', label: 'Authorization period', sort: true, hideBelow: 1024, width: '11%', render: r => `${r.periodText ? `<span class="ui-nw">${esc(r.periodText)}</span>` : '<span class="ui-muted">—</span>'}<span class="ui-sub">${esc(KIND[r.type] || r.typeLabel)}</span>` },
+      { key: 'requested', label: 'Requested', sort: true, align: 'right', hideBelow: 768, width: '7%', render: r => this.num(r.units.requested) },
+      { key: 'approved', label: 'Approved', sort: true, align: 'right', hideBelow: 768, width: '7%', render: r => r.units.awarded != null ? this.num(r.units.awarded) : r.units.offered != null ? `${this.num(r.units.offered)}<span class="ui-sub">offered</span>` : this.num(null) },
+      { key: 'units', label: 'Remaining', sort: true, width: '14%', className: 'a-c-units', render: r => this.unitsCell(r) },
+      { key: 'status', label: 'Status', sort: true, width: '12%', render: r => ui.statusChip(r.stage) },
       { key: 'deadline', label: 'Next action', sort: true, width: '17%', className: 'a-c-next', render: r => this.nextCell(r) }
     ];
     const table = ui.queueTable({
       id: 'auth', caption: 'Authorizations', columns: cols, rows, rowId: r => r.id, href: r => caseHref(r.id),
       sort: st.sort.key === 'priority' ? {} : st.sort, onSort: sort => { this.setState({ sort, page: 1 }); ui.query.writeQuery({ sort: sort.key, dir: sort.dir, page: '' }); },
-      maxHeight: rows.length > 12 ? undefined : 'none', empty: { title: q.total ? 'No authorizations match' : 'No authorizations yet', body: q.total ? 'Clear a filter to see more.' : 'Authorizations appear after a request is drafted.' }
+      maxHeight: rows.length > 12 ? undefined : 'none', empty: { title: q.total ? 'Nothing matches' : 'No authorizations yet', body: q.total ? 'Clear a filter to see more.' : 'Authorizations appear after a request is drafted.' }
     });
     const pager = ui.pager({ id: 'auth-pg', total: q.shown, size: st.size, page: st.page, noun: NOUN, label: 'Authorizations pages', onChange: ({ size, page }) => this.setState({ size, page }) });
     const canDraft = !!me && can(me, 'drafts.clinical');
     const action = canDraft ? `<a class="ui-btn ui-btn--primary" href="ExtCase.dc.html">Start continued stay</a>` : '';
-    const pill = d => `<button type="button" class="ui-fchip" data-x="ends" data-v="${d}" aria-pressed="${this.ends === d}">Ends in ${d} days</button>`;
-    const hint = this.ends ? 'Matches the date the authorization ends' : st.range.from || st.range.to ? 'Matches any overlap with the period' : '';
-    const range = `<fieldset class="a-range"><legend class="a-range__l">Authorization period</legend><label class="a-range__f"><span class="ui-sr">From</span><input class="ui-input" type="date" id="a-from" aria-label="Period from" value="${esc(st.range.from)}"></label><span aria-hidden="true">to</span><label class="a-range__f"><span class="ui-sr">To</span><input class="ui-input" type="date" id="a-to" aria-label="Period to" value="${esc(st.range.to)}"></label><span class="a-range__p">${['7', '30', '60'].map(pill).join('')}</span>${hint ? `<span class="a-range__h">${esc(hint)}</span>` : ''}${st.range.from || st.range.to ? '<button type="button" class="ui-linkbtn" data-x="range-clear">Clear dates</button>' : ''}</fieldset>`;
-    const stageNote = st.stage ? `<div class="a-active" role="status"><span>Stage: <b>${esc(M.STAGE_LABEL[st.stage] || st.stage)}</b></span><button type="button" class="ui-linkbtn" data-x="stage-clear">Clear stage</button></div>` : '';
-    const clear = active ? `<div class="a-clear"><button type="button" class="ui-linkbtn" data-x="clear-all">Clear all filters (${active})</button></div>` : '';
-    return { bar: raw(bar), stage: raw(stageNote), clear: raw(clear), queue: raw(table), pager: raw(pager), action: raw(action), range: raw(range), maturity: raw(ui.maturity('route.Authorizations')), help: raw(ui.infoPopover({ label: 'About this table', title: 'Authorizations', html: `<p>${esc(COLS_HELP)}</p><p>Remaining shows what is left of the units. It turns yellow once ${esc(String(ruleWarn(s)))}% of the units are used. A warning icon beside a date means due soon or overdue; hover it for the reason and where the number comes from (Officially verified, Payer-specific, Harvest-reported or Unverified demo assumption).</p><p>The flag button marks an authorization for attention. The people who work authorizations see it here and in their notifications (the bell at the top right).</p>` })) };
+    const dateCard = ui.dateCard({
+      id: 'auth-dc', title: 'Authorization period', from: st.range.from, to: st.range.to,
+      hint: 'The dates match any overlap with the authorization period. An Ends in chip matches the date the authorization ends instead.',
+      chips: ['7', '30', '60'].map(d => ({ key: d, label: `Ends in ${d} days`, on: this.ends === d })),
+      onChange: c => this.onDates(c)
+    });
+    const stageNote = st.stage ? `<div class="ui-stagenote" role="status"><span>Stage: <b>${esc(M.STAGE_LABEL[st.stage] || st.stage)}</b></span><button type="button" class="ui-linkbtn" data-x="stage-clear">Clear stage</button></div>` : '';
+    const clear = active ? `<div class="ui-fclear"><button type="button" class="ui-linkbtn" data-x="clear-all">Clear all filters (${active})</button></div>` : '';
+    return { bar: raw(bar), stage: raw(stageNote), clear: raw(clear), queue: raw(table), pager: raw(pager), action: raw(action), range: raw(dateCard), maturity: raw(ui.maturity('route.Authorizations')), help: raw(ui.infoPopover({ label: 'About this table', title: 'Authorizations', html: `<p>${esc(COLS_HELP)}</p><p>Remaining shows what is left of the units. It turns yellow once ${esc(String(ruleWarn(s)))}% of the units are used. A warning icon beside a date means due soon or overdue; hover it for the reason. The small icon after a date shows where the number comes from (Officially verified, Payer-specific, Harvest-reported or Unverified demo assumption) when you hover it.</p><p>The flag button marks an authorization for attention. The people who work authorizations see it here and in their notifications (the bell at the top right).</p>` })) };
   }
   num(v) { return v == null ? '<span class="ui-muted" aria-label="Not recorded">—</span>' : `<b class="ui-num">${esc(String(v))}</b>`; }
   clearAll(f) {
@@ -160,11 +164,10 @@ register('Authorizations', class extends Screen {
     if (u.showBar) return ui.unitsBar({ total: u.total, used: u.used, left: u.left, warn: u.warn, warnPct: u.warnPct }, { compact: true });
     return `<span class="a-muted a-nw">${esc(u.text)}</span>`;
   }
-  deadlineLine(r) {
-    const d = r.deadline; if (d.kind === 'none') return '';
-    const src = d.rule ? (d.rule.verification || verificationLabel(d.rule.category)) : '';
-    const why = [d.text, d.sub].filter(Boolean).join(' · ') + (src ? ` · ${src}` : '');
-    return d.date ? ui.dateFlag({ date: String(d.date).slice(0, 10), sev: d.sev, why, text: d.short ? `${d.short}` : d.text }) : `<span class="ui-muted" title="${esc(why)}">${esc(d.text)}</span>`;
+  deadlineLine(r, extra = '') {
+    const d = r.deadline; if (d.kind === 'none') return extra ? `<div class="ui-dlcell">${extra}</div>` : '';
+    const why = [d.text, d.sub].filter(Boolean).join(' · ');
+    return deadlineCell({ date: d.date ? String(d.date).slice(0, 10) : '', sev: d.sev, why, text: d.short ? `${d.short}` : d.text }, d.rule, extra);
   }
   nextCell(r) {
     const n = r.next; const href = n.di && (canOpen('DenialCase') || canOpen('Partials')) ? diHref(r.req) : caseHref(r.id);   // a denial-stage row opens the Denial Intelligence case for every role that may open it
@@ -172,16 +175,13 @@ register('Authorizations', class extends Screen {
       ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(href)}" title="${esc(n.why || 'Needs another role')}">View<span class="ui-sr"> ${esc(r.initials)}, ${esc(r.id)}. ${esc(n.label)}: ${esc(n.why || 'needs another role')}</span></a>`
       : `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(href)}">${esc(n.label)}<span class="ui-sr"> for ${esc(r.initials)}, ${esc(r.id)}</span></a>`;
     const fl = can(this.me, 'authorizations') ? flagButton({ id: r.id, label: r.label, flag: r.flag }, { label: false }) : '';
-    const dl = this.deadlineLine(r);
-    return `<div class="a-nx">${btn}<div class="a-nx__d">${dl}${fl}</div>${r.flag ? `<div class="a-nx__f" title="Flagged by ${esc(r.flag.byShort || '')} · ${esc(r.flag.reasonLabel || '')}">${esc(r.flag.reasonLabel || 'Flagged')}</div>` : ''}</div>`;
+    return `<div class="a-nx"><div class="a-nx__a">${btn}${fl}</div>${this.deadlineLine(r)}${r.flag ? `<div class="a-nx__f" title="Flagged by ${esc(r.flag.byShort || '')} · ${esc(r.flag.reasonLabel || '')}">${esc(r.flag.reasonLabel || 'Flagged')}</div>` : ''}</div>`;
+  }
+  onDates({ from, to, chip }) {   // the date card: typing a date clears an Ends in chip; an Ends in chip keeps the dates
+    this.state.range = { from, to }; this.ends = chip; this.state.page = 1;
+    ui.query.writeQuery({ from, to, ends: chip, page: '' }); this.repaint();
   }
   after(root) {
-    const upd = (k, v) => { this.state.range = { ...this.state.range, [k]: v }; if (this.ends) { this.ends = ''; ui.query.writeQuery({ ends: '' }); } this.state.page = 1; ui.query.writeQuery({ [k]: v, page: '' }); this.repaint(); };
-    const from = root.querySelector('#a-from'), to = root.querySelector('#a-to');
-    if (from) from.onchange = () => upd('from', from.value);
-    if (to) to.onchange = () => upd('to', to.value);
-    root.querySelectorAll('[data-x="range-clear"]').forEach(b => { b.onclick = () => { this.state.range = { from: '', to: '' }; ui.query.writeQuery({ from: '', to: '' }); this.repaint(); }; });
-    root.querySelectorAll('[data-x="ends"]').forEach(b => { b.onclick = () => { const on = this.ends === b.dataset.v; this.ends = on ? '' : b.dataset.v; this.state.page = 1; ui.query.writeQuery({ ends: this.ends, page: '' }); this.repaint(); }; });
     root.querySelectorAll('[data-x="stage-clear"]').forEach(b => { b.onclick = () => { this.state.stage = ''; this.state.page = 1; ui.query.writeQuery({ stage: '', page: '' }); this.repaint(); }; });
     root.querySelectorAll('[data-x="clear-all"]').forEach(b => { b.onclick = () => this.clearAll(Object.fromEntries(KEYS.map(k => [k, '']))); });
     root.querySelectorAll('[data-flag]').forEach(b => {

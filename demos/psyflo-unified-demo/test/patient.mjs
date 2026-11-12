@@ -1,7 +1,8 @@
 // Patient chart (B1, feedback round Nov 11): documentation first, the authorization as one section. The selector refuses out-of-scope patients
 // (fail closed), then the screen in a browser per role: tabs, Open/All and Notes/Forms filters, the sample-data chip on forms, Review for a
-// reviewer, Write note for the staffer, a patient with no authorization, another person's patient denied, phone width.
-import { suite, assert, state, reset, playwright, errors, login, session, BASE, SHOTS } from './lib/index.mjs';
+// reviewer, Open in Lauris as the one action on a note or form (R4: the same helper as the Dashboard; never the administrator), a patient with no
+// authorization, another person's patient denied, phone width.
+import { suite, assert, state, reset, playwright, errors, login, session, BASE, LAURIS, SHOTS } from './lib/index.mjs';
 import { patientChart } from '../web/js/shared/sel/roster.js';
 
 const T = suite('patient');
@@ -67,24 +68,28 @@ try {
     const t = await rootText(p); assert.match(t, /Intake form/); assert.match(t, /CNA/); assert.match(t, /Treatment plan/);
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
-  await T.test('supervisor: Review buttons for notes waiting on them go to the Documentation queue with the note; no write verbs', async () => {
+  await T.test('supervisor: a Review icon for notes waiting on them opens the Dashboard\'s Documents view with the note; the one other action on a row is Open in Lauris; no write verbs', async () => {
     const p = await open('cdiaz', '/#/Patient?id=DW');
-    const reviews = p.locator('a.ui-btn', { hasText: 'Review' }); assert.ok(await reviews.count() >= 1, 'Review for a pending note');
-    const href = await reviews.first().getAttribute('href'); assert.match(href, /Documentation\?/); assert.match(href, /id=/); assert.match(href, /status=pending_review/);
+    const reviews = p.locator('a.ui-hint__b[aria-label^="Review"]'); assert.ok(await reviews.count() >= 1, 'Review for a pending note');
+    const href = await reviews.first().getAttribute('href'); assert.match(href, /^#\/Dashboard\?/); assert.match(href, /view=documents/); assert.match(href, /id=/); assert.match(href, /status=pending_review/);
+    assert.ok(await p.locator('a[data-lauris]').count() >= 3, 'Open in Lauris on the document rows'); assert.eq(await p.locator('.ui-qt a.ui-btn, .ui-qt button.ui-btn').count(), 0, 'no text buttons in the table: icons with hover definitions');
     assert.eq(await p.locator('a.ui-btn', { hasText: /Write note|Fix note/ }).count(), 0, 'a supervisor does not write the note');
     await p.screenshot({ path: SHOTS + '/patient-supervisor-1440.png' }); assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
-  await T.test('direct support: Write note on what is behind, own patient only; another person\'s patient is denied and shows nothing of theirs', async () => {
+  await T.test('direct support: Open in Lauris on what is behind (the same helper as the Dashboard), own patient only; another person\'s patient is denied and shows nothing of theirs', async () => {
     let p = await open('khale', '/#/Patient?id=MR');
-    const w = p.locator('a.ui-btn', { hasText: 'Write note' }); assert.ok(await w.count() >= 2); assert.match(await w.first().getAttribute('href'), /ExtDPN|ExtWeekly|ExtMonthly/);
-    assert.eq(await p.locator('a.ui-btn', { hasText: /^Review/ }).count(), 0); await p.close();
+    const w = p.locator('a[data-lauris]'); assert.ok(await w.count() >= 2, 'the one action on a note is Open in Lauris');
+    const hrefs = await w.evaluateAll(els => els.map(e => e.getAttribute('href'))); assert.ok(hrefs.every(h => h.startsWith(LAURIS + '/login?as=khale&next=%2F')), 'every link is /login?as=khale&next=<path>: ' + hrefs[0]);
+    assert.ok(hrefs.some(h => /next=%2Fconsumers%2F3310%2Fsession%2Fdpn/.test(h)) && hrefs.some(h => /next=%2Fconsumers%2F3310%2Fsession%2Fweekly/.test(h)), 'the daily note and the weekly call open their own forms');
+    assert.match(await w.first().getAttribute('aria-label'), /^Open in Lauris: M\.R\., /); assert.eq(await p.locator('a.ui-btn', { hasText: /Write note|Fix note/ }).count(), 0, 'no Psyflo-side write links any more');
+    assert.eq(await p.locator('a.ui-hint__b[aria-label^="Review"]').count(), 0); await p.close();
     p = await open('khale', '/#/Patient?id=DW'); const t = await rootText(p);
     assert.match(t, /Patient not found/); assert.noMatch(t, /S\. Lane|Sentara|D\.W\./, 'nothing of another caseload'); assert.ok(await p.locator('a', { hasText: 'Back to Dashboard' }).count());
     await p.screenshot({ path: SHOTS + '/patient-denied-1440.png' }); await done();
   });
-  await T.test('administrator: statuses only, Open case allowed, no Review or Write buttons', async () => {
+  await T.test('administrator: statuses only, Open case allowed, no Review, no Open in Lauris, no Write buttons', async () => {
     const p = await open('dowens', '/#/Patient?id=MR');
-    assert.eq(await p.locator('a.ui-btn', { hasText: /Review|Write note|Fix note/ }).count(), 0);
+    assert.eq(await p.locator('a.ui-btn', { hasText: /Review|Write note|Fix note/ }).count(), 0); assert.eq(await p.locator('a[data-lauris], a.ui-hint__b[aria-label^="Review"]').count(), 0, 'no Lauris link, no review icon');
     await p.locator('.pt-tab', { hasText: 'Authorization' }).click(); await p.waitForTimeout(400);
     assert.ok(await p.locator('a.ui-btn', { hasText: 'Open case' }).count(), 'administrators may open the case');
     assert.deepEq(fatal(p), [], 'console errors'); await done();
@@ -92,7 +97,7 @@ try {
   await T.test('phone width: the chart has no horizontal scroll and the documentation rows stack with 44 px buttons', async () => {
     const p = await open('khale', '/#/Patient?id=MR', { w: 390, h: 900 });
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'no horizontal overflow');
-    const h = await p.locator('a.ui-btn', { hasText: 'Write note' }).first().evaluate(e => e.getBoundingClientRect().height); assert.ok(h >= 44, 'tap target ' + h);
+    const h = await p.locator('a[data-lauris]').first().evaluate(e => e.getBoundingClientRect().height); assert.ok(h >= 44, 'tap target ' + h);
     await p.screenshot({ path: SHOTS + '/patient-documentation-390.png' });
     const q = await open('jperez', '/#/Patient?id=MR&section=authorization', { w: 390, h: 900 }); assert.ok(await q.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), 'authorization section: no overflow');
     assert.deepEq(fatal(p), [], 'console errors'); await done();

@@ -587,7 +587,7 @@ export function queueRows(s, f = {}) {
       : d.issue === 'denial' ? { main: `0 of ${u.requested} approved`, sub: `Denied · ${fmtDate((d.notice || {}).date || r.denied_on)}` }
         : { main: `${u.offered != null ? u.offered : (u.awarded != null ? u.awarded : u.current)} of ${u.requested} ${u.offered != null ? 'offered' : 'approved'}`, sub: `Partial · ${fmtDate((d.notice || {}).date)}` };
     rows.push({ id: d.id, request: r.id, client: r.client, consumer: c.age ? `${c.initials}, ${c.age}` : c.initials, initials: c.initials, payer: r.payer, payerName: pf, service: (r.service || 'TDT').split(' · ')[0].replace('TDT school day', 'TDT'), serviceLine: r.service,
-      issue: d.issue, type: typeOf(d), decisionDate: String((d.notice || {}).date || r.denied_on || '').slice(0, 10) || null, decision: dec, status, group: open ? statusGroup(status) : 'closed', open, next, deadline: primaryDeadline(dls), deadlines: dls, owner: d.owner, ownerName: ownerName(s, d.owner), ownerShort: ownerShort(s, d.owner), opened: d.opened, closed: d.closed, outcome: d.outcome || null,
+      issue: d.issue, type: typeOf(d), decisionDate: String((d.notice || {}).date || r.denied_on || '').slice(0, 10) || null, decision: dec, status, group: open ? statusGroup(status) : 'closed', open, next, deadline: primaryDeadline(dls), deadlines: dls, owner: d.owner, ownerName: ownerName(s, d.owner), ownerShort: ownerShort(s, d.owner), backupName: d.backup ? ownerName(s, d.backup) : '', opened: d.opened, closed: d.closed, outcome: d.outcome || null,
       search: `${d.id} ${r.id} ${c.initials} ${pf} ${payerName(s, r.payer)} ${ownerName(s, d.owner)}`.toLowerCase() });
   }
   return rows.filter(row => {

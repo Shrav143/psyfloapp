@@ -14,7 +14,7 @@
 export const ROUTES_LIVE = {
   MyWork: true,
   Dashboard: true,         // the patient roster (feedback round Nov 11)
-  Documentation: true,     // notes, intake forms, CNAs across patients
+  Documentation: true,     // a redirect source only since R4: it lands on Dashboard?view=documents (REDIRECTS_LIVE.Documentation); ?legacy=1 bounces there too
   Patient: true,           // the patient chart: documentation first, the authorization as one section
   Authorization: true,
   DenialIntelligence: true,
@@ -24,8 +24,9 @@ export const ROUTES_LIVE = {
 };
 
 export const REDIRECTS_LIVE = {
-  MyWork: true,            // My Work sections land on Dashboard (todo, day), Documentation (review, team) or Referrals; ?legacy=1 still opens the old screen
+  MyWork: true,            // My Work sections land on Dashboard (todo, day; review and team are its Documents and Staff views) or Referrals; ?legacy=1 still opens the old screen
   DoNext: true,
+  Documentation: true,     // R4: the Documentation tab is the Dashboard's Documents view; its filters travel with the redirect
   ReviewQueue: true,
   StaffDashboard: true,
   Users: true,

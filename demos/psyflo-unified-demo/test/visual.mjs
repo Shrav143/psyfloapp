@@ -70,16 +70,16 @@ const verdict = issues => { if (issues.length) throw new Error(issues.join(' · 
 // ------------------------------------------------------------------------------------------------ 1. platform screens, 1440x900 and 1024x768
 const PLATFORM = {
   clinician: ['jperez', [
-    ['Dashboard', {}], ['Documentation', {}], ['Documentation', { status: 'pending_review' }], ['Documentation', { view: 'staff' }], ['Patient', { id: 'MR' }], ['Patient', { id: 'MR', section: 'authorization' }], ['Patient', { id: 'TW' }],
+    ['Dashboard', {}], ['Dashboard', { open: 'all' }], ['Dashboard', { view: 'documents' }], ['Dashboard', { view: 'documents', status: 'pending_review' }], ['Dashboard', { view: 'staff' }], ['Patient', { id: 'MR' }], ['Patient', { id: 'MR', section: 'authorization' }], ['Patient', { id: 'TW' }],
     ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['Authorization', { id: 'R-0402' }], ['Authorization', { id: 'R-0399', section: 'submission' }], ['Authorization', { id: 'R-0391' }], ['Authorization', { id: 'R-0388' }], ['Authorization', { id: 'R-0384' }],
     ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402' }], ['DenialCase', { id: 'R-0408' }], ['DenialCase', { id: 'R-0402', section: 'said' }], ['DenialCase', { id: 'R-0408', section: 'weak' }], ['DenialCase', { id: 'R-0408', section: 'docreq' }], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['DenialCase', { id: 'R-0402', section: 'evidence' }], ['DenialCase', { id: 'R-0402', section: 'options' }], ['DenialCase', { id: 'R-0402', section: 'action', action: 'options' }], ['DenialCase', { id: 'R-0402', section: 'history' }],
     ['DenialCase', { id: 'R-0408', section: 'action', action: 'info' }], ['DenialCase', { id: 'R-0388', section: 'action', action: 'p2p' }], ['DenialCase', { id: 'R-0384', section: 'action', action: 'appeal' }],
     ['Referrals', {}], ['Referral', { id: 'REF-118' }], ['Referral', { id: 'REF-118', panel: 'eligibility' }], ['Referral', { id: 'REF-121' }],
     ['Analytics', { section: 'outcomes', dataset: 'case' }], ['Analytics', { section: 'outcomes', dataset: 'illustrative' }], ['Analytics', { section: 'payer', dataset: 'case' }], ['Analytics', { section: 'population', dataset: 'illustrative' }]]],
-  supervisor: ['cdiaz', [['Dashboard', {}], ['Documentation', {}], ['Documentation', { view: 'staff' }], ['Patient', { id: 'MR' }], ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['Analytics', { section: 'outcomes' }]]],
-  admin: ['dowens', [['Dashboard', {}], ['Documentation', {}], ['Authorizations', {}], ['Authorization', { id: 'R-0402' }], ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['Analytics', { section: 'outcomes' }], ['Analytics', { section: 'payer' }],
+  supervisor: ['cdiaz', [['Dashboard', {}], ['Dashboard', { open: 'all' }], ['Dashboard', { view: 'documents' }], ['Dashboard', { view: 'staff' }], ['Patient', { id: 'MR' }], ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['Analytics', { section: 'outcomes' }]]],
+  admin: ['dowens', [['Dashboard', {}], ['Dashboard', { open: 'all' }], ['Dashboard', { view: 'documents' }], ['Authorizations', {}], ['Authorization', { id: 'R-0402' }], ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['Analytics', { section: 'outcomes' }], ['Analytics', { section: 'payer' }],
     ...['people', 'roles', 'units', 'rules', 'audit', 'family', 'presenter'].map(tab => ['Settings', { tab }])]],
-  direct_support: ['khale', [['Dashboard', {}], ['Patient', { id: 'MR' }], ['ExtHome', {}], ['ExtDPN', {}]]]
+  direct_support: ['khale', [['Dashboard', {}], ['Dashboard', { open: 'all' }], ['Patient', { id: 'MR' }], ['ExtHome', {}], ['ExtDPN', {}]]]
 };
 for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
   const page = await newPage({ who });

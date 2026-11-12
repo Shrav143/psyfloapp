@@ -8,43 +8,24 @@
 <x-dc>
 <helmet>
 <style>
-/* Denial Intelligence queue (E3). Classes use the d- prefix. */
-.d-page{padding:var(--sp-5) var(--gutter) var(--sp-6);max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:var(--sp-4)}
-.d-head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-3) var(--sp-4)}
-.d-head h1{margin:0;font-size:var(--fs-28);line-height:var(--lh-28);font-weight:600;letter-spacing:-.01em}
-.d-head__r{margin-left:auto;display:flex;gap:var(--sp-2);align-items:center;flex-wrap:wrap}
-.d-card{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:var(--sp-4)}
-.d-caseid b{display:block;font-weight:600;white-space:nowrap;color:var(--teal-700)}
-.d-caseid small,.d-dec small,.d-nx small,.d-dl small{display:block;color:var(--muted-700);font-size:var(--fs-12);line-height:var(--lh-12);margin-top:2px}
+/* Denial Intelligence queue (E3; R4: the page, header, date card, filter grid and table come from the shared kit, components.css "R4 FMT"). Own classes: d- prefix. */
+.d-caseid b{display:block;font-weight:600;white-space:nowrap}
 .d-dec b{font-weight:500}
-.d-nx{display:block;max-width:220px}
-.d-dl{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
-.d-dl__row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.d-dl__d{font-weight:600;white-space:nowrap}
-.d-own{white-space:nowrap}
+.d-nx{display:block}
 .d-who{white-space:nowrap}
-.d-note{color:var(--muted-700);margin:0}
-.d-datec{background:var(--teal-tint);border:1px solid var(--teal-300);border-radius:var(--r-3);padding:12px 16px;display:flex;flex-direction:column;gap:8px;width:min(100%,380px);box-sizing:border-box}
-.d-datec .ui-input{width:150px;max-width:100%}
-.d-head__r{max-width:100%}
-.d-fcard{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:var(--sp-3) var(--sp-4)}
-.d-fcard .ui-fbar{margin:0;padding:0;border:0;background:none}
-.d-datec__h{display:flex;gap:12px;align-items:baseline;justify-content:space-between}.d-datec h2{margin:0;font-size:var(--fs-14);font-weight:700}
-.d-datec__f{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}.d-datec__f label{display:flex;flex-direction:column;gap:2px;font-size:var(--fs-12);color:var(--muted-700);font-weight:600}
-.d-datec__q{display:flex;flex-wrap:wrap;gap:6px}
-.d-bar{padding:0;overflow:hidden}.d-bar .ui-fbar{border:0;margin:0;border-radius:0}
-.d-foot{display:block}
+.d-page a:not(.ui-btn):not(.ui-qt__link){color:var(--teal-700)}
+@media (max-width:767px){.d-page .ui-qt__table{min-width:760px}}
 </style>
 </helmet>
-<main class="d-page">
-  <header class="d-head">
-    <h1>Denial Intelligence</h1>
-    {{mat}}
-    <div class="d-head__r">{{date}}</div>
+<main class="ui-page d-page">
+  <header class="ui-phead">
+    <div class="ui-phead__t"><h1>Denial Intelligence</h1>{{mat}}{{help}}</div>
+    <div class="ui-phead__r">{{date}}</div>
   </header>
-  <div class="d-fcard">{{bar}}</div>
-  <div class="d-card" style="padding:0">{{table}}</div>
-  <div class="d-foot">{{pager}}</div>
+  <div class="ui-fcard ui-fgrid">{{bar}}</div>
+  {{clear}}
+  <div class="ui-tlist">{{table}}</div>
+  {{pager}}
 </main>
 </x-dc>
 </body>

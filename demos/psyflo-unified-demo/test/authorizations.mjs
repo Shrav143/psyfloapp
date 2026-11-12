@@ -248,7 +248,7 @@ try {
   await T.test('case actions on an overdue request: Log call, Overdue notice (no legal standard cited), Send again with a reason, Change owner', async () => {
     await reset('canvas'); const { p, errs } = await mk('jperez');
     await p.goto(BASE + '/#/Authorization?id=R-0399'); await p.waitForTimeout(900);
-    assert.match(await p.locator('main').innerText(), /Overdue/); assert.match(await p.locator('main').innerText(), /Harvest-reported/);
+    assert.match(await p.locator('main').innerText(), /Overdue/); { const hv = p.locator('[data-verification="harvest"]'); assert.ok(await hv.count() >= 1, 'the follow-up day carries a Harvest-reported source icon'); assert.match(await hv.first().getAttribute('aria-label'), /Harvest-reported/); assert.noMatch(await p.locator('main').innerText(), /Harvest-reported/, 'the source is an icon with a hover definition, not a chip'); }
     await p.getByRole('button', { name: 'Log call' }).first().click(); await p.getByRole('dialog').locator('#a-call-o').selectOption('in_review');
     await p.getByRole('dialog').locator('textarea').fill('Rep sees it in review'); await p.getByRole('dialog').getByRole('button', { name: 'Log call' }).click(); await p.waitForTimeout(900);
     assert.eq((await state('jperez')).auth_meta['R-0399'].calls.at(-1).outcome, 'in_review'); assert.eq(await p.getByRole('dialog').count(), 0, 'the dialog closed');
@@ -260,7 +260,7 @@ try {
     assert.ok(!(await req('R-0399')).resends, 'a reason is required'); await p.getByRole('dialog').locator('textarea').fill('Humana says the fax did not arrive'); await p.getByRole('dialog').getByRole('button', { name: 'Send again' }).click(); await p.waitForTimeout(900);
     const rs = (await req('R-0399')).resends; assert.eq(rs.length, 1); assert.eq(rs[0].by, 'jperez'); assert.eq((await req('R-0399')).sent.slice(0, 10), '2026-10-12', 'the decision clock keeps its first send date');
     await p.getByRole('button', { name: 'Change' }).first().click(); await p.getByRole('dialog').locator('#a-as-o').selectOption('jperez'); await p.getByRole('dialog').locator('#a-as-b').selectOption('cdiaz'); await p.getByRole('dialog').getByRole('button', { name: 'Save' }).click(); await p.waitForTimeout(900);
-    assert.eq((await state('jperez')).auth_meta['R-0399'].owner, 'jperez'); assert.match(await p.locator('.a-owner').innerText(), /J\. Perez/);
+    assert.eq((await state('jperez')).auth_meta['R-0399'].owner, 'jperez'); assert.match(await p.locator('.ui-hcard .ui-owner').innerText(), /J\. Perez/);
     assert.deepEq(realErrs(errs), []); await p.context().close();
   });
   await T.test('old routes keep working: Submission and EarlyDischarge land on the case sections; legacy=1 opens the old screen', async () => {

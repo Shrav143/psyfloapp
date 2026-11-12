@@ -120,8 +120,8 @@ async function openFlo(page) {
 }
 const ask = async (page, q) => { const n = await page.locator('.flo-m--f').count(); await page.fill('#flo-in', q); await page.keyboard.press('Enter'); await page.waitForFunction(k => document.querySelectorAll('.flo-m--f').length > k, n, { timeout: 5000 }); };
 const ROUTES = {
-  khale: ['Dashboard', 'Patient?id=MR'], cdiaz: ['Dashboard', 'Documentation', 'Authorizations', 'Analytics', 'Patient?id=MR'],
-  jperez: ['Dashboard', 'Documentation', 'Authorizations', 'DenialIntelligence', 'Analytics', 'Referrals', 'Patient?id=MR'], dowens: ['Dashboard', 'Documentation', 'Authorizations', 'DenialIntelligence', 'Analytics', 'Settings']
+  khale: ['Dashboard', 'Patient?id=MR'], cdiaz: ['Dashboard', 'Dashboard?view=documents', 'Authorizations', 'Analytics', 'Patient?id=MR'],
+  jperez: ['Dashboard', 'Dashboard?view=documents', 'Authorizations', 'DenialIntelligence', 'Analytics', 'Referrals', 'Patient?id=MR'], dowens: ['Dashboard', 'Dashboard?view=documents', 'Authorizations', 'DenialIntelligence', 'Analytics', 'Settings']
 };
 
 try {
@@ -152,8 +152,9 @@ try {
   });
   await T.test('a link in an answer opens its screen and closes the drawer', async () => {
     const p = await open('jperez', '/#/Dashboard'); await openFlo(p); await ask(p, 'Which notes are waiting for review?');
-    await p.locator('.flo-ln a', { hasText: 'Documentation' }).first().click(); await p.waitForTimeout(500);
-    assert.eq(await p.evaluate(() => psyflo.current.id), 'Documentation'); assert.match(await p.evaluate(() => location.hash), /status=pending_review/); assert.eq(await p.locator('.flo-drawer').count(), 0, 'drawer closed');
+    await p.locator('.flo-ln a', { hasText: 'Documents' }).first().click(); await p.waitForTimeout(500);
+    assert.eq(await p.evaluate(() => psyflo.current.id), 'Dashboard'); assert.match(await p.evaluate(() => location.hash), /view=documents/); assert.match(await p.evaluate(() => location.hash), /status=pending_review/); assert.eq(await p.locator('.flo-drawer').count(), 0, 'drawer closed');
+    assert.eq(await p.locator('.d-view__b[aria-current="page"]').innerText(), 'Documents', 'the link lands on the Documents view');
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
   await T.test('read-only in the browser: asking questions (including "do this" requests) leaves /api/state exactly as it was', async () => {

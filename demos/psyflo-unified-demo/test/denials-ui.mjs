@@ -9,6 +9,7 @@ const browser = await chromium.launch();
 const open = async (user, width = 1440) => { const ctx = await browser.newContext({ viewport: { width, height: 900 } }); const page = await ctx.newPage(); page.errs = errors(page); await login(page, user, { presenter: false }); page.ctx = ctx; return page; };
 const txt = page => page.evaluate(() => (document.getElementById('root') || {}).innerText || '');
 const hash = page => page.evaluate(() => location.hash);
+const lockLabels = page => page.$$eval('.ui-lockhint .ui-hint__b', bs => bs.map(b => b.getAttribute('aria-label') || ''));   // the "Needs clinician" lines are lock icons; the sentence is the accessible name and shows on hover
 const shot = (page, name) => page.screenshot({ path: `${SHOTS}/e3-${name}.png`, fullPage: true });
 
 await reset('canvas');
@@ -34,7 +35,7 @@ await T.test('queue (artifact layout): nine columns, four open cases sorted by d
   assert.eq(await p.$$eval('.ui-qt__row', rs => rs.length), 2, 'the Decision type filter'); assert.match(await hash(p), /decision=partial/, 'the filter is in the URL');
   await p.selectOption('#di-f-decision', ''); await p.waitForTimeout(150);
   // the Decision date card: this week holds three decisions (Oct 27, 27, 28), before this week one (Oct 22), today none
-  assert.match(await p.locator('.d-datec').innerText(), /Decision date[\s\S]*Any dates/);
+  assert.match(await p.locator('.ui-datecard').innerText(), /Decision date[\s\S]*Any dates/);
   await p.getByRole('button', { name: 'This week', exact: true }).click(); await p.waitForTimeout(250); assert.eq(await p.$$eval('.ui-qt__row', rs => rs.length), 3); assert.match(await hash(p), /from=2026-10-26&to=2026-11-01/);
   await p.getByRole('button', { name: 'Before this week', exact: true }).click(); await p.waitForTimeout(250); assert.deepEq(await p.$$eval('.ui-qt__row', rs => rs.map(r => r.dataset.rowId)), ['DI-0384']);
   await p.getByRole('button', { name: 'Today', exact: true }).click(); await p.waitForTimeout(250); assert.eq(await p.$$eval('.ui-qt__row', rs => rs.length), 0); assert.match(await txt(p), /Nothing matches/); assert.match(await p.locator('.ui-pager').innerText(), /No denials/);
@@ -121,12 +122,12 @@ await T.test('E.C. appeal on Availity: Mark ready for upload reads "Ready to upl
 await T.test('admin: the queue and the case show status and deadlines; no clinical text reaches the page; analysis, calls and drafts are locked, marking for review is not', async () => {
   await reset('canvas');
   const p = await open('dowens'); await p.goto(BASE + '/#/DenialIntelligence'); await p.waitForSelector('.ui-qt__row');
-  assert.match(await txt(p), /Status view · no clinical text/); assert.eq(await p.$$eval('.ui-qt__row', r => r.length), 4);
-  for (const h of ['overview', 'decision', 'said', 'evidence', 'weak', 'options', 'docreq', 'history']) { await p.goto(BASE + `/#/DenialCase?id=R-0408&section=${h}`); await p.waitForSelector('.d-menu'); const t = await txt(p); assert.ok(!/Piedmont|physical aggression|hospitali|seven incidents|IEP supports/i.test(t), `no clinical words on the ${h} section: ` + t.slice(0, 120)); }
-  await p.goto(BASE + '/#/DenialCase?id=R-0408&section=evidence'); await p.waitForSelector('.d-menu'); assert.match(await txt(p), /Needs clinician/);
-  await p.goto(BASE + '/#/DenialCase?id=R-0408&section=weak'); await p.waitForSelector('.d-menu'); assert.match(await txt(p), /Needs clinician/); assert.eq(await p.getByRole('button', { name: 'Analyze Denial' }).count(), 0);
-  await p.goto(BASE + '/#/DenialCase?id=R-0408&section=docreq'); await p.waitForSelector('.d-menu'); assert.match(await txt(p), /Needs clinician/); assert.eq(await p.getByRole('button', { name: /Record the request/ }).count(), 0);
-  await p.goto(BASE + '/#/DenialCase?id=R-0408&section=action&action=info'); await p.waitForSelector('.d-menu'); assert.eq(await p.getByRole('button', { name: 'Draft from records' }).count(), 0, 'no draft button for admin'); assert.match(await txt(p), /Needs clinician/);
+  assert.eq(await p.locator('.ui-lockhint .ui-hint__b[aria-label="Status view · no clinical text"]').count(), 1, 'the status-view line is a lock icon'); assert.match(await p.locator('.ui-lockhint .ui-hint__t').first().textContent(), /administrators see status, units and deadlines/i, 'with its definition on hover'); assert.eq(await p.$$eval('.ui-qt__row', r => r.length), 4);
+  for (const h of ['overview', 'decision', 'said', 'evidence', 'weak', 'options', 'docreq', 'history']) { await p.goto(BASE + `/#/DenialCase?id=R-0408&section=${h}`); await p.waitForSelector('.d-menu'); const t = await txt(p) + ' ' + await p.evaluate(() => document.getElementById('root').textContent); assert.ok(!/Piedmont|physical aggression|hospitali|seven incidents|IEP supports/i.test(t), `no clinical words on the ${h} section (text, hover definitions and labels): ` + t.slice(0, 120)); }
+  await p.goto(BASE + '/#/DenialCase?id=R-0408&section=evidence'); await p.waitForSelector('.d-menu'); assert.ok((await lockLabels(p)).some(l => /^Needs clinician/.test(l)), 'a lock icon says Needs clinician');
+  await p.goto(BASE + '/#/DenialCase?id=R-0408&section=weak'); await p.waitForSelector('.d-menu'); assert.ok((await lockLabels(p)).some(l => /^Needs clinician/.test(l)), 'a lock icon says Needs clinician'); assert.eq(await p.getByRole('button', { name: 'Analyze Denial' }).count(), 0);
+  await p.goto(BASE + '/#/DenialCase?id=R-0408&section=docreq'); await p.waitForSelector('.d-menu'); assert.ok((await lockLabels(p)).some(l => /^Needs clinician/.test(l)), 'a lock icon says Needs clinician'); assert.eq(await p.getByRole('button', { name: /Record the request/ }).count(), 0);
+  await p.goto(BASE + '/#/DenialCase?id=R-0408&section=action&action=info'); await p.waitForSelector('.d-menu'); assert.eq(await p.getByRole('button', { name: 'Draft from records' }).count(), 0, 'no draft button for admin'); assert.ok((await lockLabels(p)).some(l => /^Needs clinician/.test(l)), 'a lock icon says Needs clinician');
   await p.goto(BASE + '/#/DenialCase?id=R-0408'); await p.waitForSelector('.d-menu');
   for (const n of ['Analyze Denial', 'Identify Missing Evidence', 'Request Additional Documentation', 'Generate Appeal Draft', 'Generate Peer-to-Peer Script', 'Prepare Reconsideration']) assert.ok(await p.getByRole('button', { name: new RegExp('^' + n) }).isDisabled(), n + ' is locked for the administrator');
   assert.ok(!(await p.getByRole('button', { name: /^Mark for Clinical Review/ }).isDisabled()), 'marking a case for review is not clinical text');
@@ -153,7 +154,7 @@ await T.test('keyboard and dialogs: tabs and rows are reachable, the dialog trap
 await T.test('overview (artifact layout): header card with the process line, left menu, seven steps; Analyze opens a slide-over and fills "Where the denial is weak"; the review and the documentation request are saved', async () => {
   await reset('canvas');
   const p = await open('jperez'); await p.goto(BASE + '/#/DenialCase?id=R-0408'); await p.waitForSelector('.d-menu');
-  const hd = await p.locator('.d-hd').innerText(); assert.match(hd, /K\.T\., 9/); assert.match(hd, /Information request/); assert.match(hd, /Update status/); assert.match(hd, /Call payer · voice agent/); assert.match(hd, /Open in Authorizations/); assert.match(hd, /Open in Lauris/);
+  const hd = await p.locator('.ui-hcard').innerText(); assert.match(hd, /K\.T\., 9/); assert.match(hd, /Information request/); assert.match(hd, /Update status/); assert.match(hd, /Call payer · voice agent/); assert.match(hd, /Open in Authorizations/); assert.match(hd, /Open in Lauris/);
   assert.deepEq(await p.$$eval('.d-steps li b', bs => bs.map(b => b.innerText)), ['Decision received', 'Clinical review', 'Response prepared', 'Submitted', 'Payer response', 'Resolved']); assert.eq(await p.locator('.d-steps [aria-current=step]').count(), 1);
   const menu = await p.locator('.d-menu').innerText(); for (const w of ['REVIEW', 'Overview', 'What Anthem asked', 'Clinical evidence', 'Where the denial is weak', 'RESPOND', 'Reply to Anthem', 'Appeal draft', 'Peer-to-peer script', 'Reconsideration', 'Documentation request']) assert.ok(menu.includes(w), 'menu has ' + w);
   assert.deepEq(await p.$$eval('.d-act__t b', bs => bs.map(b => b.innerText)), ['Analyze Denial', 'Identify Missing Evidence', 'Request Additional Documentation', 'Generate Appeal Draft', 'Generate Peer-to-Peer Script', 'Prepare Reconsideration', 'Mark for Clinical Review']);

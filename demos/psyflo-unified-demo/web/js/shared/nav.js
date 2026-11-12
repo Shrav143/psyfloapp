@@ -1,7 +1,7 @@
 // The rail, as data. Change the nav by editing this file; app.js only renders it.
-// Rail: patient-first (feedback round Nov 11). Dashboard is the patient roster every role starts from; Documentation is the notes, intake
-// forms and CNAs queue (owed whether or not there is an authorization); Authorizations, Denial Intelligence and Analytics follow; below a
-// divider two small links, Referrals and Settings. The logo opens the Dashboard.
+// Rail: patient-first (feedback round Nov 11, R4). Dashboard is the patient roster every role starts from and, as its Documents view, the notes,
+// intake forms and CNAs queue (owed whether or not there is an authorization): one item, one name; Authorizations, Denial Intelligence and
+// Analytics follow; below a divider two small links, Referrals and Settings. The logo opens the Dashboard.
 // Role decides what shows: an item appears only when the user may open the route it actually points at.
 //
 // Item: { id, label, icon, route, params?, fallback?, fallbackParams?, activeFor?:[routeIds], count?:'authNeeds'|'denialsOpen'|'referralsNew' }
@@ -15,8 +15,7 @@ import { STATUS } from '../ui/chip.js';
 export const NAV = {
   logo: { id: 'dashboard-logo', label: 'Dashboard', route: 'Dashboard', fallback: 'MyWork', activeFor: [] },
   primary: [
-    { id: 'dashboard', label: 'Dashboard', icon: 'home', route: 'Dashboard', fallback: 'MyWork', activeFor: ['Patient', 'MyWork', 'DoNext', 'StaffDashboard'] },
-    { id: 'documentation', label: 'Documentation', icon: 'file', route: 'Documentation', activeFor: ['ReviewQueue'] },
+    { id: 'dashboard', label: 'Dashboard', icon: 'home', route: 'Dashboard', fallback: 'MyWork', activeFor: ['Patient', 'MyWork', 'DoNext', 'StaffDashboard', 'Documentation', 'ReviewQueue'] },
     { id: 'authorizations', label: 'Authorizations', icon: 'list', route: 'Authorizations', activeFor: ['Authorization', 'Submission', 'EarlyDischarge'], count: 'authNeeds' },
     { id: 'denials', label: 'Denial Intelligence', icon: 'shield', route: 'DenialIntelligence', fallback: 'Partials', activeFor: ['DenialCase', 'InfoRequest', 'Partials', 'PeerBrief'], count: 'denialsOpen' },
     { id: 'analytics', label: 'Analytics', icon: 'bars', route: 'Analytics', activeFor: ['PayerPlaybook'] }

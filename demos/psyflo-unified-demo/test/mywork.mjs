@@ -120,14 +120,14 @@ try {
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
   await reset('live');
-  await T.test('legacy: ?legacy=1 keeps the old Team deep link; without it My Work, StaffDashboard, ReviewQueue and DoNext land on Dashboard, Documentation or Referrals', async () => {
+  await T.test('legacy: ?legacy=1 keeps the old Team deep link; without it My Work, StaffDashboard, ReviewQueue and DoNext land on the Dashboard (its Patients, Documents or Staff view) or Referrals', async () => {
     let p = await open('cdiaz', '/#/MyWork?legacy=1&section=team&staff=khale');
     assert.match(await rootText(p), /Kayla Hale's day/); assert.match(await rootText(p), /Behind/); await p.close();
     const lands = async (user, path, id, re, sel = '#root h1') => { const q = await open(user, path, { sel }); assert.eq(await q.evaluate(() => psyflo.current.id), id, path); if (re) assert.match(await q.evaluate(() => location.hash), re, path); await q.close(); };
     await lands('cdiaz', '/#/StaffDashboard?staff=khale', 'Dashboard', /staff=khale/);
-    await lands('cdiaz', '/#/ReviewQueue', 'Documentation', /status=pending_review/, '#root .doc-page');
-    await lands('cdiaz', '/#/MyWork?section=review', 'Documentation', /status=pending_review/, '#root .doc-page');
-    await lands('cdiaz', '/#/MyWork?section=team', 'Documentation', /view=staff/, '#root .doc-page');
+    await lands('cdiaz', '/#/ReviewQueue', 'Dashboard', /view=documents.*status=pending_review|status=pending_review.*view=documents/, '#root .d-page');
+    await lands('cdiaz', '/#/MyWork?section=review', 'Dashboard', /view=documents.*status=pending_review|status=pending_review.*view=documents/, '#root .d-page');
+    await lands('cdiaz', '/#/MyWork?section=team', 'Dashboard', /view=staff/, '#root .d-page');
     await lands('cdiaz', '/#/MyWork', 'Dashboard');
     await lands('jperez', '/#/DoNext', 'Dashboard');
     await lands('jperez', '/#/MyWork?section=referrals', 'Referrals');

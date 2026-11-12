@@ -1,5 +1,5 @@
 id,feature,destination,status,evidence,notes
-M-001,Sign in (n0),Login (kept); role switching moves to presenter toolbar,MOVED,"route /Login as anonymous · suite roles PASS, settings PASS",lands on #/Login
+M-001,Sign in (n0),Login (kept); role switching moves to presenter toolbar,NOT-VERIFIED,"route /Login as anonymous · suite roles PASS, settings PASS",hash #/Login;  text missing: /Direct support|Clinician/
 M-002,Where things live (n1),Presenter drawer,MOVED,"route /WhereThingsLive as jperez · suite ui-kit PASS, fixtures PASS",lands on #/WhereThingsLive?full=1
 M-003,Do next (n2),Dashboard (patient roster),MOVED,route /DoNext as jperez · suite mywork PASS,lands on #/Dashboard
 M-004,School portal home (n3),School Portal,MOVED,route /SchoolPortal as school · suite school PASS,lands on #/SchoolPortal
@@ -25,10 +25,10 @@ M-023,Daily note (n23),Extension › Scribe,MOVED,"route /ExtDPN as khale · sui
 M-024,Weekly guardian call (n24),Extension › Scribe,MOVED,"route /ExtWeekly as jperez · suite panels PASS, smoke PASS",lands on #/ExtWeekly?client=MR
 M-025,Monthly collateral (n25),Extension › Scribe,MOVED,"route /ExtMonthly as jperez · suite panels PASS, smoke PASS",lands on #/ExtMonthly?client=MR
 M-026,Incident report (n26),Extension › Additional actions,MOVED,"route /ExtIncident as jperez · suite panels PASS, smoke PASS",lands on #/ExtIncident
-M-027,Supervisor review queue (n27),Documentation › Needs review,MOVED,route /ReviewQueue as cdiaz · suite mywork PASS,lands on #/Documentation?status=pending_review
-M-028,Staff dashboard (n28),Dashboard (staff filter) · Documentation › By staff,MOVED,route /StaffDashboard as cdiaz · suite mywork PASS,lands on #/Dashboard
-M-029,Authorizations (n29),Authorizations (queue),MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
-M-030,Parent survey (n31),Family Portal,MOVED,"route /ParentSurvey as guardian · suite family PASS, flowD PASS",lands on #/ParentSurvey
+M-027,Supervisor review queue (n27),Documentation › Needs review,MOVED,route /ReviewQueue as cdiaz · suite mywork PASS,lands on #/Dashboard?view=documents&status=pending_review
+M-028,Staff dashboard (n28),Dashboard (staff filter) · Documentation › By staff,MOVED,suite mywork PASS,proved by the suite(s) only
+M-029,Authorizations (n29),Authorizations (queue),MOVED,"suite authorizations PASS, flowC PASS",proved by the suite(s) only
+M-030,Parent survey (n31),Family Portal,MOVED,"suite family PASS, flowD PASS",proved by the suite(s) only
 M-031,Quarterly report (n32),Extension › Clinical documents,MOVED,"route /ExtQuarterly as jperez · suite panels PASS, smoke PASS",lands on #/ExtQuarterly?client=MR
 M-032,Continued stay (n33),Authorizations › evidence; Extension › Scan & Enhance,MOVED,"route /ExtCase as jperez · route /Authorization as jperez · suite panels PASS, smoke PASS",lands on #/ExtCase?client=MR; lands on #/Authorization?id=R-0411&section=evidence
 M-033,Information request (n34),Denial Intelligence › action,MOVED,"route /InfoRequest as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0408&section=action&action=info
@@ -276,7 +276,7 @@ V-083,Build script,Drop,DROPPED-WITH-REASON,suite ui-kit PASS,v3 build or in-bro
 V-084,S1 DSS creates a progress note,Spec Scenario 1 (master flow B),MOVED,"route /MobileApp as khale · code: scenario s1 · suite ui-kit PASS, fixtures PASS",lands on #/MobileApp; seed/extra/scenarios.json
 V-085,S2 DSS tracks interventions,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
 V-086,S3 Clinician enhances a progress note,Enhance Mode A,MOVED,"action enhance.scan registered with a capability entry · suite ui-kit PASS, fixtures PASS",
-V-087,S4 Clinician enhances an SRA,Spec Scenario 3,MOVED,"route /Authorization as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorization?id=R-0416
+V-087,S4 Clinician enhances an SRA,Spec Scenario 3,NOT-VERIFIED,"route /Authorization as jperez · suite ui-kit PASS, fixtures PASS",hash #/Authorization?id=R-0416;  text missing: /Next step/
 V-088,S5 Admin tracks authorizations,Authorizations demo,MOVED,"route /Authorizations as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorizations
 V-089,S6 Clinician manages a denial,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence
 V-090,S7 Clinician prepares peer-to-peer,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence

@@ -185,7 +185,7 @@ for (const role of ['clinician', 'supervisor', 'admin', 'direct_support']) {
     await run(`EXP-02 ${role}: "All screens" lists every route this role may open and each opens in two clicks`, async () => {
       const page = await newPage({ who: STAFF[role], presenter: true });
       await go(page, '/?mode=explore#/Dashboard'); await page.waitForTimeout(300);
-      const live = SCREENS.filter(s => s.id !== 'Login' && s.id !== 'UiKit' && !['MyWork', 'DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive'].includes(s.id));   // MyWork redirects to Dashboard / Documentation / Referrals
+      const live = SCREENS.filter(s => s.id !== 'Login' && s.id !== 'UiKit' && !['MyWork', 'DoNext', 'Documentation', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive'].includes(s.id));   // MyWork redirects to Dashboard (Patients, Documents, Staff) / Referrals; Documentation redirects to the Dashboard's Documents view
       const act = await apiActor(page); const des = await page.evaluate(async () => { const { api } = await import('/js/api.js'); return (api.session() || {}).designations || []; }); const may = id => routeAllowed(role, id, { role, designations: des, presenter: true });
       const expected = live.filter(s => s.min === 0 ? true : may(s.id)).map(s => s.id); void act;
       await page.click('[data-dock-menu="screens"]'); await page.waitForSelector('#dock-q');
@@ -236,7 +236,7 @@ for (const role of ['clinician', 'supervisor', 'admin', 'direct_support']) {
       // direct support lands on the framed Lauris page: its way into My Work is the panel's "My day in Psyflo" control (a button that opens the platform)
       if (role === 'direct_support' && !('Dashboard' in depth)) { await go(page, `/#/${sid}${sq ? '?' + sq : ''}`).catch(() => { }); await page.waitForTimeout(2500); for (const f of page.frames().slice(1)) { if (await f.evaluate(() => [...document.querySelectorAll('a,button')].some(b => /My day in Psyflo/i.test(b.innerText))).catch(() => false)) depth.Dashboard = 1; } }
       const must = SCREENS.filter(s => s.min > 0 && s.surface === 'app' && routeAllowed(role, s.id) && !['Login', 'UiKit'].includes(s.id)).map(s => s.id);
-      const redirected = new Set(['MyWork', 'DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility']);
+      const redirected = new Set(['MyWork', 'DoNext', 'Documentation', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility']);
       const unreached = must.filter(id => !(id in depth) && !redirected.has(id));
       console.log(`  ${role}: product links reach ${Object.keys(depth).length} routes within 3 clicks; the picker lists the rest (${picks[role] || '?'} routes)`);
       assert.deepEq(unreached, [], `${role}: routes not reachable in 3 clicks through the product's own links (Explore picker still reaches them in 2)`);

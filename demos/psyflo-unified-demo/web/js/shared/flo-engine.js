@@ -10,7 +10,7 @@
 //   floAvailable(actor)           -> true for the four staff roles; guardians and school users have no FLO
 //
 // `s` is the ROLE-PROJECTED state (api.state): the server already withholds what the role may not see, and every number below is computed from
-// the same selectors the screens use (sel/roster.js), so an answer can never disagree with the Dashboard, Documentation or Authorizations.
+// the same selectors the screens use (sel/roster.js), so an answer can never disagree with the Dashboard (Patients and Documents views) or Authorizations.
 // Result cells are plain data ({ t, to?, tone? } or a string); the drawer turns them into escaped HTML.
 import * as M from './model.js';
 import { daysBetween, addDays, fmtDate } from './dates.js';
@@ -146,7 +146,7 @@ function behindNotes(c) {
       rows: hits.sort((a, b) => b.items.length - a.items.length).map(x => { const oldest = x.items.map(i => i.due).filter(Boolean).sort()[0];
         return staffMode ? [patientCell(x.r, 'documentation'), x.r.staffShort || '—', String(x.items.length), date(oldest)] : [patientCell(x.r, 'documentation'), String(x.items.length), date(oldest)]; }) } : null,
     bars: bars.length > 1 ? bars : [],
-    links: links(c.link('See them on the Dashboard', '#/Dashboard?attention=behind', 'Dashboard'), c.link('Open Documentation, Behind', '#/Documentation?status=behind', 'Documentation')),
+    links: links(c.link('See them on the Dashboard', '#/Dashboard?attention=behind', 'Dashboard'), c.link('Open Documents, Behind', '#/Dashboard?view=documents&status=behind', 'Documentation')),
     source: `From the notes the extension reported at Process Form, and the clock. A daily note is due ${hours} h after the session (${hrs && !hrs.missing ? verificationLabel(hrs.category) : 'Harvest target'}).`,
     followUps: ['Which notes are waiting for review?', 'What are the deadlines this week?']
   });
@@ -161,7 +161,7 @@ function reviewWaiting(c) {
     title: 'Notes waiting for review',
     summary: total ? [`${pl(total, 'note')} ${total === 1 ? 'is' : 'are'} waiting for review`, `across ${pl(hits.length, 'patient')}.${mine ? ' A reviewer decides each one.' : ''}`] : ['No notes are waiting for review.', ''],
     table: total ? { cols: staffMode ? ['Patient', 'Staff', 'Waiting'] : ['Patient', 'Waiting'], rows: hits.sort((a, b) => b.n - a.n).map(x => staffMode ? [patientCell(x.r, 'documentation'), x.r.staffShort || '—', String(x.n)] : [patientCell(x.r, 'documentation'), String(x.n)]) } : null,
-    links: links(c.link('Open Documentation, Needs review', '#/Documentation?status=pending_review', 'Documentation'), c.link('See them on the Dashboard', '#/Dashboard?attention=review', 'Dashboard')),
+    links: links(c.link('Open Documents, Needs review', '#/Dashboard?view=documents&status=pending_review', 'Documentation'), c.link('See them on the Dashboard', '#/Dashboard?attention=review', 'Dashboard')),
     source: 'From the review state stored with each note (approved, returned, flagged or pending). FLO does not open or quote any note.',
     followUps: ['Who is behind on notes?']
   });
@@ -316,9 +316,9 @@ function formsDue(c) {
   const rows = d.rows.slice(0, 10);
   return done('forms', {
     title: 'Forms owed', summary: d.rows.length ? [`${pl(d.rows.length, 'form')} ${d.rows.length === 1 ? 'is' : 'are'} owed`, `(intake, CNA, treatment plan, quarterly report, discharge summary).`] : ['No form is owed.', ''],
-    table: rows.length ? { cols: ['Patient', 'Form', 'Due', 'State'], rows: rows.map(x => [{ t: x.label, to: x.to, sub: 'Lauris #' + (x.lauris || '—') }, x.typeLabel, date(x.due), { t: x.statusLabel, tone: SEV_TONE[x.sev] }]) } : null,
-    links: links(c.link('Open Documentation, Forms', '#/Documentation?group=form&status=open', 'Documentation')),
-    source: 'From the intake, CNA and plan tracker. It is sample data until the tracker reads Lauris (labelled so in Documentation).', followUps: ['Who is behind on notes?']
+    table: rows.length ? { cols: ['Patient', 'Form', 'Due', 'State'], rows: rows.map(x => [{ t: x.label, to: x.to, sub: 'Lauris #' + (x.laurisNo || '—') }, x.typeLabel, date(x.due), { t: x.statusLabel, tone: SEV_TONE[x.sev] }]) } : null,
+    links: links(c.link('Open Documents, Forms', '#/Dashboard?view=documents&group=form&status=open', 'Documentation')),
+    source: 'From the intake, CNA and plan tracker. It is sample data until the tracker reads Lauris (labelled so in the Documents view).', followUps: ['Who is behind on notes?']
   });
 }
 

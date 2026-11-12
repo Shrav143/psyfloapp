@@ -15,6 +15,7 @@
 //   flowA     the Lauris panel: screening (consumer, scripted call via the presenter command, Process Form) and the intake
 //   flowB     the phone dictation (example) and the daily note in the Lauris frame
 //   flowC     ISP, SRA, Process Form, approval, Get Signature, Send
+//   dashboard R4: Patients | Documents | Staff in one page, the old Documentation ids redirect, an item's "Open in Lauris" icon opens the overlay (#vov, Close) at the form with the panel
 //   extension the panel home (Scribe, no Track Time) and the phone without a timer; who gets what
 //   dock      presenter dock: modes, scenario selector, role switcher, simulate, reset
 import { createRequire } from 'node:module'; import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path';
@@ -474,6 +475,39 @@ async function flowA() {
   H.noErrors(); await H.close();
 }
 
+// ---------------------------------------------------------------- Dashboard (R4): one page with Patients, Documents and Staff; every note and form action opens Lauris
+async function dashboard() {
+  console.log('dashboard · Patients | Documents | Staff, and Open in Lauris');
+  // a supervisor: the switch, the redirect from the old Documentation id, the review icon
+  const S = await fresh(); const { ui: su } = S;
+  await S.signIn('Supervisor'); await su.locator('#root .d-row').first().waitFor({ timeout: 10000 });
+  ok(/Patients\s+Documents\s+Staff/.test((await su.locator('#root nav.d-view').innerText()).replace(/\s+/g, ' ')), 'the Dashboard has the three-way switch');
+  ok(await su.locator('#rail .sh-nav__i', { hasText: 'Documentation' }).count() === 0, 'no Documentation item in the rail');
+  await S.go('#/Documentation?status=pending_review'); await su.locator('#root [data-ui-id="doc"]').waitFor({ timeout: 10000 });
+  ok(/^#\/Dashboard\?/.test(await S.hash()) && /view=documents/.test(await S.hash()) && /status=pending_review/.test(await S.hash()), 'the old Documentation address lands on the Documents view with its filter: ' + await S.hash());
+  ok(await su.locator('#root a[data-lauris]').count() > 3, 'the document rows carry Open in Lauris');
+  await su.locator('#root .d-view__b', { hasText: 'Staff' }).click(); await su.locator('#root [data-ui-id="doc-staff"]').waitFor({ timeout: 10000 }); ok(/view=staff/.test(await S.hash()), 'the Staff view is in the address');
+  S.noErrors('supervisor'); await S.close();
+  // direct support: the icon opens the Lauris overlay at M.R.'s form with the panel beside it; the administrator has none
+  const H = await fresh(); const { ui } = H;
+  await H.signIn('Direct support'); await H.go('#/Dashboard'); await ui.locator('#root .d-row').first().waitFor({ timeout: 10000 });   // direct support lands on the framed Lauris page; the Dashboard is one click away
+  ok(await ui.locator('#root nav.d-view').count() === 0, 'direct support has no view switch');
+  await H.go('#/Dashboard?view=documents'); await ui.locator('#root .d-row').first().waitFor({ timeout: 10000 }); ok(await ui.locator('#root [data-ui-id="doc"]').count() === 0, '?view=documents falls back to Patients for direct support');
+  await H.go('#/Dashboard?open=all'); await ui.locator('#d-it-MR a[data-lauris]').first().waitFor({ timeout: 10000 });
+  ok(await ui.locator('#d-it-MR .ui-btn').count() === 0, 'the items carry icons, not text buttons');
+  await ui.locator('#d-it-MR a[data-lauris]').first().click();
+  await ui.locator('#vov').waitFor({ timeout: 10000 }); ok(await ui.locator('#vov .vov-x').count() === 1, 'the icon opens the Lauris overlay with a Close button');
+  await H.lwait('ov', /consumers\/3310\/session\//); await H.panelReady('ov');
+  ok(/M\.R\.[\s\S]*3310/.test(await H.P('ov').locator('#panel').innerText()), 'the panel beside the form shows the same patient');
+  await H.shot('dashboard-lauris-overlay');
+  await ui.locator('#vov .vov-x').click(); ok((await ui.locator('#vov').count()) === 0, 'Close closes the overlay');
+  H.noErrors('direct support'); await H.close();
+  const A = await fresh(); const { ui: au } = A;
+  await A.signIn('Admin'); await au.locator('#root .d-row').first().waitFor({ timeout: 10000 }); await A.go('#/Dashboard?open=all'); await au.locator('#d-it-MR .d-item').first().waitFor({ timeout: 10000 });
+  ok(await au.locator('#root a[data-lauris]').count() === 0, 'the administrator has no Open in Lauris (status only)');
+  A.noErrors('admin'); await A.close();
+}
+
 // ---------------------------------------------------------------- Flow B: phone dictation (the example) -> the daily note in the Lauris frame -> Process Form
 async function flowB() {
   console.log('flowB · phone and daily note');
@@ -627,7 +661,7 @@ async function dock() {
 }
 
 // ---------------------------------------------------------------- run
-const ORDER = [['static', null], ['roles', roles], ['narrow', narrow], ['auth', auth], ['denial', denial], ['analytics', analytics], ['settings', settings], ['referral', referral], ['flowA', flowA], ['flowB', flowB], ['flowC', flowC], ['extension', extension], ['dock', dock]];
+const ORDER = [['static', null], ['roles', roles], ['narrow', narrow], ['auth', auth], ['denial', denial], ['analytics', analytics], ['settings', settings], ['referral', referral], ['dashboard', dashboard], ['flowA', flowA], ['flowB', flowB], ['flowC', flowC], ['extension', extension], ['dock', dock]];
 for (const [name, fn] of ORDER) {
   if (ONLY && !ONLY.includes(name)) continue;
   if (name === 'static') { mode = 'file'; await staticChecks(); continue; }

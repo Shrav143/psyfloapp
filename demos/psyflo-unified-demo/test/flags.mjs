@@ -173,13 +173,13 @@ try {
   await T.test('case page: the flag banner and the flag button open the same dialog; clearing is one click and lands in History; a supervisor may clear a clinician\'s flag', async () => {
     await reset('canvas'); const { p, errs } = await mk('cdiaz'); await p.goto(BASE + '/#/Authorization?id=R-0391'); await p.waitForTimeout(900);
     const ban = await p.locator('#a-fban').innerText(); assert.match(ban, /Flagged for attention/); assert.match(ban, /Waiting on the family/); assert.match(ban, /J\. Perez|Jordan Perez/); assert.noMatch(ban, /Confirm the new initial/, 'the note is not shown to a supervisor');
-    assert.eq(await p.locator('.a-chead [data-flag]').getAttribute('aria-pressed'), 'true');
-    await p.locator('.a-chead [data-flag]').click(); await p.waitForSelector('.ui-dialog'); assert.match(await p.locator('.ui-dialog').innerText(), /Visible to clinicians and its author/);
+    assert.eq(await p.locator('.ui-hcard [data-flag]').getAttribute('aria-pressed'), 'true');
+    await p.locator('.ui-hcard [data-flag]').click(); await p.waitForSelector('.ui-dialog'); assert.match(await p.locator('.ui-dialog').innerText(), /Visible to clinicians and its author/);
     await p.getByRole('dialog').getByRole('button', { name: 'Keep the flag' }).click(); await p.waitForTimeout(300);
     await p.locator('#a-fban [data-flag]').click(); await p.getByRole('dialog').getByRole('button', { name: 'Clear flag' }).click(); await p.waitForTimeout(900);
     assert.eq(await p.locator('#a-fban').count(), 0, 'the banner is gone'); assert.eq((await flagsOf('cdiaz')).find(f => f.request === 'R-0391').status, 'cleared');
     assert.match(await p.locator('.hx__r').first().innerText(), /Flag cleared/); assert.match(await p.locator('.hx__r').first().innerText(), /Staff · C\. Diaz/);
-    assert.eq(await p.locator('.a-chead [data-flag]').getAttribute('aria-pressed'), 'false');
+    assert.eq(await p.locator('.ui-hcard [data-flag]').getAttribute('aria-pressed'), 'false');
     assert.deepEq(realErrs(errs), []); await p.context().close();
   });
   await T.test('case page History: actor tags, a filter by who with counts, a pop-up per row, Add to history; the Simulated chip on stub steps', async () => {

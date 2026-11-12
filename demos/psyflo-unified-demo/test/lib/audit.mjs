@@ -96,7 +96,7 @@ export function enumerate(o) {
     const r = el.getBoundingClientRect();
     const where = el.closest('#rail') ? 'rail' : el.closest('.ui-overlay') ? 'overlay' : el.closest('table') ? 'table' : el.closest('header,[role=banner]') ? 'header' : 'body';
     const d = { key, occ, tag, kind, type: el.getAttribute('type') || '', role: el.getAttribute('role') || '', name, nameSource, href: href || '', target: el.getAttribute('target') || '', download: el.hasAttribute('download'),
-      disabled: !!el.disabled || el.matches('fieldset:disabled *'), ariaDisabled: el.getAttribute('aria-disabled') === 'true', expanded: el.getAttribute('aria-expanded'), pressed: el.getAttribute('aria-pressed'), selected: el.getAttribute('aria-selected'), current: el.getAttribute('aria-current'),
+      disabled: !!el.disabled || el.matches('fieldset:disabled *'), ariaDisabled: el.getAttribute('aria-disabled') === 'true', expanded: el.getAttribute('aria-expanded'), pressed: el.getAttribute('aria-pressed'), selected: el.getAttribute('aria-selected'), current: el.getAttribute('aria-current'), hint: !!el.closest('[data-ui-hint]'),
       checked: el.checked === true, readonly: !!el.readOnly, options: tag === 'select' ? el.options.length : 0, where, w: Math.round(r.width), h: Math.round(r.height), x: Math.round(r.x), y: Math.round(r.y) };
     if (d.disabled || d.ariaDisabled) d.why = whyDisabled(el);
     d.el = el; out.push(d);
@@ -167,6 +167,7 @@ export function classify(b, a, ev, c) {
   // focus went to a different element than the control itself (a "Change student" link that focuses the chip list): a weak effect, listed in the report
   if (a.act && a.act !== b.act && !a.act.endsWith('[' + c.n + ']') && c.kind === 'link') return out('FOCUS-ONLY', 'moved focus to ' + a.act);
   // allowlist: nothing should change (design rules of review 06 d2.7)
+  if (c.hint && c.kind === 'button') return out('NO-EFFECT-ALLOWED', 'hint icon: the definition shows on hover and focus (R4)');
   if (c.kind === 'tab' && (c.selected === 'true' || c.current)) return out('NO-EFFECT-ALLOWED', 'active tab');
   if (c.kind === 'radio' && c.checked) return out('NO-EFFECT-ALLOWED', 'radio already selected');
   if (c.current && /page|true|step/.test(c.current)) return out('NO-EFFECT-ALLOWED', 'link to the current page');
@@ -387,10 +388,10 @@ export class Sweeper {
 // ---------------------------------------------------------------------------------------------------- route inventory (shared with a11y.mjs and visual.mjs)
 // Parameter variants (UI-KIT section 5 deep-link patterns). Variants a role cannot open are dropped by routeAllowed; redirect-only historic ids
 // (DoNext, Partials?id ...) land on these same screens and are covered by test/routes.mjs.
-export const REDIRECT_ONLY = new Set(['MyWork', 'DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive', 'UiKit', 'Login']);
+export const REDIRECT_ONLY = new Set(['MyWork', 'DoNext', 'Documentation', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive', 'UiKit', 'Login']);
 export const VARIANTS = {
-  Dashboard: { '*': [{}] },
-  Documentation: { supervisor: [{}, { status: 'pending_review' }, { view: 'staff' }], clinician: [{}, { status: 'pending_review' }, { view: 'staff' }], admin: [{}, { view: 'staff' }] },
+  // R4: Documentation is the Dashboard's Documents view (and Staff view); direct support has the Patients view only, so ?view=documents is not a variant for it
+  Dashboard: { '*': [{}], supervisor: [{}, { view: 'documents' }, { view: 'documents', status: 'pending_review' }, { view: 'staff' }], clinician: [{}, { view: 'documents' }, { view: 'documents', status: 'pending_review' }, { view: 'staff' }], admin: [{}, { view: 'documents' }, { view: 'staff' }] },
   Patient: { direct_support: [{ id: 'MR' }], supervisor: [{ id: 'MR' }, { id: 'DW' }], clinician: [{ id: 'MR' }, { id: 'TW' }, { id: 'KT' }], admin: [{ id: 'MR' }] },
   Authorizations: { '*': [{}] },
   Authorization: { clinician: ['R-0411', 'R-0402', 'R-0399', 'R-0391', 'R-0388', 'R-0384'].map(id => ({ id })), supervisor: [{ id: 'R-0411' }, { id: 'R-0399' }], admin: [{ id: 'R-0411' }, { id: 'R-0402' }] },

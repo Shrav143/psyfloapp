@@ -428,3 +428,90 @@ a.ui-hint__b{cursor:pointer}
 .ui-hint--b .ui-hint__b{color:var(--info-fg)}
 .ui-hint__t{position:fixed;left:0;top:0;z-index:calc(var(--z-rail) + 40);width:max-content;max-width:min(280px,calc(100vw - 16px));background:var(--navy-900);color:#fff;border-radius:var(--r-2);padding:6px 10px;font:500 var(--fs-12)/var(--lh-12) var(--font);box-shadow:0 6px 18px rgba(21,27,36,.28);visibility:hidden;opacity:0;pointer-events:none;transition:opacity var(--dur)}
 .ui-hint__t[data-on]{visibility:visible;opacity:1}
+
+/* ---- R4 FMT: one formatting for Authorizations and Denial Intelligence (list pages and case pages); the date card; icon-with-hover quiet labels ---- */
+.ui-page{max-width:1320px;margin:0 auto;padding:var(--sp-5) var(--gutter) 64px;display:flex;flex-direction:column;gap:var(--sp-4)}
+.ui-page--case{max-width:1180px}
+.ui-phead{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--sp-3) var(--sp-4)}
+.ui-phead h1{margin:0;font-size:var(--fs-28);line-height:var(--lh-28);font-weight:600;letter-spacing:-.01em}
+.ui-phead__t{display:flex;align-items:center;gap:var(--sp-2);flex-wrap:wrap;min-height:44px}
+.ui-phead__r{margin-left:auto;display:flex;gap:var(--sp-4);align-items:flex-start;flex-wrap:wrap;max-width:100%}
+.ui-phead__r .ui-btn{align-self:flex-end}
+/* the date card: the same card, width and spacing on every list page */
+.ui-datecard{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:12px 16px;display:flex;flex-direction:column;gap:8px;width:440px;max-width:100%;flex:none;box-sizing:border-box}
+.ui-datecard.is-set{background:var(--teal-tint);border-color:var(--teal-300)}
+.ui-datecard__h{display:flex;align-items:center;gap:6px;min-height:24px}
+.ui-datecard__t{margin:0;font-size:var(--fs-14);line-height:var(--lh-14);font-weight:700}
+.ui-datecard__s{margin-left:auto;font-size:var(--fs-13);color:var(--muted-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ui-datecard__x{min-height:24px;padding:0 4px;margin-left:2px}
+.ui-datecard__f{display:flex;gap:8px;align-items:flex-end}
+.ui-datecard__i{display:flex;flex-direction:column;gap:2px;flex:1 1 0;min-width:0}
+.ui-datecard__l{font-size:var(--fs-12);color:var(--muted-700);font-weight:600}
+.ui-datecard__i .ui-input{width:100%;min-width:0}
+.ui-datecard__a{display:inline-flex;align-items:center;height:40px;color:var(--muted-700)}
+.ui-datecard__q{display:flex;flex-wrap:wrap;gap:6px}
+.ui-datecard__q .ui-fchip{min-height:28px;padding:3px 12px;font-size:var(--fs-13)}
+/* the filter card: one grid of selects (five across, then three, then two) and the same search box */
+.ui-fcard{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:var(--sp-3) var(--sp-4)}
+.ui-fcard .ui-fbar{margin:0;padding:0;border:0;background:none}
+.ui-fgrid .ui-fbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px 14px;align-items:end}
+.ui-fgrid .ui-fsearch{order:-1;min-width:0}
+.ui-fgrid .ui-fsearch .ui-input{width:100%}
+.ui-fgrid .ui-fsel{min-width:0}
+.ui-fgrid .ui-fsel .ui-select{width:100%;max-width:none;text-overflow:ellipsis}
+.ui-fgrid .ui-fsel__l{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ui-fgrid .ui-fcount{display:none}
+.ui-fclear{display:flex;justify-content:flex-end;margin-top:-8px}
+.ui-fclear .ui-linkbtn{min-height:24px}
+.ui-stagenote{display:flex;gap:12px;align-items:center;font-size:var(--fs-13);color:var(--muted-700)}
+.ui-stagenote b{color:var(--ink-900)}
+@media (max-width:1100px){.ui-fgrid .ui-fbar{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.ui-fgrid .ui-fbar{grid-template-columns:repeat(2,minmax(0,1fr))}.ui-fgrid .ui-fsearch{grid-column:1/-1}.ui-phead__r{margin-left:0;width:100%}.ui-datecard{width:100%}}
+/* the list table: the same header, row height, padding and cell types on both lists */
+.ui-tlist .ui-qt__table{table-layout:fixed}
+.ui-tlist .ui-qt__table th{padding:10px 8px;white-space:normal;line-height:1.25;vertical-align:bottom}
+.ui-tlist .ui-qt__table td{padding:10px 8px;vertical-align:middle;overflow-wrap:anywhere}
+.ui-tlist .ui-qt__sort{text-align:left;white-space:normal;align-items:flex-end;min-height:24px}
+.ui-tlist .ui-qt__table .ui-chip{white-space:normal}
+.ui-tlist .ui-qt__link{color:inherit}
+.ui-sub{display:block;color:var(--muted-700);font-size:var(--fs-12);line-height:var(--lh-12);margin-top:2px}
+.ui-nw{white-space:nowrap}
+.ui-dlcell{display:flex;align-items:center;gap:4px 6px;flex-wrap:wrap}
+.ui-owner{display:inline-flex;align-items:center;gap:4px;font-size:var(--fs-13);white-space:nowrap}
+.ui-owner .ui-linkbtn{min-height:24px;padding:0 4px}
+.ui-owner__l{color:var(--muted-700)}
+.ui-lockline{display:flex;align-items:center;gap:6px;margin:0;font-size:var(--fs-13)}
+@media (max-width:767px){.ui-tlist .ui-qt__table{table-layout:auto;min-width:560px}.ui-tlist .ui-qt__table .ui-chip{white-space:nowrap}.ui-tlist .ui-qt__table td{overflow-wrap:normal}}
+/* the case pages: one breadcrumb, one header card, one section card */
+.ui-crumb{display:flex;gap:8px;align-items:center;font-size:var(--fs-13);color:var(--muted-700)}
+.ui-crumb a{color:var(--teal-700);text-decoration:none;font-weight:600}
+.ui-crumb a:hover{text-decoration:underline}
+.ui-hcard{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:var(--sp-4) var(--sp-5);display:flex;flex-direction:column;gap:10px}
+.ui-hcard__t{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.ui-hcard__l{display:flex;flex-wrap:wrap;gap:10px;align-items:center;min-width:0}
+.ui-hcard h1{margin:0;font-size:var(--fs-28);line-height:var(--lh-28);font-weight:600;letter-spacing:-.01em}
+.ui-hcard__id{font-weight:500;color:var(--muted-700);font-size:var(--fs-16);white-space:nowrap}
+.ui-hcard__a{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ui-hcard__c{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.ui-hcard__s{margin:0;color:var(--muted-700);font-size:var(--fs-13);line-height:var(--lh-13)}
+.ui-scard{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:var(--sp-4) var(--sp-5)}
+.ui-scard__h{display:flex;align-items:center;gap:var(--sp-2);flex-wrap:wrap;margin:0 0 var(--sp-3)}
+.ui-scard__h h2,.ui-scard>h2{margin:0;font-size:var(--fs-18);line-height:var(--lh-18);font-weight:600}
+.ui-scard__r{margin-left:auto;display:inline-flex;gap:6px;align-items:center;color:var(--muted-700);font-size:var(--fs-13)}
+.ui-scard h3{margin:var(--sp-4) 0 6px;font-size:var(--fs-13);line-height:var(--lh-13);font-weight:600;color:var(--muted-700);letter-spacing:.02em}
+.ui-sdl{margin:0 0 var(--sp-3);display:grid;gap:0}
+.ui-sdl>div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:8px 0;border-top:1px solid var(--line-200);font-size:var(--fs-13)}
+.ui-sdl>div:first-child{border-top:0}
+.ui-sdl dt{color:var(--muted-700);font-weight:600;font-size:var(--fs-12);padding-top:2px}
+.ui-sdl dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.ui-sdl dd .ui-chip,.ui-sdl dd .ui-hint,.ui-sdl dd .ui-evidence{margin-right:4px}
+@media (max-width:560px){.ui-sdl>div{grid-template-columns:1fr;gap:2px}}
+/* quiet labels as icons: the verification icon, the lock line, the missing-evidence count */
+.ui-verify .ui-hint__b{min-width:24px}
+.ui-misshint .ui-hint__b{gap:4px}
+.ui-lockhint .ui-hint__b{color:var(--muted-700)}
+
+/* ---- R4 DASH: icon actions (ui.hint with ui-hint--act): a bordered icon button for the one thing a row lets you do; "Open in Lauris", Review, Open chart ---- */
+.ui-hint--act .ui-hint__b{min-width:32px;min-height:32px;border:1px solid var(--line-300,var(--line-200));background:var(--surface-0);border-radius:var(--r-2)}
+.ui-hint--act .ui-hint__b:hover{background:var(--sand-100);border-color:var(--muted-700)}
+.ui-hint__t{white-space:normal}

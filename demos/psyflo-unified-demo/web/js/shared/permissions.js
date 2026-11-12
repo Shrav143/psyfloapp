@@ -42,7 +42,7 @@ const ROWS = [
   ['myWork',             'Y','Y','Y','Y','N','N', 'My Work home (sections are gated by the caps above)'],
   ['denials',            'N','N','Y','Y','N','N', 'Denial queue and case (admin sees status without clinical text)'],
   ['authorizations',     'N','Y','Y','Y','N','N', 'Authorization queue, case shell, unit tracker (no evidence text for supervisor/admin)'],
-  ['documentation',      'N','Y','Y','Y','N','N', 'Documentation: notes, intake forms, CNAs and plans across patients (administrator: status only, never text)'],
+  ['documentation',      'N','Y','Y','Y','N','N', 'Dashboard, Documents and Staff views: notes, intake forms, CNAs and plans across patients (administrator: status only, never text; direct support has the Patients view only)'],
   ['patientChart',       'A','Y','Y','Y','N','N', 'Patient chart: documentation status and the authorization summary (direct support: own caseload)'],
   ['scanEnhance',        'N','D','Y','N','N','N', 'Scan & Enhance, mode A (current draft)'],
   ['ext.use',            'Y','Y','Y','N','N','N', 'Lauris page panel (extension)'],
@@ -142,7 +142,7 @@ export function routeAllowed(role, routeId, user) {
 }
 
 // Ids the role may navigate to from the main nav (F2 lays these out); order is the suggested nav order.
-export const NAV_CANDIDATES = ['Dashboard', 'Documentation', 'Authorizations', 'DenialIntelligence', 'Referrals', 'Eligibility', 'Analytics',
+export const NAV_CANDIDATES = ['Dashboard', 'Authorizations', 'DenialIntelligence', 'Referrals', 'Eligibility', 'Analytics',
   'Settings', 'ExtHome', 'MobileApp'];
 export function NAV_FOR(role, user) {
   if (!MATRIX[role]) return [];

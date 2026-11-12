@@ -107,7 +107,7 @@ async function run(mode) {
       if (mode_ === 'every_note') { assert.eq(n.review, 'pending', 'every-note mode queues the note'); assert.eq(pend, L.review0 + 1, 'supervisor review queue +1'); }
       else { assert.ok(typeof n.review === 'string' && n.review.length, 'spot check: the review state is explicit, never blank: ' + n.review); assert.eq(pend, L.review0 + (n.review === 'pending' ? 1 : 0), 'the queue moves exactly when the note is queued'); }
       L.review = { mode: mode_, note: n.review, pending: pend - L.review0 };
-      const sp = await openAs(b, 'cdiaz'); pages.push(sp); await sp.goto(BASE + '/#/Documentation?status=pending_review'); await sp.waitForTimeout(1200);
+      const sp = await openAs(b, 'cdiaz'); pages.push(sp); await sp.goto(BASE + '/#/Dashboard?view=documents&status=pending_review'); await sp.waitForTimeout(1200);
       const st = await mainText(sp); if (mode_ === 'every_note') assert.match(st, /K\. Hale|M\.R\./, 'the note is in the reviewer\'s list');
       await shot(sp, `s1-${mode}-7-review`);
     });

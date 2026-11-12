@@ -11,6 +11,7 @@ import * as miscMod from './misc.js';
 import * as glanceMod from './glance.js';
 import { pager as pagerFn } from './pager.js';
 import { hint as hintFn } from './hint.js';
+import { dateCard as dateCardFn } from './date-card.js';
 import * as dockMod from './dock.js';
 import * as toastMod from './toast.js';
 import * as queryMod from './query.js';
@@ -35,6 +36,7 @@ export const ui = {
   // table footer: rows per page 10, 25, 50, 100 (replaces the "N of M" count)
   pager: pagerFn,
   hint: hintFn,
+  dateCard: dateCardFn,
   // at-a-glance pieces
   unitsBar: glanceMod.unitsBar, dateFlag: glanceMod.dateFlag,
   // small pieces

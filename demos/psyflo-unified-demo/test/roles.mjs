@@ -9,6 +9,8 @@ import { createSession } from '../server/psyflo/session.js';
 import { CAPS, CAP_LIST, ROLES, MATRIX, can, routeAllowed, ROUTE_CAPS, NAV_FOR } from '../web/js/shared/permissions.js';
 import { SCREENS } from '../web/js/registry.js';
 import { AUTHZ } from '../server/psyflo/authz.js';
+import { viewFor } from '../web/js/shared/sel/roster.js';
+import { laurisHref, mayOpenLauris } from '../web/js/shared/lauris-link.js';
 
 const T = suite('roles');
 // The expected matrix, typed independently of permissions.js (review/05 section 5). Y yes, A own caseload, D designated, N never.
@@ -16,7 +18,8 @@ const EXPECT = {
   'notes.own': 'A N Y N N N', 'notes.review': 'N Y Y N N N', 'notes.view': 'A A Y N N N', 'auth.status': 'A Y Y Y N N', 'drafts.clinical': 'N N Y N N N',
   'approve.sra': 'N D D N N N', 'sign.lauris': 'N N Y N N N', 'send.packet': 'N D Y D N N', 'payer.reply': 'N N Y N N N', 'payer.decision': 'N D Y D N N',
   'eligibility.run': 'N D Y D N N', 'analytics.aggregate': 'N A Y Y N N', 'analytics.drilldown': 'N N A N N N', 'admin.settings': 'N N N Y N N', 'admin.users': 'N N N Y N N',
-  'demo.controls': 'D D D D N N', 'referrals': 'N N Y N N N', 'myWork': 'Y Y Y Y N N', 'denials': 'N N Y Y N N', 'authorizations': 'N Y Y Y N N', 'scanEnhance': 'N D Y N N N'
+  'demo.controls': 'D D D D N N', 'referrals': 'N N Y N N N', 'myWork': 'Y Y Y Y N N', 'denials': 'N N Y Y N N', 'authorizations': 'N Y Y Y N N', 'scanEnhance': 'N D Y N N N',
+  'documentation': 'N Y Y Y N N', 'ext.use': 'Y Y Y N N N', 'patientChart': 'A Y Y Y N N'   // R4: merging Documentation into the Dashboard widened no cell: the Documents view is gated by documentation, "Open in Lauris" by ext.use
 };
 const ORDER = ['direct_support', 'supervisor', 'clinician', 'admin', 'guardian', 'school'];
 
@@ -54,6 +57,16 @@ await T.test('routes: every registry route has a capability entry; each role ope
   assert.ok(NAV_FOR('admin').includes('Settings') && !NAV_FOR('direct_support').includes('Analytics'));
 });
 
+await T.test('R4 the merged Dashboard follows the matrix: Documents and Staff views need documentation (supervisor, clinician, administrator), Open in Lauris needs ext.use (never the administrator); direct support, guardian and school get neither view', () => {
+  const who = { direct_support: { id: 'khale', role: 'direct_support' }, supervisor: { id: 'cdiaz', role: 'supervisor' }, clinician: { id: 'jperez', role: 'clinician' }, admin: { id: 'dowens', role: 'admin' }, guardian: { id: 'g', role: 'guardian' }, school: { id: 'sc', role: 'school' } };
+  const docs = { direct_support: false, supervisor: true, clinician: true, admin: true, guardian: false, school: false }, lau = { direct_support: true, supervisor: true, clinician: true, admin: false, guardian: false, school: false };
+  for (const [role, a] of Object.entries(who)) {
+    assert.eq(viewFor(a, 'documents') === 'documents', docs[role], role + ': Documents view'); assert.eq(viewFor(a, 'staff') === 'staff', docs[role], role + ': Staff view'); assert.eq(viewFor(a, '') , 'patients');
+    assert.eq(mayOpenLauris(a), lau[role], role + ': Open in Lauris'); assert.eq(!!laurisHref('http://l', a, '/consumers/3310'), lau[role], role + ': the Lauris URL');
+    assert.eq(routeAllowed(role, 'Documentation'), docs[role], role + ': the Documentation route id keeps its capability (the redirect source)');
+  }
+  assert.ok(!NAV_FOR('supervisor').includes('Documentation') && !NAV_FOR('clinician').includes('Documentation') && !NAV_FOR('admin').includes('Documentation'), 'no Documentation in the navigation of any role');
+});
 await T.test('every action has a capability entry (and nothing is declared for an action that does not exist)', async () => {
   const names = [];
   for (const f of fs.readdirSync(new URL('../server/psyflo/actions/', import.meta.url)).filter(f => f.endsWith('.js'))) {

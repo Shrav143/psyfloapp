@@ -19,17 +19,24 @@ await T.test('redirect table matches review/04-architecture.md E1 and 03-ux-audi
   const find = (from, when) => REDIRECTS.filter(r => r.from === from).find(r => !when || r.when === undefined || when(r));
   const run = (from, params, role = 'clinician') => { const saved = { ...REDIRECTS_LIVE }; Object.keys(REDIRECTS_LIVE).forEach(k => { REDIRECTS_LIVE[k] = true; }); try { return resolveRoute({ id: from, params }, { role }); } finally { Object.assign(REDIRECTS_LIVE, saved); } };
   const eq = (r, id, params) => { assert.eq(r.id, id); assert.deepEq(Object.fromEntries(Object.entries(r.params).sort()), Object.fromEntries(Object.entries(params).sort())); };
-  // My Work became the patient roster (Dashboard) and the documentation queue (Documentation), feedback round Nov 11
+  // My Work became the patient roster (Dashboard) and the documentation queue; in R4 that queue is the Dashboard's Documents view (?view=documents), so
+  // Documentation, ReviewQueue and My Work's review and team sections all land on the Dashboard, carrying their filters
   eq(run('DoNext', {}), 'Dashboard', {});
-  eq(run('ReviewQueue', {}), 'Documentation', { status: 'pending_review' });
+  eq(run('ReviewQueue', {}), 'Dashboard', { view: 'documents', status: 'pending_review' });
+  eq(run('Documentation', {}), 'Dashboard', { view: 'documents' });
+  eq(run('Documentation', { status: 'pending_review' }), 'Dashboard', { view: 'documents', status: 'pending_review' });
+  eq(run('Documentation', { view: 'staff', staff: 'khale' }), 'Dashboard', { view: 'staff', staff: 'khale' });
+  eq(run('Documentation', { status: 'all', type: 'cna', staff: 'khale', q: '4102', site: 'CC-HS1', due: 'overdue', from: '2026-10-26', to: '2026-10-31', group: 'form', sort: 'due', dir: 'desc', id: 'n-1', page: '2', size: '50', junk: 'x' }), 'Dashboard',
+    { view: 'documents', status: 'all', type: 'cna', staff: 'khale', q: '4102', site: 'CC-HS1', due: 'overdue', from: '2026-10-26', to: '2026-10-31', group: 'form', sort: 'due', dir: 'desc', id: 'n-1', page: '2', size: '50' });   // every filter travels; an unknown key does not
+  assert.eq(run('Documentation', { status: 'behind', legacy: '1' }).id, 'Documentation', 'legacy=1 bypasses the redirect (the Documentation screen then bounces to the Dashboard itself)');
   eq(run('StaffDashboard', {}, 'direct_support'), 'Dashboard', {});
   eq(run('StaffDashboard', { staff: 'khale' }, 'supervisor'), 'Dashboard', { staff: 'khale' });
   eq(run('MyWork', {}), 'Dashboard', {});
   eq(run('MyWork', { section: 'todo' }), 'Dashboard', {});
   eq(run('MyWork', { section: 'day' }, 'direct_support'), 'Dashboard', {});
-  eq(run('MyWork', { section: 'review' }), 'Documentation', { status: 'pending_review' });
-  eq(run('MyWork', { section: 'review', id: 'n-1' }), 'Documentation', { status: 'pending_review', id: 'n-1' });
-  eq(run('MyWork', { section: 'team', staff: 'khale' }), 'Documentation', { view: 'staff', staff: 'khale' });
+  eq(run('MyWork', { section: 'review' }), 'Dashboard', { view: 'documents', status: 'pending_review' });
+  eq(run('MyWork', { section: 'review', id: 'n-1' }), 'Dashboard', { view: 'documents', status: 'pending_review', id: 'n-1' });
+  eq(run('MyWork', { section: 'team', staff: 'khale' }), 'Dashboard', { view: 'staff', staff: 'khale' });
   eq(run('MyWork', { section: 'referrals' }), 'Referrals', {});
   assert.eq(run('MyWork', { section: 'review', legacy: '1' }).id, 'MyWork', 'legacy=1 still opens the old My Work');
   eq(run('Users', {}), 'Settings', { tab: 'people' });
@@ -47,6 +54,13 @@ await T.test('redirect table matches review/04-architecture.md E1 and 03-ux-audi
   assert.eq(run('WhereThingsLive', { full: '1' }).id, 'WhereThingsLive', '?full=1 still opens the page');
   assert.eq(run('DoNext', { legacy: '1' }).id, 'DoNext', 'legacy=1 bypasses every redirect');
   assert.ok(find('Eligibility'));
+});
+await T.test('R4 Documentation stays a registered route id and a redirect source only: no nav item points at it, every redirect that used to land on it lands on the Dashboard\'s Documents or Staff view', () => {
+  assert.ok(BY_ID.Documentation && isLive('Documentation'), 'still a valid route id');
+  assert.ok(REDIRECTS.some(r => r.from === 'Documentation' && r.to === 'Dashboard' && REDIRECTS_LIVE[r.flag]), 'Documentation redirects to the Dashboard');
+  assert.ok(!REDIRECTS.some(r => r.to === 'Documentation'), 'nothing redirects to Documentation any more: ' + REDIRECTS.filter(r => r.to === 'Documentation').map(r => r.from));
+  const saved = { ...REDIRECTS_LIVE }; Object.keys(REDIRECTS_LIVE).forEach(k => { REDIRECTS_LIVE[k] = true; });
+  try { for (const [id, params] of [['ReviewQueue', {}], ['MyWork', { section: 'review' }], ['MyWork', { section: 'team' }], ['Documentation', {}]]) { const r = resolveRoute({ id, params }, { role: 'supervisor' }); assert.eq(r.id, 'Dashboard', id); assert.ok(r.params.view === 'documents' || r.params.view === 'staff', `${id}${JSON.stringify(params)} carries a view: ${JSON.stringify(r.params)}`); } } finally { Object.assign(REDIRECTS_LIVE, saved); }
 });
 await T.test('referrals are never redirected away; AppealLetter and every portal route stay put', () => {
   assert.ok(!REDIRECTS.some(r => r.from === 'Referrals'), 'Referrals has no redirect');
@@ -106,7 +120,7 @@ const DEEP = [
   ['jperez', 'DoNext', {}], ['dowens', 'Users', {}], ['jperez', 'PayerPlaybook', {}], ['jperez', 'Analytics', {}], ['khale', 'MobileAssess', { client: 'AG' }], ['khale', 'MobileApp', {}], ['khale', 'MobileDictate', {}],
   [null, 'ReferralSent', {}], [null, 'ReferralForm', {}], [null, 'SchoolPortal', {}], [null, 'AppealLetter', { id: 'R-0384' }], [null, 'ParentPortal', { c: 'TW' }], [null, 'FamilyLink', { preview: '1' }], [null, 'WhereThingsLive', {}],
   // new canonical routes with their parameters: the router must pass them through to the screen
-  ['jperez', 'MyWork', { section: 'review' }], ['jperez', 'Dashboard', {}], ['jperez', 'Documentation', { status: 'pending_review' }], ['cdiaz', 'Documentation', { view: 'staff' }], ['jperez', 'Patient', { id: 'MR' }], ['khale', 'Dashboard', {}], ['jperez', 'Authorization', { id: 'R-0416', section: 'submission' }], ['jperez', 'DenialIntelligence', { decision: 'partial' }],
+  ['jperez', 'MyWork', { section: 'review' }], ['jperez', 'Dashboard', {}], ['jperez', 'Documentation', { status: 'pending_review' }], ['cdiaz', 'Documentation', { view: 'staff' }], ['jperez', 'Dashboard', { view: 'documents', status: 'pending_review' }], ['cdiaz', 'Dashboard', { view: 'staff' }], ['jperez', 'Patient', { id: 'MR' }], ['khale', 'Dashboard', {}], ['jperez', 'Authorization', { id: 'R-0416', section: 'submission' }], ['jperez', 'DenialIntelligence', { decision: 'partial' }],
   ['jperez', 'DenialCase', { id: 'R-0402', section: 'action', action: 'options' }], ['dowens', 'Settings', { tab: 'people' }], ['jperez', 'Analytics', { section: 'payer', dataset: 'illustrative' }]
 ];
 const qs = p => { const q = new URLSearchParams(p).toString(); return q ? '?' + q : ''; };

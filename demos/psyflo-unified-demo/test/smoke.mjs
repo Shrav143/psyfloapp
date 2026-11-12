@@ -36,6 +36,11 @@ try {
       if (!routeAllowed(role, s.id)) continue;
       await T.test(`${staff} · ${s.n} ${s.id}`, async () => { const i = await visit(p, errs, s.id, `${staff} ${s.id}`); assert.ok(!i.denied, 'the role may open it but the shell says not available'); });
     }
+    // R4: the Documentation tab is the Dashboard's Documents view and Staff view; the routes above reach them only through a redirect, so open the views themselves.
+    // Direct support has no Documents view: the same address falls back to Patients and must still render without an error.
+    for (const view of only ? [] : ['documents', 'documents&status=pending_review', 'staff']) {
+      await T.test(`${staff} · Dashboard ?view=${view}`, async () => { const i = await visit(p, errs, 'Dashboard?view=' + view, `${staff} Dashboard ${view}`); assert.ok(!i.denied, 'never a denial'); assert.match(i.text, /Dashboard/); if (role === 'direct_support') assert.ok(!/Documents/.test(i.text), 'no Documents view for direct support'); else assert.match(i.text, /Documents/); });
+    }
     await ctx.close();
   }
   const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } }); const p = await ctx.newPage(); const errs = errors(p);

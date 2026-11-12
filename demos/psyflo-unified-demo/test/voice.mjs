@@ -145,7 +145,7 @@ await T.test('screen: running the call and then closing it saves nothing; the ad
   const p = await open('jperez'); await p.goto(BASE + '/#/DenialCase?id=R-0408'); await p.waitForSelector('#d-call');
   await p.click('#d-call'); const dlg = p.getByRole('dialog'); await dlg.locator('#d-run').click(); await p.waitForSelector('#d-script li:nth-child(4)', { timeout: 6000 });
   await p.keyboard.press('Escape'); await p.waitForTimeout(400); assert.ok(!(await dispute('R-0408')).calls, 'a closed dialog saves nothing'); await p.ctx.close();
-  const a = await open('dowens'); await a.goto(BASE + '/#/DenialCase?id=R-0408'); await a.waitForSelector('.d-hd');
+  const a = await open('dowens'); await a.goto(BASE + '/#/DenialCase?id=R-0408'); await a.waitForSelector('.ui-hcard');
   const b = a.getByRole('button', { name: /Call payer · voice agent/ }); assert.ok(await b.isDisabled()); assert.match(await b.getAttribute('title'), /Needs clinician/);
   assert.ok(!(await a.getByRole('link', { name: /Open in Lauris/ }).count()), 'the administrator has no Lauris link (no ext.use)');
   assert.deepEq(a.errs, [], a.errs.join('|')); await a.ctx.close();
