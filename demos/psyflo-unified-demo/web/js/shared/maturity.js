@@ -75,7 +75,7 @@ export const MATURITY = {
   'route.PeerBrief': f('working', 'Peer-to-peer brief', 'Assembled from the request; call date and outcome logged by a person.', ['PeerBrief', 'DenialCase']),
   'route.PayerPlaybook': f('future', 'Payer playbook', 'Deprioritised; lives as payer guidance in Analytics.', ['PayerPlaybook', 'Analytics']),
   'route.DenialIntelligence': f('working', 'Denial Intelligence', 'Queue of cases that need a payer-decision response.', ['DenialIntelligence']),
-  'route.DenialCase': f('working', 'Denial case', 'Decision, evidence, options, action and history.', ['DenialCase']),
+  'route.DenialCase': f('working', 'Denial case', 'Overview, what the payer said, evidence, weak points, replies, documentation request and history.', ['DenialCase']),
   'route.Analytics': f('future', 'Analytics', 'Pilot scorecard is Working; outcomes, payer and population views are Future.', ['Analytics']),
   'route.Users': f('working', 'Users and roles', 'Demo-grade permissions enforced by the server.', ['Users', 'Settings']),
   'route.Settings': f('working', 'Settings', 'People, roles, units, rules, audit, family link, presenter.', ['Settings']),
@@ -102,6 +102,8 @@ export const MATURITY = {
   'denial.info': f('simulated', 'Information reply', 'Payer-specific window; configurable.', ['InfoRequest', 'DenialCase']),
   'denial.partial': f('working', 'Partial-decision options', 'Accept, add information, peer-to-peer, early discharge.', ['Partials', 'DenialCase']),
   'denial.p2p': f('working', 'Peer-to-peer brief', 'Recording consent is an open question.', ['PeerBrief', 'DenialCase']),
+  'denial.analysis': f('simulated', 'Where the denial is weak', 'Rule-based points from stored records: what answers a stated reason, what is not documented, what to clarify. No likelihood is given.', ['DenialCase']),
+  'denial.docreq': f('working', 'Documentation request', 'Records who was asked for the missing documents. Psyflo sends no message; a person asks.', ['DenialCase']),
   'denial.p2pAutomation': f('future', 'Peer-to-peer scheduling automation', 'Peer-to-peer must be done by clinical staff.', []),
   'denial.appeal': f('simulated', 'Appeal preparation', 'Guardian-led; the provider path shows Not verified.', ['DenialCase', 'AppealLetter'], { verification: 'unverified' }),
   'denial.overdueNotice': f('simulated', 'Overdue-decision notice', 'Window is configurable with a source label.', ['Authorization'], { verification: 'unverified' }),
@@ -118,8 +120,8 @@ export const MATURITY = {
   'school.portal': f('working', 'School referral', 'Submit a referral and see status of own referrals.', ['SchoolPortal', 'ReferralForm', 'ReferralSent']),
   'settings.roles': f('working', 'Roles and permissions', 'Least privilege enforced server-side; demo-grade, no identity provider.', ['Settings', 'Users']),
   'settings.library': f('pilot', 'Intervention-rationale library', 'Needs Harvest\'s documentation trainer to author it.', ['Settings']),
-  'agents.voice': f('future', 'Voice agent calls a payer', 'Autonomous action; off by default and not ported.', []),
-  'agents.flo': f('future', 'Data agent', 'Would sign in to Lauris; conflicts with the page-bridge rule.', []),
+  'agents.voice': f('simulated', 'Voice agent calls a payer', 'A scripted call that a person starts and a person records, in Denial Intelligence. It is refused while the payer line is closed (demo hours, not verified). Nothing is dialled, the payer side is a placeholder, and the transcript is saved only when the person records the call. It is never a payer decision.', ['DenialCase']),
+  'agents.flo': f('simulated', 'FLO', 'A rule-based assistant over the records this role can already see. Read-only: it never flags, sends, signs, calls or changes anything, and it never reads note text. The earlier data agent that would sign in to Lauris is not built.', ['Dashboard', 'Documentation', 'Authorizations', 'DenialIntelligence', 'Analytics']),
   'compliance.incident': f('future', 'Incident reporting and compliance', 'Single voice; can wait.', ['ExtIncident']),
   'dock.presenter': f('working', 'Presenter dock', 'Presenter-only tools; never part of the product viewport.', [])
 };

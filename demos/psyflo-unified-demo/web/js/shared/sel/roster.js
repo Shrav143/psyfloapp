@@ -37,6 +37,9 @@ export const NOTE_TYPES = ['daily', 'weekly_guardian', 'monthly_collateral'];
 export const docLabel = t => DOC_LABEL[t] || t;
 const WRITE = { daily: 'ExtDPN.dc.html?client=', weekly_guardian: 'ExtWeekly.dc.html?client=', monthly_collateral: 'ExtMonthly.dc.html?client=' };
 const FORM_HREF = { intake: 'ExtCNA.dc.html?client=', cna: 'ExtCNA.dc.html?client=', isp: 'ExtISP.dc.html?client=', quarterly: 'ExtQuarterly.dc.html?client=', discharge: 'ExtDischarge.dc.html?client=' };
+// Where a document is edited: Lauris is the record; Psyflo only reads, enhances and tracks (feedback Nov 12). Returns the mock Lauris path.
+const LAURIS_FORM = { daily: 'dpn', weekly_guardian: 'weekly', monthly_collateral: 'collateral', intake: 'cna', cna: 'cna', isp: 'isp', quarterly: 'quarterly', discharge: 'discharge' };
+export const laurisPath = (harvestNo, type, session) => !harvestNo ? '' : session ? '/sessions/' + session : LAURIS_FORM[type] ? `/consumers/${harvestNo}/session/${LAURIS_FORM[type]}` : `/consumers/${harvestNo}?tab=active`;
 export const chartHref = (id, section) => `#/Patient?id=${encodeURIComponent(id)}${section ? '&section=' + section : ''}`;
 
 // ---------------------------------------------------------------------------------------------------------------- scope
@@ -124,7 +127,7 @@ export function outstandingByClient(s, actor) {
   for (const n of s.notes || []) {
     if (!scope.has(n.client)) continue;
     if (n.review === 'pending' && (pendingIds.has(n.id) || (isDS && n.staff === actor.id) || actor.role === 'admin')) {
-      add({ client: n.client, kind: 'review', type: n.type, title: DOC_LABEL[n.type] || 'Note', sub: periodLabel(n.type, n.date), due: (n.date || '').slice(0, 10), dueText: n.date ? fmtDate(n.date) : '', sev: 'y', status: 'pending_review', rank: 20, verb: mayReview ? 'Review' : 'Open', to: mayReview ? 'MyWork.dc.html?section=review&id=' + n.id : chartHref(n.client, 'documentation'), noteId: n.id, who: M.staffShort(s, n.staff) });
+      add({ client: n.client, kind: 'review', type: n.type, title: DOC_LABEL[n.type] || 'Note', sub: periodLabel(n.type, n.date), due: '', dueText: '', sev: 'y', status: 'pending_review'   /* a note waiting for review has no due date of its own: its session date is in the sub line, and it must not drive the Next date column */, rank: 20, verb: mayReview ? 'Review' : 'Open', to: mayReview ? 'MyWork.dc.html?section=review&id=' + n.id : chartHref(n.client, 'documentation'), noteId: n.id, who: M.staffShort(s, n.staff) });
     } else if (['returned', 'flagged'].includes(n.review) && (isDS ? n.staff === actor.id : true)) {
       add({ client: n.client, kind: 'fix', type: n.type, title: (n.review === 'flagged' ? 'Flagged · ' : 'Returned · ') + (DOC_LABEL[n.type] || 'note'), sub: periodLabel(n.type, n.date), due: '', dueText: '', sev: 'r', status: 'returned', rank: 12, verb: isDS ? 'Fix note' : 'Open', to: isDS ? (WRITE[n.type] || WRITE.daily) + n.client : chartHref(n.client, 'documentation'), noteId: n.id, who: M.staffShort(s, n.staff) });
     }
@@ -272,18 +275,18 @@ export function allDocs(s, actor) {
     const dueAt = n.type === 'daily' ? addDaysHour(n.date, hours) : n.type === 'weekly_guardian' ? addDays(mondayOf(n.date), 4) + 'T23:59' : monthEnd(n.date) + 'T23:59';
     const late = !!n.processed_at && n.processed_at > dueAt;
     const st = n.review === 'pending' ? 'pending_review' : ['returned', 'flagged'].includes(n.review) ? 'returned' : late ? 'late' : 'done';
-    out.push(base(n.client, { id: 'note:' + n.id, noteId: n.id, group: 'note', type: n.type, typeLabel: DOC_LABEL[n.type], date: n.date, dateText: periodLabel(n.type, n.date), due: dueAt.slice(0, 10), dueText: fmtDate(dueAt.slice(0, 10)), status: st, statusLabel: STATUS_LABEL[st], sev: STATUS_SEV[st], staff: n.staff, staffShort: M.staffShort(s, n.staff), reviewer: n.reviewed_by ? M.staffShort(s, n.reviewed_by) : '', filedAt: n.processed_at || '', to: chartHref(n.client, 'documentation') }));
+    out.push(base(n.client, { id: 'note:' + n.id, noteId: n.id, group: 'note', type: n.type, typeLabel: DOC_LABEL[n.type], date: n.date, dateText: periodLabel(n.type, n.date), due: dueAt.slice(0, 10), dueText: fmtDate(dueAt.slice(0, 10)), status: st, statusLabel: STATUS_LABEL[st], sev: STATUS_SEV[st], staff: n.staff, staffShort: M.staffShort(s, n.staff), reviewer: n.reviewed_by ? M.staffShort(s, n.reviewed_by) : '', filedAt: n.processed_at || '', lauris: laurisPath(cl(n.client).harvest_no, n.type, n.session) || (cl(n.client).harvest_no ? `/consumers/${cl(n.client).harvest_no}?tab=active` : ''), to: chartHref(n.client, 'documentation') }));
   }
   // notes that are missing: behind or due
   for (const m of noteMisses(s, actor, scope)) {
     const st = m.behind ? 'behind' : 'due';
-    out.push(base(m.client, { id: `miss:${m.client}:${m.type}:${m.date}`, group: 'note', type: m.type, typeLabel: DOC_LABEL[m.type], date: m.date, dateText: periodLabel(m.type, m.date), due: m.dueAt.slice(0, 10), dueText: dueText(m.dueAt, t), status: st, statusLabel: STATUS_LABEL[st], sev: m.behind ? 'r' : sevOfDue(m.dueAt, t), staff: m.staff, staffShort: M.staffShort(s, m.staff), reviewer: '', filedAt: '', missing: true, to: chartHref(m.client, 'documentation') }));
+    out.push(base(m.client, { id: `miss:${m.client}:${m.type}:${m.date}`, group: 'note', type: m.type, typeLabel: DOC_LABEL[m.type], date: m.date, dateText: periodLabel(m.type, m.date), due: m.dueAt.slice(0, 10), dueText: dueText(m.dueAt, t), status: st, statusLabel: STATUS_LABEL[st], sev: m.behind ? 'r' : sevOfDue(m.dueAt, t), staff: m.staff, staffShort: M.staffShort(s, m.staff), reviewer: '', filedAt: '', missing: true, lauris: laurisPath(cl(m.client).harvest_no, m.type), to: chartHref(m.client, 'documentation') }));
   }
   // forms
   for (const d of s.documents || []) {
     if (!scope.has(d.client)) continue;
     const st = d.status === 'done' ? 'done' : d.due < t ? 'behind' : d.status === 'needs_review' ? 'pending_review' : d.status === 'in_progress' ? 'in_progress' : 'due';
-    out.push(base(d.client, { id: 'doc:' + d.id, docId: d.id, group: 'form', type: d.kind, typeLabel: DOC_LABEL[d.kind], date: d.done_on || d.due, dateText: d.done_on ? 'Done ' + fmtDate(d.done_on) : '', due: d.due, dueText: dueText(d.due, t), status: st, statusLabel: st === 'due' ? 'Not started' : STATUS_LABEL[st], sev: STATUS_SEV[st], staff: cl(d.client).staff || '', staffShort: cl(d.client).staff ? M.staffShort(s, cl(d.client).staff) : '', owner: d.owner || '', ownerShort: d.owner ? M.staffShort(s, d.owner) : '', reviewer: '', filedAt: d.done_on || '', illustrative: !!d.illustrative, to: chartHref(d.client, 'documentation') }));
+    out.push(base(d.client, { id: 'doc:' + d.id, docId: d.id, group: 'form', type: d.kind, typeLabel: DOC_LABEL[d.kind], date: d.done_on || d.due, dateText: d.done_on ? 'Done ' + fmtDate(d.done_on) : '', due: d.due, dueText: dueText(d.due, t), status: st, statusLabel: st === 'due' ? 'Not started' : STATUS_LABEL[st], sev: STATUS_SEV[st], staff: cl(d.client).staff || '', staffShort: cl(d.client).staff ? M.staffShort(s, cl(d.client).staff) : '', owner: d.owner || '', ownerShort: d.owner ? M.staffShort(s, d.owner) : '', reviewer: '', filedAt: d.done_on || '', illustrative: !!d.illustrative, lauris: laurisPath(cl(d.client).harvest_no, d.kind), to: chartHref(d.client, 'documentation') }));
   }
   return out;
 }

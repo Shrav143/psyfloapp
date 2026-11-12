@@ -1,6 +1,6 @@
 # ui-kit · PASS
 
-Run 2026-11-11T21-13-30Z · 60322 ms · instance 0 · exit 0
+Run 2026-11-12T00-16-46Z · 61320 ms · instance 2 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -25,7 +25,7 @@ Run 2026-11-11T21-13-30Z · 60322 ms · instance 0 · exit 0
 | PASS | landmarks: <html lang>, a labelled nav, exactly one main, real links in the rail |  |
 | PASS | focus moves to main on a route change and the route is announced |  |
 | PASS | the old demo bar is gone from the product viewport |  |
-| PASS | rail: light sand, 232 px wide, collapses to icons at 1024; counts only where meaningful |  |
+| PASS | rail: dark navy (the Nov 8 look), 232 px wide, collapses to icons at 1024; counts only where meaningful |  |
 | PASS | rail by role follows the permission table (supervisor, clinician, admin, direct support) |  |
 | PASS | dock: hidden by default in Presentation, Ctrl+Shift+P toggles, label PRESENTER, mode always visible, above the viewport |  |
 | PASS | dock: ?present=1 opens it; ?mode=explore docks it open (no hide control) and is stored in psyflo_mode |  |
@@ -39,5 +39,5 @@ Run 2026-11-11T21-13-30Z · 60322 ms · instance 0 · exit 0
 | PASS | no console errors on the gallery, the stubs and the shell routes |  |
 | PASS | rail foot stays reachable at 1024 px: Sign out and Help as named controls, "Demo data · nothing is real" visible |  |
 | PASS | rail foot stays reachable at 700 px: Sign out and Help as named controls, "Demo data · nothing is real" visible |  |
-| PASS | the wordmark on the light rail is the full-colour logo (navy, teal, marigold), not the reverse one |  |
+| PASS | the wordmark on the navy rail is the reverse logo (white, teal, marigold), not the full-colour one |  |
 | PASS | framed Lauris routes: a slim top bar with "Back to Psyflo", the route title as the h1 and no developer text |  |

@@ -1,0 +1,7 @@
+{
+  "_about": "Backdated history for an authorization that would otherwise show an empty History (R3). R-0411 is a continued stay request for a student whose authorization (Aug 18 to Nov 13) is on file in Lauris; the request was drafted from the record and nothing has been sent. Synthetic demo data. Each row is a plain audit event (who, when, what) like every other event.",
+  "events": [
+    { "at": "2026-08-18T09:05", "what": "Authorization on file in Lauris · 110 units · Aug 18 – Nov 13 · Anthem", "who": "Lauris", "record": "R-0411", "actor_kind": "bridge", "sim": false },
+    { "at": "2026-10-27T08:00", "what": "Continued stay request drafted from the record for a person to review · nothing sent", "who": "Psyflo", "record": "R-0411", "actor_kind": "system", "sim": false }
+  ]
+}

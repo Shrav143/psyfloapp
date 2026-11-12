@@ -9,6 +9,7 @@ import * as timelineMod from './timeline.js';
 import * as drMod from './draft-review.js';
 import * as miscMod from './misc.js';
 import * as glanceMod from './glance.js';
+import { pager as pagerFn } from './pager.js';
 import * as dockMod from './dock.js';
 import * as toastMod from './toast.js';
 import * as queryMod from './query.js';
@@ -30,6 +31,8 @@ export const ui = {
   // overlays
   overlay: overlayMod.overlay, modal: overlayMod.modal, drawer: overlayMod.drawer, popover: overlayMod.popover, confirm: overlayMod.confirm,
   tooltip: overlayMod.tooltip, dialogHtml: overlayMod.dialogHtml,
+  // table footer: rows per page 10, 25, 50, 100 (replaces the "N of M" count)
+  pager: pagerFn,
   // at-a-glance pieces
   unitsBar: glanceMod.unitsBar, dateFlag: glanceMod.dateFlag,
   // small pieces

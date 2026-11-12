@@ -9,7 +9,8 @@
 // A person-level fact: { id, site, siteLabel, locality, payer, payerLabel, age, ageBand, program, status, enrolled, ended,
 //   dx:[{key,label}], goals:[{key,label,touched?,pct?}], ivs:[{key,label,n}], series:[{inst,label,lowerBetter,points:[{d,v}]}],
 //   feedback:[{src,q,v}], monthly:{ 'YYYY-MM':{ incidents, office } }, svc:[{key,label,n}], units:{authorized,used}, flags:[], have:{ goals, score, note, guardian } }
-import { grp, sup, groupPatients, MIN_FLOOR, median, r1, monthLabel, addMonths, monthKey, sum, pct } from './common.js';
+import { grp, sup, groupPatients, MIN_FLOOR, median, r1, monthLabel, addMonths, monthKey, sum, pct, inRange } from './common.js';
+import { daysBetween } from '../dates.js';
 
 export const AGE_BANDS = [['5–7', 5, 7], ['8–10', 8, 10], ['11–13', 11, 13], ['14–17', 14, 17]];
 export const ageBand = a => { if (a == null || a === '') return null; const b = AGE_BANDS.find(x => a >= x[1] && a <= x[2]); return b ? b[0] : a < 5 ? 'Under 5' : '18 and over'; };
@@ -75,10 +76,13 @@ const COMPLETE_LABEL = { goals: 'Treatment goals on record', score: 'A score on 
 // ---------- Patient Population ----------
 export function populationPanels(F, env) {
   const P = [];
+  P.push(populationKpi(F, env));
   P.push(groupPanel(F, 'pop.enrollment', 'Enrollment', GROUPERS['pop.enrollment'], env, { first: 'Status', label: k => STATUS_LABEL[k] || k, order: STATUS_ORDER, definition: 'Patients by where they are in care today. Counted from the stored client record.' }));
   P.push(groupPanel(F, 'pop.age', 'Age groups', GROUPERS['pop.age'], env, { first: 'Age', order: AGE_BANDS.map(b => b[0]), definition: 'Patients by age in years. Patients with no age on record are not placed in a group.' }));
   P.push(groupPanel(F, 'pop.sites', 'Schools and localities', GROUPERS['pop.sites'], env, { first: 'Site', label: k => (F.find(f => f.site === k) || {}).siteLabel || k, definition: 'Patients by the school or site on their record. Localities are Campbell County and Lynchburg City.' }));
+  if (F.some(f => f.locality)) P.push(groupPanel(F, 'pop.locality', 'Counties and cities', f => f.locality, env, { first: 'Locality', noDrill: true, definition: 'Patients by the county or city of their school or site (Campbell County and Lynchburg City).' }));
   if (F.some(f => f.payer)) P.push(groupPanel(F, 'pop.payer', 'Insurance mix', GROUPERS['pop.payer'], env, { first: 'Plan', label: k => (F.find(f => f.payer === k) || {}).payerLabel || k, definition: 'Patients by the plan on their authorization or Medicaid record.' }));
+  if (F.some(f => f.referral)) P.push(groupPanel(F, 'pop.referral', 'Referral sources', f => f.referral, env, { first: 'Referred by', noDrill: true, definition: 'Patients by who referred them, as recorded at referral. Sources with fewer than the minimum number of patients are rolled into one row.' }));
   P.push(groupPanel(F, 'pop.dx', 'Diagnoses', GROUPERS['pop.dx'], env, { first: 'Primary diagnosis', label: k => (F.map(f => f.dx && f.dx[0]).find(d => d && d.key === k) || { label: k }).label, definition: 'The first diagnosis code on the record, grouped by its category. A diagnosis is not a treatment goal, an intervention or a service.', empty: 'No diagnosis is stored for these patients.' }));
   P.push(groupPanel(F, 'pop.cooc', 'Co-occurring', GROUPERS['pop.cooc'], env, { first: 'Diagnoses on record', label: k => COOC_LABEL[k] || k, order: ['none', 'one', 'two'], definition: 'How many diagnosis codes the record holds for each patient.' }));
   P.push(groupPanel(F, 'pop.service', 'Service types', GROUPERS['pop.service'], env, { first: 'Service', label: k => (F.flatMap(f => f.svc || []).find(x => x.key === k) || { label: k }).label, definition: 'Patients by the service on their requests or enrollment. A service type is not an intervention.' }));
@@ -123,10 +127,76 @@ function flowPanel(F, env) {
   return { id: 'pop.flow', title: 'Admissions and discharges', ...T(COLS('Month', ['admitted', 'Admitted'], ['discharged', 'Discharged']), rows), definition: 'Patients whose service start or discharge falls in the month, last six months. Months with fewer than the minimum group are not shown.', chart: { type: 'months', keys: ['admitted', 'discharged'] } };
 }
 
+// ---------- the headline cards (the artifact's KPI row): every figure is a count of patients or a median, small groups never shown ----------
+const pctOf = (n, d) => (d > 0 ? Math.round((100 * n) / d) + '%' : '—');
+const KPI = (label, value, sub, o = {}) => ({ label, value, sub: sub || '', ...o });
+const KPI_COLS = [{ key: 'label', label: 'Measure' }, { key: 'value', label: 'Value', align: 'right' }, { key: 'sub', label: 'What it counts' }];
+function medianDays(F, env) {
+  const d = F.filter(f => f.enrolled && f.ended).map(f => daysBetween(f.enrolled, f.ended)).filter(x => x >= 0);
+  return d.length >= env.min ? { value: Math.round(median(d)) + ' days', n: d.length } : { value: d.length ? sup(env.min) : '—', n: d.length };
+}
+function populationKpi(F, env) {
+  const N = new Set(F.map(f => f.id)).size; const from = env.from || '1900-01-01', to = env.asOf || '9999-12-31';
+  const active = F.filter(f => f.status === 'active').length;
+  const adm = F.filter(f => f.enrolled && inRange(f.enrolled, from, to)).length, dis = F.filter(f => f.ended && inRange(f.ended, from, to)).length;
+  const md = medianDays(F, env); const g = n => grp(n, env.min);
+  return { id: 'pop.kpi', title: 'Population summary', ...T(KPI_COLS, [
+    KPI('Total patients', g(N), 'Patients in scope, unique'),
+    KPI('Active patients', g(active), 'In service on the last day'),
+    KPI('New admissions', g(adm), 'Service start in the period'),
+    KPI('Discharges', g(dis), 'Discharged in the period'),
+    KPI('Length of treatment', md.value, md.n >= env.min ? `Median, ${md.n} discharged patients` : 'A median needs 5 discharged patients')]),
+    definition: 'Unique patients, service starts and discharges are counted separately. Length of treatment is the median number of days from service start to discharge, over patients who have been discharged.' };
+}
+function outcomeKpi(F, env) {
+  const N = new Set(F.map(f => f.id)).size; const g = n => grp(n, env.min);
+  const active = F.filter(f => f.status === 'active'); const usable = F.filter(f => (f.series || []).some(s => s.points.length > 1));
+  const dirOf = f => { const d = f.series.filter(s => s.points.length > 1).map(direction); return d.includes('worse') ? 'worse' : d.includes('better') ? 'better' : 'steady'; };
+  const better = usable.filter(f => dirOf(f) === 'better').length, steady = usable.filter(f => dirOf(f) === 'steady').length, worse = usable.filter(f => dirOf(f) === 'worse').length;
+  // three complementary groups: if any is small, none is shown (the total would reveal it)
+  const hide = usable.length < env.min || [better, steady, worse].some(n => n > 0 && n < env.min);
+  const d = n => (hide ? sup(env.min) : pctOf(n, usable.length)); const dsub = txt => (hide ? (usable.length < env.min ? `A group under ${env.min} is not shown` : 'Hidden so a small group cannot be worked out') : txt);
+  const review = F.filter(f => (f.flags || []).length).length;
+  const scored = active.filter(f => f.have && f.have.score).length, unscored = active.length - scored;
+  const hideC = active.length < env.min || (scored > 0 && scored < env.min) || (unscored > 0 && unscored < env.min);
+  const md = medianDays(F, env);
+  return { id: 'out.kpi', title: 'Headline measures', ...T(KPI_COLS, [
+    KPI('Active patients', g(active.length), 'In service on the last day of the period'),
+    KPI('Showing improvement', d(better), dsub(`${better} of ${usable.length} patients with two or more scores. Latest score at least 10% better than the first, on the same scale`)),
+    KPI('Little change', d(steady), dsub(`${steady} of ${usable.length} patients with two or more scores. Latest score within 10% of the first`)),
+    KPI('Worsening', d(worse), dsub(`${worse} of ${usable.length} patients with two or more scores. Latest score at least 10% worse than the first`), { tone: 'warn' }),
+    KPI('Needing clinical review', g(review), N >= env.min ? `Of ${N} patients in scope. No score, an old score, a goal with no note, a worse score or an incident` : 'A group under 5 is not shown', { tone: 'warn' }),
+    KPI('Score on record', hideC ? sup(env.min) : pctOf(scored, active.length), hideC ? 'Hidden so a small group cannot be worked out' : `${scored} of ${active.length} active patients have a score on a recognised scale`),
+    KPI('Length of treatment', md.value, md.n >= env.min ? `Median days to discharge, ${md.n} discharged patients` : 'A median needs 5 discharged patients')]),
+    definition: 'Direction compares each patient\'s latest score with the first, for patients with two or more scores on one scale (lower is better on PHQ, GAD, SUDS and the DSM cross-cutting measures). Improvement, little change and worsening add up to the patients with usable scores; a change of 10% or more counts. Nothing is estimated and no score is compared across different scales.' };
+}
+// average change from each patient's first reading, by reading number, one line per scale (a scale needs 5 patients with two readings)
+function trendPanel(F, env) {
+  const byInst = new Map();
+  for (const f of F) for (const s of f.series || []) { if (s.points.length < 2) continue; if (!byInst.has(s.inst)) byInst.set(s.inst, { label: s.label, runs: [] }); byInst.get(s.inst).runs.push([...s.points].sort((a, b) => (a.d < b.d ? -1 : 1)).map(p => p.v)); }
+  const scales = [...byInst.entries()].filter(([, e]) => e.runs.length >= env.min).sort((a, b) => b[1].runs.length - a[1].runs.length).slice(0, 6);
+  const K = Math.min(6, Math.max(0, ...scales.map(([, e]) => Math.max(...e.runs.map(r => r.length)))));
+  const cols = [{ key: 'label', label: 'Reading' }, ...scales.map(([k, e], i) => ({ key: 's' + i, label: e.label, align: 'right' }))];
+  const rows = [];
+  for (let k = 0; k < K; k++) {
+    const row = { label: k === 0 ? 'First reading' : `Reading ${k + 1}` };
+    scales.forEach(([, e], i) => {
+      const at = e.runs.filter(r => r.length > k && r[0] > 0);
+      row['s' + i] = k === 0 ? 0 : at.length >= env.min ? r1(sum(at.map(r => (100 * (r[k] - r[0])) / r[0])) / at.length) : at.length ? sup(env.min) : null;
+    });
+    rows.push(row);
+  }
+  return { id: 'out.trend', title: 'Outcomes over time', ...T(cols, rows), n: scales.map(([, e]) => ({ label: e.label, n: e.runs.length })),
+    definition: 'Each line is one scale: the average percent change from each patient\'s own first reading, at the same reading number (lower is better). Scales from different instruments are never added together. A scale needs 5 patients with two or more readings, and a point needs 5 patients with that reading.',
+    empty: scales.length ? '' : 'No scale has two or more stored scores for 5 or more patients.' };
+}
+
 // ---------- Patient Outcomes ----------
 export function outcomePanels(F, env) {
   const P = [];
   const N = new Set(F.map(f => f.id)).size;
+  P.push(outcomeKpi(F, env));
+  P.push(trendPanel(F, env));
   const usable = F.filter(f => (f.series || []).some(s => s.points.length > 1));
   // two complementary cells: if either is a small group, both are hidden (otherwise the total would reveal the small one)
   const hideBoth = N < env.min || (usable.length > 0 && usable.length < env.min) || (N - usable.length > 0 && N - usable.length < env.min);

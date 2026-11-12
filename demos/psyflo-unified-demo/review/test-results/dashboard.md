@@ -1,6 +1,6 @@
 # dashboard · PASS
 
-Run 2026-11-11T21-13-30Z · 29790 ms · instance 2 · exit 0
+Run 2026-11-12T00-16-46Z · 35175 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -18,3 +18,5 @@ Run 2026-11-11T21-13-30Z · 29790 ms · instance 2 · exit 0
 | PASS | two-person confirmations: after the administrator proposes a designation the clinician sees the strip with a Review button; the proposer does not, and no strip when nothing waits |  |
 | PASS | phone width: no horizontal scroll, patients become cards, buttons are 44 px |  |
 | PASS | the old My Work, Do next and Staff dashboard routes land on the Dashboard; the review sections land on Documentation |  |
+| PASS | feedback Nov 12: no date or time and no "N of M" above the table; rows per page 10, 25, 50, 100 at the bottom, kept in the address |  |
+| PASS | the rail is dark navy with a teal active item, the top bar carries FLO and the bell on every platform page, and a note waiting for review gives no date |  |

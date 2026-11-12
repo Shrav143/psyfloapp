@@ -29,7 +29,7 @@ const screens = Object.fromEntries(ls('web/screens', f => f.endsWith('.dc.html')
 const actionFiles = ls('server/psyflo/actions', f => f.endsWith('.js'));                                // loaded in filename order, like server/index.js
 
 const prelude = fs.readFileSync(path.join(SRC, 'prelude.js'), 'utf8');
-const tokensCss = read('web/css/tokens.css'), componentsCss = read('web/css/components.css'), panelCss = read('web/panel/panel.css'), hostedCss = fs.readFileSync(path.join(SRC, 'hosted.css'), 'utf8');
+const tokensCss = read('web/css/tokens.css'), componentsCss = read('web/css/components.css'), floCss = read('web/css/flo.css'), panelCss = read('web/panel/panel.css'), hostedCss = fs.readFileSync(path.join(SRC, 'hosted.css'), 'utf8');
 
 // ---------- hosted-only source patches ----------
 // The screens and the UI kit belong to other owners and stay untouched. These few places do something a hosted page cannot (save a file, open a
@@ -118,6 +118,7 @@ html = must(html, '<title>Psyflo × Harvest</title>', '<title>Psyflo Harvest Dem
 html = must(html, '<link rel="manifest" href="/manifest.webmanifest">\n', '<meta name="color-scheme" content="light">\n');
 html = must(html, '<link rel="stylesheet" href="/css/tokens.css">', `<style>:root{color-scheme:light}</style>\n<style>${tokensCss}</style>`);
 html = must(html, '<link rel="stylesheet" href="/css/components.css">', `<style>${componentsCss}</style>\n<style>${hostedCss}</style>`);
+html = must(html, '<link rel="stylesheet" href="/css/flo.css">', `<style>${floCss}</style>`);
 html = html.replace(/<script type="module"[^>]*><\/script>\s*/g, '');
 html = must(html, '</body>', `<script>window.__VROOT=true;${safe(prelude)}</script>\n<script>${safe(appJs)}</script>\n</body>`);
 

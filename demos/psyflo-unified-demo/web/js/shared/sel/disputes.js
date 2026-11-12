@@ -311,7 +311,7 @@ function answerAsk(s, d, r, idx, ask) {
     if (c.goals && c.goals.length) return { text: c.goals.map(g => `Goal ${g.n} (${g.name}): ${g.objective}`).join(' '), ids: [], miss: [] };
     return { text: missing('the ISP goals and baselines'), ids: [], miss: ['ISP goals and baselines'] };
   }
-  return { text: missing('the answer to this item'), ids: [], miss: ['answer to this item'] };
+  return { text: missing('the answer to this item'), ids: [], miss: ['answer to this item'], unmatched: true };
 }
 
 // buildDoc(s, d, r, kind) -> { kind, gen, sections:[{key,title,text,evidence:[ids],missing:[labels],basis}], reviewed:null, sent:null, versions:[] }
@@ -381,6 +381,112 @@ export function clarifyQuestions(s, d, r, idx) {
   const n = r.units_offered != null ? r.units_offered : r.units_awarded;
   q.push(`Is the ${n != null ? n + '-unit ' : ''}decision final, or open to review, and by when?`);
   return q;
+}
+
+// ---------------------------------------------------------------------------------------------------------------- the workspace (R3): said vs shown, weak points, steps, call hours
+// What the payer said, set beside the stored records that answer it. A reason that no stored record can be matched to says "not compared yet":
+// nothing is invented. `need` is what stays marked Evidence missing for that reason. Same matching the drafts use (answerAsk).
+const tidy = t => String(t || '').replace(MISSING_RE, '').replace(/\s+([.,;])/g, '$1').replace(/\s{2,}/g, ' ').replace(/(?:,\s*)+\./g, '.').trim();
+export function compareReasons(s, d, r, idx) {
+  const items = (d.concerns || []).filter(x => x && x.text && !/not recorded/i.test(x.text));
+  return items.map((x, i) => {
+    const said = String(x.text).replace(/^["“]|["”]$/g, '');
+    const a = answerAsk(s, d, r, idx, said); const matched = !a.unmatched;
+    return { key: 'r' + (i + 1), said, source: x.source || '', matched, shows: matched ? tidy(a.text) : '', ids: matched ? a.ids : [], need: matched ? a.miss : [] };
+  });
+}
+// Where the denial is weak: Strong = a stored record answers a stated reason · Gap = not documented yet · Clarify = the payer's criterion is not on file
+// or no stored record is matched to a reason · Risk = a documentation weakness. Derived from the same evidence index the drafts use; no likelihood is given.
+export const WEAK_KINDS = { strong: ['success', 'Strong'], gap: ['danger', 'Gap'], clarify: ['info', 'Clarify'], risk: ['warning', 'Risk'] };
+export function weakPoints(s, d, r, idx) {
+  const pf = payerFirst(s, r.payer); const out = []; const reasons = compareReasons(s, d, r, idx);
+  reasons.filter(x => x.matched && !x.need.length && x.ids.length).forEach(x => out.push({ k: x.key, kind: 'strong', title: `The record answers “${x.said}”`, text: x.shows, ids: x.ids, fix: 'Cite these records in the response', go: 'evidence' }));
+  idx.needs.forEach(n => out.push({ k: 'g-' + n.key, kind: 'gap', title: `Not documented: ${n.label}`, ids: [], fix: 'Collect it in the chart, or write the sentence yourself. Drafts print it as Evidence missing', go: 'evidence', lauris: true }));
+  if (!reasons.length) out.push({ k: 'c-none', kind: 'clarify', title: `${pf} did not state a reason that is on file`, ids: [], fix: 'Read the payer letter, then ask which criterion was unmet (see the call questions)', go: 'said' });
+  reasons.filter(x => !x.matched).forEach(x => out.push({ k: x.key + '-c', kind: 'clarify', title: `No stored record is matched to “${x.said}” yet`, ids: [], fix: `Ask ${pf} which criterion applied, and which records the reviewer read`, go: 'said' }));
+  if (idx.counts.held) out.push({ k: 'x-held', kind: 'risk', title: `${idx.counts.held} record${idx.counts.held === 1 ? ' is' : 's are'} held back from drafts (sensitive or excluded)`, ids: idx.items.filter(e => !e.usable).map(e => e.id), fix: 'A clinician decides whether to include each sensitive record', go: 'evidence' });
+  if (idx.items.some(e => e.provenance === 'seed')) out.push({ k: 'x-seed', kind: 'risk', title: 'Some records are illustrative samples, not captured from a chart', ids: idx.items.filter(e => e.provenance === 'seed').map(e => e.id), fix: 'Replace them with the chart records before anything goes to the payer', go: 'evidence' });
+  const ru = rule(s, d.issue === 'denial' ? 'appeal.window_days' : 'appeal.reconsideration_days');
+  if (/not verified|unverified|assumption/i.test(ru.verification || '') || ru.category === 'UNVERIFIED-DEMO-ASSUMPTION') out.push({ k: 'x-rule', kind: 'risk', title: d.issue === 'denial' ? 'The appeal window comes from a rule that is not verified for this payer' : 'The reconsideration step is not verified for this payer', ids: [], rule: ru, fix: 'Confirm the date on the payer letter or by phone', go: 'said' });
+  return out;
+}
+
+// The seven recommended steps and what each has produced so far (all read from what a person recorded; none is a prediction)
+export const STEP_LIST = [['analyze', 'Analyze Denial'], ['gaps', 'Identify Missing Evidence'], ['docreq', 'Request Additional Documentation'], ['appeal', 'Generate Appeal Draft'], ['p2p', 'Generate Peer-to-Peer Script'], ['recon', 'Prepare Reconsideration'], ['review', 'Mark for Clinical Review']];
+export const NEEDS_CLINICAL = ['analyze', 'gaps', 'docreq', 'appeal', 'p2p', 'recon'];
+export const DOCREQ_TO = { clinician: 'Treating clinician', guardian: 'Guardian', school: 'School counselor' };
+export function stepResults(s, d, r, idx) {
+  const out = {}; const docs = d.docs || {};
+  if (d.analysis) out.analyze = `Analyzed ${fmtDate(String(d.analysis.at).slice(0, 10))}`;
+  if (d.gaps) out.gaps = idx.needs.length ? `${idx.needs.length} missing` : 'None missing';
+  if (d.docreq) { const open = (d.docreq.items || []).filter(x => !x.got).length; out.docreq = open ? `${open} requested · ${DOCREQ_TO[d.docreq.to] || d.docreq.to}` : 'All received'; }
+  for (const k of ['appeal', 'p2p', 'recon']) { const doc = docs[k]; if (!doc || !doc.sections) continue;
+    out[k] = doc.sent ? `Sent${doc.sent.ref ? ' · ' + doc.sent.ref : ''}` : doc.ready ? 'Ready to upload' : doc.reviewed ? 'Reviewed' : doc.sections.some(x => x.edited) ? 'Edited · Simulated draft' : 'Simulated draft'; }
+  if (d.review) out.review = `Clinical review · ${staffOf(s, d.review.to).name || d.review.to}`;
+  return out;
+}
+// the process line under the case header
+export const TIMELINE = ['Decision received', 'Clinical review', 'Response prepared', 'Submitted', 'Payer response', 'Resolved'];
+export function timelineOf(s, d, r, status) {
+  const docs = d.docs || {}; const dc = k => docs[k] || {};
+  const worked = !!(d.analysis || d.gaps || d.docreq || d.review || Object.values(docs).some(x => x && x.sections));
+  let step;
+  if (!isOpen(d)) step = 5;
+  else switch (status) {
+    case 'info-req': step = 1; break;
+    case 'drafted': step = 2; break;
+    case 'p2p-prep': step = dc('p2p').reviewed ? 2 : 1; break;
+    case 'p2p': step = r.stage === 'p2p_awaiting' ? 4 : 3; break;
+    case 'recon-prep': step = dc('recon').reviewed ? 2 : 1; break;
+    case 'recon': step = 4; break;
+    case 'appeal-prep': step = dc('appeal').reviewed ? 2 : 1; break;
+    case 'appeal': step = 4; break;
+    default: step = worked ? 1 : 0;
+  }
+  const first = [d.analysis, d.gaps, d.docreq, d.review, ...Object.values(docs).map(x => x && x.gen)].filter(Boolean).map(x => String(x.at || '')).filter(Boolean).sort()[0];
+  const pathDoc = dc(d.path === 'appeal' ? 'appeal' : d.path === 'recon' ? 'recon' : r.stage === 'info_requested' ? 'info' : 'p2p');
+  const day = at => at ? fmtDate(String(at).slice(0, 10)) : '';
+  const dates = [day((d.notice || {}).date || d.opened), day(first), day(pathDoc.reviewed && pathDoc.reviewed.at), day((pathDoc.sent || pathDoc.ready || {}).at || r.p2p_at), '', day(d.closed)];
+  return { step, labels: TIMELINE, dates };
+}
+
+// Payer provider-services hours (seed/extra/payer-hours.json, an UNVERIFIED-DEMO-ASSUMPTION). Pure; the server uses the same function to refuse a call to a closed line.
+const DOW = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']; const DOW_L = { sun: 'Sun', mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri', sat: 'Sat' };
+const mins = t => { const [h, m] = String(t).split(':').map(Number); return h * 60 + (m || 0); };
+const clock12 = t => { const [h, m] = String(t).split(':').map(Number); return `${((h + 11) % 12) + 1}${m ? ':' + String(m).padStart(2, '0') : ''} ${h < 12 ? 'am' : 'pm'}`; };
+const dowOf = date => DOW[new Date(String(date).slice(0, 10) + 'T00:00:00Z').getUTCDay()];
+export function hoursSummary(days) {
+  const order = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']; const groups = [];
+  for (const k of order) { const v = days && days[k]; if (!v) continue; const key = v.join('-'); const last = groups[groups.length - 1]; if (last && last.key === key && last.to === order[order.indexOf(k) - 1]) last.to = k; else groups.push({ key, from: k, to: k, v }); }
+  return groups.map(g => `${DOW_L[g.from]}${g.to !== g.from ? '–' + DOW_L[g.to] : ''} ${clock12(g.v[0])}–${clock12(g.v[1])}`).join(', ') || 'No hours on file';
+}
+export function lineStatus(s, payerId, at) {
+  const now = at || clockNow(s); const h = (s.payer_hours || []).find(x => x.payer === payerId);
+  const base = { payer: payerId, at: now, category: h ? h.category : 'UNVERIFIED-DEMO-ASSUMPTION', source: h ? h.source : 'No hours are on file for this payer.', verified_on: h ? h.verified_on : null };
+  if (!h) return { ...base, known: false, open: false, summary: 'No hours on file', today: null, nextOpen: null, line: 'Provider services' };
+  const date = now.slice(0, 10), time = now.slice(11, 16); const dow = dowOf(date); const today = h.days[dow] || null;
+  const open = !!today && mins(time) >= mins(today[0]) && mins(time) < mins(today[1]);
+  let nextOpen = null;
+  for (let i = 0; i < 8 && !nextOpen; i++) {
+    const dt = addDays(date, i); const k = dowOf(dt); const hr = h.days[k]; if (!hr) continue;
+    if (i === 0 && mins(time) >= mins(hr[0])) continue;                                     // already past today's opening
+    nextOpen = { date: dt, dow: k, label: `${i === 0 ? 'today' : i === 1 ? 'tomorrow' : DOW_L[k]} ${clock12(hr[0])}` };
+  }
+  return { ...base, known: true, open, line: h.line || 'Provider services', summary: hoursSummary(h.days), today: today ? `${clock12(today[0])}–${clock12(today[1])}` : 'Closed today', nextOpen };
+}
+// The simulated call: a script the voice agent would read, built only from stored case facts. The payer's side is a labelled placeholder: Psyflo never writes what a payer says.
+export const CALL_PURPOSES = [['status', 'Ask where the decision stands'], ['p2p', 'Ask for a peer-to-peer time'], ['docs', 'Confirm which documents the payer needs']];
+export function callScript(s, d, r, purpose) {
+  const pf = payerFirst(s, r.payer); const c = clientOf(s, r.client); const org = (s.org && s.org.name) || 'the clinic'; const notice = (d.notice || {}).date;
+  const what = purpose === 'p2p' ? `We would like to ask for a peer-to-peer review of the decision${notice ? ' dated ' + longDate(notice) : ''}. Could you give us the reviewer's available times and a reference number for the request?`
+    : purpose === 'docs' ? `Could you confirm which documents you still need for request ${r.id}, how they should be sent, and the date they are due?`
+      : `Could you tell me where the ${d.issue === 'info' ? 'information request' : 'decision'} stands, and whether any document is still outstanding?`;
+  return [
+    { who: 'agent', text: `Hello, this is Psyflo's calling assistant for ${org}. I am calling ${pf} provider services about request ${r.id} for a consumer with the initials ${c.initials}.` },
+    { who: 'agent', text: what },
+    { who: 'payer', text: `Scripted placeholder: on a real call ${pf} answers here. Psyflo does not write what a payer says; the person who records this call types what was said.` },
+    { who: 'agent', text: 'Thank you. Could you give me a reference number for this call? I will pass it to the clinician.' }
+  ];
 }
 
 // ---------------------------------------------------------------------------------------------------------------- options (valid ones only; an unavailable or unverified path says so)
@@ -457,7 +563,7 @@ export function caseView(s, requestId, me) {
   return { r, d, c, payer: { id: r.payer, name: payerName(s, r.payer), first: payerFirst(s, r.payer) }, channel: { key: r.channel, label: CHANNEL_LABEL[r.channel] || r.channel },
     consumer: c.age ? `${c.initials}, ${c.age}` : c.initials, issue: d.issue, issueLabel: ISSUE_LABEL[d.issue] || d.issue, status, path: derivePath(d, r), open: isOpen(d),
     next: nextAction(s, d, r), deadlines, deadline: primaryDeadline(deadlines), units: unitsView(s, d, r), decision: decisionView(s, d, r), options: optionsFor(s, d, r, me),
-    owner: { id: d.owner, name: ownerName(s, d.owner), short: ownerShort(s, d.owner) }, backup: d.backup ? { id: d.backup, name: ownerName(s, d.backup) } : null };
+    owner: { id: d.owner, name: ownerName(s, d.owner), short: ownerShort(s, d.owner) }, backup: d.backup ? { id: d.backup, name: ownerName(s, d.backup) } : null, line: lineStatus(s, r.payer) };
 }
 
 // ---------------------------------------------------------------------------------------------------------------- the queue

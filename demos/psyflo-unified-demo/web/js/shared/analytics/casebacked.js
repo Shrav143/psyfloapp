@@ -111,7 +111,7 @@ export function clinicalFacts(s, ctx, P) {
 
 // one (site, period) slice of the clinical digest: panels with small groups suppressed, plus pilot measures 2 to 4 as figures
 export function clinicalSlice(s, ctx, P) {
-  const facts = clinicalFacts(s, ctx, P); const env = { min: ctx.min, drill: ctx.drill, asOf: ctx.today };
+  const facts = clinicalFacts(s, ctx, P); const env = { min: ctx.min, drill: ctx.drill, asOf: ctx.today, from: P.from };
   const prep = prepTime(s, ctx, P), intake = intakeToSra(s, ctx, P), miss = missingCaught(s, ctx, P);
   const small = n => (n > 0 && n < ctx.min ? sup(ctx.min) : n);
   return {
@@ -226,7 +226,7 @@ export function requestFacts(s, ctx, P, payerFilter = '') {
     const anchor = sent || decided || day(r.drafted_at) || null;
     if (anchor && !(inRange(anchor, P.from, P.to) || (decided && inRange(decided, P.from, P.to)))) continue;
     out.push({ id: r.id, client: r.client, payer: r.payer, payerLabel: payerShort(s, r.payer), type: r.type, svc: r.service, submitted: sent, decided, outcome, requested: r.units_requested || 0, approved, offered,
-      reason: r.denial_reason || (r.decision_log || []).map(d => d.reason).find(Boolean) || null, appealed: r.stage === 'appeal_sent' || !!r.appeal, renewal: r.type === 'continued_stay',
+      reason: r.denial_reason || (r.decision_log || []).map(d => d.reason).find(Boolean) || null, appealed: r.stage === 'appeal_sent' || !!r.appeal, appealOutcome: (r.appeal && r.appeal.outcome) || null, renewal: r.type === 'continued_stay',
       days: sent && decided ? Math.max(0, daysBetween(sent, decided)) : null, stage: r.stage, extraWork: ['info_requested', 'peer_to_peer_requested', 'peer_to_peer_booked', 'p2p_awaiting', 'appeal_sent'].includes(r.stage) || !!r.p2p_at || !!r.info_requested_at || !!r.appeal || (r.decision_log || []).some(d => d.kind === 'p2p') });
   }
   return out;

@@ -27,7 +27,7 @@ export const PRE_SEND = ['draft_ready', 'needs_approval', 'awaiting_signature', 
 export const SENT = ['sending', 'portal_open', 'submitted', 'overdue'];
 export const CHIPS = [
   { value: 'needs', label: 'Needs action' }, { value: 'draft', label: 'Draft' }, { value: 'awaiting', label: 'Awaiting signature' },
-  { value: 'submitted', label: 'Submitted' }, { value: 'active', label: 'Active' }, { value: 'renewal', label: 'Renewal due' }
+  { value: 'submitted', label: 'Submitted' }, { value: 'active', label: 'Active' }, { value: 'renewal', label: 'Renewal due' }, { value: 'flagged', label: 'Flagged' }
 ];
 export const CHIP_VALUES = CHIPS.map(c => c.value);
 export const STAGE_LIST = ['draft_ready', 'needs_approval', 'awaiting_signature', 'signed', 'sending', 'portal_open', 'submitted', 'overdue', 'info_requested', 'partial_decide', 'peer_to_peer_requested', 'peer_to_peer_booked', 'p2p_awaiting', 'denied', 'appeal_sent', 'active', 'early_discharge', 'closed'];
@@ -60,7 +60,7 @@ export function normalizeParams(p = {}, today = '') {
   if (!from && !to && g('range')) { const r = monthRange(g('range'), today); if (r) [from, to] = r; }
   const units = ['25', '50', 'warn'].includes(g('units')) ? g('units') : '';
   const due = ['overdue', 'today', '7', '30'].includes(g('due')) ? g('due') : '';
-  return { q: g('q'), status, payer: g('payer'), type: g('type'), owner: g('owner'), stage, site: g('site'), school: g('school'), units, due, ends, from, to, sort: g('sort'), dir: g('dir') === 'desc' ? 'desc' : 'asc' };
+  return { q: g('q'), status, payer: g('payer'), type: g('type'), service: g('service'), owner: g('owner'), stage, site: g('site'), school: g('school'), units, due, ends, from, to, sort: g('sort'), dir: g('dir') === 'desc' ? 'desc' : 'asc' };
 }
 // the query keys a legacy link may carry that the canonical state replaces (the screen clears them from the URL)
 export const LEGACY_KEYS = ['show', 'st', 'exp', 'range', 'tab'];
@@ -73,6 +73,7 @@ const schoolOf = (s, r) => { const c = clientOf(s, r); const id = (c && c.school
 const payerName = (s, id) => (id === 'ffs' ? 'Medicaid FFS' : M.payerShort(s, id));
 export const serviceShort = r => String(r.service || '').split(' · ')[0] || '—';
 const staffShort = (s, id) => { const st = M.byId(s.staff, id); return st ? M.staffShort(s, id) : id; };
+const staffName = (s, id) => (M.byId(s.staff, id) || {}).name || id;
 export const whoName = (s, who) => (!who ? '' : who === 'Psyflo' ? 'Psyflo' : who === 'bridge' ? 'Page bridge' : who === 'Sfax' ? 'Sfax (simulated)' : /payer/i.test(who) ? 'Payer' : M.byId(s.staff, who) ? M.staffShort(s, who) : who);
 const upper1 = x => String(x || '').replace(/^./, c => c.toUpperCase());
 const isDate = d => /^\d{4}-\d{2}-\d{2}/.test(String(d || ''));
@@ -193,6 +194,14 @@ export function deadline(s, r) {
   }
 }
 
+// ---------------------------------------------------------------------------------------------------------------- flags
+// the open flag on an authorization (state.flags, written by request.flag): who marked it, when, the short reason
+export const openFlagOf = (s, id) => (s.flags || []).find(f => f.request === id && f.status === 'open') || null;
+// Why a person flags an authorization: a short list, so the flag says one clear thing to everyone who sees it. A free note is optional and is
+// only shown to clinicians and to the person who wrote it (the projection hides it from other roles, like every free text).
+export const FLAG_REASONS = [['decision', 'Needs a decision'], ['deadline', 'Deadline is close'], ['units', 'Units running low'], ['payer', 'Payer follow-up needed'], ['family', 'Waiting on the family'], ['documents', 'Documents missing'], ['other', 'Other (say in the note)']];
+export const flagReasonLabel = k => (FLAG_REASONS.find(x => x[0] === k) || [0, 'Marked for attention'])[1];
+
 // ---------------------------------------------------------------------------------------------------------------- owner
 export function ownerOf(s, r) {
   const m = (s.auth_meta || {})[r.id] || {};
@@ -250,6 +259,7 @@ function chipsOf(s, r) {
   if (g === 'submitted' || r.stage === 'overdue') set.add('submitted');
   if (g === 'active') set.add('active');
   const rn = renewal(s, r); if (rn && rn.due) set.add('renewal');
+  if (openFlagOf(s, r.id)) set.add('flagged');
   return set;
 }
 function periodOf(s, r) {
@@ -270,14 +280,17 @@ export function rowOf(s, r0, me) {
     payerId: r.payer, payer: payerName(s, r.payer), payerFull: payer.name, channel: M.CHANNEL_LABEL[r.channel] || r.channel, service: serviceShort(r), type: r.type, typeLabel: type,
     stage: r.stage, group: GROUP[r.stage] || 'closed', tags: [...tags], inDI: DI_STAGES.includes(r.stage),
     units: u, deadline: dl, owner: own, next: na, period: per, req: r,
-    ref: r.fax_ref || r.portal_ref || ''
+    ref: r.fax_ref || r.portal_ref || '',
+    serviceLabel: serviceShort(r), serviceCode: String(r.service || '').split(' · ')[1] || '',
+    periodText: per.start && per.end ? `${fmtDate(per.start)} – ${fmtDate(per.end)}` : per.end ? `ends ${fmtDate(per.end)}` : '',
+    flag: (() => { const f = openFlagOf(s, r.id); return f ? { ...f, byShort: staffShort(s, f.by), reasonLabel: flagReasonLabel(f.reason) } : null; })()
   };
 }
 // the sort value of each column
 const GROUP_ORDER = ['needs', 'awaiting', 'draft', 'submitted', 'denial', 'active', 'closed'];
 const SEV_ORDER = { overdue: 0, soon: 1, ok: 2, none: 3 };
 export const SORTERS = {
-  case: r => r.label, payer: r => r.payer, type: r => r.typeLabel,
+  case: r => r.label, payer: r => r.payer, type: r => r.typeLabel, service: r => r.serviceLabel, period: r => r.period.end || '9999', requested: r => (r.units.requested == null ? -1 : r.units.requested), approved: r => (r.units.awarded != null ? r.units.awarded : r.units.offered != null ? r.units.offered : -1),
   status: r => GROUP_ORDER.indexOf(r.group) * 100 + STAGE_LIST.indexOf(r.stage),
   units: r => (r.units.left != null ? r.units.left : r.units.requested), deadline: r => r.deadline.date || '9999', owner: r => r.owner.name, next: r => r.next.label,
   priority: r => SEV_ORDER[r.deadline.sev] * 10000 + GROUP_ORDER.indexOf(r.group) * 100 + STAGE_LIST.indexOf(r.stage)
@@ -290,6 +303,7 @@ function matches(s, row, f) {
   if (f.q) { const q = f.q.toLowerCase(); const hay = [row.id, row.label, row.initials, row.school, row.payer, row.payerFull, row.typeLabel, row.service, row.owner.name, row.ref, M.STAGE_LABEL[row.stage]].join(' ').toLowerCase(); if (!hay.includes(q)) return false; }
   if (f.payer && row.payerId !== f.payer) return false;
   if (f.type && row.type !== f.type) return false;
+  if (f.service && row.serviceLabel !== f.service) return false;
   if (f.owner && row.owner.id !== f.owner) return false;
   if (f.stage && row.stage !== f.stage) return false;
   if (f.site && row.locality !== f.site) return false;
@@ -302,7 +316,7 @@ function matches(s, row, f) {
 }
 // authQueue(s, filters, me): filters are the canonical ones (normalizeParams). counts ignore the status chip so each chip shows what it would give.
 export function authQueue(s, filters = {}, me) {
-  const f = { q: '', status: '', payer: '', type: '', owner: '', stage: '', site: '', school: '', units: '', due: '', ends: '', from: '', to: '', sort: '', dir: 'asc', ...filters };
+  const f = { q: '', status: '', payer: '', type: '', service: '', owner: '', stage: '', site: '', school: '', units: '', due: '', ends: '', from: '', to: '', sort: '', dir: 'asc', ...filters };
   const all = (s.requests || []).map(r => rowOf(s, r, me));
   const base = all.filter(row => matches(s, row, f));
   const counts = { all: base.length }; for (const c of CHIP_VALUES) counts[c] = base.filter(row => row.tags.includes(c)).length;
@@ -317,6 +331,7 @@ export function queueOptions(s) {
   return {
     payers: uniq(rows, x => x.payerId).map(x => [x.payerId, x.payer]).sort((a, b) => a[1].localeCompare(b[1])),
     types: uniq(rows, x => x.type).map(x => [x.type, M.TYPE_LABEL[x.type] || x.type]),
+    services: uniq(rows, x => x.serviceLabel).map(x => [x.serviceLabel, x.serviceLabel]),
     owners: uniq(rows.filter(x => x.owner.id), x => x.owner.id).map(x => [x.owner.id, x.owner.name]),
     sites: [...new Set(rows.map(x => x.locality).filter(Boolean))].sort().map(x => [x, x]),
     schools: uniq(rows.filter(x => x.schoolId), x => x.schoolId).map(x => [x.schoolId, x.school]).sort((a, b) => a[1].localeCompare(b[1])),
@@ -414,11 +429,56 @@ export function timelineOf(s, r, me) {
     // the model's derived "Renewal due" sits on the end date; the lead time puts it earlier (rules table)
     const re = rd && /^Renewal due$/.test(h.what) ? { at: rd.date, what: `Reauth due · ${rd.sub}`, upcoming: rd.date > s.today } : null;
     const x = re ? { ...h, ...re } : h;
-    out.push({ id: `${r.id}:d${i}`, at: x.at, what: (x.upcoming ? 'Upcoming · ' : '') + x.what, who: '', actor: 'system', sim: false, source: re ? 'Lead time from the rules table (unverified demo assumption)' : 'Derived from the request record and the rules table', tone: x.upcoming ? 'warning' : undefined });
+    out.push({ id: `${r.id}:d${i}`, at: x.at, what: (x.upcoming ? 'Upcoming · ' : '') + x.what, who: '', actor: 'system', sim: false, source: re ? 'Lead time from the rules table (unverified demo assumption)' : 'Derived from the request record and the rules table', tone: x.upcoming ? 'warning' : undefined, derived: true, upcoming: !!x.upcoming, clock: !!x.clock, by: x.who || '' });
   });
   out.sort((a, b) => String(b.at).localeCompare(String(a.at)));
   const latest = out.find(x => !String(x.what).startsWith('Upcoming')); if (latest && na.text) latest.next = { label: na.text };
   return out;
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------- history
+// The artifact's History block on an authorization: every step with who did it (an actor tag per row), filterable by who, each row opening a
+// pop-up of its facts. Built from the audit trail plus the dates the request itself implies (timelineOf). Nothing is invented: a row that
+// has no recorded source says it was derived from the record.
+//   voice   the phone agent (Simulated; the Denial Intelligence workspace logs these)       agent   Psyflo automation (Sfax stub, receipts, reminders)
+//   psyflo  drafts and rule-based checks by Psyflo, reviewed by a person                    staff   a person at Harvest
+//   lauris  read from the open Lauris page (page bridge)                                    payer   from the plan, recorded by a person
+export const HIST_ACTORS = {
+  voice: { label: 'Voice agent', icon: 'phone', legend: 'Psyflo’s phone agent calls the payer and records what was said. Simulated in this demo: no real call is placed.' },
+  agent: { label: 'Psyflo agent', icon: 'refresh', legend: 'Automated work by Psyflo: sends through the stubs, delivery receipts, reminders. Simulated in this demo; a person starts every send.' },
+  psyflo: { label: 'Psyflo', icon: 'sparkle', legend: 'Drafts and rule-based checks by Psyflo. A person reviews them before anything is used.' },
+  staff: { label: 'Staff', icon: 'user', legend: 'A person at Harvest' },
+  lauris: { label: 'From Lauris', icon: 'file', legend: 'Read from the open Lauris page: signed forms, processed documents, authorization records' },
+  payer: { label: 'Payer', icon: 'inbox', legend: 'From the plan: letters, decisions, calls and portal messages, recorded by a person' }
+};
+export const HIST_ORDER = ['voice', 'agent', 'psyflo', 'staff', 'lauris', 'payer'];
+export const HIST_ENTRY_KINDS = [['call', 'Call'], ['note', 'Note'], ['document', 'Document received'], ['payer', 'Payer contact']];
+const escRe = x => String(x).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const AI_RE = /\b(drafted|draft prepared|assembled|generated|analy[sz]ed|suggested|scanned)\b/i;
+export function historyOf(s, r0, me) {
+  const r = reqView(s, r0); if (!r) return { events: [], counts: {}, total: 0 };
+  const names = [...new Set((s.payers || []).flatMap(p => [p.name, p.short, payerName(s, p.id)]).filter(Boolean))];
+  const payerRe = new RegExp(`^(Payer|${names.map(escRe).join('|')})\\b`, 'i');
+  const kindOf = x => {
+    if (x.actor === 'voice' || /voice agent/i.test(x.who || '')) return 'voice';
+    if (x.actor === 'payer' || payerRe.test(x.what)) return 'payer';
+    if (x.actor === 'lauris') return 'lauris';
+    if (x.actor === 'system') return 'agent';                              // the Sfax stub, the presenter's clock
+    if (x.actor === 'psyflo') return AI_RE.test(x.what) || x.derived ? 'psyflo' : 'agent';
+    return 'staff';
+  };
+  const events = timelineOf(s, r, me).filter(x => !x.upcoming && !(x.derived && x.clock)).map(x => {
+    const kind = kindOf(x); const [action, ...rest] = String(x.what).split(' · '); const detail = rest.join(' · ');
+    const flag = /^Flag/.test(action); const call = /\b(called|call logged|phone|follow-up call|receipt confirmed by phone)\b/i.test(x.what);
+    const pk = x.document ? 'doc' : /send pressed|sent|faxed|uploaded|resent|sent again/i.test(action) ? 'submission' : kind === 'payer' ? 'letter' : call ? 'call' : 'note';
+    const facts = [['When', x.at ? fmtDateTime(x.at) : 'Before the pilot'], x.who ? [kind === 'payer' || kind === 'voice' ? 'Recorded by' : 'Who', x.who] : null, ['Source', x.source || '']].filter(Boolean);
+    return { id: x.id, at: x.at || '', kind, name: kind === 'staff' ? x.who : '', action, detail, sim: !!x.sim || kind === 'voice', flag, derived: !!x.derived,
+      pop: { title: action, kind: pk, facts, href: x.document ? x.document.href : '', hrefLabel: x.document ? x.document.name : '', lauris: kind === 'lauris' } };
+  });
+  events.sort((a, b) => (a.at ? 0 : 1) - (b.at ? 0 : 1) || String(b.at).localeCompare(String(a.at)));
+  const counts = {}; for (const e of events) counts[e.kind] = (counts[e.kind] || 0) + 1;
+  return { events, counts, total: events.length };
 }
 
 // the payer side: calls, decisions, sends and replies, newest first
@@ -512,7 +572,7 @@ export function transitionOf(s, r) {
 // who may do what here (for the screen: a disabled control says why)
 export function capsFor(me) {
   const c = k => !!can(me, k);
-  return { approve: c('approve.sra'), send: c('send.packet'), decide: c('payer.decision'), reply: c('payer.reply'), clinical: c('drafts.clinical'), viewText: !!(me && me.role === 'clinician' && c('notes.view')), assign: c('authorizations'), pdf: c('authorizations') };
+  return { approve: c('approve.sra'), send: c('send.packet'), decide: c('payer.decision'), reply: c('payer.reply'), clinical: c('drafts.clinical'), viewText: !!(me && me.role === 'clinician' && c('notes.view')), assign: c('authorizations'), pdf: c('authorizations'), flag: c('authorizations'), history: c('authorizations') };
 }
 
 export function authCase(s, id, me) {
@@ -526,7 +586,9 @@ export function authCase(s, id, me) {
     type: r.type, typeLabel: M.TYPE_LABEL[r.type] || r.type, stage: r.stage, group: GROUP[r.stage] || 'closed', inDI: DI_STAGES.includes(r.stage), owner: own,
     flow, next: na, deadline: dl, units: u, renewal: rn, unitTask: task, unitRule: unitRule(s, r.service), caps: capsFor(me),
     docs: documents(s, r), evidence: evidenceOf(s, r, me), submission: submissionOf(s, r), timeline: timelineOf(s, r, me), payerLog: payerLog(s, r), tasks: tasksOf(s, r, me), transition: transitionOf(s, r),
-    signatureFlag: r.signature_flag || null, calls: ((s.auth_meta || {})[r.id] || {}).calls || []
+    signatureFlag: r.signature_flag || null, calls: ((s.auth_meta || {})[r.id] || {}).calls || [],
+    flag: (() => { const f = openFlagOf(s, r.id); return f ? { ...f, byShort: staffShort(s, f.by), byName: staffName(s, f.by), reasonLabel: flagReasonLabel(f.reason) } : null; })(),
+    history: historyOf(s, r, me), serviceCode: String(r.service || '').split(' · ')[1] || '', period: periodOf(s, r)
   };
 }
 

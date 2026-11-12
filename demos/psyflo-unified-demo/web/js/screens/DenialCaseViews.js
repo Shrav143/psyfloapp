@@ -1,24 +1,35 @@
-// HTML builders for the Denial case workspace (E3): header, Decision, Evidence, Options, Action (info · options · p2p · appeal · reconsider)
-// and History. Pure functions of a context { s, me, cv, ui, M, hrefFor, st } that return trusted HTML strings; the controller
-// (DenialCase.js) wires the data-x buttons. Few words: states are chips, detail opens on demand.
+// HTML builders for the Denial case workspace (E3, rebuilt in the artifact's layout for R3): a header card with the process line, a left menu
+// (Review · Respond), the Overview (seven recommended steps, what the payer said against what the chart shows, where the denial is weak),
+// the evidence, the replies (information, decide, peer-to-peer, appeal, reconsideration), the documentation request and a collapsed History.
+// Pure functions of a context { s, me, cv, ui, M, hrefFor, st } that return trusted HTML strings; the controller (DenialCase.js) wires the data-x buttons.
+// Few words: states are chips, detail opens on demand. Nothing here predicts an outcome or writes clinical text: every sentence has a stored source.
 import * as D from '../shared/sel/disputes.js';
 import { rule, ruleValue } from '../shared/rules.js';
 import { fmtDate, fmtDateTime, fmtTime, daysBetween, hoursBetween } from '../shared/dates.js';
 
-export const SECTIONS = [['decision', 'Decision'], ['evidence', 'Evidence'], ['options', 'Options'], ['action', 'Action'], ['history', 'History']];
+export const SECTIONS = [['overview', 'Overview'], ['said', 'What the payer said'], ['evidence', 'Clinical evidence'], ['weak', 'Where the denial is weak'], ['action', 'Respond'], ['docreq', 'Documentation request'], ['history', 'History']];
 export const ACTIONS = ['info', 'options', 'p2p', 'appeal', 'reconsider'];
+// Old links keep working: section=decision is "What the payer said", section=options is the Decide action, section=action&action=… is the reply
+export function entry(p = {}) {
+  const a = ACTIONS.includes(p.action) ? p.action : null;
+  if (p.section === 'options') return { section: 'action', action: a || 'options' };
+  const section = p.section === 'decision' ? 'said' : SECTIONS.some(([k]) => k === p.section) ? p.section : (a ? 'action' : 'overview');
+  return { section, action: section === 'action' ? a : null };
+}
 const e = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const when = at => !at ? '' : String(at).includes('T') ? fmtDateTime(at) : fmtDate(at);
 const nl = t => e(t).replace(/\n/g, '<br>');
 const marked = t => nl(t).replace(/\[Evidence missing — verify ([^\]]*)\]/g, '<mark class="d-miss">Evidence missing — verify $1</mark>');
 const btn = (label, x, o = {}) => `<button type="button" class="ui-btn ui-btn--${o.tone || 'secondary'}${o.sm ? ' ui-btn--sm' : ''}" data-x="${x}"${Object.entries(o.data || {}).map(([k, v]) => ` data-${k}="${e(v)}"`).join('')}${o.disabled ? ' disabled' : ''}${o.title ? ` title="${e(o.title)}"` : ''}${o.id ? ` id="${e(o.id)}"` : ''}>${e(label)}</button>`;
-const link = (label, href, o = {}) => `<a class="ui-btn ui-btn--${o.tone || 'secondary'}${o.sm ? ' ui-btn--sm' : ''}" href="${e(href)}"${o.blank ? ' target="_blank" rel="noopener"' : ''}>${e(label)}</a>`;
+const link = (label, href, o = {}) => `<a class="ui-btn ui-btn--${o.tone || 'secondary'}${o.sm ? ' ui-btn--sm' : ''}" href="${e(href)}"${o.blank ? ' target="_blank" rel="noopener"' : ''}>${e(label)}${o.blank ? c_icon('external', 14) + '<span class="ui-sr"> (opens in a new tab)</span>' : ''}</a>`;
+let c_icon = () => '';                                   // set from the context (ui.icon) on first use
 const needs = (c, why = 'Needs clinician') => c.me && D.canWork(c.me) ? '' : `<span class="d-need">${e(why)}</span>`;
+const STEP_PATH = { appeal: 'appeal', p2p: 'p2p', recon: 'recon' };
 
 // where each kind of "next action" lives
 export function nextTarget(cv) {
   const g = cv.next.group; const st = cv.status;
-  if (g === 'decide') return { section: 'options', label: 'Choose' };
+  if (g === 'decide') return { section: 'action', action: 'options', label: 'Choose' };
   if (g === 'wait' || g === 'done') return null;
   const action = st === 'info-req' || st === 'drafted' ? 'info' : st === 'p2p' || st === 'p2p-prep' ? 'p2p' : st === 'recon-prep' || st === 'recon' ? 'reconsider' : st === 'appeal-prep' || st === 'appeal' ? 'appeal' : 'options';
   return { section: 'action', action, label: { prepare: 'Draft', review: 'Review', send: 'Send', call: 'Open call', record: 'Record outcome' }[g] || 'Open' };
@@ -31,74 +42,122 @@ export function defaultAction(cv) {
   if (st === 'appeal-prep' || st === 'appeal') return 'appeal';
   return r.stage === 'partial_decide' || r.stage === 'denied' ? 'options' : 'info';
 }
-
-// ------------------------------------------------------------------------------------------------------------------ header
-export function header(c) {
-  const { cv, ui, hrefFor } = c; const d = cv.d; const r = cv.r;
-  const dl = cv.deadline; const hourly = dl && dl.date && String(dl.date).includes('T');
-  let rel = '';
-  if (dl && dl.date && cv.open) { const h = hourly ? Math.round(hoursBetween(M_now(c), dl.date)) : null; rel = hourly && Math.abs(h) < 72 ? (h < 0 ? `${-h} h late` : `${h} h left`) : dl.days < 0 ? `${-dl.days} d late` : dl.days === 0 ? 'Today' : `${dl.days} d`; }
-  const tone = dl && dl.sev === 'overdue' ? 'danger' : dl && dl.sev === 'soon' ? 'warning' : 'neutral';
-  const chips = [ui.statusChip(cv.status, { kind: 'dispute' }),
-    cv.open && dl ? `<span class="d-dlchip">${ui.chip(`${dl.label}${dl.date ? ' · ' + when(dl.date) : ''}`, { tone, icon: dl.sev === 'overdue' ? 'alert' : 'clock', detail: rel })}${ui.sourceChip(dl)}</span>` : '',
-    !cv.open ? ui.chip(`Closed ${fmtDate(d.closed)}`, { tone: 'neutral', icon: 'lock' }) : ''].join('');
-  const nt = cv.open ? nextTarget(cv) : null;
-  const next = cv.open ? `<div class="d-next" role="status"><span class="d-next__l">Next</span><b>${e(cv.next.label)}</b>${nt && (nt.section !== 'action' || D.canWork(c.me)) ? btn(nt.label, 'goto', { tone: 'primary', data: { section: nt.section, action: nt.action || '' } }) : nt ? needs(c) : ''}</div>` : `<div class="d-next d-next--done" role="status"><span class="d-next__l">Outcome</span><b>${e(d.outcome ? d.outcome.text : 'Closed')}</b>${link('Open authorization', hrefFor('Authorizations.dc.html?id=' + r.id), { tone: 'primary' })}</div>`;
-  return `<nav class="d-crumb" aria-label="Breadcrumb"><a href="#/DenialIntelligence">Denial Intelligence</a><span aria-hidden="true">/</span><span aria-current="page">${e(r.id)}</span></nav>
-  <header class="d-head"><div class="d-head__t"><h1>${e(cv.c.initials)} · ${e(cv.issueLabel)}</h1><div class="d-head__c">${chips}</div></div>
-    <div class="d-head__r">${btn(`Owner: ${cv.owner.short}`, 'assign', { sm: true, tone: 'ghost', title: 'Change the owner and the backup' })}${btn(`${cv.payer.first} guidance`, 'guidance', { sm: true, tone: 'secondary' })}${link('Authorization', hrefFor('Authorizations.dc.html?id=' + r.id), { sm: true })}</div></header>
-  ${next}`;
-}
+// which replies make sense at this stage (the others stay in the menu and explain themselves)
+const validAction = (c, a) => {
+  const r = c.cv.r; const d = c.cv.d; const st = r.stage;
+  return { options: ['partial_decide', 'denied'].includes(st), info: ['info_requested', 'portal_open'].includes(st) || !!(d.docs || {}).info, p2p: ['partial_decide', ...D.P2P_STAGES].includes(st), reconsider: ['partial_decide', 'denied'].includes(st) || d.path === 'recon', appeal: ['denied', 'appeal_sent'].includes(st) }[a];
+};
 const M_now = c => c.M.now(c.s);
 
-export function strip(c) {
-  const { cv, ui } = c; const u = cv.units; const r = cv.r; const d = cv.d;
-  const item = (k, v) => `<div><dt>${e(k)}</dt><dd>${v}</dd></div>`;
-  return `<dl class="d-strip" aria-label="Case facts">${item('Payer', e(cv.payer.name))}${item('Send path', e(cv.channel.label))}${item('Service', e((r.service || '').split(' · ')[0]))}${item('Units', `${u.requested} requested${u.offered != null ? ' · ' + u.offered + ' offered' : ''}${u.awarded != null ? ' · ' + u.awarded + ' awarded' : ''}`)}${item('Case', e(d.id))}</dl>`;
+// ------------------------------------------------------------------------------------------------------------------ header card
+function deadlineChip(c) {
+  const { cv, ui } = c; const dl = cv.deadline; if (!cv.open || !dl) return '';
+  const hourly = dl.date && String(dl.date).includes('T'); let rel = '';
+  if (dl.date) { const h = hourly ? Math.round(hoursBetween(M_now(c), dl.date)) : null; rel = hourly && Math.abs(h) < 72 ? (h < 0 ? `${-h} h late` : `${h} h left`) : dl.days < 0 ? `${-dl.days} d late` : dl.days === 0 ? 'Today' : `${dl.days} d`; }
+  const tone = dl.sev === 'overdue' ? 'danger' : dl.sev === 'soon' ? 'warning' : 'neutral';
+  return `<span class="d-dlchip">${ui.chip(`${dl.label}${dl.date ? ' · ' + when(dl.date) : ''}`, { tone, icon: dl.sev === 'overdue' ? 'alert' : 'clock', detail: rel })}${ui.sourceChip(dl)}</span>`;
+}
+// Update status: status is derived from the request, so this menu offers the recorded steps that move it (each one opens its own dialog or section).
+function statusItems(c) {
+  const { cv } = c; const r = cv.r; const d = cv.d; const work = D.canWork(c.me); const out = [];
+  if (!cv.open) return out;
+  const goto = (label, section, action) => out.push({ label, x: 'goto', data: { section, action: action || '' } });
+  if (work) {
+    if (r.stage === 'partial_decide') { out.push({ label: 'Accept the offer…', x: 'accept', data: { mode: 'plain' } }); out.push({ label: 'Ask for a peer-to-peer…', x: 'p2preq' }); if (!(d.tried || []).includes('recon')) out.push({ label: 'Request reconsideration', x: 'choose', data: { path: 'recon' } }); }
+    if (r.stage === 'denied') { out.push({ label: 'Prepare an appeal', x: 'choose', data: { path: 'appeal' } }); if (!(d.tried || []).includes('recon')) out.push({ label: 'Request reconsideration', x: 'choose', data: { path: 'recon' } }); out.push({ label: 'Accept the denial…', x: 'accept', data: { mode: 'denial' } }); }
+    if (['info_requested', 'portal_open'].includes(r.stage)) goto('Draft or review the reply', 'action', 'info');
+    if (D.P2P_STAGES.includes(r.stage)) { out.push({ label: r.p2p_at ? 'Change the call…' : 'Set the call…', x: 'schedule' }); out.push({ label: r.stage === 'p2p_awaiting' ? 'Record the decision…' : 'Log the outcome…', x: 'outcome' }); }
+    if (r.stage === 'appeal_sent' || (d.docs.recon && d.docs.recon.sent)) out.push({ label: 'Record the payer answer…', x: 'outcome' });
+  }
+  out.push({ label: d.review ? 'Update the clinical review…' : 'Mark for clinical review…', x: 'step', data: { k: 'review' } });
+  out.push({ label: 'Change the owner…', x: 'assign' });
+  return out;
+}
+export function header(c) {
+  const { cv, ui, hrefFor } = c; c_icon = ui.icon; const d = cv.d; const r = cv.r; const work = D.canWork(c.me);
+  const tone = d.issue === 'denial' ? 'danger' : d.issue === 'info' ? 'info' : 'warning';
+  const items = statusItems(c);
+  const upd = items.length ? `<details class="d-upd" id="d-upd"><summary class="ui-btn ui-btn--secondary ui-btn--sm">Update status</summary><ul class="d-upd__p" role="menu" aria-label="Update status">${items.map(it => `<li role="none"><button type="button" role="menuitem" data-x="${it.x}"${Object.entries(it.data || {}).map(([k, v]) => ` data-${k}="${e(v)}"`).join('')}>${e(it.label)}</button></li>`).join('')}</ul></details>` : '';
+  const voice = cv.open ? (work ? `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="call" id="d-call">${ui.icon('phone', 14)} Call payer · voice agent</button>` : `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" disabled title="Needs clinician: a clinician starts and records every payer call">${ui.icon('phone', 14)} Call payer · voice agent</button>`) : '';
+  const lauris = c.laurisUrl && c.canLauris ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${e(c.laurisUrl)}" target="_blank" rel="noopener">Open in Lauris${ui.icon('external', 14)}<span class="ui-sr"> (opens Lauris in a new tab)</span></a>` : '';
+  const chips = [ui.statusChip(cv.status, { kind: 'dispute' }), deadlineChip(c), !cv.open ? ui.chip(`Closed ${fmtDate(d.closed)}`, { tone: 'neutral', icon: 'lock' }) : '',
+    `<span class="d-auth"><span class="ui-muted">Authorization</span> ${ui.statusChip(r.stage)}</span>`, btn(`Owner: ${cv.owner.short}`, 'assign', { sm: true, tone: 'ghost', title: 'Change the owner and the backup' })].join('');
+  const u = cv.units; const svc = (r.service || '').split(' · ')[0];
+  const line = [cv.payer.name, svc, `Request ${r.id}`, `${u.requested} units requested`, `Sent by ${cv.channel.label}`, d.id].map(e).join(' · ');
+  const tl = D.timelineOf(c.s, d, r, cv.status);
+  const steps = `<ol class="d-steps" aria-label="Where this decision is">${tl.labels.map((l, i) => `<li class="${i < tl.step ? 'is-done' : i === tl.step ? 'is-now' : ''}"${i === tl.step ? ' aria-current="step"' : ''}><span class="d-steps__dot" aria-hidden="true">${i < tl.step ? ui.icon('check', 12) : i + 1}</span><b>${e(l)}</b><span class="d-steps__d">${i <= tl.step ? e(tl.dates[i]) : ''}</span></li>`).join('')}</ol>`;
+  return `<nav class="d-crumb" aria-label="Breadcrumb"><a href="#/DenialIntelligence">Denial Intelligence</a><span aria-hidden="true">/</span><span aria-current="page">${e(cv.c.initials)}</span></nav>
+  <header class="d-hd"><div class="d-hd__t"><div class="d-hd__l"><h1>${e(cv.consumer)}</h1>${ui.chip(cv.issueLabel, { tone })}</div><div class="d-hd__a">${upd}${voice}${link('Open in Authorizations', hrefFor('Authorizations.dc.html?id=' + r.id), { sm: true })}${lauris}</div></div>
+  <div class="d-hd__c">${chips}</div><p class="d-hd__s">${line}</p>${steps}</header>`;
 }
 
-export function tabs(c) {
-  const { cv, st } = c; const idx = c.idx();
-  const badge = k => k === 'evidence' && c.clinical && idx.counts.missing ? `<span class="d-tab__n" title="${idx.counts.missing} items marked Evidence missing">${idx.counts.missing}</span>` : k === 'options' && cv.open ? `<span class="d-tab__n">${cv.options.filter(o => o.available).length}</span>` : k === 'history' ? `<span class="d-tab__n">${c.history().length}</span>` : '';
-  return `<nav class="d-tabs" aria-label="Case sections"><ul>${SECTIONS.map(([k, l]) => `<li><a href="#/DenialCase?id=${e(cv.r.id)}&section=${k}" data-x="tab" data-section="${k}"${st.section === k ? ' aria-current="page"' : ''}>${e(l)}${badge(k)}</a></li>`).join('')}</ul></nav>`;
+// ------------------------------------------------------------------------------------------------------------------ left menu
+export function menu(c) {
+  const { cv, st } = c; const r = cv.r; const d = cv.d; const idx = c.idx(); const res = D.stepResults(c.s, d, r, idx); const done = D.STEP_LIST.filter(([k]) => res[k]).length;
+  const act = st.action || defaultAction(cv);
+  const href = (section, action) => `#/DenialCase?id=${e(r.id)}&section=${section}${action ? '&action=' + action : ''}`;
+  const item = (label, section, action, sub) => { const on = st.section === section && (section !== 'action' || act === action); return `<li><a href="${href(section, action)}" data-x="tab" data-section="${section}"${action ? ` data-action="${action}"` : ''}${on ? ' aria-current="page"' : ''}><b>${e(label)}</b>${sub ? `<span>${e(sub)}</span>` : ''}</a></li>`; };
+  const pf = cv.payer.first; const nW = c.clinical ? D.weakPoints(c.s, d, r, idx).length : null;
+  const ev = !c.clinical ? 'Restricted' : idx.counts.missing ? `${idx.counts.missing} not documented` : 'All documented';
+  const doc = k => (d.docs || {})[k]; const docSub = k => res[k] === undefined ? (validAction(c, k === 'recon' ? 'reconsider' : k) ? '' : 'Not available now') : res[k];
+  const respond = [
+    ['partial_decide', 'denied'].includes(r.stage) ? item(r.stage === 'denied' ? 'Accept the denial' : 'Decide on the offer', 'action', 'options', '') : '',
+    validAction(c, 'info') ? item(`Reply to ${pf}`, 'action', 'info', doc('info') ? (doc('info').sent ? 'Sent' : doc('info').reviewed ? 'Reviewed' : 'Simulated draft') : '') : '',
+    item('Appeal draft', 'action', 'appeal', docSub('appeal')), item('Peer-to-peer script', 'action', 'p2p', docSub('p2p')), item('Reconsideration', 'action', 'reconsider', docSub('recon')),
+    item('Documentation request', 'docreq', '', res.docreq || (c.clinical && idx.needs.length ? `${idx.needs.length} to request` : ''))].join('');
+  return `<nav class="d-menu" aria-label="Case sections"><p class="d-menu__g">Review</p><ul>${item('Overview', 'overview', '', `${done} of ${D.STEP_LIST.length} steps done`)}${item(d.issue === 'info' ? `What ${pf} asked` : `What ${pf} said`, 'said', '', '')}${item('Clinical evidence', 'evidence', '', ev)}${item('Where the denial is weak', 'weak', '', c.clinical ? (res.analyze ? `${nW} point${nW === 1 ? '' : 's'}` : 'Not analyzed') : 'Restricted')}</ul><p class="d-menu__g">Respond</p><ul>${respond}</ul></nav>`;
 }
 
-// ------------------------------------------------------------------------------------------------------------------ Decision
-export function decisionSection(c) {
-  const { cv, ui, s } = c; const d = cv.d; const r = cv.r; const dec = cv.decision; const u = cv.units;
-  const row = (k, v) => `<div class="ui-dl__r"><dt>${e(k)}</dt><dd>${v}</dd></div>`;
-  const doc = dec.docRef ? `${e(dec.docRef)}` : `<span class="d-docref">${c.ui.evidenceChip({ state: 'missing', label: 'the document reference for the payer decision' })}<span class="ui-muted d-sm">${e(dec.docRefNote)}</span> ${D.canRecord(c.me) && ['partial', 'denial'].includes(d.issue) && cv.open ? btn('Record document', 'recorddoc', { sm: true }) : needs(c, 'Needs a person with the decision capability')}</span>`;
-  const reasons = !c.clinical && d.issue === 'info' ? `<p>${needs(c, 'Needs clinician')}</p>` : dec.reasons.length ? `<ul class="d-reasons">${dec.reasons.map(x => `<li><blockquote class="ui-quote">${e(x.text)}</blockquote><span class="d-sm ui-muted">${e(x.source)}${x.earlier ? ' · earlier step' : ''}</span></li>`).join('')}</ul>` : `<p>${ui.evidenceChip({ state: 'missing', label: "the payer's stated reason" })}</p>`;
-  const asked = d.issue === 'info' ? 'What the payer asked' : "The payer's stated reasons";
-  const dls = cv.deadlines.length ? `<ul class="d-dls">${cv.deadlines.map(x => `<li><span><b>${e(x.label)}</b>${x.date ? ' · ' + e(when(x.date)) : ''}${x.days != null ? ` <span class="d-sm ui-muted">(${x.days < 0 ? -x.days + ' d late' : x.days === 0 ? 'today' : 'in ' + x.days + ' d'})</span>` : ''}</span>${ui.sourceChip(x)}<span class="d-sm ui-muted">${e(x.source)}</span></li>`).join('')}</ul>` : '<p class="ui-muted">No open deadline.</p>';
-  const unitsLine = u.current != null ? `${u.requested} requested → ${u.current} ${d.issue === 'denial' ? 'approved' : u.offered != null ? 'offered' : 'approved'}. At ${u.rate} units a school day, ${u.current} units cover ${u.days} school days${u.runOut ? ', to about ' + fmtDate(u.runOut) : ''}. ${ui.sourceChip(u.assumption)}` : `${u.requested} requested.`;
-  const ledger = dec.ledger.length ? `<details class="d-det"><summary>Decision record (${dec.ledger.length}) · write-once</summary><table class="d-table"><thead><tr><th>When</th><th>Kind</th><th>Outcome</th><th>Units</th><th>Document</th><th>Recorded by</th></tr></thead><tbody>${dec.ledger.slice().reverse().map(x => `<tr${x.superseded_by ? ' class="d-sup"' : ''}><td>${e(when(x.at))}</td><td>${e(x.kind)}</td><td>${e(x.outcome)}${x.sim ? ' ' + ui.chip('Simulated', { tone: 'outline', size: 'sm', className: 'ui-chip--sim' }) : ''}</td><td>${x.units ?? ''}</td><td>${e(x.doc_ref)}</td><td>${e(c.M.staff(s, x.by).name)}${x.reason ? ' · correction: ' + e(x.reason) : ''}</td></tr>`).join('')}</tbody></table></details>` : '<p class="d-sm ui-muted">No decision record yet: a decision is stored once, with the document that states it.</p>';
-  return `<section class="d-sect" aria-labelledby="d-h-dec"><h2 id="d-h-dec">Decision</h2>
-  <dl class="ui-dl d-dl">${row('What', e(dec.summary))}${row('When', e(when(dec.date) || 'Not recorded') + (dec.via ? ' · ' + e(dec.via) : ''))}${row('Document', doc)}${dec.source ? row('Source', e(dec.source)) : ''}${!cv.open && d.outcome ? row('Outcome', `<b>${e(d.outcome.text)}</b>${d.outcome.doc_ref ? ' · document ' + e(d.outcome.doc_ref) : ''} · ${e(when(d.closed))}`) : ''}</dl>
-  <h3>${asked}</h3>${reasons}
-  <h3>Units</h3><p>${unitsLine}</p>
-  <h3>Deadlines</h3>${dls}
-  ${ledger}</section>`;
+// ------------------------------------------------------------------------------------------------------------------ Overview: the seven recommended steps
+function stepsCard(c) {
+  const { cv, ui, s } = c; const d = cv.d; const r = cv.r; const idx = c.idx(); const res = D.stepResults(s, d, r, idx); const done = D.STEP_LIST.filter(([k]) => res[k]).length;
+  const nt = cv.open ? nextTarget(cv) : null;
+  const next = cv.open ? `<div class="d-next" role="status"><span class="d-next__l">Next</span><b>${e(cv.next.label)}</b><span class="d-sm ui-muted">${e(cv.owner.name)}</span>${nt && D.canWork(c.me) ? btn(nt.label, 'goto', { tone: 'primary', sm: true, data: { section: nt.section, action: nt.action || '' } }) : nt ? needs(c) : ''}</div>`
+    : `<div class="d-next d-next--done" role="status"><span class="d-next__l">Outcome</span><b>${e(d.outcome ? d.outcome.text : 'Closed')}</b>${link('Open authorization', c.hrefFor('Authorizations.dc.html?id=' + r.id), { tone: 'primary', sm: true })}</div>`;
+  const rows = D.STEP_LIST.map(([k, label], i) => {
+    const locked = D.NEEDS_CLINICAL.includes(k) && !c.clinical; const res1 = res[k];
+    const dl = STEP_PATH[k] && d.issue !== 'info' ? cv.deadlines.find(x => x.kind === k) : null; const cur = cv.path === STEP_PATH[k] && STEP_PATH[k];
+    const bits = [locked ? `<span class="ui-muted">${ui.icon('lock', 14)} Clinical record access required</span>` : res1 ? `<span class="d-act__ok">${e(res1)}</span>` : '', dl ? `<span class="d-sm ui-muted">Deadline ${e(dl.label)}${dl.date ? ' · ' + e(when(dl.date)) : ''}</span>${ui.sourceChip(dl)}` : '', cur ? ui.chip('Current pathway', { tone: 'info', icon: 'dot', size: 'sm' }) : ''].filter(Boolean).join('');
+    return `<li class="d-act${res1 ? ' is-done' : ''}${cur ? ' is-cur' : ''}"><button type="button" class="d-act__b" data-x="step" data-k="${k}"${locked ? ' disabled title="Clinical record access required"' : ''} aria-label="${e(label)}${res1 ? ', ' + e(res1) : ''}"><span class="d-act__n" aria-hidden="true">${res1 ? ui.icon('check', 14) : i + 1}</span><span class="d-act__t"><b>${e(label)}</b>${bits ? `<span class="d-act__r">${bits}</span>` : ''}</span><span class="d-act__go" aria-hidden="true">${locked ? '' : 'Open ›'}</span></button></li>`;
+  }).join('');
+  return `<section class="d-sect" aria-labelledby="d-h-steps"><div class="d-sect__h"><h2 id="d-h-steps">Recommended next steps</h2><span class="d-sm ui-muted d-sect__r">${done} of ${D.STEP_LIST.length} done</span></div>${next}<ol class="d-acts">${rows}</ol></section>`;
+}
+// What the payer said, beside what the chart shows (stored records, each with its source; "Not documented" where none)
+const evChips = (c, ids) => { const idx = c.idx(); const chips = (ids || []).map(id => D.evidenceById(idx, id)).filter(Boolean).map(it => c.ui.evidenceChip(D.chipOpts(it))); return chips.slice(0, 3).join('') + (chips.length > 3 ? `<details class="d-more"><summary>+${chips.length - 3} more sources</summary><div class="d-sec__ev">${chips.slice(3).join('')}</div></details>` : ''); };
+function saidCard(c, o = {}) {
+  const { cv, ui, s } = c; const d = cv.d; const r = cv.r; const pf = cv.payer.first; const dec = cv.decision;
+  const title = d.issue === 'info' ? `What ${pf} asked` : `What ${pf} said`;
+  let rows;
+  if (c.clinical) {
+    const pairs = D.compareReasons(s, d, r, c.idx());
+    rows = pairs.map(x => `<div class="d-vs"><blockquote class="d-said">“${e(x.said)}”</blockquote><div class="d-shows"><span class="d-cap">What the chart shows</span>${x.matched ? `<p>${x.shows ? e(x.shows) : ''} ${evChips(c, x.ids)}</p>` : '<p class="ui-muted">Not compared yet: no stored record is matched to this reason.</p>'}${x.need.map(n => `<p class="d-needrow">${ui.evidenceChip({ state: 'missing', label: n })}</p>`).join('')}</div></div>`).join('')
+      || `<p>${ui.evidenceChip({ state: 'missing', label: "the payer's stated reason" })}</p>`;
+  } else {
+    rows = d.issue === 'info' ? `<p>${needs(c, 'Needs clinician')} <span class="d-sm ui-muted">The items the payer asked for are clinical text.</span></p>`
+      : (dec.reasons || []).map(x => `<div class="d-vs"><blockquote class="d-said">“${e(String(x.text).replace(/^["“]|["”]$/g, ''))}”</blockquote><div class="d-shows"><span class="d-cap">What the chart shows</span><p>${needs(c, 'Needs clinician')}</p></div></div>`).join('') || `<p class="ui-muted">No reason is recorded.</p>`;
+  }
+  const corr = [dec.via ? ui.chip(`${dec.via}${dec.date ? ' · ' + when(dec.date) : ''}`, { tone: 'outline', icon: 'send' }) : '', dec.source ? `<span class="d-sm ui-muted">${e(dec.source)}</span>` : ''].join('');
+  return `<section class="d-sect" aria-labelledby="d-h-said${o.id || ''}"><div class="d-sect__h"><h2 id="d-h-said${o.id || ''}">${e(title)}</h2><span class="d-sect__r">${o.compact ? btn('Decision details', 'tab', { sm: true, tone: 'ghost', data: { section: 'said' } }) : ''}${btn(`${pf} guidance`, 'guidance', { sm: true, tone: 'ghost' })}</span></div>${rows}${corr ? `<div class="d-corr"><span class="d-cap">Payer correspondence</span>${corr}</div>` : ''}</section>`;
+}
+// Where the denial is weak: points derived from stored records (see sel/disputes.js weakPoints). "Analyze" is a person's button; nothing is scored.
+function weakRow(c, w, compact) {
+  const { ui, s } = c; const idx = c.idx(); const [tone, lab] = D.WEAK_KINDS[w.kind];
+  const refs = [evChips(c, w.ids), w.rule ? ui.sourceChip(w.rule) : ''].join('');
+  const go = w.lauris && c.laurisUrl && c.canLauris ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${e(c.laurisUrl)}" target="_blank" rel="noopener">Collect in Lauris${ui.icon('external', 14)}<span class="ui-sr"> (opens Lauris in a new tab)</span></a>` : w.go ? btn(w.go === 'evidence' ? 'Open the evidence' : 'Decision details', 'tab', { sm: true, data: { section: w.go } }) : '';
+  return `<div class="d-wp" data-kind="${w.kind}">${ui.chip(lab, { tone, size: 'sm' })}<div class="d-wp__b"><b>${e(w.title)}</b>${w.text && !compact ? `<p>${e(w.text)}</p>` : ''}<div class="d-wp__f">${refs}<span class="d-wp__fix">Fix: ${e(w.fix)}</span>${go}</div></div></div>`;
+}
+function weakCard(c, limit) {
+  const { cv, ui, s } = c; const d = cv.d; const r = cv.r; const sec = limit ? '' : ' id="d-h-weak"';
+  const head = extra => `<div class="d-sect__h"><h2${sec || ' id="d-h-weakc"'}>Where the denial is weak</h2>${extra || ''}</div>`;
+  if (!c.clinical) return `<section class="d-sect" aria-labelledby="${limit ? 'd-h-weakc' : 'd-h-weak'}">${head()}${ui.emptyState({ tone: 'denied', title: 'Needs clinician', body: 'Weak points quote clinical records, so they are shown to clinicians only. Administrators see the status, units and deadlines of the case.' })}</section>`;
+  if (!d.analysis) return `<section class="d-sect" aria-labelledby="${limit ? 'd-h-weakc' : 'd-h-weak'}">${head()}<div class="d-empty"><span class="ui-muted">Not analyzed yet</span>${cv.open && D.canWork(c.me) ? btn('Analyze Denial', 'step', { tone: 'primary', sm: true, data: { k: 'analyze' } }) : ''}</div></section>`;
+  const all = D.weakPoints(s, d, r, c.idx()); const list = limit ? all.slice(0, limit) : all;
+  const extra = limit ? (all.length > limit ? btn(`See all ${all.length}`, 'tab', { sm: true, data: { section: 'weak' } }) : '') : `${ui.maturity('denial.analysis')}${ui.chip('Simulated', { tone: 'outline', className: 'ui-chip--sim', title: 'Rule-based points from stored records; no language model is called and no likelihood is given.' })}<span class="d-sm ui-muted">Analyzed ${e(when(d.analysis.at))} · ${e(c.M.staff(s, d.analysis.by).name)}</span>`;
+  return `<section class="d-sect" aria-labelledby="${limit ? 'd-h-weakc' : 'd-h-weak'}">${head(extra)}<div class="d-wk">${list.map(w => weakRow(c, w, !!limit)).join('') || '<p class="ui-muted">No weak points found in the stored records.</p>'}</div>${!limit && cv.open && D.canWork(c.me) ? `<div class="ui-btnrow">${btn('Analyze again', 'step', { sm: true, data: { k: 'analyze' } })}</div>` : ''}</section>`;
 }
 
-// ------------------------------------------------------------------------------------------------------------------ Evidence
-export function evidenceSection(c) {
-  const { cv, ui } = c;
-  if (!c.clinical) return `<section class="d-sect" aria-labelledby="d-h-ev"><h2 id="d-h-ev">Evidence</h2>${ui.emptyState({ tone: 'denied', title: 'Needs clinician', body: 'Clinical evidence is shown to clinicians only. Administrators see the status, units and deadlines of the case.' })}</section>`;
-  const idx = c.idx(); const d = cv.d;
-  const row = it => `<li class="d-ev${it.usable ? '' : ' d-ev--held'}"><span class="d-ev__d">${e(fmtDate(it.date, { year: !it.current }))}</span><span class="d-ev__b"><b>${e(it.label)}</b>${it.quote ? `<span class="d-sm ui-muted">${e(it.quote)}</span>` : ''}</span><span class="d-ev__c">${ui.evidenceChip(D.chipOpts(it))}</span><span class="d-ev__a">${D.canWork(c.me) && cv.open ? (it.usable ? btn('Exclude', 'incl', { sm: true, tone: 'ghost', data: { ref: it.id, include: '0' }, title: 'Keep this record out of drafts' }) : btn(it.state === 'sensitive' ? 'Include' : 'Include again', 'incl', { sm: true, tone: 'ghost', data: { ref: it.id, include: '1' }, title: it.state === 'sensitive' ? 'Sensitive: include only when appropriate and authorized' : 'Use this record in drafts again' })) : ''}</span></li>`;
-  const cur = idx.items.filter(x => x.current); const old = idx.items.filter(x => !x.current);
-  const seeded = idx.items.some(x => x.provenance === 'seed');
-  const miss = idx.needs.length ? `<ul class="d-miss-l">${idx.needs.map(n => `<li>${ui.evidenceChip({ state: 'missing', label: n.label })}</li>`).join('')}</ul>` : `<p class="ui-muted">Nothing is marked missing for this case.</p>`;
-  return `<section class="d-sect" aria-labelledby="d-h-ev"><div class="d-sect__h"><h2 id="d-h-ev">Evidence</h2>${ui.sourceChip(rule(c.s, 'evidence.current_window_days'))}${seeded ? ui.chip('Illustrative sample', { tone: 'outline', icon: 'info', title: 'These records are seeded demo data, not captured from a real chart.' }) : ''}</div>
-  <h3>Missing <span class="d-n">${idx.needs.length}</span></h3>${miss}
-  <h3>Last ${idx.window} days <span class="d-n">${cur.length}</span></h3>${cur.length ? `<ul class="d-evl">${cur.map(row).join('')}</ul>` : `<p>${ui.evidenceChip({ state: 'missing', label: `dated records from the last ${idx.window} days` })}</p>`}
-  ${old.length ? `<h3>Earlier history <span class="d-n">${old.length}</span></h3><ul class="d-evl">${old.map(row).join('')}</ul>` : ''}
-  ${idx.counts.held ? `<p class="d-sm ui-muted">${idx.counts.held} record${idx.counts.held === 1 ? ' is' : 's are'} held back from drafts (sensitive or excluded).</p>` : ''}</section>`;
-}
-
-// ------------------------------------------------------------------------------------------------------------------ Options
-export function optionsSection(c) {
+// ------------------------------------------------------------------------------------------------------------------ All paths (the former Options page): every route this decision can take, each with its rule and source
+function pathsCard(c) {
   const { cv, ui, hrefFor } = c; const r = cv.r;
   const card = o => {
     const dl = o.deadline;
@@ -108,15 +167,67 @@ export function optionsSection(c) {
     return `<li class="d-opt${o.available ? '' : ' d-opt--off'}"><div class="d-opt__b"><h3>${e(o.label)}</h3><p>${e(o.available ? o.sub || '' : o.why || '')}</p><div class="d-opt__m">${chips}${dlLine}</div></div><div class="d-opt__a">${act}</div></li>`;
   };
   const on = cv.options.filter(o => o.available), off = cv.options.filter(o => !o.available);
-  return `<section class="d-sect" aria-labelledby="d-h-opt"><h2 id="d-h-opt">Options</h2>${cv.open ? '' : `<p class="ui-muted">This case is closed: ${e(cv.d.outcome ? cv.d.outcome.text : '')}</p>`}
+  return `<section class="d-sect"><details class="d-paths" id="d-paths"${c.st.paths ? ' open' : ''}><summary><h2>All paths</h2><span class="d-sm ui-muted">${on.length} available · each with its rule and source</span></summary>${cv.open ? '' : `<p class="ui-muted">This case is closed: ${e(cv.d.outcome ? cv.d.outcome.text : '')}</p>`}
   <ul class="d-opts">${on.map(card).join('')}</ul>
-  ${off.length ? `<details class="d-det"><summary>Not available here (${off.length})</summary><ul class="d-opts">${off.map(card).join('')}</ul></details>` : ''}</section>`;
+  ${off.length ? `<details class="d-det"><summary>Not available here (${off.length})</summary><ul class="d-opts">${off.map(card).join('')}</ul></details>` : ''}</details></section>`;
+}
+export function overviewSection(c) { return stepsCard(c) + saidCard(c, { compact: true, id: '-o' }) + weakCard(c, 3) + pathsCard(c); }
+export function saidSection(c) { return saidCard(c, { id: '' }) + decisionSection(c); }
+export const weakSection = c => weakCard(c, 0);
+
+// ------------------------------------------------------------------------------------------------------------------ Decision details
+export function decisionSection(c) {
+  const { cv, ui, s } = c; const d = cv.d; const r = cv.r; const dec = cv.decision; const u = cv.units;
+  const row = (k, v) => `<div class="ui-dl__r"><dt>${e(k)}</dt><dd>${v}</dd></div>`;
+  const doc = dec.docRef ? `${e(dec.docRef)}` : `<span class="d-docref">${c.ui.evidenceChip({ state: 'missing', label: 'the document reference for the payer decision' })}<span class="ui-muted d-sm">${e(dec.docRefNote)}</span> ${D.canRecord(c.me) && ['partial', 'denial'].includes(d.issue) && cv.open ? btn('Record document', 'recorddoc', { sm: true }) : needs(c, 'Needs a person with the decision capability')}</span>`;
+  const dls = cv.deadlines.length ? `<ul class="d-dls">${cv.deadlines.map(x => `<li><span><b>${e(x.label)}</b>${x.date ? ' · ' + e(when(x.date)) : ''}${x.days != null ? ` <span class="d-sm ui-muted">(${x.days < 0 ? -x.days + ' d late' : x.days === 0 ? 'today' : 'in ' + x.days + ' d'})</span>` : ''}</span>${ui.sourceChip(x)}<span class="d-sm ui-muted">${e(x.source)}</span></li>`).join('')}</ul>` : '<p class="ui-muted">No open deadline.</p>';
+  const unitsLine = u.current != null ? `${u.requested} requested → ${u.current} ${d.issue === 'denial' ? 'approved' : u.offered != null ? 'offered' : 'approved'}. At ${u.rate} units a school day, ${u.current} units cover ${u.days} school days${u.runOut ? ', to about ' + fmtDate(u.runOut) : ''}. ${ui.sourceChip(u.assumption)}` : `${u.requested} requested.`;
+  const ledger = dec.ledger.length ? `<details class="d-det"><summary>Decision record (${dec.ledger.length}) · write-once</summary><table class="d-table"><thead><tr><th>When</th><th>Kind</th><th>Outcome</th><th>Units</th><th>Document</th><th>Recorded by</th></tr></thead><tbody>${dec.ledger.slice().reverse().map(x => `<tr${x.superseded_by ? ' class="d-sup"' : ''}><td>${e(when(x.at))}</td><td>${e(x.kind)}</td><td>${e(x.outcome)}${x.sim ? ' ' + ui.chip('Simulated', { tone: 'outline', size: 'sm', className: 'ui-chip--sim' }) : ''}</td><td>${x.units ?? ''}</td><td>${e(x.doc_ref)}</td><td>${e(c.M.staff(s, x.by).name)}${x.reason ? ' · correction: ' + e(x.reason) : ''}</td></tr>`).join('')}</tbody></table></details>` : '<p class="d-sm ui-muted">No decision record yet: a decision is stored once, with the document that states it.</p>';
+  const calls = c.clinical && (d.calls || []).length ? `<h3>Payer calls <span class="d-n">${d.calls.length}</span></h3><ul class="d-calls">${d.calls.slice().reverse().map(x => `<li><b>${e(when(x.at))}</b> · ${e(x.purpose_label)} · ${e(c.M.staff(s, x.by).name)}${x.ref ? ' · ref ' + e(x.ref) : ''} ${ui.chip('Simulated', { tone: 'outline', size: 'sm', className: 'ui-chip--sim' })}<br><span class="d-sm">${e(x.outcome)}</span></li>`).join('')}</ul>` : '';
+  return `<section class="d-sect" aria-labelledby="d-h-dec"><h2 id="d-h-dec">Decision details</h2>
+  <dl class="ui-dl d-dl">${row('What', e(dec.summary))}${row('When', e(when(dec.date) || 'Not recorded') + (dec.via ? ' · ' + e(dec.via) : ''))}${row('Document', doc)}${dec.source ? row('Source', e(dec.source)) : ''}${!cv.open && d.outcome ? row('Outcome', `<b>${e(d.outcome.text)}</b>${d.outcome.doc_ref ? ' · document ' + e(d.outcome.doc_ref) : ''} · ${e(when(d.closed))}`) : ''}</dl>
+  <h3>Units</h3><p>${unitsLine}</p>
+  <h3>Deadlines</h3>${dls}
+  ${calls}
+  ${ledger}</section>`;
 }
 
-// ------------------------------------------------------------------------------------------------------------------ History
-export function historySection(c) {
-  const { cv, ui } = c; const evs = c.history();
-  return `<section class="d-sect" aria-labelledby="d-h-his"><h2 id="d-h-his">History</h2>${ui.timeline(evs, { id: 'dc-tl', label: 'Correspondence and decisions, newest first' })}</section>`;
+// ------------------------------------------------------------------------------------------------------------------ Evidence
+export function evidenceSection(c) {
+  const { cv, ui } = c;
+  if (!c.clinical) return `<section class="d-sect" aria-labelledby="d-h-ev"><h2 id="d-h-ev">Clinical evidence</h2>${ui.emptyState({ tone: 'denied', title: 'Needs clinician', body: 'Clinical evidence is shown to clinicians only. Administrators see the status, units and deadlines of the case.' })}</section>`;
+  const idx = c.idx(); const d = cv.d;
+  const row = it => `<li class="d-ev${it.usable ? '' : ' d-ev--held'}"><span class="d-ev__d">${e(fmtDate(it.date, { year: !it.current }))}</span><span class="d-ev__b"><b>${e(it.label)}</b>${it.quote ? `<span class="d-sm ui-muted">${e(it.quote)}</span>` : ''}</span><span class="d-ev__c">${ui.evidenceChip(D.chipOpts(it))}</span><span class="d-ev__a">${D.canWork(c.me) && cv.open ? (it.usable ? btn('Exclude', 'incl', { sm: true, tone: 'ghost', data: { ref: it.id, include: '0' }, title: 'Keep this record out of drafts' }) : btn(it.state === 'sensitive' ? 'Include' : 'Include again', 'incl', { sm: true, tone: 'ghost', data: { ref: it.id, include: '1' }, title: it.state === 'sensitive' ? 'Sensitive: include only when appropriate and authorized' : 'Use this record in drafts again' })) : ''}</span></li>`;
+  const cur = idx.items.filter(x => x.current); const old = idx.items.filter(x => !x.current);
+  const seeded = idx.items.some(x => x.provenance === 'seed');
+  const miss = idx.needs.length ? `<ul class="d-miss-l">${idx.needs.map(n => `<li>${ui.evidenceChip({ state: 'missing', label: n.label })}</li>`).join('')}</ul>` : `<p class="ui-muted">Nothing is marked missing for this case.</p>`;
+  return `<section class="d-sect" aria-labelledby="d-h-ev"><div class="d-sect__h"><h2 id="d-h-ev">Clinical evidence</h2>${ui.sourceChip(rule(c.s, 'evidence.current_window_days'))}${seeded ? ui.chip('Illustrative sample', { tone: 'outline', icon: 'info', title: 'These records are seeded demo data, not captured from a real chart.' }) : ''}</div>
+  <h3>Missing <span class="d-n">${idx.needs.length}</span></h3>${miss}${idx.needs.length && D.canWork(c.me) && cv.open ? `<div class="ui-btnrow">${btn('Request additional documentation', 'tab', { sm: true, data: { section: 'docreq' } })}</div>` : ''}
+  <h3>Last ${idx.window} days <span class="d-n">${cur.length}</span></h3>${cur.length ? `<ul class="d-evl">${cur.map(row).join('')}</ul>` : `<p>${ui.evidenceChip({ state: 'missing', label: `dated records from the last ${idx.window} days` })}</p>`}
+  ${old.length ? `<h3>Earlier history <span class="d-n">${old.length}</span></h3><ul class="d-evl">${old.map(row).join('')}</ul>` : ''}
+  ${idx.counts.held ? `<p class="d-sm ui-muted">${idx.counts.held} record${idx.counts.held === 1 ? ' is' : 's are'} held back from drafts (sensitive or excluded).</p>` : ''}</section>`;
+}
+
+// ------------------------------------------------------------------------------------------------------------------ Documentation request
+export function docreqSection(c) {
+  const { cv, ui, s, st } = c; const d = cv.d; const r = cv.r; const work = D.canWork(c.me) && cv.open;
+  if (!c.clinical) return `<section class="d-sect" aria-labelledby="d-h-dr"><h2 id="d-h-dr">Documentation request</h2>${ui.emptyState({ tone: 'denied', title: 'Needs clinician', body: 'What is missing is read from clinical records, so the request is prepared by clinicians.' })}</section>`;
+  const idx = c.idx(); const q = d.docreq;
+  const received = q ? (q.items || []).filter(x => x.got).length : 0;
+  const state = q ? `<h3>Requested from ${e(D.DOCREQ_TO[q.to] || q.to)}</h3><p class="d-sm ui-muted">Recorded ${e(when(q.at))} by ${e(c.M.staff(s, q.by).name)}. Psyflo sends no message: a person asks them.</p>
+    <ul class="d-dr">${q.items.map(x => `<li><span>${x.got ? ui.chip('Received', { tone: 'success', icon: 'check', size: 'sm' }) : ui.chip('Requested', { tone: 'warning', icon: 'clock', size: 'sm' })} ${e(x.label)}${x.got ? ` <span class="d-sm ui-muted">· ${e(when(x.got.at))} · ${e(c.M.staff(s, x.got.by).name)}</span>` : ''}</span>${!x.got && work ? btn('Mark received', 'docrecv', { sm: true, tone: 'ghost', data: { key: x.key } }) : ''}</li>`).join('')}</ul>` : '';
+  const need = idx.needs;
+  const form = !need.length ? `<p class="ui-muted">Nothing is marked Evidence missing for this case, so there is nothing to request.</p>`
+    : `<fieldset class="d-radios"><legend>What is missing</legend>${need.map(n => `<label class="d-check"><input type="checkbox" name="d-dr-k" value="${e(n.key)}" checked> ${e(n.label)}</label>`).join('')}</fieldset>
+      <fieldset class="d-radios"><legend>Request it from</legend>${Object.entries(D.DOCREQ_TO).map(([k, l], i) => `<label><input type="radio" name="d-dr-to" value="${k}"${(st.drTo || (q && q.to) || 'clinician') === k ? ' checked' : ''}> ${e(l)}</label>`).join('')}</fieldset>
+      <div class="ui-btnrow">${work ? btn(q ? 'Record a new request' : 'Record the request', 'docreq', { tone: 'primary' }) : needs(c)}</div><p class="d-sm ui-muted">This records who was asked and when. It does not send anything; the person asks them directly, then marks each item received here.</p>`;
+  return `<section class="d-sect" aria-labelledby="d-h-dr"><div class="d-sect__h"><h2 id="d-h-dr">Documentation request</h2>${ui.maturity('denial.docreq')}${q ? `<span class="d-sm ui-muted">${received} of ${q.items.length} received</span>` : ''}</div>${state}<h3>${q ? 'Still missing' : 'Missing evidence'}</h3>${form}</section>`;
+}
+
+// ------------------------------------------------------------------------------------------------------------------ History (a collapsed card at the foot of the page)
+export function historyCard(c) {
+  const { cv, ui, st } = c; const evs = c.history();
+  return `<details class="d-hist" id="d-hist"${st.hist || st.section === 'history' ? ' open' : ''}><summary><h2>History</h2><span class="d-sm ui-muted">${evs.length} event${evs.length === 1 ? '' : 's'}</span></summary>${ui.timeline(evs, { id: 'dc-tl', label: 'Correspondence and decisions, newest first' })}</details>`;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ documents (draft, review, edit)
@@ -262,14 +373,9 @@ function reconAction(c) {
 export function actionSection(c) {
   if (!c.cv.open && !c.st.action) {
     const d = c.cv.d;
-    return `<section class="d-sect" aria-labelledby="d-h-done"><h2 id="d-h-done">Closed</h2><p><b>${e(d.outcome ? d.outcome.text : 'This case is closed.')}</b>${d.outcome && d.outcome.doc_ref ? ' · document ' + e(d.outcome.doc_ref) : ''} · ${e(when(d.closed))}</p><p class="ui-muted">A closed case is write-once. A new payer decision on this request opens a new case.</p><div class="ui-btnrow">${btn('Open History', 'goto', { data: { section: 'history' } })}${link('Open authorization', c.hrefFor('Authorizations.dc.html?id=' + c.cv.r.id), { tone: 'primary' })}</div></section>`;
+    return `<section class="d-sect" aria-labelledby="d-h-done"><h2 id="d-h-done">Closed</h2><p><b>${e(d.outcome ? d.outcome.text : 'This case is closed.')}</b>${d.outcome && d.outcome.doc_ref ? ' · document ' + e(d.outcome.doc_ref) : ''} · ${e(when(d.closed))}</p><p class="ui-muted">A closed case is write-once. A new payer decision on this request opens a new case.</p><div class="ui-btnrow">${btn('Open History', 'tab', { data: { section: 'history' } })}${link('Open authorization', c.hrefFor('Authorizations.dc.html?id=' + c.cv.r.id), { tone: 'primary' })}</div></section>`;
   }
   const k = c.st.action || defaultAction(c.cv);
-  const label = { info: 'Information', options: 'Decide', p2p: 'Peer-to-peer', appeal: 'Appeal', reconsider: 'Reconsider' };
-  const r = c.cv.r; const d = c.cv.d; const st = r.stage;
-  const valid = { options: ['partial_decide', 'denied'].includes(st), info: ['info_requested', 'portal_open'].includes(st) || !!(d.docs || {}).info, p2p: ['partial_decide', ...D.P2P_STAGES].includes(st), reconsider: ['partial_decide', 'denied'].includes(st) || d.path === 'recon', appeal: ['denied', 'appeal_sent'].includes(st) };
-  const show = ['options', 'info', 'p2p', 'reconsider', 'appeal'].filter(a => valid[a] || a === k);
-  const sub = show.length > 1 ? `<nav class="d-subnav" aria-label="Workflow">${show.map(a => `<a href="#/DenialCase?id=${e(r.id)}&section=action&action=${a}" data-x="subnav" data-action="${a}"${k === a ? ' aria-current="true"' : ''}>${label[a]}</a>`).join('')}</nav>` : '';
   const body = { info: infoAction, options: optionsAction, p2p: p2pAction, appeal: appealAction, reconsider: reconAction }[k] || optionsAction;
-  return sub + body(c);
+  return body(c);
 }

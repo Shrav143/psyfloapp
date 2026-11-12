@@ -1,6 +1,6 @@
 # documentation · PASS
 
-Run 2026-11-11T21-13-30Z · 36201 ms · instance 2 · exit 0
+Run 2026-11-12T00-16-46Z · 37537 ms · instance 1 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -10,7 +10,7 @@ Run 2026-11-11T21-13-30Z · 36201 ms · instance 2 · exit 0
 | PASS | the server refuses what the screen hides: administrator and direct support cannot review; nobody reviews their own note |  |
 | PASS | supervisor: one h1, Open is the default, the table has Patient to Action, the status chips carry counts, nothing outside the scope |  |
 | PASS | filters: status chip, document type, search, group; each persists in the URL and survives a reload; Clear filters returns to Open |  |
-| PASS | sorting by Due and Status; Show more for a long list; header stays |  |
+| PASS | sorting by Due and Status; the pager (rows per page 10, 25, 50, 100) replaces the count and Show more; header stays |  |
 | PASS | review drawer: ?id= opens it on load; approve end to end (status changes in the table, audit event, toast); the decided note leaves Needs review |  |
 | PASS | return with a note: the note is required, the drawer stays open on the error; then the note goes back (status Sent back, audit event, reviewer named) |  |
 | PASS | "That didn't happen" needs a note too and flags the note (sent back, flagged in the audit trail) |  |

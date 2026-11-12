@@ -108,14 +108,18 @@ try {
     assert.eq((await p.locator('.ui-fchip[aria-pressed="true"]').innerText()).replace(/\s+/g, ' ').replace(/\d+/, '').trim(), 'Open', 'Clear returns to Open');
     assert.eq(await p.locator('#doc-from').inputValue(), '', 'dates cleared'); assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
-  await T.test('sorting by Due and Status; Show more for a long list; header stays', async () => {
+  await T.test('sorting by Due and Status; the pager (rows per page 10, 25, 50, 100) replaces the count and Show more; header stays', async () => {
     const p = await open('jperez', '/#/Documentation?status=all');
     await p.click('.ui-qt__sort[data-key="due"]'); await p.waitForTimeout(250);
     const first = (await p.locator('.ui-qt tbody tr').first().innerText()); assert.ok(first.length > 0);
     assert.match(await p.evaluate(() => location.hash), /sort=due/);
     assert.eq(await p.locator('.ui-qt thead th[aria-sort="ascending"]').count(), 1);
-    assert.ok(await p.locator('.ui-qt__more').count() >= 1, 'a long list shows Show more'); await p.click('[data-ui-more]'); await p.waitForTimeout(250);
-    assert.ok((await p.locator('.ui-qt tbody tr[data-ui-row]').count()) > 25, 'more rows after Show more'); await done();
+    assert.eq(await p.locator('.ui-qt__more').count(), 0, 'no Show more any more'); assert.eq(await p.locator('.ui-fcount b.ui-num').count(), 0, 'no N of M count above the table');
+    assert.deepEq(await p.locator('select[data-ui-pgsize] option').allTextContents(), ['10', '25', '50', '100'], 'rows per page'); assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 1–25 of \d+ documents/);
+    assert.eq(await p.locator('.ui-qt tbody tr[data-ui-row]').count(), 25, 'the default page is 25 rows');
+    await p.selectOption('select[data-ui-pgsize]', '10'); await p.waitForTimeout(250); assert.eq(await p.locator('.ui-qt tbody tr[data-ui-row]').count(), 10); assert.match(await p.evaluate(() => location.hash), /size=10/);
+    await p.click('[data-ui-pgnext]'); await p.waitForTimeout(250); assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 11–20 of/); assert.match(await p.evaluate(() => location.hash), /page=2/);
+    await p.selectOption('select[data-ui-pgsize]', '100'); await p.waitForTimeout(250); assert.ok((await p.locator('.ui-qt tbody tr[data-ui-row]').count()) > 25, 'one hundred at once'); await done();
   });
 
   await T.test('review drawer: ?id= opens it on load; approve end to end (status changes in the table, audit event, toast); the decided note leaves Needs review', async () => {

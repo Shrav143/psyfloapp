@@ -11,6 +11,7 @@ import * as X from '../shared/analytics/export.js';
 import * as Ask from '../shared/analytics/ask.js';
 import { pdfReport } from '../shared/analytics/pdf-report.js';
 import { renderPanel, renderScorecard, renderList, renderBreakdown, measureDefinitions } from './AnalyticsParts.js';
+import { layout } from './AnalyticsLayout.js';
 import { rule } from '../shared/rules.js';
 import { fmtDate } from '../shared/dates.js';
 import { MATURITY } from '../shared/maturity.js';
@@ -26,7 +27,8 @@ function download(name, content, type) {
 register('Analytics', class extends Screen {
   async init() {
     const q = this.params || {};
-    this.state = { dataset: q.dataset === 'illustrative' ? 'illustrative' : 'case', section: V.normSection(q.section), open: {},
+    const pgq = ui.pager.fromQuery(q, { size: 10 });
+    this.state = { dataset: q.dataset === 'illustrative' ? 'illustrative' : 'case', section: V.normSection(q.section), open: {}, om: 'scores', pm: 'volume', size: pgq.size, pg: {},
       f: { period: C.normPeriod(q.period), site: q.site || '', payer: q.payer || '', program: q.program || '' } };
     this.sampleOpen = false; this.guided = false;
     this.pg = null; try { this.pg = await import('../shared/payer-guidance.js'); } catch { this.pg = null; }   // E3's payer guidance, when it exists
@@ -42,49 +44,57 @@ register('Analytics', class extends Screen {
 
   renderVals() {
     const s = this.s, actor = this.actor, st = this.state, prov = this.prov;
-    if (!actor) return { head: '', banner: '', filters: '', scorecard: '', tabs: '', body: '' };
+    if (!actor) return { head: '', notice: '', filters: '', scorecard: '', tabs: '', body: '' };
     const ctx = V.CB.makeCtx(s, actor, {});
     const view = V.sectionView(s, actor, prov, st.section, st.f);
     const sc = prov === C.PROV.CASE ? V.scorecardView(s, actor, st.f) : null;
     this._sc = sc; this._view = view; this._ctx = ctx;
     return {
-      head: raw(this.head()), banner: raw(this.banner(view, ctx)),
-      filters: raw(ui.filterBar({ id: 'an-f', label: 'Filters', selects: V.filterSpec(s, actor, prov, st.section), state: st.f, defaults: { period: C.DEFAULT_PERIOD }, onChange: f => this.setState({ f }) })),
+      head: raw(this.head()), notice: raw(this.banner(view, ctx)), filters: raw(this.filterPanel(view)),
       scorecard: raw(sc ? renderScorecard(sc, { periodLabel: sc.period.label }) : ''), tabs: raw(this.tabs()), body: raw(this.body(view, ctx))
     };
+  }
+  // the reporting period (preset chips) and the other filters, in one panel like the artifact's
+  filterPanel(view) {
+    const s = this.s, actor = this.actor, st = this.state; const spec = V.filterSpec(s, actor, this.prov, st.section);
+    const per = spec.find(x => x.key === 'period'); const P = view.period || {};
+    const range = P.days ? `${fmtDate(P.from, { year: true })} to ${fmtDate(P.to, { year: true })}` : 'All stored records';
+    return `<section class="an-fbar" aria-label="Reporting period and filters"><div class="an-fbar__p"><span class="an-fbar__l">${ui.icon('calendar', 16)}<b>Reporting period</b></span><span class="an-fbar__r ui-num">${esc(range)}</span></div>${ui.filterBar({ id: 'an-f', label: 'Filters', chips: per.options.map(([value, label]) => ({ key: 'period', value, label })), chipsLabel: 'Reporting period', selects: spec.filter(x => x.key !== 'period'), state: st.f, defaults: { period: C.DEFAULT_PERIOD }, onChange: f => this.setState({ f }) })}</section>`;
   }
   head() {
     const seg = [['case', 'Case-backed'], ['illustrative', 'Illustrative cohort']].map(([id, l]) => `<a href="${esc(this.hash(this.state.section, id))}" aria-current="${this.state.dataset === id}">${l}</a>`).join('');
     return `<div class="a-head"><h1 id="a-h1">Analytics</h1><div class="a-acts"><nav class="a-seg" aria-label="Dataset">${seg}</nav>
-      <button type="button" class="ui-btn ui-btn--secondary" data-x="ask">Ask</button><button type="button" class="ui-btn ui-btn--secondary" data-x="earlier">Earlier views</button><button type="button" class="ui-btn ui-btn--primary" data-x="export">Export</button></div></div>`;
+      <button type="button" class="ui-btn ui-btn--secondary" data-x="earlier">Earlier views</button><button type="button" class="ui-btn ui-btn--secondary" data-x="ask">${ui.icon('sparkle', 16)}Ask FLO</button><button type="button" class="ui-btn ui-btn--primary" data-x="export">Export Report</button></div></div>`;
   }
   banner(view, ctx) {
     const ill = this.prov === C.PROV.COHORT; const asOf = fmtDate(view.asOf, { year: true });
     const only = !ctx.drill ? `<span class="ui-sp"></span>${ui.chip('Aggregates only', { tone: 'neutral', icon: 'lock' })}${ui.infoPopover({ label: 'Why aggregates only', title: 'Aggregates only', html: '<p>Patient-level rows need clinical-records access: a clinician, own caseload. Your role sees groups of 5 or more.</p>' })}` : '';
-    if (ill) return `<div class="a-banner a-banner--illustrative" role="status">${ui.datasetChip(C.PROV.COHORT)}<span>Generated cohort of 120 patients · data through ${esc(asOf)}</span><span class="a-muted">Not reconciled with Authorizations or Denial Intelligence.</span><a href="${esc(this.hash(this.state.section, 'case'))}">Back to case-backed</a>${only}</div>`;
-    return `<div class="a-banner" role="status">${ui.datasetChip(C.PROV.CASE)}<span>Counted from stored records · as of ${esc(asOf)}</span><span class="a-muted">${esc(view.scopeLabel)}</span>${only}</div>`;
+    if (ill) return `<div class="an-notice an-notice--ill" role="status">${ui.datasetChip(C.PROV.COHORT)}<p><b>Illustrative cohort.</b> 120 fictional patients generated for this demo (no names or initials), data through ${esc(asOf)}. Figures are not Harvest results and do not reconcile with Authorizations or Denial Intelligence. <a href="${esc(this.hash(this.state.section, 'case'))}">Back to case-backed</a></p>${only}</div>`;
+    return `<div class="an-notice" role="status">${ui.datasetChip(C.PROV.CASE)}<p><b>Case-backed.</b> Counted from the records stored in this demo, as of ${esc(asOf)}. ${esc(view.scopeLabel)}. A group of fewer than ${C.minN(this.s)} is never shown.</p>${only}</div>`;
   }
   tabs() {
-    return `<nav class="a-tabs" aria-label="Analytics sections">${V.SECTIONS.map(([id, l]) => `<a href="${esc(this.hash(id, this.state.dataset))}" ${this.state.section === id ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>`;
+    return `<nav class="an-stabs" aria-label="Analytics sections">${V.SECTIONS.map(([id, l]) => `<a href="${esc(this.hash(id, this.state.dataset))}" ${this.state.section === id ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>`;
   }
   body(view, ctx) {
     const st = this.state, s = this.s;
     const title = V.SECTIONS.find(x => x[0] === st.section)[1];
     const mat = maturity('analytics.' + st.section);
-    const o = { drill: ctx.drill && this.prov === C.PROV.CASE, href: r => this.href(r), open: st.open, dataset: this.prov, rule: (key, payer) => ui.sourceChip(rule(s, key, payer)) };
-    let head = `<div class="a-sec__h"><h2>${esc(title)}</h2>${mat}`;
-    if (st.section === 'payer') head += `<span class="ui-sp"></span><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="guidance">Payer guidance</button>`;
+    const pgOf = id => ({ size: st.size, page: (st.pg[id] || 1) });
+    const o = { drill: ctx.drill && this.prov === C.PROV.CASE, href: r => this.href(r), open: st.open, dataset: this.prov, canDI: canOpen('DenialIntelligence'), prov: this.prov, pgOf,
+      onPage: (id, ch) => { try { ui.query.writeQuery({ size: ch.size === 10 ? '' : ch.size }); } catch { /* the query is a convenience */ } this.setState({ size: ch.size, pg: { ...st.pg, [id]: ch.page } }); },
+      rule: (key, payer) => ui.sourceChip(rule(s, key, payer)) };
+    let head = `<div class="an-sectools"><h2 class="ui-sr">${esc(title)}</h2>${mat}`;
+    if (st.section === 'payer') head += `<span class="ui-sp"></span>${o.canDI ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(this.href({ id: 'DenialIntelligence', params: {} }))}">Investigate in Denial Intelligence</a>` : ''}<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="guidance">Payer guidance</button>`;
     head += '</div>';
     if (view.unavailable) return head + ui.emptyState({ tone: 'empty', title: 'Aggregates not ready', body: 'Open the presenter dock and reset the demo data to rebuild them.' });
-    const strip = view.strip ? `<div class="a-strip">${ui.statStrip(view.strip.map(x => ({ label: x.label, value: C.cellText(x.value) })), { label: title })}</div>` : '';
     const notes = (view.notes || []).map(n => `<p class="a-muted">${esc(n)}</p>`).join('');
-    const grid = `<div class="a-grid">${(view.panels || []).map(p => renderPanel(p, o)).join('')}</div>`;
+    const grid = layout(st.section, view.panels || [], o, st);
     let sample = '';
     if (st.section === 'payer' && this.prov === C.PROV.CASE) {
       const base = V.baselineView(s);
       if (base.length) sample = `<details class="a-sample"${this.sampleOpen ? ' open' : ''}><summary>${ui.datasetChip(C.PROV.EXPORT)}<span>Earlier baseline</span></summary><div><div class="a-grid">${base.map(p => renderPanel(p, { ...o, drill: false })).join('')}</div></div></details>`;
     }
-    return head + strip + notes + grid + sample;
+    return head + notes + `<div class="an-body">${grid}</div>` + sample;
   }
 
   after(root) {
@@ -97,6 +107,9 @@ register('Analytics', class extends Screen {
     if (x === 'defs') return ui.drawer({ title: 'Pilot measures', returnFocus: el, body: `<p class="a-muted">Each measure is defined once, here, before its figure is shown.</p>${measureDefinitions(this._sc)}` });
     if (x === 'drill') return this.drill(el.dataset.p, el.dataset.k, el);
     if (x === 'more') return this.setState({ open: { ...this.state.open, [el.dataset.p]: !this.state.open[el.dataset.p] } });
+    if (x === 'om') return this.setState({ om: el.dataset.v });
+    if (x === 'pm') return this.setState({ pm: el.dataset.v });
+    if (x === 'child') return this.child();
     if (x === 'ask') return this.ask(el);
     if (x === 'export') return this.exportDialog(el);
     if (x === 'earlier') return this.earlier(el);
@@ -128,7 +141,7 @@ register('Analytics', class extends Screen {
     const body = `<div class="a-ask"><p>${ui.maturity(MATURITY['analytics.ask'] || { level: 'simulated', note: 'Rule-based answers from the figures on this screen. No language model.' })} <span class="a-muted">Answers only from the data on this screen.</span></p>
       <form data-ask><div class="ui-field"><label class="ui-field__l" for="a-q">Question</label><input class="ui-input" id="a-q" autocomplete="off" placeholder="Which notes were late?"></div><button type="submit" class="ui-btn ui-btn--primary">Ask</button></form>
       <div class="a-sug">${Ask.SUGGESTED.map(q => `<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div><div class="a-ans" data-ans role="status" aria-live="polite"></div></div>`;
-    ui.drawer({ title: 'Ask', body, returnFocus: el, initialFocus: '#a-q', onMount(dlg) {
+    ui.drawer({ title: 'Ask FLO', body, returnFocus: el, initialFocus: '#a-q', onMount(dlg) {
       const out = dlg.querySelector('[data-ans]'); const input = dlg.querySelector('#a-q');
       const run = q => { input.value = q; const a = Ask.answer(self.s, self.actor, q, { dataset: self.prov, rawF: self.state.f }); out.innerHTML = self.answerHtml(a); };
       dlg.querySelector('form[data-ask]').onsubmit = e => { e.preventDefault(); run(input.value); };
@@ -150,7 +163,7 @@ register('Analytics', class extends Screen {
       <fieldset class="a-choice"><legend>Format</legend><label><input type="radio" name="a-fmt" value="csv" checked> CSV</label><label><input type="radio" name="a-fmt" value="pdf"> PDF</label></fieldset>
       <fieldset class="a-choice"><legend>Scope</legend><label><input type="radio" name="a-scope" value="one" checked> ${esc(sectionName)}</label><label><input type="radio" name="a-scope" value="all"> All three sections</label></fieldset>
       <p class="a-muted">The file carries the period, the filters, the definitions and the dataset, and prints the same figures as the screen. ${maturity('analytics.export')}</p>`;
-    ui.modal({ title: 'Export', size: 'sm', body, returnFocus: el, actions: [{ label: 'Cancel', tone: 'secondary' }, { label: 'Download', tone: 'primary', onClick: h => { self.exportNow(h.dialog); } }] });
+    ui.modal({ title: 'Export Report', size: 'sm', body, returnFocus: el, actions: [{ label: 'Cancel', tone: 'secondary' }, { label: 'Download', tone: 'primary', onClick: h => { self.exportNow(h.dialog); } }] });
   }
   exportNow(dlg) {
     const fmt = (dlg.querySelector('input[name="a-fmt"]:checked') || {}).value || 'csv', scope = (dlg.querySelector('input[name="a-scope"]:checked') || {}).value || 'one';

@@ -170,5 +170,24 @@ try {
     p = await open('cdiaz', '/#/StaffDashboard?staff=khale'); assert.eq(await p.evaluate(() => psyflo.current.id), 'Dashboard'); assert.match(await p.evaluate(() => location.hash), /staff=khale/);
     assert.eq(await p.locator('.d-row').count(), rosterRows((await actorOf('cdiaz')).s, (await actorOf('cdiaz')).actor, { staff: 'khale' }).shown, 'the staff filter applies'); await done();
   });
+  await T.test('feedback Nov 12: no date or time and no "N of M" above the table; rows per page 10, 25, 50, 100 at the bottom, kept in the address', async () => {
+    const p = await open('jperez', '/#/Dashboard');
+    const head = await p.locator('.d-head').innerText(); assert.noMatch(head, /\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b|\d{1,2}:\d{2}\s*(am|pm)/i, 'no date or time in the header: ' + head);
+    assert.eq(await p.locator('.ui-fcount b.ui-num').count(), 0, 'no "19 of 19 patients" count at the top');
+    assert.deepEq(await p.locator('select[data-ui-pgsize] option').allTextContents(), ['10', '25', '50', '100']);
+    assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 1–19 of 19 patients/); assert.eq(await p.locator('tr.d-row').count(), 19, 'the default page (25) holds all 19');
+    await p.selectOption('select[data-ui-pgsize]', '10'); await p.waitForTimeout(300);
+    assert.eq(await p.locator('tr.d-row').count(), 10); assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 1–10 of 19/); assert.match(await p.evaluate(() => location.hash), /size=10/);
+    await p.click('[data-ui-pgnext]'); await p.waitForTimeout(300); assert.eq(await p.locator('tr.d-row').count(), 9); assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 11–19 of 19/);
+    await p.click('.ui-fchip >> text=Behind'); await p.waitForTimeout(300); assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 1–\d+ of \d+ patients/, 'a filter goes back to page 1');
+    const q = await open('jperez', '/#/Dashboard?size=50'); assert.eq(await q.locator('select[data-ui-pgsize]').inputValue(), '50', 'the size survives a reload'); await done();
+  });
+  await T.test('the rail is dark navy with a teal active item, the top bar carries FLO and the bell on every platform page, and a note waiting for review gives no date', async () => {
+    const p = await open('cdiaz', '/#/Dashboard');
+    const c = await p.evaluate(() => ({ rail: getComputedStyle(document.getElementById('rail')).backgroundColor, act: getComputedStyle(document.querySelector('.sh-nav__i[aria-current=page]')).backgroundColor, font: getComputedStyle(document.body).fontFamily, flo: !!document.querySelector('#topbar [data-topbar=flo]'), bell: !!document.querySelector('#topbar [data-topbar=bell]') }));
+    assert.eq(c.rail, 'rgb(21, 27, 36)'); assert.eq(c.act, 'rgb(33, 122, 120)'); assert.match(c.font, /DM Sans/); assert.ok(c.flo && c.bell, 'FLO and the bell');
+    const { s, actor } = await actorOf('jperez'); const dw = rosterRows(s, actor).rows.find(r => r.id === 'DW');
+    assert.ok(dw.items.filter(i => i.kind === 'review').every(i => !i.due), 'a note waiting for review has no due date, so it cannot drive Next date'); await done();
+  });
 } finally { await done(); await browser.close(); }
 const r = await T.done(); process.exit(r.fail ? 1 : 0);

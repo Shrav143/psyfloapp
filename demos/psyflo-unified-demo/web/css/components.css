@@ -244,35 +244,36 @@ html.ui-scroll-lock{overflow:hidden}
 html{scroll-padding-top:calc(var(--dock-h) + 12px)}
 body{margin:0}
 .sh-app{display:flex;min-height:calc(100vh - var(--dock-h));width:100%}
-.sh-rail{flex:0 0 var(--rail-w);width:var(--rail-w);background:var(--sand-100);border-right:1px solid var(--line-200);position:sticky;top:var(--dock-h);height:calc(100vh - var(--dock-h));align-self:flex-start;overflow:auto;display:flex;flex-direction:column;padding:20px 12px 12px;z-index:var(--z-rail);color:var(--ink-900)}
+.sh-rail{flex:0 0 var(--rail-w);width:var(--rail-w);background:var(--navy-900);border-right:1px solid var(--navy-900);position:sticky;top:var(--dock-h);height:calc(100vh - var(--dock-h));align-self:flex-start;overflow:auto;display:flex;flex-direction:column;padding:20px 12px 12px;z-index:var(--z-rail);color:var(--on-navy)}
 .sh-rail[hidden]{display:none}
 .sh-logo{display:block;padding:0 8px 4px;color:inherit;text-decoration:none;border-radius:var(--r-2)}
 .sh-logo svg{display:block;width:104px;height:auto}
-.sh-logo small{display:block;margin-top:6px;font-size:var(--fs-12);line-height:var(--lh-12);color:var(--muted-700);letter-spacing:.04em}
+.sh-logo small{display:block;margin-top:8px;font-size:var(--fs-12);line-height:var(--lh-12);color:var(--on-navy-muted);letter-spacing:.08em;text-transform:uppercase}
 .sh-nav{display:flex;flex-direction:column;margin-top:20px}
 .sh-nav ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
-.sh-nav__i{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 10px 0 12px;border-radius:var(--r-3);color:var(--ink-900);text-decoration:none;font-weight:500;font-size:14.5px;position:relative;white-space:nowrap}
-.sh-nav__i:hover{background:#E6DCCD;color:var(--ink-900)}
-.sh-nav__i[aria-current=page]{background:var(--teal-700);color:#fff}
+.sh-nav__i{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 10px 0 12px;border-radius:var(--r-3);color:var(--on-navy);text-decoration:none;font-weight:500;font-size:15px;position:relative;white-space:nowrap}
+.sh-nav__i:hover{background:var(--navy-700);color:#fff}
+.sh-nav__i[aria-current=page]{background:var(--teal-600);color:#fff}
 .sh-nav__i .ui-icon{flex:0 0 20px}
-.sh-nav__n{margin-left:auto;min-width:22px;height:22px;padding:0 6px;border-radius:var(--r-pill);background:var(--surface-0);color:var(--ink-900);font-size:var(--fs-12);font-weight:700;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line-200)}
+.sh-nav__n{margin-left:auto;min-width:22px;height:22px;padding:0 6px;border-radius:var(--r-pill);background:var(--navy-line);color:#fff;font-size:var(--fs-12);font-weight:700;display:inline-flex;align-items:center;justify-content:center;border:1px solid transparent}
 .sh-nav__i[aria-current=page] .sh-nav__n{background:rgba(255,255,255,.22);color:#fff;border-color:transparent}
-.sh-nav__sep{height:1px;background:var(--line-200);margin:12px 8px}
-.sh-nav__i--small{min-height:36px;font-size:var(--fs-14);border-radius:var(--r-2);color:var(--ink-900)}
-.sh-nav__i--small[aria-current=page]{background:#E3D7C6;color:var(--ink-900);font-weight:600}
-.sh-nav__i--small[aria-current=page]:hover{background:#E3D7C6}
+.sh-nav__sep{height:1px;background:var(--navy-line);margin:12px 8px}
+.sh-nav__i--small{min-height:36px;font-size:var(--fs-14);border-radius:var(--r-2);color:var(--on-navy-muted)}
+.sh-nav__i--small[aria-current=page]{background:var(--teal-600);color:#fff;font-weight:600}
+.sh-nav__i--small[aria-current=page]:hover{background:var(--teal-600)}
+.sh-nav__i--small:hover{color:#fff}
 .sh-foot{margin-top:auto;padding-top:16px;display:flex;flex-direction:column;gap:10px}
-.sh-demo{display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;border:1px solid var(--line-200);background:var(--paper-50);border-radius:var(--r-2);font-size:var(--fs-12);color:var(--neutral-fg)}
+.sh-demo{display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;border:1px solid var(--navy-line);background:var(--navy-700);border-radius:var(--r-2);font-size:var(--fs-12);color:var(--on-navy-muted)}
 .sh-demo i{width:8px;height:8px;border-radius:50%;background:var(--marigold-400);flex:0 0 8px}
-.sh-help{display:flex;align-items:center;gap:12px;min-height:36px;padding:0 12px;border:0;background:none;border-radius:var(--r-2);font:500 var(--fs-14) var(--font);color:var(--ink-900);cursor:pointer;text-align:left}
-.sh-help:hover{background:#E6DCCD}
-.sh-user{display:grid;grid-template-columns:36px minmax(0,1fr);align-items:center;gap:0 10px;padding:12px 8px 2px;border-top:1px solid var(--line-200)}
+.sh-help{display:flex;align-items:center;gap:12px;min-height:36px;padding:0 12px;border:0;background:none;border-radius:var(--r-2);font:500 var(--fs-14) var(--font);color:var(--on-navy);cursor:pointer;text-align:left}
+.sh-help:hover{background:var(--navy-700)}
+.sh-user{display:grid;grid-template-columns:36px minmax(0,1fr);align-items:center;gap:0 10px;padding:12px 8px 2px;border-top:1px solid var(--navy-line)}
 .sh-user__av{grid-row:1 / span 2}.sh-user__t{grid-column:2}.sh-signout{grid-column:2;justify-self:start;margin-left:-6px}
-.sh-user__av{flex:0 0 36px;width:36px;height:36px;border-radius:50%;background:var(--teal-700);color:#fff;font-size:var(--fs-13);font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+.sh-user__av{flex:0 0 36px;width:36px;height:36px;border-radius:50%;background:var(--teal-600);color:#fff;font-size:var(--fs-13);font-weight:600;display:inline-flex;align-items:center;justify-content:center}
 .sh-user__t{min-width:0;flex:1}
-.sh-user__t b{display:block;font-size:var(--fs-13);font-weight:600;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sh-user__t span{display:block;font-size:var(--fs-12);color:var(--muted-700);line-height:1.25}
-.sh-signout{display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:0 6px;border-radius:var(--r-1);font-size:var(--fs-12);color:var(--teal-700);font-weight:600}
+.sh-user__t b{display:block;font-size:var(--fs-13);font-weight:600;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff}
+.sh-user__t span{display:block;font-size:var(--fs-12);color:var(--on-navy-muted);line-height:1.25}
+.sh-signout{display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:0 6px;border-radius:var(--r-1);font-size:var(--fs-12);color:var(--teal-300);font-weight:600}
 .sh-signout .ui-icon{display:none}
 #stage{flex:1 1 0;min-width:0;position:relative}
 #stage:focus{outline:none}
@@ -301,7 +302,7 @@ body[data-surface="parent"] .sh-rail,body[data-surface="school"] .sh-rail,body[d
   .sh-help{padding:0;width:44px;height:44px;justify-content:center}
   .sh-user{display:flex;flex-direction:column;gap:6px;padding:12px 0 2px;justify-content:center}.sh-signout{margin-left:0}
   .sh-signout{width:44px;height:44px;justify-content:center;border-radius:var(--r-2)}
-  .sh-signout:hover{background:#E6DCCD}
+  .sh-signout:hover{background:var(--navy-700)}
   .sh-signout .ui-icon{display:inline-block}
   /* "Demo data · nothing is real" cannot fit a 64 px rail: it becomes a slim line along the bottom of the window (still inside #rail, still on every app screen) */
   .sh-demo{position:fixed;left:var(--rail-w);right:0;bottom:0;z-index:var(--z-rail);justify-content:center;min-height:28px;height:28px;padding:0 12px;border:0;border-top:1px solid var(--line-200);border-radius:0;background:var(--paper-50);color:var(--neutral-fg)}
@@ -390,3 +391,27 @@ body[data-surface="parent"] .sh-rail,body[data-surface="school"] .sh-rail,body[d
 .ui-dateflag--soon .ui-dateflag__i{color:#8A5A00}
 .ui-dateflag--overdue .ui-dateflag__i,.ui-dateflag--overdue .ui-dateflag__t{color:var(--danger-fg)}
 .ui-dateflag--none{color:var(--muted-700)}
+
+/* ---- pager (ui/pager.js, feedback Nov 12): the table footer, rows per page 10 / 25 / 50 / 100 ---- */
+.ui-pager{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;margin-top:14px;padding:10px 4px;font-size:var(--fs-13);color:var(--muted-700)}
+.ui-pager b{color:var(--ink-900)}
+.ui-pager__size{display:flex;align-items:center;gap:8px}
+.ui-pager__size .ui-select{min-height:36px;width:auto;padding-right:28px}
+.ui-pager__range{margin-right:auto}
+.ui-pager__nav{display:flex;align-items:center;gap:10px}
+.ui-pager__nav .ui-btn[disabled]{opacity:.45;cursor:not-allowed}
+@media (max-width:640px){.ui-pager{gap:8px 12px}.ui-pager__range{order:-1;flex:1 0 100%;margin-right:0}}
+
+/* ---- top bar: FLO and the bell, on every platform page (shell, feedback Nov 12) ---- */
+.sh-top{position:sticky;top:var(--dock-h);z-index:calc(var(--z-rail) - 1);background:var(--paper-50);padding:10px var(--gutter) 0}
+.sh-top[hidden]{display:none}
+.sh-top__in{max-width:1320px;margin:0 auto;display:flex;justify-content:flex-end;align-items:center;gap:10px}
+.sh-top__b{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;min-width:40px;padding:0 14px;border:1px solid var(--line-300,var(--line-200));background:var(--surface-0);color:var(--ink-900);border-radius:var(--r-pill);font:600 var(--fs-14) var(--font);cursor:pointer}
+.sh-top__b:hover{background:var(--sand-100)}
+.sh-top__flo{color:var(--teal-700)}
+.sh-top__bell{padding:0}
+.sh-top__dot{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--danger-fg);color:#fff;font:600 11px/18px var(--font);text-align:center}
+.sh-top__dot[hidden]{display:none}
+
+/* ---- document rows: the "Open in Lauris" link sits beside the other action (Documentation table, patient chart) ---- */
+.pt-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}

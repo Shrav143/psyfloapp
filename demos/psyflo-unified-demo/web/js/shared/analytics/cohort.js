@@ -173,7 +173,7 @@ export function cohortFacts(F) {
     const last = readings.length ? readings[readings.length - 1].d : null; const flags = [];
     if (active) { if (!readings.length) flags.push('no_score'); else if (daysBetween(last, to) > 60) flags.push('stale_score'); }
     if (series.length && series[0].points.length > 1 && direction(series[0]) === 'worse') flags.push('worse');
-    return { id: p.id, site: p.site, siteLabel: p.site, locality: p.county, payer: p.payer, payerLabel: PAYERS[p.payer], age: p.age, ageBand: ageBand(p.age), program: (PROGRAMS.find(x => x[0] === p.program) || [0, p.program])[1],
+    return { id: p.id, site: p.site, siteLabel: p.site, locality: p.county, referral: p.referral, payer: p.payer, payerLabel: PAYERS[p.payer], age: p.age, ageBand: ageBand(p.age), program: (PROGRAMS.find(x => x[0] === p.program) || [0, p.program])[1],
       status: active ? 'active' : 'discharged', enrolled: p.enroll, ended: p.end, dx: [p.dx, ...p.dx2].map(k => ({ key: k, label: dxLabel(k) })), goals, ivs: [...ivs.values()], series, monthly,
       feedback: p.fb.filter(x => inRange(x.d, W.from, W.to)).map(x => ({ src: x.src, v: x.v, pos: x.pos })), svc: [...svc.values()], units: null, flags,
       have: { goals: p.goals.length > 0, score: readings.length > 0, note: p.ivs.some(v => !v.observed && inRange(v.d, addDays(to, -29), to)), guardian: p.family } };
@@ -184,14 +184,14 @@ export function cohortRequests(F) {
   for (const p of scope(F)) for (const a of p.auths) {
     if (!(inRange(a.submitted, W.from, W.to) || (a.decided && inRange(a.decided, W.from, W.to)))) continue;
     const reason = a.reason ? (REASONS.find(x => x.k === a.reason) || {}).label : null;
-    out.push({ id: a.id, payer: p.payer, payerLabel: PAYERS[p.payer], type: a.kind === 'initial' ? 'initial' : 'continued_stay', svc: a.svc, submitted: a.submitted, decided: a.decided, outcome: a.status === 'pending' ? 'pending' : a.status === 'overturned' ? 'approved' : a.status, requested: a.requested, approved: a.approved,
-      reason, appealed: !!a.appeal, renewal: a.kind === 'concurrent', days: a.decided ? daysBetween(a.submitted, a.decided) : null, extraWork: !!a.appeal || a.status === 'partial' });
+    out.push({ id: a.id, payer: p.payer, payerLabel: PAYERS[p.payer], type: a.kind === 'initial' ? 'initial' : 'continued_stay', svc: (SERVICES.find(x => x.k === a.svc) || { label: a.svc }).label, submitted: a.submitted, decided: a.decided, outcome: a.status === 'pending' ? 'pending' : a.status === 'overturned' ? 'approved' : a.status, requested: a.requested, approved: a.approved,
+      reason, appealed: !!a.appeal, appealOutcome: a.appeal ? a.appeal.outcome : null, renewal: a.kind === 'concurrent', days: a.decided ? daysBetween(a.submitted, a.decided) : null, extraWork: !!a.appeal || a.status === 'partial' });
   }
   return out;
 }
 
 // ---------- sections ----------
-const env = (s, F) => ({ min: minN(s), drill: false, provenance: PROV.COHORT, asOf: COHORT_AS_OF, ivNote: 'Delivered interventions in the period' });
+const env = (s, F) => ({ min: minN(s), drill: false, provenance: PROV.COHORT, asOf: COHORT_AS_OF, from: cohortPeriod(F).from, ivNote: 'Delivered interventions in the period' });
 const tag = P => P.map(p => ({ ...p, provenance: PROV.COHORT }));
 export function cohortSection(s, section, rawF) {
   const F = cohortFilters(rawF); const e = env(s, F); const W = cohortPeriod(F);

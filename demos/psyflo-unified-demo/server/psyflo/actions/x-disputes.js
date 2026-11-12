@@ -21,7 +21,7 @@ import { can } from '../../../web/js/shared/permissions.js';
 import leadExtension from './lead-extension.js';   // static import: in the hosted single-file build every module is evaluated before any action is registered
 import {
   ADVERSE, P2P_STAGES, ISSUE_LABEL, PATH_LABEL, DOC_TITLE, isOpen, byDisputeId, byRequest, issueOfRequest, deriveStatus, derivePath, resolutionOf, buildDoc, docText, docMissing,
-  evidenceIndex, MISSING_RE, payerFirst
+  evidenceIndex, MISSING_RE, payerFirst, weakPoints, lineStatus, callScript, CALL_PURPOSES, DOCREQ_TO
 } from '../../../web/js/shared/sel/disputes.js';
 
 const byId = (arr, id) => (arr || []).find(x => x.id === id);
@@ -97,8 +97,8 @@ if (!store.__disputesSync) {
   store.changed = function () { try { syncDisputes(this, this.state); } catch (e) { console.error('disputes reconcile failed:', e); } return orig.call(this); };
   // an older persisted state has no disputes yet: seed them once
   try {
-    if (!Array.isArray(store.state.disputes)) { const seed = loadSeed(); for (const k of ['disputes', 'dispute_evidence', 'drafting_rules']) if (!store.state[k]) store.state[k] = JSON.parse(JSON.stringify(seed[k] || [])); syncDisputes(store, store.state); store.save(); }
-    else for (const k of ['dispute_evidence', 'drafting_rules']) if (!store.state[k]) store.state[k] = JSON.parse(JSON.stringify(loadSeed()[k] || []));
+    if (!Array.isArray(store.state.disputes)) { const seed = loadSeed(); for (const k of ['disputes', 'dispute_evidence', 'drafting_rules', 'payer_hours']) if (!store.state[k]) store.state[k] = JSON.parse(JSON.stringify(seed[k] || [])); syncDisputes(store, store.state); store.save(); }
+    else for (const k of ['dispute_evidence', 'drafting_rules', 'payer_hours']) if (!store.state[k]) store.state[k] = JSON.parse(JSON.stringify(loadSeed()[k] || []));
   } catch (e) { console.error('disputes seed failed:', e); }
 }
 
@@ -263,6 +263,72 @@ export default {
     return { id: d.id };
   },
 
+  // A person marks the denial analysis (or the missing-evidence check) as done. The points themselves are computed on screen from stored records
+  // (rule-based, no likelihood); this records who looked and when, and how many points there were. It changes nothing else.
+  'dispute.analyze'(s, { id, step = 'analyze' }) {
+    const d = dispute(s, id); const r = requestOf(s, d);
+    if (!['analyze', 'gaps'].includes(step)) throw new Error('Unknown step: ' + step);
+    const idx = evidenceIndex(s, d, r);
+    if (step === 'analyze') {
+      const n = weakPoints(s, d, r, idx).length;
+      d.analysis = { at: this.now(), by: this.who(), points: n };
+      log(this, s, d, `Denial analyzed from stored records · ${n} point${n === 1 ? '' : 's'} (rule-based, Simulated)`, { sim: true });
+      return { id: d.id, points: n };
+    }
+    d.gaps = { at: this.now(), by: this.who(), n: idx.needs.length };
+    log(this, s, d, `Missing evidence checked · ${idx.needs.length} item${idx.needs.length === 1 ? '' : 's'} not documented`);
+    return { id: d.id, missing: idx.needs.length };
+  },
+
+  // Ask a licensed clinician to review the case. The note stays on the case (clinician view); the audit line says only that a note exists.
+  'dispute.markReview'(s, { id, to, note }) {
+    const d = dispute(s, id); const r = requestOf(s, d);
+    const rv = byId(s.staff, to); if (!rv) refuse('Choose who reviews the case.', { record: r.id, status: 422, audit: false });
+    if (!can(rv, 'payer.reply')) refuse(`${rv.name} cannot review a payer-decision case: it needs a licensed clinician.`, { record: r.id, status: 422, code: 'reviewer_role' });
+    const text = String(note || '').trim().slice(0, 400);
+    d.review = { to: rv.id, note: text || undefined, at: this.now(), by: this.who() };
+    log(this, s, d, `Marked for clinical review · ${rv.name}${text ? ' · note on the case' : ''}`);
+    return { id: d.id, to: rv.id };
+  },
+
+  // Record a request for the documentation the analysis found missing. Psyflo sends nothing: a person contacts the clinician, guardian or school.
+  'dispute.docRequest'(s, { id, to, keys }) {
+    const d = dispute(s, id); const r = requestOf(s, d);
+    if (!DOCREQ_TO[to]) refuse('Choose who the documentation is requested from: the treating clinician, the guardian or the school counselor.', { record: r.id, status: 422, audit: false });
+    const idx = evidenceIndex(s, d, r); const pick = (Array.isArray(keys) ? keys : idx.needs.map(n => n.key));
+    const items = idx.needs.filter(n => pick.includes(n.key)).map(n => ({ key: n.key, label: n.label, got: null }));
+    if (!items.length) refuse('Nothing marked Evidence missing is selected, so there is nothing to request.', { record: r.id, status: 422, code: 'nothing_missing', audit: false });
+    d.docreq = { to, items, at: this.now(), by: this.who() };
+    log(this, s, d, `Documentation requested from ${DOCREQ_TO[to].toLowerCase()} · ${items.length} item${items.length === 1 ? '' : 's'} · recorded only: Psyflo sends no message, a person asks`);
+    return { id: d.id, items: items.length };
+  },
+  // A person records that an item arrived (the record itself is added in the chart, not here).
+  'dispute.docReceived'(s, { id, key }) {
+    const d = dispute(s, id); const r = requestOf(s, d);
+    const it = d.docreq && (d.docreq.items || []).find(x => x.key === key); if (!it) refuse('That item is not on the request.', { record: r.id, status: 422, audit: false });
+    if (it.got) refuse('That item is already marked received.', { record: r.id, code: 'write_once', audit: false });
+    it.got = { at: this.now(), by: this.who() };
+    log(this, s, d, `Documentation received · ${it.label}`);
+    return { id: d.id };
+  },
+
+  // The simulated voice-agent call. A person starts it and a person records it: nothing is dialled, the payer side is a labelled placeholder,
+  // and the outcome is what the person types. It is refused while the payer line is closed (demo hours, UNVERIFIED-DEMO-ASSUMPTION).
+  // A call never changes the stage and is never a payer decision; a decision is recorded with its document (dispute.resolve).
+  'dispute.logCall'(s, { id, purpose, outcome, ref }) {
+    const d = dispute(s, id); const r = requestOf(s, d); const pf = payerFirst(s, r.payer);
+    const pu = CALL_PURPOSES.find(x => x[0] === purpose); if (!pu) refuse('Choose what the call is about.', { record: r.id, status: 422, audit: false });
+    const ls = lineStatus(s, r.payer, this.now());
+    if (!ls.open) refuse(ls.known ? `${pf} ${ls.line.toLowerCase()} is closed now (${ls.summary}; demo hours, not verified)${ls.nextOpen ? '. Next opening: ' + ls.nextOpen.label : ''}. No call was recorded.` : `No opening hours are on file for ${pf}, so the call cannot be recorded. Add them or call by phone.`, { record: r.id, code: 'payer_closed', status: 409 });
+    const said = String(outcome || '').trim(); if (said.length < 3) refuse('Write what the payer said, in your own words. The call is recorded only with your note.', { record: r.id, status: 422, audit: false });
+    const refNo = String(ref || '').trim().slice(0, 40) || undefined;
+    d.calls = d.calls || [];
+    const call = { id: `CALL-${d.calls.length + 1}`, at: this.now(), by: this.who(), purpose: pu[0], purpose_label: pu[1], script: callScript(s, d, r, pu[0]), outcome: said.slice(0, 600), ref: refNo, sim: true, line: ls.line, hours: ls.summary, hours_category: ls.category };
+    d.calls.push(call);
+    log(this, s, d, `Voice agent call recorded (Simulated) · ${pu[1].toLowerCase()} · ${pf}${refNo ? ' · reference ' + refNo : ''} · outcome typed by ${staffName(s, this.who())} · not a payer decision`, { sim: true });
+    return { id: d.id, call: call.id };
+  },
+
   // Record the call date the payer agreed by phone (the payer calls; this happens outside Psyflo).
   'dispute.schedule'(s, { id, when, ref, reviewer }) {
     const d = dispute(s, id); const r = requestOf(s, d);
@@ -380,15 +446,21 @@ export const authz = {
   'dispute.includeEvidence': { any: ['payer.reply'] },
   'dispute.schedule': { any: ['payer.reply'] },
   'dispute.send': { any: ['payer.reply', 'send.packet'], check: docCheck },
+  'dispute.analyze': { any: ['payer.reply'] },
+  'dispute.markReview': { any: ['denials'] },
+  'dispute.docRequest': { any: ['payer.reply'] },
+  'dispute.docReceived': { any: ['payer.reply'] },
+  'dispute.logCall': { any: ['payer.reply'] },
   'dispute.recordDecision': { any: ['payer.decision'] },
   'dispute.resolve': { any: ['payer.decision'] }
 };
 
 // ------------------------------------------------------------------------------------------------------------- what each role may read
 const stripDocs = docs => Object.fromEntries(Object.entries(docs || {}).map(([k, v]) => [k, { gen: !!(v && v.gen), reviewed: v && v.reviewed ? { at: v.reviewed.at } : null, sent: v && v.sent ? { at: v.sent.at, ref: v.sent.ref } : null }]));
-const statusOnly = d => ({ id: d.id, request: d.request, client: d.client, payer: d.payer, issue: d.issue, status: d.status, path: d.path, owner: d.owner, backup: d.backup, opened: d.opened, closed: d.closed, units: d.units, notice: { date: d.notice && d.notice.date, via: d.notice && d.notice.via, doc_ref: d.notice && d.notice.doc_ref }, concerns: d.issue === 'info' ? [] : d.concerns, docs: stripDocs(d.docs), tried: d.tried, outcome: d.outcome ? { status: d.outcome.status, text: d.outcome.text, units: d.outcome.units, at: d.outcome.at } : null, provenance: d.provenance });
+const statusOnly = d => ({ id: d.id, request: d.request, client: d.client, payer: d.payer, issue: d.issue, status: d.status, path: d.path, owner: d.owner, backup: d.backup, opened: d.opened, closed: d.closed, units: d.units, notice: { date: d.notice && d.notice.date, via: d.notice && d.notice.via, doc_ref: d.notice && d.notice.doc_ref }, concerns: d.issue === 'info' ? [] : d.concerns, docs: stripDocs(d.docs), review: d.review ? { to: d.review.to, at: d.review.at } : null, calls: (d.calls || []).length, tried: d.tried, outcome: d.outcome ? { status: d.outcome.status, text: d.outcome.text, units: d.outcome.units, at: d.outcome.at } : null, provenance: d.provenance });
 export const projection = {
   disputes: { clinician: true, admin: (s, actor, v) => (v || []).map(statusOnly), default: false },
   dispute_evidence: { clinician: true, default: false },
+  payer_hours: { clinician: true, admin: true, supervisor: true, direct_support: false, default: false },
   drafting_rules: { clinician: true, admin: true, supervisor: true, direct_support: false, default: false }
 };

@@ -232,10 +232,10 @@ await T.test('the old demo bar is gone from the product viewport', async () => {
   assert.eq(await page.locator('#stage #dock, #app #dock, #root .sh-dock').count(), 0);
   await closeAll();
 });
-await T.test('rail: light sand, 232 px wide, collapses to icons at 1024; counts only where meaningful', async () => {
+await T.test('rail: dark navy (the Nov 8 look), 232 px wide, collapses to icons at 1024; counts only where meaningful', async () => {
   let page = await open('jperez', '/#/DoNext');
   const r = await page.evaluate(() => { const rail = document.getElementById('rail'); return { w: Math.round(rail.getBoundingClientRect().width), bg: getComputedStyle(rail).backgroundColor, items: [...rail.querySelectorAll('.sh-nav__i')].map(a => a.getAttribute('aria-label')), pos: getComputedStyle(rail).position }; });
-  assert.eq(r.w, 232); assert.eq(r.bg, 'rgb(239, 232, 222)'); assert.ok(!r.items.some(x => /, 0 /.test(x)), 'no zero counts');
+  assert.eq(r.w, 232); assert.eq(r.bg, 'rgb(21, 27, 36)'); assert.ok(!r.items.some(x => /, 0 /.test(x)), 'no zero counts');
   await page.close(); await closeAll();
   page = await open('jperez', '/#/DoNext', { w: 1024, h: 768 });
   const c = await page.evaluate(() => ({ w: Math.round(document.getElementById('rail').getBoundingClientRect().width), label: getComputedStyle(document.querySelector('.sh-nav__l')).display }));
@@ -364,11 +364,11 @@ for (const w of [1024, 700]) {
     await closeAll();
   });
 }
-await T.test('the wordmark on the light rail is the full-colour logo (navy, teal, marigold), not the reverse one', async () => {
+await T.test('the wordmark on the navy rail is the reverse logo (white, teal, marigold), not the full-colour one', async () => {
   const page = await open('jperez', '/#/Dashboard');
   const fills = await page.evaluate(() => [...document.querySelectorAll('#rail .sh-logo svg path')].map(p => p.getAttribute('fill').toUpperCase()));
-  assert.ok(fills.length >= 6 && fills.every(f => ['#151B24', '#217A78', '#E0A030'].includes(f)), 'fills ' + [...new Set(fills)].join(','));
-  assert.ok(!fills.includes('#FFFFFF') && !fills.includes('#5FC0BE'), 'no reverse-logo colours on the sand rail');
+  assert.ok(fills.length >= 6 && fills.every(f => ['#FFFFFF', '#5FC0BE', '#F0B44C'].includes(f)), 'fills ' + [...new Set(fills)].join(','));
+  assert.ok(!fills.includes('#151B24') && !fills.includes('#217A78'), 'no full-colour logo values on the navy rail');
   await closeAll();
 });
 await T.test('framed Lauris routes: a slim top bar with "Back to Psyflo", the route title as the h1 and no developer text', async () => {

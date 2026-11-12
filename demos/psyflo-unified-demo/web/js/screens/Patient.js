@@ -2,8 +2,8 @@
 // whether or not a payer authorization exists. The authorization is one section of the chart, a compact summary with a link to the case.
 // Data: web/js/shared/sel/roster.js patientChart(s, actor, id), which returns null for a patient outside the signed-in person's scope
 // (direct support: own caseload; supervisor: managed staff and their sites), so another patient's data never reaches this screen.
-import { register, Screen, M, raw, ui, esc, session, hrefFor, canOpen } from '../app.js';
-import { ROLE_LABEL } from '../shared/permissions.js';
+import { register, Screen, M, raw, ui, esc, session, hrefFor, canOpen, api } from '../app.js';
+import { ROLE_LABEL, can } from '../shared/permissions.js';
 import { fmtDate } from '../shared/dates.js';
 import { patientChart, chartHref } from '../shared/sel/roster.js';
 
@@ -18,7 +18,7 @@ const plural = (n, w) => `${n} ${n === 1 ? w : w + 's'}`;
 register('Patient', class extends Screen {
   init() {
     const p = this.params;
-    this.state = { scope: p.scope === 'all' ? 'all' : p.scope === 'open' ? 'open' : '', group: ['note', 'form'].includes(p.group) ? p.group : '', limit: 15 };
+    this.state = { scope: p.scope === 'all' ? 'all' : p.scope === 'open' ? 'open' : '', group: ['note', 'form'].includes(p.group) ? p.group : '', ...ui.pager.fromQuery(p) };
   }
   get actor() { return session.actor; }
   get section() { return this.params.section === 'authorization' ? 'authorization' : 'documentation'; }
@@ -26,7 +26,17 @@ register('Patient', class extends Screen {
   chart() { const a = this.actor; return a && a.role ? patientChart(this.s, a, this.params.id) : null; }
 
   statusChip(d) { return ui.chip(d.statusLabel, { tone: TONE[d.sev] || 'neutral', icon: ICON[d.status] || 'dot', size: 'sm' }); }
+  // Lauris is where every note and form is edited and saved: one button on every row opens it on the right page
+  laurisLink(d) {
+    const a = this.actor; if (!d.lauris || !a || !can(a, 'ext.use')) return '';
+    const url = `${api.config.laurisURL}/login?as=${encodeURIComponent(a.id || 'jperez')}&next=${encodeURIComponent(d.lauris)}`;
+    return `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(url)}" target="_blank" rel="noopener">Open in Lauris${ui.icon('external', 14)}<span class="ui-sr"> ${esc(d.typeLabel)} ${esc(d.dateText || '')} (opens Lauris in a new tab)</span></a>`;
+  }
   action(d, c) {
+    const lau = this.laurisLink(d); const act = this.action2(d, c);
+    return lau || act ? `<div class="pt-acts">${act}${lau}</div>` : '';
+  }
+  action2(d, c) {
     const a = this.actor, go = (label, route, qs) => canOpen(route) ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(hrefFor(route + '.dc.html?' + qs))}">${esc(label)}<span class="ui-sr"> ${esc(d.typeLabel)} ${esc(d.dateText || '')}</span></a>` : '';
     if (d.status === 'done' || d.status === 'late') return '';
     if (d.status === 'pending_review' && d.noteId && c.can.reviewNotes && canOpen('Documentation')) return `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(hrefFor('Documentation', { id: d.noteId, status: 'pending_review' }))}">Review<span class="ui-sr"> ${esc(d.typeLabel)} ${esc(d.dateText || '')}</span></a>`;
@@ -52,10 +62,10 @@ register('Patient', class extends Screen {
       { key: 'act', label: 'Action', render: d => this.action(d, c) }
     ];
     const table = ui.queueTable({
-      id: 'pt-docs', caption: 'Documentation', columns: cols, rows, rowId: d => d.id, limit: st.limit, limitStep: 15, onMore: () => this.setState({ limit: st.limit + 15 }), total: rows.length, maxHeight: 'none',
+      id: 'pt-docs', caption: 'Documentation', columns: cols, rows: ui.pager.slice(rows, { size: st.size, page: st.page }), rowId: d => d.id, total: rows.length, maxHeight: 'none',
       empty: { title: all.length ? 'Nothing outstanding' : 'No documentation yet', body: all.length ? 'Choose All to see what was filed.' : '' }
     });
-    return tools + table;
+    return tools + table + ui.pager({ id: 'pt-pg', total: rows.length, size: st.size, page: st.page, noun: 'documents', onChange: ({ size, page }) => this.setState({ size, page }) });
   }
 
   authHtml(c) {
@@ -97,7 +107,7 @@ register('Patient', class extends Screen {
     root.querySelectorAll('[data-x="seg"]').forEach(el => {
       el.onclick = e => {
         e.preventDefault(); const key = el.dataset.key, val = el.dataset.val;
-        ui.query.writeQuery({ [key]: key === 'group' ? val : val }); this.setState({ [key]: val, limit: 15 });
+        ui.query.writeQuery({ [key]: key === 'group' ? val : val }); this.setState({ [key]: val, page: 1 });
       };
     });
   }

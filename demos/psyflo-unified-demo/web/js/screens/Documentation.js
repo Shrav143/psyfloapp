@@ -4,9 +4,9 @@
 // Data: web/js/shared/sel/roster.js (documentRows) and sel/mywork.js (teamView, pendingFor). Nothing here is computed from a default user:
 // with nobody signed in the screen shows a sign-in notice. Administrator: statuses and dates only, no note text, no review buttons.
 // The old My Work review and team sections redirect here (registry.js); ?legacy=1 on MyWork still opens the old screen.
-import { register, Screen, M, raw, esc, ui, session, hrefFor } from '../app.js';
+import { register, Screen, M, raw, esc, ui, session, hrefFor, api } from '../app.js';
 import { can, ROLE_LABEL } from '../shared/permissions.js';
-import { documentRows, normalizeDocs, chartHref, DOC_TYPES, docLabel } from '../shared/sel/roster.js';
+import { documentRows, normalizeDocs, chartHref, DOC_TYPES, docLabel, laurisPath } from '../shared/sel/roster.js';
 import { teamView, pendingFor, textOf } from '../shared/sel/mywork.js';
 import { reviewModel } from './MyWorkViews.js';
 
@@ -21,7 +21,7 @@ register('Documentation', class extends Screen {
     const f = normalizeDocs(p);
     // '' (a cleared chip) and a missing status both mean Open; 'all' is its own value so it survives a reload
     const status = p.status === 'all' ? 'all' : f.status || 'open';
-    this.state = { f: { q: f.q, status, type: f.type, group: f.group, staff: f.staff, site: f.site }, range: { from: f.from, to: f.to }, sort: { key: f.sort || '', dir: f.dir }, limit: 25 };
+    this.state = { f: { q: f.q, status, type: f.type, group: f.group, staff: f.staff, site: f.site }, range: { from: f.from, to: f.to }, sort: { key: f.sort || '', dir: f.dir }, ...ui.pager.fromQuery(this.params) };
     this.view = p.view === 'staff' ? 'staff' : 'documents';
     this.deepId = f.id || '';
   }
@@ -30,7 +30,7 @@ register('Documentation', class extends Screen {
     const st = this.state; const f = st.f;
     return normalizeDocs({ ...f, status: f.status === 'all' ? '' : f.status, from: st.range.from, to: st.range.to, sort: st.sort.key, dir: st.sort.dir });
   }
-  setF(next) { this.setState({ f: { ...this.state.f, ...next, status: next.status || 'open' }, limit: 25 }); }
+  setF(next) { ui.query.writeQuery({ page: '' }); this.setState({ f: { ...this.state.f, ...next, status: next.status || 'open' }, page: 1 }); }
 
   renderVals() {
     const s = this.s, a = this.actor;
@@ -59,7 +59,6 @@ register('Documentation', class extends Screen {
         { key: 'staff', label: 'Staff', options: opt('All staff', dr.options.staff) },
         { key: 'site', label: 'Site', options: opt('All sites', dr.options.sites) }
       ],
-      shown: dr.shown, total: dr.total, noun: 'documents',
       onChange: next => this.setF(next), onClear: () => { this.state.range = { from: '', to: '' }; ui.query.writeQuery({ from: '', to: '' }); this.setF({ q: '', status: 'open', type: '', group: '', staff: '', site: '' }); }
     });
     const reviewable = new Set(can(a, 'notes.review') ? pendingFor(s, a).map(n => n.id) : []);
@@ -75,19 +74,20 @@ register('Documentation', class extends Screen {
       { key: 'act', label: 'Action', render: r => {
         const who = `${r.label}, ${r.typeLabel}`;
         const review = r.noteId && r.status === 'pending_review' && reviewable.has(r.noteId) ? `<button type="button" class="ui-btn ui-btn--primary ui-btn--sm" data-x="review" data-id="${esc(r.noteId)}">Review<span class="ui-sr"> ${esc(who)}</span></button>` : '';
-        return `<div class="doc-acts">${review}<a class="ui-btn ui-btn--ghost ui-btn--sm" href="${esc(r.to)}">Open chart<span class="ui-sr"> for ${esc(r.label)}</span></a></div>`;
+        return `<div class="doc-acts">${review}${this.laurisLink(r.lauris, who)}<a class="ui-btn ui-btn--ghost ui-btn--sm" href="${esc(r.to)}">Open chart<span class="ui-sr"> for ${esc(r.label)}</span></a></div>`;
       } }
     ];
     const table = ui.queueTable({
-      id: 'doc', caption: 'Documentation', columns: cols, rows: dr.rows, rowId: r => r.id, href: r => r.to,
+      id: 'doc', caption: 'Documentation', columns: cols, rows: ui.pager.slice(dr.rows, { size: st.size, page: st.page }), rowId: r => r.id, href: r => r.to,
       sort: st.sort.key ? st.sort : {}, onSort: sort => { this.setState({ sort }); ui.query.writeQuery({ sort: sort.key, dir: sort.dir }); },
-      limit: st.limit, limitStep: 25, onMore: () => this.setState({ limit: st.limit + 25 }), total: dr.shown, maxHeight: dr.rows.length > 12 ? undefined : 'none',
+      total: dr.shown, maxHeight: dr.rows.length > 12 ? undefined : 'none',
       empty: { title: dr.total ? 'No documents match' : 'No documents yet', body: dr.total ? 'Clear a filter to see more.' : '' }
     });
     const showsForms = f.group !== 'note' && dr.rows.some(r => r.group === 'form');
     const sample = showsForms ? `<span class="doc-sample">${ui.datasetChip('illustrative', { text: 'Forms: sample data', title: 'Intake, CNA, plan, quarterly and discharge status is sample data until that tracker is wired to Lauris' })}</span>` : '';
     const range = `<fieldset class="doc-range"><legend class="doc-range__l">Due between</legend><label class="doc-range__f"><span class="ui-sr">From</span><input class="ui-input" type="date" id="doc-from" aria-label="Due from" value="${esc(st.range.from)}"></label><span aria-hidden="true">to</span><label class="doc-range__f"><span class="ui-sr">To</span><input class="ui-input" type="date" id="doc-to" aria-label="Due to" value="${esc(st.range.to)}"></label>${st.range.from || st.range.to ? '<button type="button" class="ui-linkbtn" data-x="range-clear">Clear dates</button>' : ''}</fieldset>`;
-    return { sample: raw(sample), range: raw(range), bar: raw(bar), body: raw(table) };
+    const pg = ui.pager({ id: 'doc-pg', total: dr.rows.length, size: st.size, page: st.page, noun: 'documents', onChange: ({ size, page }) => this.setState({ size, page }) });
+    return { sample: raw(sample), range: raw(range), bar: raw(bar), body: raw(table + pg) };
   }
 
   // ------------------------------------------------------------------------------------------------ By staff tab
@@ -128,6 +128,12 @@ register('Documentation', class extends Screen {
     else if (name === 'apprOff') this.approvalOff(d.id, el);
   }
 
+  // Lauris is where every document is edited and saved; this opens it on the right page (a person with the Lauris panel, never the administrator)
+  laurisLink(path, who) {
+    const a = this.actor; if (!path || !a || !can(a, 'ext.use')) return '';
+    const url = `${api.config.laurisURL}/login?as=${encodeURIComponent(a.id || 'jperez')}&next=${encodeURIComponent(path)}`;
+    return `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(url)}" target="_blank" rel="noopener">Open in Lauris${ui.icon('external', 14)}<span class="ui-sr"> ${esc(who || '')} (opens Lauris in a new tab)</span></a>`;
+  }
   // ------------------------------------------------------------------------------------------------ review drawer
   openReview(id, opener) {
     const s = this.s, a = this.actor;
@@ -140,6 +146,7 @@ register('Documentation', class extends Screen {
     if (!canText) body += `<div class="doc-hidden">${ui.icon('lock', 14)}<span>Clinical text hidden for your role</span></div>`;
     else body += `<div class="doc-rv__cmp"><section><h3>${esc(c.wroteLabel)}</h3><div class="doc-rv__txt">${c.wrote ? esc(c.wrote) : '<span class="doc-muted">Nothing typed or dictated: the note was written in Lauris directly.</span>'}</div></section><section><h3>Psyflo added ${ui.chip('Marked', { tone: 'success', size: 'sm' })}</h3><div class="doc-rv__txt">${c.hasEnhanced ? c.enhanced : '<span class="doc-muted">Not enhanced. Nothing was added; the checks run on what the staffer wrote.</span>'}</div></section></div><div class="doc-rv__checks" aria-label="Checks">${c.checks}</div>`;
     if (canText && c.repeat) body += `<div class="doc-rv__pat">${ui.icon('flag', 14)}<span>Same words in ${c.repeat.count} of ${esc(c.repeat.name)}'s last ${c.repeat.of} notes (${esc(c.repeat.dates)})</span></div>`;
+    body += `<p class="doc-rv__lau">${this.laurisLink(laurisPath(M.client(s, n.client).harvest_no, n.type, n.session), `${label}, ${n.type}`)}</p>`;
     body += `<div class="doc-rv__trail">${esc(c.trail)}</div><div class="ui-field"><label class="ui-field__l" for="doc-rv-c">Note to ${esc(who)}</label><textarea class="ui-input ui-textarea" id="doc-rv-c" rows="3"></textarea><div class="doc-err" id="doc-rv-err" role="alert"></div></div></div>`;
     const decide = (decision, h) => this.decide(n, decision, h);
     return ui.drawer({

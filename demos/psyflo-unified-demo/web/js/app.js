@@ -14,6 +14,8 @@ import { makeSim } from './ui/sim.js';
 import { visibleNav, activeItem } from './shared/nav.js';
 import { featuresFor, LEVEL_ORDER } from './shared/maturity.js';
 import { icon } from './ui/util.js';
+import './ui/flo.js';   // FLO, the assistant: listens for the top bar's `psyflo:topbar` event (id 'flo') and opens its chat drawer
+import './ui/bell.js';  // the bell: notification centre (flags, payer items, deadlines, units); listens for `psyflo:topbar` (id 'bell') and keeps the unread number on the bell
 import { isHosted, setHash } from './shared/links.js';   // hosted preview (hosted/index.html): no-ops in the Node build
 
 const api = API.api;
@@ -137,7 +139,7 @@ function railHTML(currentId) {
   };
   const initials = esc(u.initials || String(u.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2));
   const logoT = nav.logo.target;
-  return `<a class="sh-logo" href="${esc(hrefFor(logoT.id, logoT.params))}" aria-label="Psyflo, My Work"${on === 'my-work' ? ' aria-current="page"' : ''}>${LOGO.replace('<svg ', '<svg aria-hidden="true" focusable="false" ').replace(/role="img"\s*aria-label="[^"]*"/, '')}<small>Harvest Outreach Center · TDT</small></a>
+  return `<a class="sh-logo" href="${esc(hrefFor(logoT.id, logoT.params))}" aria-label="Psyflo, Dashboard"${on === 'my-work' ? ' aria-current="page"' : ''}>${LOGO.replace('<svg ', '<svg aria-hidden="true" focusable="false" ').replace(/role="img"\s*aria-label="[^"]*"/, '')}<small>Harvest Outreach Center · TDT</small></a>
   <nav class="sh-nav" aria-label="Main"><ul>${nav.primary.length || nav.secondary.length ? nav.primary.map(i => link(i)).join('') : link({ ...nav.logo, icon: 'home', countText: '', count: 0, target: logoT })}</ul>${nav.secondary.length ? `<div class="sh-nav__sep" role="separator"></div><ul>${nav.secondary.map(i => link(i, true)).join('')}</ul>` : ''}</nav>
   <div class="sh-foot">
     <div class="sh-demo"><i aria-hidden="true"></i><span>Demo data · nothing is real</span></div>
@@ -153,8 +155,32 @@ function renderRail(force) {
   railKey = html;
   const had = rail.contains(document.activeElement) ? (document.activeElement.getAttribute('href') || document.activeElement.dataset.sh) : null;
   rail.innerHTML = html; rail.hidden = !html;
+  renderTopbar(!!html);
   if (had) { const el = [...rail.querySelectorAll('a[href],button')].find(e => (e.getAttribute('href') || e.dataset.sh) === had); if (el) el.focus({ preventScroll: true }); }
 }
+// ---------- the top bar: FLO (the assistant) and the bell (notifications), on every platform page ----------
+// The bar only dispatches `psyflo:topbar` ({ id: 'flo' | 'bell', opener }); web/js/ui/flo.js and web/js/ui/bell.js listen and open their drawers.
+// window.psyfloTopbar.setBadge('bell', n) puts an unread count on a button.
+const TOPBAR = { badges: {} };
+function applyTopbarBadges() {
+  const el = document.getElementById('topbar'); if (!el) return;
+  for (const id of ['flo', 'bell']) {
+    const b = el.querySelector(`[data-topbar="${id}"]`); if (!b) continue; const n = TOPBAR.badges[id] || 0; const dot = b.querySelector('.sh-top__dot');
+    if (dot) { dot.hidden = !n; dot.textContent = n > 9 ? '9+' : String(n); }
+    b.setAttribute('aria-label', (id === 'bell' ? 'Notifications' : 'FLO assistant') + (n ? `, ${n} unread` : ''));
+  }
+}
+function renderTopbar(show) {
+  const el = document.getElementById('topbar'); if (!el) return;
+  el.hidden = !show;
+  if (!show || el.dataset.ready) { if (show) applyTopbarBadges(); return; }
+  el.dataset.ready = '1';
+  el.innerHTML = `<div class="sh-top__in"><button type="button" class="sh-top__b sh-top__flo" data-topbar="flo" aria-haspopup="dialog" aria-label="FLO assistant">${icon('sparkle', 18)}<span>FLO</span></button><button type="button" class="sh-top__b sh-top__bell" data-topbar="bell" aria-haspopup="dialog" aria-label="Notifications">${icon('bell', 20)}<span class="sh-top__dot" hidden></span></button></div>`;
+  el.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-topbar]'); if (b) window.dispatchEvent(new CustomEvent('psyflo:topbar', { detail: { id: b.dataset.topbar, opener: b } })); });
+  applyTopbarBadges();
+}
+window.psyfloTopbar = { setBadge(id, n) { TOPBAR.badges[id] = Math.max(0, +n || 0); applyTopbarBadges(); } };
+
 function openHelp(returnFocus) {
   ui.drawer({ title: 'Help', returnFocus, body: `<h3 class="sh-note__h">Keyboard</h3><dl class="sh-help-k"><dt>${ui.kbd('Tab')}</dt><dd>First stop is "Skip to main content"</dd><dt>${ui.kbd('Esc')}</dt><dd>Close a drawer, dialog or popover</dd><dt>${ui.kbd('↑')} ${ui.kbd('↓')}</dt><dd>Move between rows of a queue</dd><dt>${ui.kbd('Enter')}</dt><dd>Open the focused row</dd></dl>
     <h3 class="sh-note__h">About this demo</h3><p>Demo data · nothing is real. Psyflo drafts and records. A person presses Process Form, Get Signature and Send, and a person signs.</p>` });
@@ -178,7 +204,7 @@ let mode = 'presentation', dockState = 'hidden', maturityOn = false;
 function initDockState() {
   const m = flag('mode'); mode = MODES[m] ? m : (MODES[ls.get(MODE_KEY)] ? ls.get(MODE_KEY) : 'presentation'); if (MODES[m]) ls.set(MODE_KEY, m);
   const p = flag('present') ?? flag('presenter');
-  dockState = ls.get(DOCK_KEY) === 'open' || ls.get(DOCK_KEY) === 'collapsed' ? ls.get(DOCK_KEY) : isHosted() ? 'collapsed' : 'hidden';   // hosted: the handle shows, so the presenter tools can be found
+  dockState = ls.get(DOCK_KEY) === 'open' || ls.get(DOCK_KEY) === 'collapsed' ? ls.get(DOCK_KEY) : 'hidden';   // no ribbon until asked for (Ctrl+Shift+P or ?present=1), hosted preview included: it was a distraction in the demo (feedback Nov 12)
   if (p === '0') dockState = 'hidden'; else if (p != null && p !== '') dockState = 'open';
   if (mode === 'explore') dockState = 'open';
   if (innerWidth <= 700 && dockState === 'open') dockState = 'collapsed'; // phone widths: a 24 px handle until tapped
@@ -198,7 +224,6 @@ function renderDock(force) {
   if (force || html !== dockKey || el.dataset.state !== dockState) {
     const focusTag = el.contains(document.activeElement) ? document.activeElement.dataset.dock : null;
     dockKey = html; el.dataset.state = dockState; el.dataset.mode = mode; el.hidden = dockState === 'hidden'; el.innerHTML = html;
-    if (isHosted()) el.querySelector('.sh-dock__mode')?.insertAdjacentHTML('afterend', '<span class="sh-dock__hosted">Hosted preview · data resets on reload</span>');
     if (focusTag) el.querySelector(`[data-dock="${focusTag}"]`)?.focus({ preventScroll: true });
   }
   measureDock();
@@ -524,7 +549,7 @@ async function boot() {
   initDockState();
   await api.init();
   try { PERM = await import('./shared/permissions.js'); } catch { PERM = null; }
-  LOGO = (await fetch('/js/logo-color.svg').then(r => r.ok ? r.text() : Promise.reject()).catch(() => fetch('/js/logo.svg').then(r => r.text()))).trim();   // full-colour wordmark for the light rail (logo.svg is the reverse one for navy)
+  LOGO = (await fetch('/js/logo.svg').then(r => r.text())).trim();   // the reverse wordmark (white, teal, marigold) for the navy rail
   await loadNotes();
   await Promise.all(Object.keys(MODULES).map(k => MODULES[k]().catch(e => console.error('controller', k, e))));
   const root = document.getElementById('root');

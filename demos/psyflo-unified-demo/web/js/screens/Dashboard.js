@@ -35,10 +35,10 @@ register('Dashboard', class extends Screen {
     const f = normalizeRoster(this.params);
     const a = this.actor;
     if (a && a.role === 'direct_support') { f.staff = ''; f.clinician = ''; }
-    this.state = { f: { q: f.q, attention: f.attention, site: f.site, staff: f.staff, clinician: f.clinician, payer: f.payer, units: f.units, due: f.due }, sort: { key: SORTABLE.includes(f.sort) ? f.sort : '', dir: f.dir }, open: f.open === 'all' || f.open === 'none' ? f.open : '', toggled: {} };
+    this.state = { f: { q: f.q, attention: f.attention, site: f.site, staff: f.staff, clinician: f.clinician, payer: f.payer, units: f.units, due: f.due }, sort: { key: SORTABLE.includes(f.sort) ? f.sort : '', dir: f.dir }, open: f.open === 'all' || f.open === 'none' ? f.open : '', toggled: {}, ...ui.pager.fromQuery(this.params) };
   }
   get actor() { return session.actor; }
-  setF(next) { this.setState({ f: { ...this.state.f, ...next } }); }
+  setF(next) { ui.query.writeQuery({ page: '' }); this.setState({ f: { ...this.state.f, ...next }, page: 1 }); }
 
   // where an item's button goes: its own target when this role may open it, else the patient chart (the chart explains the rest)
   resolve(it, row) {
@@ -104,7 +104,7 @@ register('Dashboard', class extends Screen {
 
   renderVals() {
     const s = this.s, a = this.actor;
-    const date = M.fmtDate(clockToday(s), { dow: true }) + ' · ' + M.fmtTime(clockNow(s));
+    const date = '';   // no date or time in the page header (feedback Nov 12)
     if (!a || !a.role) return { dateText: date, roleChip: raw(''), maturity: raw(''), confirms: raw(''), bar: raw(''), table: raw(ui.emptyState({ tone: 'denied', title: 'Sign in to see your patients', body: 'The Dashboard is built for the signed-in role.', action: { label: 'Sign in', href: '#/Login' } })) };
     const isDS = a.role === 'direct_support', st = this.state, today = clockToday(s);
     const res = rosterRows(s, a, { ...st.f, sort: st.sort.key, dir: st.sort.dir });
@@ -127,10 +127,11 @@ register('Dashboard', class extends Screen {
     const bar = ui.filterBar({
       id: 'd-f', label: 'Patient filters', chipsLabel: 'Show', state: st.f,
       search: { key: 'q', placeholder: 'Initials or Lauris #', label: 'Search patients' }, chips, selects,
-      shown: res.shown, total: res.total, noun: 'patients', onChange: f => this.setF(f), onClear: f => this.setF(f)
+      onChange: f => this.setF(f), onClear: f => this.setF(f)
     });
 
-    const withItems = rows.filter(r => r.items.length);
+    const pageRows = ui.pager.slice(rows, { size: st.size, page: st.page });
+    const withItems = pageRows.filter(r => r.items.length);
     const allOpen = withItems.length > 0 && withItems.every(r => this.isOpen(r, rows.length));
     const th = (key, label, o2 = {}) => {
       const on = sortNow.key === key; const asc = on && sortNow.dir === 'asc';
@@ -140,7 +141,7 @@ register('Dashboard', class extends Screen {
     const cols = isDS ? 6 : 7;
     const head = `<tr>${th('patient', 'Patient', { sort: true, extra: withItems.length ? `<button type="button" class="ui-linkbtn d-all" data-x="all">${allOpen ? 'Collapse all' : 'Expand all'}</button>` : '' })}${isDS ? '' : th('staff', 'Responsible', { sort: true, cls: 'd-hide-lt-1100' })}${th('', 'Notes')}${th('', 'Forms')}${th('units', 'Authorization', { sort: true })}${th('due', 'Next date', { sort: true })}${th('attention', 'Alerts', { sort: true })}</tr>`;
     const emp = v => (v ? '' : ' class="d-empty"');
-    const body = rows.map(r => {
+    const body = pageRows.map(r => {
       const open = this.isOpen(r, rows.length), nd = nextDate(r, today);
       const tog = r.items.length ? `<button type="button" class="d-tog" data-x="tog" data-id="${esc(r.id)}" aria-expanded="${open}" aria-controls="d-it-${esc(r.id)}" aria-label="${open ? 'Hide' : 'Show'} ${plural(r.items.length, 'item')} for ${esc(r.label)}">${ui.icon('chevD', 16)}</button>` : '<span class="d-tog d-tog--none" aria-hidden="true"></span>';
       const resp = isDS ? '' : `<td class="d-hide-lt-1100" data-label="Responsible"><span class="d-resp">${r.staffShort ? esc(r.staffShort) : '<span class="d-none">—</span>'}</span>${r.clinicianShort ? `<span class="d-sub">${esc(r.clinicianShort)}</span>` : ''}</td>`;
@@ -148,7 +149,7 @@ register('Dashboard', class extends Screen {
         (r.items.length ? `<tr class="d-items-row" id="d-it-${esc(r.id)}"${open ? '' : ' hidden'}><td colspan="${cols}">${this.itemsHtml(r)}</td></tr>` : '');
     }).join('');
     const empty = res.total ? `<tr><td colspan="${cols}">${ui.emptyState({ title: 'No patients match', body: 'Clear a filter to see more.' })}</td></tr>` : `<tr><td colspan="${cols}">${ui.emptyState({ title: isDS ? 'No patients on your caseload yet' : 'No patients yet' })}</td></tr>`;
-    const table = `<div class="ui-qt d-qt"><div class="ui-qt__scroll" role="region" aria-label="Patients" tabindex="0"><table class="ui-qt__table d-table"><caption class="ui-sr">Patients, sorted by ${esc({ patient: 'patient', staff: 'responsible', attention: 'alerts', units: 'units left', due: 'next date' }[sortNow.key])}</caption><thead>${head}</thead><tbody>${rows.length ? body : empty}</tbody></table></div></div>`;
+    const table = `<div class="ui-qt d-qt"><div class="ui-qt__scroll" role="region" aria-label="Patients" tabindex="0"><table class="ui-qt__table d-table"><caption class="ui-sr">Patients, sorted by ${esc({ patient: 'patient', staff: 'responsible', attention: 'alerts', units: 'units left', due: 'next date' }[sortNow.key])}</caption><thead>${head}</thead><tbody>${rows.length ? body : empty}</tbody></table></div></div>` + ui.pager({ id: 'd-pg', total: rows.length, size: st.size, page: st.page, noun: 'patients', onChange: ({ size, page }) => this.setState({ size, page }) });
     return { dateText: date, roleChip: raw(ui.chip(ROLE_LABEL[a.role] || a.role, { tone: 'neutral', size: 'sm' })), maturity: raw(ui.maturity('route.Dashboard')), confirms: raw(this.confirmsHtml(a)), bar: raw(bar), table: raw(table) };
   }
 

@@ -582,10 +582,10 @@ async function dock() {
   const H = await fresh(); const { ui, page } = H;
   await H.signIn('Supervisor');
   const dockEl = ui.locator('#dock');
-  ok(await dockEl.isVisible() && /Hosted preview · data resets on reload/.test(await dockEl.innerText()), 'the dock handle shows the one hosted line: "Hosted preview · data resets on reload"');
+  ok(!(await dockEl.isVisible()), 'no ribbon until asked for: the "Presentation · product only" and "Hosted preview · data resets on reload" strip is gone (feedback Nov 12)');
+  await page.keyboard.press('Control+Shift+P'); await ui.locator('[data-dock-menu="scenario"]').waitFor();
+  ok(await dockEl.isVisible() && !/Hosted preview/.test(await dockEl.innerText()), 'Ctrl+Shift+P opens the presenter tools, with no hosted line');
   ok(/Presentation/.test(await dockEl.innerText()), 'Presentation mode is the default');
-  await ui.locator('[data-dock="toggle"]').click(); await ui.locator('[data-dock-menu="scenario"]').waitFor();
-  ok(/Hosted preview/.test(await dockEl.innerText()), 'the line stays when the dock is open');
   // modes
   await ui.locator('[data-dock="mode"]').click(); await page.waitForTimeout(300);
   ok(/Explore/.test(await ui.locator('.sh-dock__mode').innerText()) && await ui.locator('[data-dock-menu="screens"]').count() === 1, 'Explore mode: all features by role, and the All screens menu');
