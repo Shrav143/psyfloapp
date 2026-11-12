@@ -146,18 +146,19 @@ const toNeedsApproval = async () => {
   assert.ok((await ev('processed')).ok); return { no, sid, ev, signed };
 };
 try {
-  await T.test('the queue: no demo buttons, chips with counts, URL state, v3 links, sort, search, Denial Intelligence links', async () => {
+  await T.test('the queue (R3, after the artifact): no demo buttons, a Status dropdown instead of chips, URL state, v3 links, sort, search, Denial Intelligence links', async () => {
     await reset('canvas'); const { p, errs } = await mk('dowens');
     await p.goto(BASE + '/#/Authorizations'); await p.waitForTimeout(800);
     const txt = await p.locator('main').innerText(); assert.noMatch(txt, /Demo only|Demo: receive|advance the clock/i, 'demo controls left the screen');
-    for (const l of ['Needs action', 'Draft', 'Awaiting signature', 'Submitted', 'Active', 'Renewal due', 'All']) assert.ok(await p.getByRole('button', { name: new RegExp('^' + l) }).count(), 'chip ' + l);
-    await p.getByRole('button', { name: /^Needs action/ }).click(); await p.waitForTimeout(300);
+    const opts = await p.locator('select[data-key="status"] option').allInnerTexts(); for (const l of ['All statuses', 'Needs action', 'Draft', 'Awaiting signature', 'Submitted', 'Active', 'Renewal due', 'Flagged']) assert.ok(opts.includes(l), 'status option ' + l + ' in ' + opts.join());
+    assert.eq(await p.locator('.ui-fchips').count(), 0, 'no status chips: the artifact has dropdown filters only');
+    await p.selectOption('select[data-key="status"]', 'needs'); await p.waitForTimeout(300);
     assert.match(await p.evaluate(() => location.hash), /status=needs/); const rows = await p.locator('tbody tr[data-ui-row]').count(); assert.ok(rows >= 2 && rows <= 5, 'filtered rows ' + rows);
     assert.ok(await p.locator('a[href^="#/Authorization?id="]').count() >= 1, 'rows are real links to the case');
     await p.goto(BASE + '/#/Authorizations?show=renewals&exp=60'); await p.waitForTimeout(700);
     const h = await p.evaluate(() => location.hash); assert.match(h, /status=renewal/); assert.noMatch(h, /show=|exp=/); assert.match(h, /ends=60/);
     await p.goto(BASE + '/#/Authorizations'); await p.waitForTimeout(600);
-    await p.locator('th button', { hasText: 'Units' }).click(); await p.waitForTimeout(300);
+    await p.locator('th button', { hasText: 'Remaining' }).click(); await p.waitForTimeout(300);
     assert.eq(await p.locator('th[aria-sort="ascending"]').count(), 1);
     await p.fill('input[type=search]', 'Sentara'); await p.waitForTimeout(600); assert.ok((await p.locator('tbody tr[data-ui-row]').count()) <= 3);
     await p.fill('input[type=search]', ''); await p.waitForTimeout(500);
@@ -165,16 +166,19 @@ try {
     assert.eq(await p.locator('.a-di').count(), 0, 'no "In Denial Intelligence" line in the status cell any more');
     assert.deepEq(realErrs(errs), []); await p.context().close();
   });
-  await T.test('simple table (feedback Nov 11): units are one bar "N left of M" flagged from 75% used; a deadline is a date with a warning icon; every filter is on the page', async () => {
+  await T.test('the table (feedback Nov 11, laid out like the artifact): units are one bar "N left of M" flagged from 75% used; the Next action cell holds the button and a dated deadline with a warning icon; ten filters on the page', async () => {
     await reset('canvas'); const { p, errs } = await mk('jperez');
     await p.goto(BASE + '/#/Authorizations'); await p.waitForTimeout(900);
     const row = name => p.locator('tbody tr[data-ui-row]', { hasText: name }).first();
     assert.match(await row('M.R.').innerText(), /27\s*left of 110/); assert.ok(await row('M.R.').locator('.ui-units.is-warn').count(), 'M.R. is at 75% used: yellow flag');
     assert.ok(await row('T.N.').locator('.ui-units.is-out').count(), '0 left of 65 is the red state'); assert.eq(await row('D.W.').locator('.ui-units.is-warn, .ui-units.is-out').count(), 0, '110 left of 110 carries no flag');
     assert.ok(await row('A.L.').locator('.ui-dateflag--overdue .ui-dateflag__i svg').count(), 'an overdue date carries a warning icon');
-    const cell = await row('M.R.').locator('.a-c-dl').innerText(); assert.match(cell.trim(), /^[A-Z][a-z]{2} \d{1,2}$/, 'the deadline cell is only a date: ' + cell);
-    assert.noMatch(await p.locator('tbody').innerText(), /Harvest-reported|Unverified|Payer-specific|school days|window ended/i, 'sources and sentences moved into the tooltip');
-    for (const l of ['Payer', 'Request type', 'Assigned clinician', 'Location', 'School', 'Stage', 'Units remaining', 'Next step due']) assert.ok(await p.locator('.ui-fsel__l', { hasText: new RegExp('^' + l + '$') }).count(), 'filter ' + l);
+    const heads = (await p.locator('thead th').allInnerTexts()).map(x => x.trim().replace(/\s+/g, ' ')); assert.deepEq(heads, ['Consumer', 'Service', 'Payer', 'Assigned clinician', 'Authorization period', 'Requested', 'Approved', 'Remaining', 'Status', 'Next action'], 'the artifact columns');
+    const cell = await row('M.R.').locator('.a-c-next').innerText(); assert.match(cell, /Nov 13/, 'the Next action cell carries the dated deadline: ' + cell); assert.ok(await row('M.R.').locator('.a-c-next .ui-dateflag--soon').count(), 'a flag icon on a deadline that is close');
+    assert.noMatch(await p.locator('tbody').innerText(), /Harvest-reported|Unverified|Payer-specific|window ended/i, 'sources and sentences moved into the tooltip');
+    for (const l of ['Status', 'Payer', 'Service type', 'Request type', 'Assigned clinician', 'Location', 'School', 'Units remaining', 'Next step due']) assert.ok(await p.locator('.ui-fsel__l', { hasText: new RegExp('^' + l + '$') }).count(), 'filter ' + l);
+    assert.eq(await p.locator('.ui-fbar .ui-fsel, .ui-fbar .ui-fsearch').count(), 10, 'search plus nine dropdowns: the artifact grid of ten');
+    assert.eq(await p.locator('.ui-pager').count(), 1, 'the pager is at the bottom'); { const n = (await state('jperez')).requests.length; assert.match(await p.locator('.ui-pager').innerText(), new RegExp('Showing\\s*1–' + Math.min(n, 25) + '\\s*of\\s*' + n + '\\s*authorizations')); } assert.noMatch(await p.locator('main > header, .a-head').innerText(), /\d+ of \d+/, 'no "N of M" at the top');
     assert.eq(await p.locator('details.ui-fmore').count(), 0, 'no "More filters" disclosure');
     await p.selectOption('select[data-key="units"]', 'warn'); await p.waitForTimeout(400);
     const flagged = await p.locator('tbody tr[data-ui-row]').allInnerTexts(); assert.eq(flagged.length, 3, 'flagged rows: ' + flagged.map(x => x.split('\n')[0]).join(','));
@@ -210,13 +214,13 @@ try {
     await sender.p.screenshot({ path: SHOTS + '/authorizations-s3-submitted.png', fullPage: true });
     assert.deepEq(realErrs(sender.errs.concat(errs)), []); await p.context().close(); await sender.p.context().close();
   });
-  await T.test('the timeline: events open What · When · Who · Document · Source · Next action; ?section= opens that section', async () => {
+  await T.test('the history: rows open What · When · Who · Document · Source · Next action in a pop-up; ?section=timeline lands on History; every row has an actor tag', async () => {
     const { p, errs } = await mk('jperez'); await p.goto(BASE + '/#/Authorization?id=R-0416&section=timeline'); await p.waitForTimeout(900);
-    assert.ok(await p.locator('details[data-sec="timeline"][open]').count(), 'timeline section open');
-    await p.locator('.ui-tl__what').first().click(); await p.waitForSelector('.ui-overlay--drawer');
-    const t = await p.locator('.ui-overlay--drawer').innerText(); for (const k of ['What', 'When', 'Who', 'Document', 'Source', 'Next action']) assert.match(t, new RegExp(k));
+    assert.ok(await p.locator('details[data-sec="history"][open]').count(), 'history block open');
+    await p.locator('.hx__r').first().click(); await p.waitForSelector('.ui-dialog');
+    const t = await p.locator('.ui-dialog').innerText(); for (const k of ['What', 'When', 'Who', 'Document', 'Source', 'Next action']) assert.match(t, new RegExp(k));
     await p.keyboard.press('Escape');
-    assert.ok(await p.locator('.ui-tl__h time').count() >= 5, 'latest first, with times');
+    const rows = await p.locator('.hx__r').count(); assert.ok(rows >= 5, 'at least five steps: ' + rows); assert.eq(await p.locator('.hx__r .hx__g').count(), rows, 'one actor tag per row'); assert.ok(await p.locator('.hx__w b').count() >= 5, 'latest first, with dates');
     assert.deepEq(realErrs(errs), []); await p.context().close();
   });
   await T.test('Record decision: approved opens the Enter units in Lauris task (card with the Lauris link); Psyflo does not write units; admin sees the task read-only', async () => {
@@ -252,7 +256,6 @@ try {
     assert.match(letter, /We have not received a decision/); assert.match(letter, /Jordan Perez, LPC/); assert.noMatch(letter, /7-calendar-day|7-day|standard/i, 'no legal standard is cited');
     await p.getByRole('dialog').getByRole('button', { name: 'Send notice' }).click(); await p.waitForTimeout(900);
     const r = await req('R-0399'); assert.ok(r.overdue_notice_sent && /^F-\d+/.test(r.overdue_notice_ref), 'the reference comes from the send stub'); assert.eq(await p.getByRole('dialog').count(), 0);
-    await p.locator('summary', { hasText: 'Submission history' }).click(); await p.waitForTimeout(200);
     await p.getByRole('button', { name: 'Send again' }).first().click(); await p.getByRole('dialog').getByRole('button', { name: 'Send again' }).click(); await p.waitForTimeout(300);
     assert.ok(!(await req('R-0399')).resends, 'a reason is required'); await p.getByRole('dialog').locator('textarea').fill('Humana says the fax did not arrive'); await p.getByRole('dialog').getByRole('button', { name: 'Send again' }).click(); await p.waitForTimeout(900);
     const rs = (await req('R-0399')).resends; assert.eq(rs.length, 1); assert.eq(rs[0].by, 'jperez'); assert.eq((await req('R-0399')).sent.slice(0, 10), '2026-10-12', 'the decision clock keeps its first send date');
@@ -263,7 +266,7 @@ try {
   await T.test('old routes keep working: Submission and EarlyDischarge land on the case sections; legacy=1 opens the old screen', async () => {
     await reset('canvas'); const { p, errs } = await mk('jperez');
     await p.goto(BASE + '/#/Submission?id=R-0399'); await p.waitForTimeout(800); let h = await p.evaluate(() => location.hash + '|' + psyflo.current.id);
-    assert.match(h, /^#\/Authorization\?id=R-0399&section=submission\|Authorization$/); assert.ok(await p.locator('details[data-sec="submission"][open]').count());
+    assert.match(h, /^#\/Authorization\?id=R-0399&section=submission\|Authorization$/); assert.ok(await p.locator('[data-sec="submission"]').count(), 'the submission card');
     await p.goto(BASE + '/#/EarlyDischarge?id=R-0402'); await p.waitForTimeout(800); h = await p.evaluate(() => location.hash); assert.match(h, /id=R-0402&section=transition/);
     await p.goto(BASE + '/#/Authorizations?id=R-0391'); await p.waitForTimeout(800); assert.match(await p.evaluate(() => location.hash), /^#\/Authorization\?id=R-0391/);
     await p.goto(BASE + '/#/Submission?id=R-0399&legacy=1'); await p.waitForTimeout(800); assert.eq(await p.evaluate(() => psyflo.current.id), 'Submission');

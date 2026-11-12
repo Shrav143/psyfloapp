@@ -50,19 +50,19 @@ async function run(mode) {
       await desk.goto(BASE + '/#/Authorizations'); await desk.waitForSelector('.ui-qt__row'); await desk.waitForTimeout(400);
       const row = (await queueRows(desk)).find(r => r.id === 'R-0402'); assert.ok(row && /Partial: decide/.test(row.text), 'queue: ' + (row && row.text));
       await desk.goto(BASE + '/#/Authorization?id=R-0402'); await desk.waitForTimeout(1000);
-      await desk.getByRole('link', { name: /^Open in Denial Intelligence/ }).first().click(); await desk.waitForSelector('.d-tabs');
-      assert.match(await rootText(desk), /D\.W\. · Partial approval/); assert.match(await desk.evaluate(() => location.hash), /DenialCase\?id=R-0402/);
+      await desk.getByRole('link', { name: /^Open in Denial Intelligence/ }).first().click(); await desk.waitForSelector('.d-menu');
+      assert.match(await rootText(desk), /D\.W\., 15[\s\S]*Partial approval/); assert.match(await desk.evaluate(() => location.hash), /DenialCase\?id=R-0402/);
       assert.eq(disp(await state('jperez'), 'R-0402').status, 'decide', 'the dispute already exists: nothing is created by looking');
       const dq = await (async () => { await desk.goto(BASE + '/#/DenialIntelligence'); await desk.waitForSelector('.ui-qt__row'); return queueRows(desk); })(); assert.eq(dq.length, 4, 'four open cases'); assert.ok(dq.some(r => r.id === 'R-0402' || /R-0402/.test(r.text)));
     });
     await F.step('2 evidence and options: dated sourced evidence, "Evidence missing — verify …" for what is not stored, only valid options, unverified paths labelled', async () => {
-      await desk.goto(BASE + '/#/DenialCase?id=R-0402&section=evidence'); await desk.waitForSelector('.d-tabs');
+      await desk.goto(BASE + '/#/DenialCase?id=R-0402&section=evidence'); await desk.waitForSelector('.d-menu');
       let t = await rootText(desk); assert.match(t, /Evidence missing — verify previous treatment outcome/); assert.match(t, /Physical aggression toward a peer/);
-      await desk.getByRole('link', { name: /^Options/ }).click(); t = await rootText(desk);
+      await desk.getByRole('link', { name: /^Overview/ }).click(); await desk.locator('#d-paths > summary').click(); t = await rootText(desk);
       assert.match(t, /Accept decision/); assert.match(t, /Prepare peer-to-peer/); assert.match(t, /Payer rule not verified/); assert.match(t, /Not available here \(2\)/);
     });
     await F.step('3 choose peer-to-peer: stage peer_to_peer_requested; the page says it is NOT sent to the payer; a next task appears on the Dashboard; owner and deadline stay visible', async () => {
-      await desk.getByRole('button', { name: 'Open' }).nth(1).click(); await desk.waitForSelector('#d-h-p2p');
+      await desk.locator('#d-paths .d-opt').filter({ hasText: 'Prepare peer-to-peer' }).getByRole('button', { name: 'Open' }).click(); await desk.waitForSelector('#d-h-p2p');
       await desk.getByRole('button', { name: /Ask Sentara for a peer-to-peer/ }).click(); await desk.getByRole('dialog').getByRole('button', { name: 'Log the request' }).click();
       const s = await waitState(x => req(x, 'R-0402').stage === 'peer_to_peer_requested', { what: 'peer_to_peer_requested' });
       assert.eq(req(s, 'R-0402').decision.door, 'p2p'); assert.eq(req(s, 'R-0402').decision.by, 'jperez'); assert.ok(s.events.some(e => e.record === 'R-0402' && /peer-to-peer/i.test(e.what) && e.who === 'jperez'));
@@ -90,7 +90,7 @@ async function run(mode) {
       await waitText(desk, /Partly overturned/); assert.match(await rootText(desk), /130 of 150 units approved/); await shot(desk, `s5-${mode}-5-dw-done`);
     });
     await F.step('6 back to the authorization: R-0402 is Active with 130 units and the "Enter units in Lauris" card (with the Lauris link); the queue says Active; Denial Intelligence lists three open cases', async () => {
-      await desk.getByRole('link', { name: 'Open authorization' }).click(); await desk.waitForTimeout(1200);
+      await desk.getByRole('link', { name: 'Open in Authorizations' }).click(); await desk.waitForTimeout(1200);
       const t = await mainText(desk); assert.match(await desk.evaluate(() => location.hash), /#\/Authorization\?id=R-0402|#\/Authorizations/); assert.match(t, /Active/); assert.match(t, /130/); assert.match(t, /Enter units in Lauris/);
       assert.ok(await desk.getByRole('link', { name: /Open Lauris/ }).count() >= 1, 'a link to Lauris for the person');
       await desk.goto(BASE + '/#/Authorizations'); await desk.waitForSelector('.ui-qt__row'); await desk.waitForTimeout(400); const row = (await queueRows(desk)).find(r => r.id === 'R-0402'); assert.ok(/Active/.test(row.text), 'queue row: ' + row.text);
@@ -142,7 +142,7 @@ async function run(mode) {
 
     // ---------------------------------------------------------------- E.C.
     await F.step('11 E.C. (R-0384): the clinician drafts and reviews the appeal letter; the guardian signs on the phone (the signer is the guardian behind the link); staff press Send; "faxed" appears only after Send, the reference comes from the stub', async () => {
-      await desk.goto(BASE + '/#/DenialCase?id=R-0384&section=action&action=appeal'); await desk.waitForSelector('.d-tabs');
+      await desk.goto(BASE + '/#/DenialCase?id=R-0384&section=action&action=appeal'); await desk.waitForSelector('.d-menu');
       assert.match(await rootText(desk), /Illustrative sample/);
       await desk.getByRole('button', { name: 'Draft again from records' }).click(); await desk.waitForTimeout(800);
       for (let i = 0; i < 6 && (await desk.getByRole('button', { name: 'Mark reviewed' }).isDisabled().catch(() => false)); i++) { const ed = desk.locator('.d-secdoc').filter({ hasText: /Evidence missing/ }).first().getByRole('button', { name: 'Edit' }); if (!(await ed.count())) break; await ed.click(); const ta = desk.locator('.d-edit textarea'); await ta.fill((await ta.inputValue()).replace(/\[Evidence missing[^\]]*\]/g, 'The clinician adds the dated record before this goes out.')); await desk.getByRole('button', { name: 'Save section' }).click(); await desk.waitForTimeout(500); }
@@ -152,7 +152,7 @@ async function run(mode) {
       assert.eq(await g.locator('.fp-steps').getAttribute('data-appeal-status'), 'ready'); const gt = await rootText(g); assert.ok(!/Dispute|evidence|options|Sentara/i.test(gt), 'the guardian sees the letter, never the case');
       await g.locator('[data-sig-method="type"]').click(); await g.fill('input[id="sig-name"]', 'Elena Carter'); await g.locator('a[href="#sign"]').click(); await waitState(x => (req(x, 'R-0384').appeal || {}).status === 'signed', { what: 'appeal signed' });
       s = await state('jperez'); assert.eq(req(s, 'R-0384').stage, 'denied', 'signing is not sending'); assert.ok(!s.events.some(e => e.record === 'R-0384' && /faxed|Sfax|sent to Anthem/i.test(e.what) && /appeal/i.test(e.what)), 'no send language before Send'); assert.ok(req(s, 'R-0384').appeal.signer !== 'Elena Carter', 'the signer is the guardian behind the link, never the typed text');
-      await desk.goto(BASE + '/#/DenialCase?id=R-0384&section=action&action=appeal'); await desk.waitForSelector('.d-tabs');
+      await desk.goto(BASE + '/#/DenialCase?id=R-0384&section=action&action=appeal'); await desk.waitForSelector('.d-menu');
       await desk.getByRole('button', { name: /Mark ready for upload/ }).first().click(); await desk.getByRole('dialog').getByRole('button', { name: 'Mark ready' }).click();
       s = await waitState(x => (req(x, 'R-0384').appeal || {}).status === 'ready_to_upload', { ms: 15000, what: 'the person\'s Mark ready' }); const a = req(s, 'R-0384').appeal;
       const e = s.events.filter(x => x.record === 'R-0384' && /Appeal letter ready for the clinician to upload in Availity/.test(x.what)); assert.ok(e.length === 1 && e[0].sim === true && e[0].who === 'jperez', 'the recorded action is a person\'s and says simulated: ' + JSON.stringify(e.map(x => [x.who, x.sim, x.what])));

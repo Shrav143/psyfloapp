@@ -5,7 +5,7 @@
 //   requested, approved (units awarded, null when none yet), offered, reason, appealed, appealOutcome, renewal, days (decision day N) }
 // The headline strip prints any count of 1 to 4 as "Fewer than 5". Table rows for a payer under the minimum are rolled up; the All payers row and the
 // unit and reauthorization tables are tracker counts of work items, shown in full and labelled as such in their definitions.
-import { sup, grp, median, r1, sum, addMonths, monthKey, monthLabel } from './common.js';
+import { sup, grp, median, r1, sum, addMonths, monthKey, monthLabel, cellText } from './common.js';
 
 const COLS = (first, ...more) => [{ key: 'label', label: first }, ...more.map(([key, label]) => ({ key, label, align: 'right' }))];
 const isDecided = r => ['approved', 'partial', 'denied'].includes(r.outcome);
@@ -37,8 +37,8 @@ function kpiPanel(R, env) {
   const days = dec.map(r => r.days).filter(x => x != null);
   const awarded = dec.filter(r => r.approved != null || r.outcome === 'denied'); const reqU = sum(awarded.map(r => r.requested)), apprU = sum(awarded.map(r => r.approved || 0));
   const appealed = R.filter(r => r.appealed).length; const pend = R.filter(r => !isDecided(r)).length;
-  return { id: 'pay.kpi', title: 'Headline measures', kind: 'table', columns: KPI_COLS, rows: [
-    KPI('Authorization requests', g(R.length), R.length >= min ? `${pend} awaiting a decision` : 'A group under 5 is not shown'),
+  return { id: 'pay.kpi', title: 'Payer headline measures', kind: 'table', columns: KPI_COLS, rows: [
+    KPI('Authorization requests', g(R.length), R.length >= min ? `${cellText(g(pend))} awaiting a decision` : 'A group under 5 is not shown'),
     KPI('Full approval rate', rate(ap), rsub(`${ap} of ${dec.length} decided requests approved in full`)),
     KPI('Partial approval rate', rate(pa), rsub(`${pa} of ${dec.length} decided requests partly approved`)),
     KPI('Full denial rate', rate(de), rsub(`${de} of ${dec.length} decided requests denied`), { tone: 'warn' }),

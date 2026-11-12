@@ -281,12 +281,12 @@ async function denial() {
   await H.api('demo.reset', { preset: 'canvas' }, 'dowens+p'); await page.waitForTimeout(600);
   await H.go('#/DenialIntelligence'); await ui.locator('.ui-qt__row').first().waitFor();
   ok(await ui.locator('.ui-qt__row').count() === 4, 'the queue lists four open cases');
-  await ui.getByRole('link', { name: /R-0402/ }).first().click(); await ui.locator('.d-tabs').waitFor();
-  ok(/D\.W\. · Partial approval/.test(await H.main()), 'the D.W. partial approval case opens');
-  await ui.getByRole('link', { name: /^Evidence/ }).click(); ok(/Evidence missing — verify previous treatment outcome/.test(await H.main()), 'missing evidence prints "Evidence missing — verify …"');
-  await ui.getByRole('link', { name: /^Options/ }).click(); const opt = await H.main();
+  await ui.getByRole('link', { name: /R-0402/ }).first().click(); await ui.locator('.d-menu').waitFor();
+  ok(/D\.W\., 15[\s\S]*Partial approval/.test(await H.main()), 'the D.W. partial approval case opens');
+  await ui.getByRole('link', { name: /^Clinical evidence/ }).click(); ok(/Evidence missing — verify previous treatment outcome/.test(await H.main()), 'missing evidence prints "Evidence missing — verify …"');
+  await ui.getByRole('link', { name: /^Overview/ }).click(); await ui.locator('#d-paths > summary').click(); const opt = await H.main();
   ok(/Accept decision/.test(opt) && /Prepare peer-to-peer/.test(opt) && /Payer rule not verified/.test(opt), 'options: accept, prepare a peer-to-peer; a payer rule is labelled not verified');
-  await ui.getByRole('button', { name: 'Open' }).nth(1).click(); await ui.locator('#d-h-p2p').waitFor();
+  await ui.locator('#d-paths .d-opt').filter({ hasText: 'Prepare peer-to-peer' }).getByRole('button', { name: 'Open' }).click(); await ui.locator('#d-h-p2p').waitFor();
   await ui.getByRole('button', { name: /Ask Sentara for a peer-to-peer/ }).click(); await ui.getByRole('dialog').getByRole('button', { name: 'Log the request' }).click(); await page.waitForTimeout(600);
   await ui.getByRole('button', { name: 'Draft from records' }).click(); await page.waitForTimeout(600);
   ok(/Evidence missing — verify the risk of a more restrictive setting/.test(await H.main()) && /Simulated/.test(await H.main()), 'the call notes draft from records, with a Simulated chip and no invented evidence');
@@ -299,7 +299,7 @@ async function denial() {
   await ui.locator('#d-ocd').fill('Sentara decision letter 2026-11-19'); await dlg.getByRole('button', { name: 'Record the outcome' }).click(); await page.waitForTimeout(900);
   const t = await H.main(); ok(/Partly overturned/.test(t) && /Peer-to-peer: 130 of 150 units approved \(110 offered\)/.test(t), 'the outcome is recorded: 130 of 150 units');
   await H.shot('denial-1-outcome');
-  await ui.getByRole('link', { name: 'Open authorization' }).click(); await page.waitForTimeout(900);
+  await ui.getByRole('link', { name: 'Open in Authorizations' }).click(); await page.waitForTimeout(900);
   const s = await H.state(); ok(s.requests.find(r => r.id === 'R-0402').stage === 'active' && s.clients.find(c => c.id === 'DW').authorization.units === 130, 'back on the authorization: Active with 130 units');
   ok(s.lauris_tasks.some(x => x.client === 'DW' && x.units === 130 && x.status === 'open'), 'the human task "enter the units in Lauris" is open (Psyflo writes no units)');
 

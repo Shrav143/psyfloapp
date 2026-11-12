@@ -124,21 +124,21 @@ register('Authorizations', class extends Screen {
     });
     const rows = ui.pager.slice(q.rows, { size: st.size, page: st.page });
     const cols = [
-      { key: 'case', label: 'Consumer', sort: true, primary: true, width: '10%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.initials)}</b></span>${r.lauris ? `<span class="a-sub a-nw">Lauris #${esc(r.lauris)}</span>` : ''}` },
+      { key: 'case', label: 'Consumer', sort: true, primary: true, width: '9%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.initials)}</b></span>${r.lauris ? `<span class="a-sub a-nw">Lauris #${esc(r.lauris)}</span>` : ''}` },
       { key: 'service', label: 'Service', sort: true, hideBelow: 1024, width: '8%', render: r => `${esc(r.serviceLabel)}${r.serviceCode ? `<span class="a-sub">${esc(r.serviceCode)}</span>` : ''}` },
-      { key: 'payer', label: 'Payer', sort: true, width: '8%', render: r => `<span class="a-nw">${esc(r.payer)}</span>` },
-      { key: 'owner', label: 'Assigned clinician', sort: true, hideBelow: 1280, width: '8%', render: r => `<span class="a-nw" title="${esc(r.owner.backup ? 'Backup: ' + r.owner.backup.name : 'No backup set')}">${esc(r.owner.short)}</span>` },
-      { key: 'period', label: 'Authorization period', sort: true, hideBelow: 1024, width: '11%', render: r => `${r.periodText ? `<span class="a-nw">${esc(r.periodText)}</span>` : '<span class="ui-muted">—</span>'}<span class="a-sub">${esc(KIND[r.type] || r.typeLabel)}</span>` },
-      { key: 'requested', label: 'Requested', sort: true, align: 'right', hideBelow: 768, width: '6%', render: r => this.num(r.units.requested) },
-      { key: 'approved', label: 'Approved', sort: true, align: 'right', hideBelow: 768, width: '6%', render: r => r.units.awarded != null ? this.num(r.units.awarded) : r.units.offered != null ? `${this.num(r.units.offered)}<span class="a-sub">offered</span>` : this.num(null) },
-      { key: 'units', label: 'Remaining', sort: true, width: '14%', className: 'a-c-units', render: r => this.unitsCell(r) },
-      { key: 'status', label: 'Status', sort: true, width: '12%', render: r => ui.statusChip(r.stage) },
+      { key: 'payer', label: 'Payer', sort: true, hideBelow: 768, width: '9%', render: r => esc(r.payer) },
+      { key: 'owner', label: 'Assigned clinician', sort: true, hideBelow: 1280, width: '7%', render: r => `<span title="${esc(r.owner.backup ? 'Backup: ' + r.owner.backup.name : 'No backup set')}">${esc(r.owner.short)}</span>` },
+      { key: 'period', label: 'Authorization period', sort: true, hideBelow: 1024, width: '10.5%', render: r => `${r.periodText ? `<span class="a-nw">${esc(r.periodText)}</span>` : '<span class="ui-muted">—</span>'}<span class="a-sub">${esc(KIND[r.type] || r.typeLabel)}</span>` },
+      { key: 'requested', label: 'Requested', sort: true, align: 'right', hideBelow: 768, width: '7.5%', render: r => this.num(r.units.requested) },
+      { key: 'approved', label: 'Approved', sort: true, align: 'right', hideBelow: 768, width: '7.5%', render: r => r.units.awarded != null ? this.num(r.units.awarded) : r.units.offered != null ? `${this.num(r.units.offered)}<span class="a-sub">offered</span>` : this.num(null) },
+      { key: 'units', label: 'Remaining', sort: true, width: '12%', className: 'a-c-units', render: r => this.unitsCell(r) },
+      { key: 'status', label: 'Status', sort: true, width: '12.5%', render: r => ui.statusChip(r.stage) },
       { key: 'deadline', label: 'Next action', sort: true, width: '17%', className: 'a-c-next', render: r => this.nextCell(r) }
     ];
     const table = ui.queueTable({
       id: 'auth', caption: 'Authorizations', columns: cols, rows, rowId: r => r.id, href: r => caseHref(r.id),
       sort: st.sort.key === 'priority' ? {} : st.sort, onSort: sort => { this.setState({ sort, page: 1 }); ui.query.writeQuery({ sort: sort.key, dir: sort.dir, page: '' }); },
-      maxHeight: 'none', empty: { title: q.total ? 'No authorizations match' : 'No authorizations yet', body: q.total ? 'Clear a filter to see more.' : 'Authorizations appear after a request is drafted.' }
+      maxHeight: rows.length > 12 ? undefined : 'none', empty: { title: q.total ? 'No authorizations match' : 'No authorizations yet', body: q.total ? 'Clear a filter to see more.' : 'Authorizations appear after a request is drafted.' }
     });
     const pager = ui.pager({ id: 'auth-pg', total: q.shown, size: st.size, page: st.page, noun: NOUN, label: 'Authorizations pages', onChange: ({ size, page }) => this.setState({ size, page }) });
     const canDraft = !!me && can(me, 'drafts.clinical');
@@ -157,7 +157,7 @@ register('Authorizations', class extends Screen {
   }
   unitsCell(r) {
     const u = r.units;
-    if (u.showBar) return ui.unitsBar({ total: u.total, used: u.used, left: u.left, warn: u.warn, warnPct: u.warnPct });
+    if (u.showBar) return ui.unitsBar({ total: u.total, used: u.used, left: u.left, warn: u.warn, warnPct: u.warnPct }, { compact: true });
     return `<span class="a-muted a-nw">${esc(u.text)}</span>`;
   }
   deadlineLine(r) {

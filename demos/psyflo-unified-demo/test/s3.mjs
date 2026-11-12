@@ -142,7 +142,7 @@ async function run(mode) {
     await F.step('9 the timeline and Analytics follow: R-0416 has the full chain of events; the pilot scorecard "Sends with receipts" moves +1 over +1 on the screen and in the selector', async () => {
       await desk.goto(BASE + '/#/Authorization?id=' + R + '&section=timeline'); await desk.waitForTimeout(1000);
       const s = await state('jperez'); const n = s.events.filter(e => e.record === R).length; assert.ok(n >= L.ev0 + 6, `timeline gained ${n - L.ev0} events`);
-      assert.ok(await desk.locator('.ui-tl__what').count() >= 6, 'the timeline lists them');
+      assert.ok(await desk.locator('.hx__r').count() >= 6, 'the history lists them');
       const a = scoreRows(await state('dowens'), 'dowens').receipts; assert.eq(a.den, L.rec0.den + 1, 'one more send'); assert.eq(a.num, L.rec0.num + 1, 'with its receipt');
       const ad = await openAs(b, 'dowens'); pages.push(ad); await ad.goto(BASE + '/#/Analytics'); await ad.waitForSelector('.a-tile__b'); const dom = await pilotDom(ad); assert.eq(dom.receipts.headline, a.headline, 'screen = selector');
       assert.eq(dom.receipts.headline, `${L.rec0.num + 1} of ${L.rec0.den + 1}`);

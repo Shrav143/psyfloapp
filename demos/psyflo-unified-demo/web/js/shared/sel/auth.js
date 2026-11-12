@@ -431,6 +431,8 @@ export function timelineOf(s, r, me) {
     const x = re ? { ...h, ...re } : h;
     out.push({ id: `${r.id}:d${i}`, at: x.at, what: (x.upcoming ? 'Upcoming · ' : '') + x.what, who: '', actor: 'system', sim: false, source: re ? 'Lead time from the rules table (unverified demo assumption)' : 'Derived from the request record and the rules table', tone: x.upcoming ? 'warning' : undefined, derived: true, upcoming: !!x.upcoming, clock: !!x.clock, by: x.who || '' });
   });
+  // an authorization whose seeded events hide the model's "Renewal due" fallback row still shows when reauth is due (rules table lead time)
+  if (rd && rd.date && !out.some(x => x.derived && /^(Upcoming · )?Reauth due/.test(x.what))) out.push({ id: `${r.id}:rd`, at: rd.date, what: (rd.date > s.today ? 'Upcoming · ' : '') + `Reauth due · ${rd.sub}`, who: '', actor: 'system', sim: false, source: 'Lead time from the rules table (unverified demo assumption)', tone: rd.date > s.today ? 'warning' : undefined, derived: true, upcoming: rd.date > s.today, clock: true, by: '' });
   out.sort((a, b) => String(b.at).localeCompare(String(a.at)));
   const latest = out.find(x => !String(x.what).startsWith('Upcoming')); if (latest && na.text) latest.next = { label: na.text };
   return out;
@@ -471,10 +473,8 @@ export function historyOf(s, r0, me) {
   const events = timelineOf(s, r, me).filter(x => !x.upcoming && !(x.derived && x.clock)).map(x => {
     const kind = kindOf(x); const [action, ...rest] = String(x.what).split(' · '); const detail = rest.join(' · ');
     const flag = /^Flag/.test(action); const call = /\b(called|call logged|phone|follow-up call|receipt confirmed by phone)\b/i.test(x.what);
-    const pk = x.document ? 'doc' : /send pressed|sent|faxed|uploaded|resent|sent again/i.test(action) ? 'submission' : kind === 'payer' ? 'letter' : call ? 'call' : 'note';
-    const facts = [['When', x.at ? fmtDateTime(x.at) : 'Before the pilot'], x.who ? [kind === 'payer' || kind === 'voice' ? 'Recorded by' : 'Who', x.who] : null, ['Source', x.source || '']].filter(Boolean);
-    return { id: x.id, at: x.at || '', kind, name: kind === 'staff' ? x.who : '', action, detail, sim: !!x.sim || kind === 'voice', flag, derived: !!x.derived,
-      pop: { title: action, kind: pk, facts, href: x.document ? x.document.href : '', hrefLabel: x.document ? x.document.name : '', lauris: kind === 'lauris' } };
+    const pk = x.document ? 'Document' : /\b(send pressed|sent|faxed|uploaded|resent|sent again)\b/i.test(action) ? 'Submission' : kind === 'payer' ? 'Payer' : call ? 'Call' : flag ? 'Flag' : 'Note';
+    return { id: x.id, at: x.at || '', kind, name: kind === 'staff' ? x.who : '', action, detail, sim: !!x.sim || kind === 'voice', flag, derived: !!x.derived, popKind: pk, raw: { ...x, what: x.what } };
   });
   events.sort((a, b) => (a.at ? 0 : 1) - (b.at ? 0 : 1) || String(b.at).localeCompare(String(a.at)));
   const counts = {}; for (const e of events) counts[e.kind] = (counts[e.kind] || 0) + 1;

@@ -9,10 +9,10 @@ import { fmtDate, fmtDateTime, fmtTime, daysBetween, hoursBetween } from '../sha
 
 export const SECTIONS = [['overview', 'Overview'], ['said', 'What the payer said'], ['evidence', 'Clinical evidence'], ['weak', 'Where the denial is weak'], ['action', 'Respond'], ['docreq', 'Documentation request'], ['history', 'History']];
 export const ACTIONS = ['info', 'options', 'p2p', 'appeal', 'reconsider'];
-// Old links keep working: section=decision is "What the payer said", section=options is the Decide action, section=action&action=… is the reply
+// Old links keep working: section=decision is "What the payer said", section=options is the Overview with "All paths" open, section=action&action=… is the reply
 export function entry(p = {}) {
   const a = ACTIONS.includes(p.action) ? p.action : null;
-  if (p.section === 'options') return { section: 'action', action: a || 'options' };
+  if (p.section === 'options') return a ? { section: 'action', action: a } : { section: 'overview', action: null, paths: true };   // the old Options page is the "All paths" card, opened
   const section = p.section === 'decision' ? 'said' : SECTIONS.some(([k]) => k === p.section) ? p.section : (a ? 'action' : 'overview');
   return { section, action: section === 'action' ? a : null };
 }
@@ -77,7 +77,7 @@ export function header(c) {
   const { cv, ui, hrefFor } = c; c_icon = ui.icon; const d = cv.d; const r = cv.r; const work = D.canWork(c.me);
   const tone = d.issue === 'denial' ? 'danger' : d.issue === 'info' ? 'info' : 'warning';
   const items = statusItems(c);
-  const upd = items.length ? `<details class="d-upd" id="d-upd"><summary class="ui-btn ui-btn--secondary ui-btn--sm">Update status</summary><ul class="d-upd__p" role="menu" aria-label="Update status">${items.map(it => `<li role="none"><button type="button" role="menuitem" data-x="${it.x}"${Object.entries(it.data || {}).map(([k, v]) => ` data-${k}="${e(v)}"`).join('')}>${e(it.label)}</button></li>`).join('')}</ul></details>` : '';
+  const upd = items.length ? `<div class="d-upd" id="d-upd"><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm d-upd__b" id="d-upd-b" data-x="upd" aria-haspopup="menu" aria-expanded="false" aria-controls="d-upd-p">Update status</button><ul class="d-upd__p" id="d-upd-p" role="menu" aria-labelledby="d-upd-b" hidden>${items.map(it => `<li role="none"><button type="button" role="menuitem" data-x="${it.x}"${Object.entries(it.data || {}).map(([k, v]) => ` data-${k}="${e(v)}"`).join('')}>${e(it.label)}</button></li>`).join('')}</ul></div>` : '';
   const voice = cv.open ? (work ? `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="call" id="d-call">${ui.icon('phone', 14)} Call payer · voice agent</button>` : `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" disabled title="Needs clinician: a clinician starts and records every payer call">${ui.icon('phone', 14)} Call payer · voice agent</button>`) : '';
   const lauris = c.laurisUrl && c.canLauris ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${e(c.laurisUrl)}" target="_blank" rel="noopener">Open in Lauris${ui.icon('external', 14)}<span class="ui-sr"> (opens Lauris in a new tab)</span></a>` : '';
   const chips = [ui.statusChip(cv.status, { kind: 'dispute' }), deadlineChip(c), !cv.open ? ui.chip(`Closed ${fmtDate(d.closed)}`, { tone: 'neutral', icon: 'lock' }) : '',
@@ -98,13 +98,13 @@ export function menu(c) {
   const href = (section, action) => `#/DenialCase?id=${e(r.id)}&section=${section}${action ? '&action=' + action : ''}`;
   const item = (label, section, action, sub) => { const on = st.section === section && (section !== 'action' || act === action); return `<li><a href="${href(section, action)}" data-x="tab" data-section="${section}"${action ? ` data-action="${action}"` : ''}${on ? ' aria-current="page"' : ''}><b>${e(label)}</b>${sub ? `<span>${e(sub)}</span>` : ''}</a></li>`; };
   const pf = cv.payer.first; const nW = c.clinical ? D.weakPoints(c.s, d, r, idx).length : null;
-  const ev = !c.clinical ? 'Restricted' : idx.counts.missing ? `${idx.counts.missing} not documented` : 'All documented';
+  const nMiss = c.missing().length; const ev = !c.clinical ? 'Restricted' : nMiss ? `${nMiss} not documented` : 'All documented';
   const doc = k => (d.docs || {})[k]; const docSub = k => res[k] === undefined ? (validAction(c, k === 'recon' ? 'reconsider' : k) ? '' : 'Not available now') : res[k];
   const respond = [
     ['partial_decide', 'denied'].includes(r.stage) ? item(r.stage === 'denied' ? 'Accept the denial' : 'Decide on the offer', 'action', 'options', '') : '',
     validAction(c, 'info') ? item(`Reply to ${pf}`, 'action', 'info', doc('info') ? (doc('info').sent ? 'Sent' : doc('info').reviewed ? 'Reviewed' : 'Simulated draft') : '') : '',
     item('Appeal draft', 'action', 'appeal', docSub('appeal')), item('Peer-to-peer script', 'action', 'p2p', docSub('p2p')), item('Reconsideration', 'action', 'reconsider', docSub('recon')),
-    item('Documentation request', 'docreq', '', res.docreq || (c.clinical && idx.needs.length ? `${idx.needs.length} to request` : ''))].join('');
+    item('Documentation request', 'docreq', '', res.docreq || (c.clinical && nMiss ? `${nMiss} to request` : ''))].join('');
   return `<nav class="d-menu" aria-label="Case sections"><p class="d-menu__g">Review</p><ul>${item('Overview', 'overview', '', `${done} of ${D.STEP_LIST.length} steps done`)}${item(d.issue === 'info' ? `What ${pf} asked` : `What ${pf} said`, 'said', '', '')}${item('Clinical evidence', 'evidence', '', ev)}${item('Where the denial is weak', 'weak', '', c.clinical ? (res.analyze ? `${nW} point${nW === 1 ? '' : 's'}` : 'Not analyzed') : 'Restricted')}</ul><p class="d-menu__g">Respond</p><ul>${respond}</ul></nav>`;
 }
 
@@ -115,10 +115,10 @@ function stepsCard(c) {
   const next = cv.open ? `<div class="d-next" role="status"><span class="d-next__l">Next</span><b>${e(cv.next.label)}</b><span class="d-sm ui-muted">${e(cv.owner.name)}</span>${nt && D.canWork(c.me) ? btn(nt.label, 'goto', { tone: 'primary', sm: true, data: { section: nt.section, action: nt.action || '' } }) : nt ? needs(c) : ''}</div>`
     : `<div class="d-next d-next--done" role="status"><span class="d-next__l">Outcome</span><b>${e(d.outcome ? d.outcome.text : 'Closed')}</b>${link('Open authorization', c.hrefFor('Authorizations.dc.html?id=' + r.id), { tone: 'primary', sm: true })}</div>`;
   const rows = D.STEP_LIST.map(([k, label], i) => {
-    const locked = D.NEEDS_CLINICAL.includes(k) && !c.clinical; const res1 = res[k];
+    const locked = (D.NEEDS_CLINICAL.includes(k) && !c.clinical) || !cv.open; const lockWhy = !cv.open ? 'This case is closed' : 'Clinical record access required'; const res1 = res[k];
     const dl = STEP_PATH[k] && d.issue !== 'info' ? cv.deadlines.find(x => x.kind === k) : null; const cur = cv.path === STEP_PATH[k] && STEP_PATH[k];
-    const bits = [locked ? `<span class="ui-muted">${ui.icon('lock', 14)} Clinical record access required</span>` : res1 ? `<span class="d-act__ok">${e(res1)}</span>` : '', dl ? `<span class="d-sm ui-muted">Deadline ${e(dl.label)}${dl.date ? ' · ' + e(when(dl.date)) : ''}</span>${ui.sourceChip(dl)}` : '', cur ? ui.chip('Current pathway', { tone: 'info', icon: 'dot', size: 'sm' }) : ''].filter(Boolean).join('');
-    return `<li class="d-act${res1 ? ' is-done' : ''}${cur ? ' is-cur' : ''}"><button type="button" class="d-act__b" data-x="step" data-k="${k}"${locked ? ' disabled title="Clinical record access required"' : ''} aria-label="${e(label)}${res1 ? ', ' + e(res1) : ''}"><span class="d-act__n" aria-hidden="true">${res1 ? ui.icon('check', 14) : i + 1}</span><span class="d-act__t"><b>${e(label)}</b>${bits ? `<span class="d-act__r">${bits}</span>` : ''}</span><span class="d-act__go" aria-hidden="true">${locked ? '' : 'Open ›'}</span></button></li>`;
+    const bits = [locked && cv.open ? `<span class="ui-muted">${ui.icon('lock', 14)} Clinical record access required</span>` : res1 ? `<span class="d-act__ok">${e(res1)}</span>` : '', dl ? `<span class="d-sm ui-muted">Deadline ${e(dl.label)}${dl.date ? ' · ' + e(when(dl.date)) : ''}</span>${ui.sourceChip(dl)}` : '', cur ? ui.chip('Current pathway', { tone: 'info', icon: 'dot', size: 'sm' }) : ''].filter(Boolean).join('');
+    return `<li class="d-act${res1 ? ' is-done' : ''}${cur ? ' is-cur' : ''}"><button type="button" class="d-act__b" data-x="step" data-k="${k}"${locked ? ` disabled title="${lockWhy}"` : ''} aria-label="${e(label)}${res1 ? ', ' + e(res1) : ''}"><span class="d-act__n" aria-hidden="true">${res1 ? ui.icon('check', 14) : i + 1}</span><span class="d-act__t"><b>${e(label)}</b>${bits ? `<span class="d-act__r">${bits}</span>` : ''}</span><span class="d-act__go" aria-hidden="true">${locked ? '' : 'Open ›'}</span></button></li>`;
   }).join('');
   return `<section class="d-sect" aria-labelledby="d-h-steps"><div class="d-sect__h"><h2 id="d-h-steps">Recommended next steps</h2><span class="d-sm ui-muted d-sect__r">${done} of ${D.STEP_LIST.length} done</span></div>${next}<ol class="d-acts">${rows}</ol></section>`;
 }
@@ -152,7 +152,7 @@ function weakCard(c, limit) {
   if (!c.clinical) return `<section class="d-sect" aria-labelledby="${limit ? 'd-h-weakc' : 'd-h-weak'}">${head()}${ui.emptyState({ tone: 'denied', title: 'Needs clinician', body: 'Weak points quote clinical records, so they are shown to clinicians only. Administrators see the status, units and deadlines of the case.' })}</section>`;
   if (!d.analysis) return `<section class="d-sect" aria-labelledby="${limit ? 'd-h-weakc' : 'd-h-weak'}">${head()}<div class="d-empty"><span class="ui-muted">Not analyzed yet</span>${cv.open && D.canWork(c.me) ? btn('Analyze Denial', 'step', { tone: 'primary', sm: true, data: { k: 'analyze' } }) : ''}</div></section>`;
   const all = D.weakPoints(s, d, r, c.idx()); const list = limit ? all.slice(0, limit) : all;
-  const extra = limit ? (all.length > limit ? btn(`See all ${all.length}`, 'tab', { sm: true, data: { section: 'weak' } }) : '') : `${ui.maturity('denial.analysis')}${ui.chip('Simulated', { tone: 'outline', className: 'ui-chip--sim', title: 'Rule-based points from stored records; no language model is called and no likelihood is given.' })}<span class="d-sm ui-muted">Analyzed ${e(when(d.analysis.at))} · ${e(c.M.staff(s, d.analysis.by).name)}</span>`;
+  const extra = limit ? (all.length > limit ? btn(`See all ${all.length}`, 'tab', { sm: true, data: { section: 'weak' } }) : '') : `${ui.maturity('denial.analysis')}<span class="d-sm ui-muted">Analyzed ${e(when(d.analysis.at))} · ${e(c.M.staff(s, d.analysis.by).name)}</span>`;
   return `<section class="d-sect" aria-labelledby="${limit ? 'd-h-weakc' : 'd-h-weak'}">${head(extra)}<div class="d-wk">${list.map(w => weakRow(c, w, !!limit)).join('') || '<p class="ui-muted">No weak points found in the stored records.</p>'}</div>${!limit && cv.open && D.canWork(c.me) ? `<div class="ui-btnrow">${btn('Analyze again', 'step', { sm: true, data: { k: 'analyze' } })}</div>` : ''}</section>`;
 }
 
@@ -200,9 +200,10 @@ export function evidenceSection(c) {
   const row = it => `<li class="d-ev${it.usable ? '' : ' d-ev--held'}"><span class="d-ev__d">${e(fmtDate(it.date, { year: !it.current }))}</span><span class="d-ev__b"><b>${e(it.label)}</b>${it.quote ? `<span class="d-sm ui-muted">${e(it.quote)}</span>` : ''}</span><span class="d-ev__c">${ui.evidenceChip(D.chipOpts(it))}</span><span class="d-ev__a">${D.canWork(c.me) && cv.open ? (it.usable ? btn('Exclude', 'incl', { sm: true, tone: 'ghost', data: { ref: it.id, include: '0' }, title: 'Keep this record out of drafts' }) : btn(it.state === 'sensitive' ? 'Include' : 'Include again', 'incl', { sm: true, tone: 'ghost', data: { ref: it.id, include: '1' }, title: it.state === 'sensitive' ? 'Sensitive: include only when appropriate and authorized' : 'Use this record in drafts again' })) : ''}</span></li>`;
   const cur = idx.items.filter(x => x.current); const old = idx.items.filter(x => !x.current);
   const seeded = idx.items.some(x => x.provenance === 'seed');
-  const miss = idx.needs.length ? `<ul class="d-miss-l">${idx.needs.map(n => `<li>${ui.evidenceChip({ state: 'missing', label: n.label })}</li>`).join('')}</ul>` : `<p class="ui-muted">Nothing is marked missing for this case.</p>`;
+  const need = c.missing();
+  const miss = need.length ? `<ul class="d-miss-l">${need.map(n => `<li>${ui.evidenceChip({ state: 'missing', label: n.label })}</li>`).join('')}</ul>` : `<p class="ui-muted">Nothing is marked missing for this case.</p>`;
   return `<section class="d-sect" aria-labelledby="d-h-ev"><div class="d-sect__h"><h2 id="d-h-ev">Clinical evidence</h2>${ui.sourceChip(rule(c.s, 'evidence.current_window_days'))}${seeded ? ui.chip('Illustrative sample', { tone: 'outline', icon: 'info', title: 'These records are seeded demo data, not captured from a real chart.' }) : ''}</div>
-  <h3>Missing <span class="d-n">${idx.needs.length}</span></h3>${miss}${idx.needs.length && D.canWork(c.me) && cv.open ? `<div class="ui-btnrow">${btn('Request additional documentation', 'tab', { sm: true, data: { section: 'docreq' } })}</div>` : ''}
+  <h3>Missing <span class="d-n">${need.length}</span></h3>${miss}${need.length && D.canWork(c.me) && cv.open ? `<div class="ui-btnrow">${btn('Request additional documentation', 'tab', { sm: true, data: { section: 'docreq' } })}</div>` : ''}
   <h3>Last ${idx.window} days <span class="d-n">${cur.length}</span></h3>${cur.length ? `<ul class="d-evl">${cur.map(row).join('')}</ul>` : `<p>${ui.evidenceChip({ state: 'missing', label: `dated records from the last ${idx.window} days` })}</p>`}
   ${old.length ? `<h3>Earlier history <span class="d-n">${old.length}</span></h3><ul class="d-evl">${old.map(row).join('')}</ul>` : ''}
   ${idx.counts.held ? `<p class="d-sm ui-muted">${idx.counts.held} record${idx.counts.held === 1 ? ' is' : 's are'} held back from drafts (sensitive or excluded).</p>` : ''}</section>`;
@@ -216,7 +217,7 @@ export function docreqSection(c) {
   const received = q ? (q.items || []).filter(x => x.got).length : 0;
   const state = q ? `<h3>Requested from ${e(D.DOCREQ_TO[q.to] || q.to)}</h3><p class="d-sm ui-muted">Recorded ${e(when(q.at))} by ${e(c.M.staff(s, q.by).name)}. Psyflo sends no message: a person asks them.</p>
     <ul class="d-dr">${q.items.map(x => `<li><span>${x.got ? ui.chip('Received', { tone: 'success', icon: 'check', size: 'sm' }) : ui.chip('Requested', { tone: 'warning', icon: 'clock', size: 'sm' })} ${e(x.label)}${x.got ? ` <span class="d-sm ui-muted">· ${e(when(x.got.at))} · ${e(c.M.staff(s, x.got.by).name)}</span>` : ''}</span>${!x.got && work ? btn('Mark received', 'docrecv', { sm: true, tone: 'ghost', data: { key: x.key } }) : ''}</li>`).join('')}</ul>` : '';
-  const need = idx.needs;
+  const need = c.missing();
   const form = !need.length ? `<p class="ui-muted">Nothing is marked Evidence missing for this case, so there is nothing to request.</p>`
     : `<fieldset class="d-radios"><legend>What is missing</legend>${need.map(n => `<label class="d-check"><input type="checkbox" name="d-dr-k" value="${e(n.key)}" checked> ${e(n.label)}</label>`).join('')}</fieldset>
       <fieldset class="d-radios"><legend>Request it from</legend>${Object.entries(D.DOCREQ_TO).map(([k, l], i) => `<label><input type="radio" name="d-dr-to" value="${k}"${(st.drTo || (q && q.to) || 'clinician') === k ? ' checked' : ''}> ${e(l)}</label>`).join('')}</fieldset>
@@ -321,7 +322,7 @@ function p2pAction(c) {
   const concerns = d.concerns && d.concerns.length ? `<ul class="d-reasons">${d.concerns.map(x => `<li><blockquote class="ui-quote">${e(x.text)}</blockquote><span class="d-sm ui-muted">${e(x.source)}</span></li>`).join('')}</ul>` : `<p>${ui.evidenceChip({ state: 'missing', label: "the payer's stated concerns" })}</p>`;
   const hist = c.history().slice(0, 4).map(x => `<li><b>${e(fmtDate(x.at))}</b> ${e(x.what)}</li>`).join('');
   const questions = D.clarifyQuestions(s, d, r, idx).map(q => `<li>${e(q)}</li>`).join('');
-  const before = idx.needs.length ? `<ul class="d-miss-l">${idx.needs.map(n => `<li>${ui.evidenceChip({ state: 'missing', label: n.label })}</li>`).join('')}</ul>` : '<p class="ui-muted">Nothing is marked missing.</p>';
+  const before = c.missing().length ? `<ul class="d-miss-l">${c.missing().map(n => `<li>${ui.evidenceChip({ state: 'missing', label: n.label })}</li>`).join('')}</ul>` : '<p class="ui-muted">Nothing is marked missing.</p>';
   const sample = (s.denial_reasons || []).slice(0, 3);
   const sampleQ = sample.length ? `<details class="d-det"><summary>Questions reviewers often ask ${ui.chip('Sample data, illustrative', { tone: 'outline', size: 'sm' })}</summary><ul>${sample.map(x => `<li>${e(x.reason)}</li>`).join('')}</ul><p class="d-sm ui-muted">Common payer reasons from the seeded sample; the answer must come from this case's records.</p></details>` : '';
   const seededBrief = ((s.request_details || {})[r.id] || {}).brief;
@@ -378,4 +379,26 @@ export function actionSection(c) {
   const k = c.st.action || defaultAction(c.cv);
   const body = { info: infoAction, options: optionsAction, p2p: p2pAction, appeal: appealAction, reconsider: reconAction }[k] || optionsAction;
   return body(c);
+}
+
+// ------------------------------------------------------------------------------------------------------------------ slide-over panels (Analyze · Missing evidence · Clinical review)
+export function panelBody(c, k) {
+  const { cv, ui, s } = c; const d = cv.d; const r = cv.r; const idx = c.idx();
+  if (k === 'analyze') {
+    const all = D.weakPoints(s, d, r, idx);
+    return `<p class="d-sm ui-muted">Read from the stored records of this case, rule-based. ${ui.chip('Simulated', { tone: 'outline', className: 'ui-chip--sim', title: 'No language model is called and no likelihood is given.' })} Analyzed ${e(when(d.analysis && d.analysis.at))}.</p><div class="d-wk">${all.slice(0, 5).map(w => weakRow(c, w, true)).join('') || '<p class="ui-muted">No weak points found in the stored records.</p>'}</div>${all.length > 5 ? `<p class="d-sm ui-muted">${all.length - 5} more in the full analysis.</p>` : ''}<div class="ui-btnrow"><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-px="tab" data-section="weak">Open the full analysis</button></div>`;
+  }
+  if (k === 'gaps') {
+    const need = c.missing();
+    return `<p class="d-sm ui-muted">Each item below is marked Evidence missing in the drafts until it is documented.</p>${need.length ? `<ul class="d-miss-l d-miss-l--col">${need.map(n => `<li>${ui.evidenceChip({ state: 'missing', label: n.label })}${c.laurisUrl && c.canLauris ? `<a class="ui-btn ui-btn--ghost ui-btn--sm" href="${e(c.laurisUrl)}" target="_blank" rel="noopener">Collect in Lauris${ui.icon('external', 14)}<span class="ui-sr"> (opens Lauris in a new tab)</span></a>` : ''}</li>`).join('')}</ul>` : '<p class="ui-muted">Nothing is marked missing for this case.</p>'}${need.length ? `<div class="ui-btnrow"><button type="button" class="ui-btn ui-btn--primary ui-btn--sm" data-px="tab" data-section="docreq">Request additional documentation</button></div>` : ''}`;
+  }
+  if (k === 'review') {
+    const clin = (s.staff || []).filter(x => x.role === 'clinician'); const cur = d.review;
+    const res = D.stepResults(s, d, r, idx);
+    const found = D.STEP_LIST.filter(([kk]) => res[kk] && kk !== 'review').map(([kk, l]) => `<li>${e(l)} <span class="d-sm ui-muted">· ${e(res[kk])}</span></li>`).join('');
+    return `<div class="d-f"><label for="d-rv">Reviewer</label><select class="ui-select" id="d-rv">${clin.map(x => `<option value="${e(x.id)}"${(cur ? cur.to : d.owner) === x.id ? ' selected' : ''}>${e(x.name)}${x.credential ? ', ' + e(x.credential) : ''} · ${e(x.title || x.role)}</option>`).join('')}</select><span class="d-modal-note">A licensed clinician reviews the case. This records who was asked and when; it sends nothing.</span></div>
+    <div class="d-f"><label for="d-rvn">Note for the reviewer (optional)</label><textarea class="ui-textarea" id="d-rvn" rows="3" maxlength="400" style="width:100%;padding:8px 12px">${e(cur && cur.note || '')}</textarea></div>
+    <h3 class="d-sm">What the reviewer will find</h3>${found ? `<ul class="d-q">${found}</ul>` : '<p class="d-sm ui-muted">No step has a result yet. The reviewer starts from the stored records.</p>'}`;
+  }
+  return '';
 }

@@ -395,13 +395,20 @@ export function compareReasons(s, d, r, idx) {
     return { key: 'r' + (i + 1), said, source: x.source || '', matched, shows: matched ? tidy(a.text) : '', ids: matched ? a.ids : [], need: matched ? a.miss : [] };
   });
 }
+// Everything not documented for this case: the evidence index's needs plus what each stated reason still lacks (deduplicated by label).
+// One list for the menu count, the Evidence page, the weak points, the documentation request and the gaps panel.
+export function missingItems(s, d, r, idx) {
+  const out = idx.needs.map(n => ({ key: n.key, label: n.label })); const seen = new Set(out.map(x => x.label.toLowerCase()));
+  for (const x of compareReasons(s, d, r, idx)) for (const m of x.need) { const k = String(m).toLowerCase(); if (seen.has(k)) continue; seen.add(k); out.push({ key: 'q-' + k.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40), label: m }); }
+  return out;
+}
 // Where the denial is weak: Strong = a stored record answers a stated reason · Gap = not documented yet · Clarify = the payer's criterion is not on file
 // or no stored record is matched to a reason · Risk = a documentation weakness. Derived from the same evidence index the drafts use; no likelihood is given.
 export const WEAK_KINDS = { strong: ['success', 'Strong'], gap: ['danger', 'Gap'], clarify: ['info', 'Clarify'], risk: ['warning', 'Risk'] };
 export function weakPoints(s, d, r, idx) {
   const pf = payerFirst(s, r.payer); const out = []; const reasons = compareReasons(s, d, r, idx);
   reasons.filter(x => x.matched && !x.need.length && x.ids.length).forEach(x => out.push({ k: x.key, kind: 'strong', title: `The record answers “${x.said}”`, text: x.shows, ids: x.ids, fix: 'Cite these records in the response', go: 'evidence' }));
-  idx.needs.forEach(n => out.push({ k: 'g-' + n.key, kind: 'gap', title: `Not documented: ${n.label}`, ids: [], fix: 'Collect it in the chart, or write the sentence yourself. Drafts print it as Evidence missing', go: 'evidence', lauris: true }));
+  missingItems(s, d, r, idx).forEach(n => out.push({ k: 'g-' + n.key, kind: 'gap', title: `Not documented: ${n.label}`, ids: [], fix: 'Collect it in the chart, or write the sentence yourself. Drafts print it as Evidence missing', go: 'evidence', lauris: true }));
   if (!reasons.length) out.push({ k: 'c-none', kind: 'clarify', title: `${pf} did not state a reason that is on file`, ids: [], fix: 'Read the payer letter, then ask which criterion was unmet (see the call questions)', go: 'said' });
   reasons.filter(x => !x.matched).forEach(x => out.push({ k: x.key + '-c', kind: 'clarify', title: `No stored record is matched to “${x.said}” yet`, ids: [], fix: `Ask ${pf} which criterion applied, and which records the reviewer read`, go: 'said' }));
   if (idx.counts.held) out.push({ k: 'x-held', kind: 'risk', title: `${idx.counts.held} record${idx.counts.held === 1 ? ' is' : 's are'} held back from drafts (sensitive or excluded)`, ids: idx.items.filter(e => !e.usable).map(e => e.id), fix: 'A clinician decides whether to include each sensitive record', go: 'evidence' });
@@ -418,7 +425,7 @@ export const DOCREQ_TO = { clinician: 'Treating clinician', guardian: 'Guardian'
 export function stepResults(s, d, r, idx) {
   const out = {}; const docs = d.docs || {};
   if (d.analysis) out.analyze = `Analyzed ${fmtDate(String(d.analysis.at).slice(0, 10))}`;
-  if (d.gaps) out.gaps = idx.needs.length ? `${idx.needs.length} missing` : 'None missing';
+  if (d.gaps) { const n = missingItems(s, d, r, idx).length; out.gaps = n ? `${n} missing` : 'None missing'; }
   if (d.docreq) { const open = (d.docreq.items || []).filter(x => !x.got).length; out.docreq = open ? `${open} requested · ${DOCREQ_TO[d.docreq.to] || d.docreq.to}` : 'All received'; }
   for (const k of ['appeal', 'p2p', 'recon']) { const doc = docs[k]; if (!doc || !doc.sections) continue;
     out[k] = doc.sent ? `Sent${doc.sent.ref ? ' · ' + doc.sent.ref : ''}` : doc.ready ? 'Ready to upload' : doc.reviewed ? 'Reviewed' : doc.sections.some(x => x.edited) ? 'Edited · Simulated draft' : 'Simulated draft'; }
@@ -482,7 +489,7 @@ export function callScript(s, d, r, purpose) {
     : purpose === 'docs' ? `Could you confirm which documents you still need for request ${r.id}, how they should be sent, and the date they are due?`
       : `Could you tell me where the ${d.issue === 'info' ? 'information request' : 'decision'} stands, and whether any document is still outstanding?`;
   return [
-    { who: 'agent', text: `Hello, this is Psyflo's calling assistant for ${org}. I am calling ${pf} provider services about request ${r.id} for a consumer with the initials ${c.initials}.` },
+    { who: 'agent', text: `Hello, this is Psyflo's calling assistant for ${org}. I am calling ${pf} provider services about request ${r.id} for a consumer with the initials ${String(c.initials).replace(/\.$/, '')}.` },
     { who: 'agent', text: what },
     { who: 'payer', text: `Scripted placeholder: on a real call ${pf} answers here. Psyflo does not write what a payer says; the person who records this call types what was said.` },
     { who: 'agent', text: 'Thank you. Could you give me a reference number for this call? I will pass it to the clinician.' }
@@ -580,14 +587,17 @@ export function queueRows(s, f = {}) {
       : d.issue === 'denial' ? { main: `0 of ${u.requested} approved`, sub: `Denied · ${fmtDate((d.notice || {}).date || r.denied_on)}` }
         : { main: `${u.offered != null ? u.offered : (u.awarded != null ? u.awarded : u.current)} of ${u.requested} ${u.offered != null ? 'offered' : 'approved'}`, sub: `Partial · ${fmtDate((d.notice || {}).date)}` };
     rows.push({ id: d.id, request: r.id, client: r.client, consumer: c.age ? `${c.initials}, ${c.age}` : c.initials, initials: c.initials, payer: r.payer, payerName: pf, service: (r.service || 'TDT').split(' · ')[0].replace('TDT school day', 'TDT'), serviceLine: r.service,
-      issue: d.issue, type: typeOf(d), decision: dec, status, group: open ? statusGroup(status) : 'closed', open, next, deadline: primaryDeadline(dls), deadlines: dls, owner: d.owner, ownerName: ownerName(s, d.owner), ownerShort: ownerShort(s, d.owner), opened: d.opened, closed: d.closed, outcome: d.outcome || null,
+      issue: d.issue, type: typeOf(d), decisionDate: String((d.notice || {}).date || r.denied_on || '').slice(0, 10) || null, decision: dec, status, group: open ? statusGroup(status) : 'closed', open, next, deadline: primaryDeadline(dls), deadlines: dls, owner: d.owner, ownerName: ownerName(s, d.owner), ownerShort: ownerShort(s, d.owner), opened: d.opened, closed: d.closed, outcome: d.outcome || null,
       search: `${d.id} ${r.id} ${c.initials} ${pf} ${payerName(s, r.payer)} ${ownerName(s, d.owner)}`.toLowerCase() });
   }
   return rows.filter(row => {
     if (f.q && !row.search.includes(String(f.q).toLowerCase().trim())) return false;
     if (f.decision && row.type !== f.decision && !(f.decision === 'p2p' && row.group === 'p2p')) return false;
     if (f.payer && row.payer !== f.payer) return false;
+    if (f.service && row.service !== f.service) return false;
     if (f.owner && row.owner !== f.owner) return false;
+    if (f.from && !(row.decisionDate && row.decisionDate >= f.from)) return false;
+    if (f.to && !(row.decisionDate && row.decisionDate <= f.to)) return false;
     if (f.next && row.next.group !== f.next) return false;
     const st = f.status || '';
     if (st === '') { if (!row.open) return false; } else if (st === 'closed') { if (row.open) return false; } else if (st !== 'all' && row.group !== st) return false;
@@ -605,6 +615,8 @@ export const queueGetters = {
   case: r => r.request, consumer: r => r.initials, payer: r => r.payerName, service: r => r.service,
   decision: r => r.decision.main, status: r => (r.open ? '0' : '1') + r.status, next: r => r.next.label, owner: r => r.ownerShort
 };
+// Monday to Sunday of the week that holds `day` (for the decision-date quick buttons)
+export function weekBounds(day) { const dow = (new Date(day + 'T00:00:00Z').getUTCDay() + 6) % 7; const mon = addDays(day, -dow); return { from: mon, to: addDays(mon, 6) }; }
 export const OPEN_COUNT = s => disputesOf(s).filter(isOpen).length;
 
 // ---------------------------------------------------------------------------------------------------------------- resolution (used by the reconcile step on the server)

@@ -241,13 +241,13 @@ try {
   await T.test('admin: three sections render, aggregates only, no drill-down, no console errors, within the density target', async () => {
     const { ctx, page, errs } = await open('dowens', '/Analytics?section=outcomes');
     for (const sec of SECS) {
-      await page.goto(BASE + '/#/Analytics?section=' + sec); await page.waitForSelector('.a-card'); await page.waitForTimeout(250);
-      assert.eq(await page.locator('main h1').count(), 1, 'one h1'); assert.match(await page.locator('.a-banner').innerText(), /Case-backed/); assert.match(await page.locator('.a-banner').innerText(), /Aggregates only/);
+      await page.goto(BASE + '/#/Analytics?section=' + sec); await page.waitForSelector('.an-body .an-card, .an-body .an-kpis'); await page.waitForTimeout(250);
+      assert.eq(await page.locator('main h1').count(), 1, 'one h1'); assert.match(await page.locator('.an-notice').innerText(), /Case-backed/); assert.match(await page.locator('.an-notice').innerText(), /Aggregates only/);
       assert.eq(await page.locator('[data-x="drill"]').count(), 0, `${sec}: no drill buttons for an administrator`);
       assert.ok(await page.locator('#a-score-h').count() === 1 && await page.locator('.a-tile').count() === 6, 'the pilot scorecard is the first band');
-      const n = await interactive(page); assert.ok(n <= 40, `${sec}: ${n} visible actions (target 40)`);
-      assert.match(await page.locator('.a-sec__h').innerText(), /Future/, `${sec} carries its maturity chip`);
-      if (sec === 'payer') { const t = await page.locator('.a-strip').innerText(); assert.ok(!/\b[1-4]\b/.test(t.replace(/Fewer than 5/g, '')), 'the payer strip prints no count of 1 to 4: ' + t.replace(/\s+/g, ' ')); }
+      const n = await interactive(page); assert.ok(n <= 60, `${sec}: ${n} visible actions (target 60: the artifact's Analytics adds period and metric chips and a link per insight; it was 40 on the old page)`);
+      assert.match(await page.locator('.an-stabs').innerText(), /Future/, `${sec} carries its maturity chip`);
+      if (sec === 'payer') { const t = await page.locator('.an-kpis').first().innerText(); assert.ok(!/\b[1-4]\b/.test(t.replace(/Fewer than 5/g, '')), 'the payer headline cards print no count of 1 to 4: ' + t.replace(/\s+/g, ' ')); }
       await page.screenshot({ path: path.join(SHOTS, `analytics-admin-${sec}.png`), fullPage: true });
     }
     assert.deepEq(errs, [], errs.join(' | ')); await ctx.close();
@@ -257,23 +257,23 @@ try {
     const btn = page.locator('[data-x="drill"]').first(); assert.ok(await btn.count() >= 1, 'a group of 5 or more is clickable'); const label = (await btn.innerText()).trim();
     await btn.click(); await page.waitForSelector('[role="dialog"] .a-list li'); const items = await page.locator('[role="dialog"] .a-list li').count(); assert.eq(String(items), label, 'the list has as many patients as the number clicked');
     assert.match(await page.locator('[role="dialog"]').innerText(), /clinical-records access/); await page.keyboard.press('Escape');
-    await page.goto(BASE + '/#/Analytics?section=population&dataset=illustrative'); await page.waitForSelector('.a-card'); assert.eq(await page.locator('[data-x="drill"]').count(), 0, 'no patient-level rows for the cohort'); assert.match(await page.locator('.a-banner').innerText(), /Illustrative cohort/);
+    await page.goto(BASE + '/#/Analytics?section=population&dataset=illustrative'); await page.waitForSelector('.an-body .an-card, .an-body .an-kpis'); assert.eq(await page.locator('[data-x="drill"]').count(), 0, 'no patient-level rows for the cohort'); assert.match(await page.locator('.an-notice').innerText(), /Illustrative cohort/);
     assert.eq(await page.locator('#a-score-h').count(), 0, 'the pilot scorecard is case-backed only and is not shown over the cohort');
     await page.screenshot({ path: path.join(SHOTS, 'analytics-cohort-population.png'), fullPage: true });
     assert.deepEq(errs, [], errs.join(' | ')); await ctx.close();
   });
   await T.test('supervisor: own sites only, scorecard and sections render', async () => {
-    const { ctx, page, errs } = await open('cdiaz', '/Analytics?section=payer'); await page.waitForSelector('.a-card');
-    assert.match(await page.locator('.a-banner').innerText(), /Your sites/); assert.eq(await page.locator('[data-x="drill"]').count(), 0);
+    const { ctx, page, errs } = await open('cdiaz', '/Analytics?section=payer'); await page.waitForSelector('.an-body .an-card, .an-body .an-kpis');
+    assert.match(await page.locator('.an-notice').innerText(), /Your sites/); assert.eq(await page.locator('[data-x="drill"]').count(), 0);
     const opts = await page.locator('#an-f-site option').allInnerTexts(); assert.ok(opts.length <= 3 && !opts.some(o => /Lynchburg/.test(o)), 'site options are the supervisor\'s own: ' + opts.join(', '));
     await page.screenshot({ path: path.join(SHOTS, 'analytics-supervisor-payer.png'), fullPage: true }); assert.deepEq(errs, [], errs.join(' | ')); await ctx.close();
   });
   await T.test('a filter changes the figures and the URL; a tab is a real link; reload keeps the view', async () => {
     const { ctx, page } = await open('dowens', '/Analytics?section=payer');
-    await page.selectOption('#an-f-period', 'all'); await page.waitForTimeout(300);
+    await page.click('[data-ui-fchip][data-key="period"][data-value="all"]'); await page.waitForTimeout(300);
     assert.match(page.url(), /period=all/); assert.match(await page.locator('.a-score__h').innerText(), /All stored records/);
-    const href = await page.locator('.a-tabs a', { hasText: 'Patient Population' }).getAttribute('href'); assert.match(href, /section=population/); assert.match(href, /period=all/);
-    await page.reload(); await page.waitForSelector('.a-card'); assert.eq(await page.locator('#an-f-period').inputValue(), 'all', 'reload keeps the period');
+    const href = await page.locator('.an-stabs a', { hasText: 'Patient Population' }).getAttribute('href'); assert.match(href, /section=population/); assert.match(href, /period=all/);
+    await page.reload(); await page.waitForSelector('.an-body .an-card, .an-body .an-kpis'); assert.eq(await page.locator('[data-ui-fchip][data-key="period"][data-value="all"]').getAttribute('aria-pressed'), 'true', 'reload keeps the period');
     await ctx.close();
   });
   await T.test('the CSV file the Export button writes matches the panels on screen, cell for cell', async () => {
@@ -282,8 +282,9 @@ try {
       await page.click('[data-x="export"]'); await page.waitForSelector('[role="dialog"] input[name="a-fmt"]');
       const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download' }).click()]);
       const file = await dl.path(); const csv = fs.readFileSync(file, 'utf8'); const rows = parseCsv(csv); assert.match(dl.suggestedFilename(), /^Psyflo_analytics_(case|illustrative)_(payer|population|outcomes)_last-90-days_.+\.csv$/);
-      for (let k = 0; k < 8 && await page.locator('[data-x="more"][aria-expanded="false"]').count(); k++) { await page.locator('[data-x="more"][aria-expanded="false"]').first().click(); await page.waitForTimeout(150); }
-      const screen = await page.evaluate(() => [...document.querySelectorAll('#root .a-card')].filter(c => !c.closest('details')).map(c => ({ title: c.querySelector('h3').innerText.trim(), rows: [...c.querySelectorAll('tbody tr')].map(tr => [...tr.children].map(td => td.innerText.replace(/\s+/g, ' ').trim())) })));
+      for (let k = 0; k < 6; k++) { const idx = await page.$$eval('[data-ui-pgsize]', els => els.findIndex(e => e.value !== '100')); if (idx < 0) break; await page.locator('[data-ui-pgsize]').nth(idx).selectOption('100'); await page.waitForTimeout(150); }
+      await page.evaluate(() => document.querySelectorAll('details.an-td').forEach(d => { d.open = true; }));
+      const screen = await page.evaluate(() => [...document.querySelectorAll('#root table.a-tbl')].filter(t => !t.closest('details.a-sample')).map(t => ({ title: t.querySelector('caption').innerText.trim(), rows: [...t.querySelectorAll('tbody tr')].map(tr => [...tr.children].map(td => td.innerText.replace(/\s+/g, ' ').trim())) })));
       assert.ok(screen.length >= 4, `${who}: panels on screen`);
       for (const p of screen) { const got = csvBlock(rows, p.title); assert.ok(got, `${who}: "${p.title}" is in the CSV`); assert.deepEq(got, p.rows, `${who}: "${p.title}" matches the screen`); }
       const tiles = await page.evaluate(() => [...document.querySelectorAll('.a-tile')].map(t => t.querySelector('b').innerText.trim()));

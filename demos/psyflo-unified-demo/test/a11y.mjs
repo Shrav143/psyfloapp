@@ -253,7 +253,7 @@ if (on('keyboard') || on('clinician')) {
   });
   await run('A11Y-K5 every enabled control on the main screens is reachable with Tab (walk compared with the enumerated set)', async () => {
     const out = [];
-    for (const [id, params] of [['Dashboard', {}], ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['Referral', { id: 'REF-118' }], ['Analytics', { section: 'outcomes', dataset: 'case' }]]) {
+    for (const [id, params] of [['Dashboard', {}], ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402' }], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['DenialCase', { id: 'R-0408', section: 'weak' }], ['DenialCase', { id: 'R-0408', section: 'docreq' }], ['Referral', { id: 'REF-118' }], ['Analytics', { section: 'outcomes', dataset: 'case' }]]) {
       await page.setViewportSize({ width: 1440, height: 900 }); await openAt(page, id, params);
       const stops = await A.tabWalk(page.mainFrame(), { page, max: 220 });
       const nm = x => String(x || '').replace(/\s+/g, ' ').trim().toLowerCase().slice(0, 40);

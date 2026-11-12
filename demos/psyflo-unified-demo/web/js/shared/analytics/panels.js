@@ -160,7 +160,7 @@ function outcomeKpi(F, env) {
   const scored = active.filter(f => f.have && f.have.score).length, unscored = active.length - scored;
   const hideC = active.length < env.min || (scored > 0 && scored < env.min) || (unscored > 0 && unscored < env.min);
   const md = medianDays(F, env);
-  return { id: 'out.kpi', title: 'Headline measures', ...T(KPI_COLS, [
+  return { id: 'out.kpi', title: 'Outcome headline measures', ...T(KPI_COLS, [
     KPI('Active patients', g(active.length), 'In service on the last day of the period'),
     KPI('Showing improvement', d(better), dsub(`${better} of ${usable.length} patients with two or more scores. Latest score at least 10% better than the first, on the same scale`)),
     KPI('Little change', d(steady), dsub(`${steady} of ${usable.length} patients with two or more scores. Latest score within 10% of the first`)),
@@ -182,7 +182,7 @@ function trendPanel(F, env) {
     const row = { label: k === 0 ? 'First reading' : `Reading ${k + 1}` };
     scales.forEach(([, e], i) => {
       const at = e.runs.filter(r => r.length > k && r[0] > 0);
-      row['s' + i] = k === 0 ? 0 : at.length >= env.min ? r1(sum(at.map(r => (100 * (r[k] - r[0])) / r[0])) / at.length) : at.length ? sup(env.min) : null;
+      row['s' + i] = k === 0 ? '0%' : at.length >= env.min ? r1(sum(at.map(r => (100 * (r[k] - r[0])) / r[0])) / at.length) + '%' : at.length ? sup(env.min) : null;
     });
     rows.push(row);
   }

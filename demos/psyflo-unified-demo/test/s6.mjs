@@ -13,9 +13,11 @@ const b = await chromium.launch();
 const ledgers = {};
 const CLINICAL = /Piedmont|Physical aggression toward|hospitali|Played basketball|Walked with|Objective 1 ·|office referrals this month/i;
 const actor = (s, id) => { const a = (s.staff || []).find(x => x.id === id); return { ...a, designations: a.designations || [] }; };
-const panelsOnScreen = p => p.evaluate(() => [...document.querySelectorAll('#root .a-card')].filter(c => !c.closest('details')).map(c => ({ title: c.querySelector('h3').innerText.trim(), rows: [...c.querySelectorAll('tbody tr')].map(tr => [...tr.children].map(td => td.innerText.replace(/\s+/g, ' ').trim())) })));
-const expandAll = async p => { for (let k = 0; k < 10 && await p.locator('[data-x="more"][aria-expanded="false"]').count(); k++) { await p.locator('[data-x="more"][aria-expanded="false"]').first().click(); await p.waitForTimeout(120); } };
-const stripPairs = async p => { const t = await p.locator('.a-strip').first().innerText().catch(() => ''); const l = t.split('\n').map(x => x.trim()).filter(Boolean); const out = []; for (let i = 0; i + 1 < l.length; i += 2) out.push([l[i], l[i + 1]]); return out; };
+const panelsOnScreen = p => p.evaluate(() => { document.querySelectorAll('details.an-td').forEach(d => { d.open = true; }); return [...document.querySelectorAll('#root table.a-tbl')].filter(t => !t.closest('details.a-sample')).map(t => ({ title: t.querySelector('caption').innerText.trim(), rows: [...t.querySelectorAll('tbody tr')].map(tr => [...tr.children].map(td => td.innerText.replace(/\s+/g, ' ').trim())) })); });
+// every table shows the pager's "Rows per page" (10, 25, 50, 100): choose 100 so the whole table is on screen
+const expandAll = async p => { for (let k = 0; k < 6; k++) { const idx = await p.$$eval('[data-ui-pgsize]', els => els.findIndex(e => e.value !== '100')); if (idx < 0) break; await p.locator('[data-ui-pgsize]').nth(idx).selectOption('100'); await p.waitForTimeout(150); } };
+// the headline cards of Payer Performance, as [label, value] pairs
+const stripPairs = p => p.evaluate(() => [...document.querySelectorAll('.an-kpis')].flatMap(g => [...g.querySelectorAll('.an-kpi')].map(c => [c.querySelector('.an-kpi__l').innerText.trim(), c.querySelector('.an-kpi__v').innerText.trim()])));
 
 async function run(mode) {
   const F = flow(T, `S6[${mode}]`); const L = {}; const pages = [];
@@ -32,8 +34,8 @@ async function run(mode) {
     // ---------------------------------------------------------------- 1 open Analytics
     await F.step('1 Analytics (admin): three sections as links, Case-backed by default, the banner says where the figures come from; the pilot scorecard shows the six measures and every tile equals its selector; aggregates only', async () => {
       ad = await openAs(b, 'dowens'); pages.push(ad); await ad.goto(BASE + '/#/Analytics'); await ad.waitForSelector('.a-tile__b'); await ad.waitForTimeout(500);
-      const t = await mainText(ad); for (const x of ['Patient Outcomes', 'Payer Performance', 'Patient Population', 'Pilot scorecard', 'Case-backed', 'Counted from stored records · as of Oct 29, 2026', 'Aggregates only']) assert.match(t, new RegExp(x));
-      assert.eq(await ad.locator('.a-tabs a').count(), 3, 'exactly three sections'); const dom = await pilotDom(ad); assert.eq(Object.keys(dom).length, 6);
+      const t = await mainText(ad); for (const x of ['Patient Outcomes', 'Payer Performance', 'Patient Population', 'Pilot scorecard', 'Case-backed', 'Counted from the records stored in this demo, as of Oct 29, 2026', 'Aggregates only']) assert.match(t, new RegExp(x));
+      assert.eq(await ad.locator('.an-stabs a').count(), 3, 'exactly three sections'); const dom = await pilotDom(ad); assert.eq(Object.keys(dom).length, 6);
       for (const [k, v] of Object.entries(L.sc0)) assert.eq(dom[k].headline, v.headline, 'tile ' + k + ': screen = selector');
       assert.ok(!CLINICAL.test(await ad.content()), 'no clinical text for the administrator'); assert.eq(await ad.locator('[data-x="drill"]').count(), 0, 'no patient drill-down for the administrator');
       await shot(ad, `s6-${mode}-1-analytics`);
@@ -53,7 +55,7 @@ async function run(mode) {
       await api('request.partialDecide', { id: 'R-0402', door: 'accept' }, 'jperez');
       const s1 = await state('dowens'); const u1 = units(s1); assert.eq(u1['Offers awaiting a reply'], u0['Offers awaiting a reply'] - 1); assert.eq(u1['Units approved'] - u0['Units approved'], 110); assert.eq(scoreRows(s1, 'dowens').unresolved.num, unres0 - 1);
       await ad.waitForFunction(() => /Units approved/.test(document.body.innerText), null, { timeout: 4000 });
-      const t = await mainText(ad); assert.match(t, new RegExp('Units approved\\s*\\n?\\s*' + u1['Units approved'])); assert.match(t, /Offers awaiting a reply\s*\n?\s*0/); assert.ok(!/Harvest's Lauris export/.test(await ad.content()), 'the baseline is never called a Lauris export');
+      const t = await mainText(ad); assert.match(t, new RegExp('Units approved\\s*\\n?\\s*' + u1['Units approved'], 'i')); assert.match(t, /Offers awaiting a reply\s*\n?\s*0/i); assert.ok(!/Harvest's Lauris export/.test(await ad.content()), 'the baseline is never called a Lauris export');
       await shot(ad, `s6-${mode}-3-payer`);
     });
     await F.step('3b a payer row opens Denial Intelligence filtered to that payer (a link, not a dead cell); an upcoming-work row opens its case', async () => {

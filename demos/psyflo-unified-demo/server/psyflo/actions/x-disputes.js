@@ -21,7 +21,7 @@ import { can } from '../../../web/js/shared/permissions.js';
 import leadExtension from './lead-extension.js';   // static import: in the hosted single-file build every module is evaluated before any action is registered
 import {
   ADVERSE, P2P_STAGES, ISSUE_LABEL, PATH_LABEL, DOC_TITLE, isOpen, byDisputeId, byRequest, issueOfRequest, deriveStatus, derivePath, resolutionOf, buildDoc, docText, docMissing,
-  evidenceIndex, MISSING_RE, payerFirst, weakPoints, lineStatus, callScript, CALL_PURPOSES, DOCREQ_TO
+  evidenceIndex, MISSING_RE, payerFirst, weakPoints, missingItems, lineStatus, callScript, CALL_PURPOSES, DOCREQ_TO
 } from '../../../web/js/shared/sel/disputes.js';
 
 const byId = (arr, id) => (arr || []).find(x => x.id === id);
@@ -275,9 +275,10 @@ export default {
       log(this, s, d, `Denial analyzed from stored records · ${n} point${n === 1 ? '' : 's'} (rule-based, Simulated)`, { sim: true });
       return { id: d.id, points: n };
     }
-    d.gaps = { at: this.now(), by: this.who(), n: idx.needs.length };
-    log(this, s, d, `Missing evidence checked · ${idx.needs.length} item${idx.needs.length === 1 ? '' : 's'} not documented`);
-    return { id: d.id, missing: idx.needs.length };
+    const miss = missingItems(s, d, r, idx).length;
+    d.gaps = { at: this.now(), by: this.who(), n: miss };
+    log(this, s, d, `Missing evidence checked · ${miss} item${miss === 1 ? '' : 's'} not documented`);
+    return { id: d.id, missing: miss };
   },
 
   // Ask a licensed clinician to review the case. The note stays on the case (clinician view); the audit line says only that a note exists.
@@ -295,8 +296,8 @@ export default {
   'dispute.docRequest'(s, { id, to, keys }) {
     const d = dispute(s, id); const r = requestOf(s, d);
     if (!DOCREQ_TO[to]) refuse('Choose who the documentation is requested from: the treating clinician, the guardian or the school counselor.', { record: r.id, status: 422, audit: false });
-    const idx = evidenceIndex(s, d, r); const pick = (Array.isArray(keys) ? keys : idx.needs.map(n => n.key));
-    const items = idx.needs.filter(n => pick.includes(n.key)).map(n => ({ key: n.key, label: n.label, got: null }));
+    const idx = evidenceIndex(s, d, r); const miss = missingItems(s, d, r, idx); const pick = (Array.isArray(keys) ? keys : miss.map(n => n.key));
+    const items = miss.filter(n => pick.includes(n.key)).map(n => ({ key: n.key, label: n.label, got: null }));
     if (!items.length) refuse('Nothing marked Evidence missing is selected, so there is nothing to request.', { record: r.id, status: 422, code: 'nothing_missing', audit: false });
     d.docreq = { to, items, at: this.now(), by: this.who() };
     log(this, s, d, `Documentation requested from ${DOCREQ_TO[to].toLowerCase()} · ${items.length} item${items.length === 1 ? '' : 's'} · recorded only: Psyflo sends no message, a person asks`);

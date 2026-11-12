@@ -8,7 +8,7 @@
 <x-dc>
 <helmet>
 <style>
-/* Authorizations (feedback round Nov 11): one filtered table. Classes use the a- prefix; tokens and the UI kit do the rest. */
+/* All Authorizations (R3, after the artifact): period card top right, ten filters in a 5 x 2 grid, one table, the pager at the bottom. Classes use the a- prefix; tokens and the UI kit do the rest. */
 .a-page{max-width:1320px;margin:0 auto;padding:var(--sp-5) var(--gutter) 64px;display:flex;flex-direction:column;gap:var(--sp-4)}
 .a-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--sp-3) var(--sp-4)}
 .a-head h1{margin:0;font-size:var(--fs-28);line-height:var(--lh-28);font-weight:600;letter-spacing:-.01em}
@@ -26,24 +26,34 @@
 .a-page .ui-qt__sort{min-height:24px}
 .a-page a:not(.ui-btn):not(.ui-qt__link){color:var(--teal-700)}
 .a-page a:not(.ui-btn):not(.ui-qt__link):hover{text-decoration:underline}
-.a-page .ui-qt__table td{padding:10px 8px;vertical-align:middle}
+.a-page .ui-qt__table{table-layout:fixed}
+.a-page .ui-qt__table td{padding:10px 8px;vertical-align:middle;overflow-wrap:anywhere}
+.a-page .ui-qt__table .ui-chip{white-space:normal}
+.a-page .ui-qt__table th{white-space:normal;line-height:1.25;vertical-align:bottom}
+.a-page .ui-qt__sort{text-align:left;white-space:normal;align-items:flex-end}
 .a-page .ui-qt__table th{padding-left:8px;padding-right:8px}
-.a-page .ui-qt__table td:last-child{white-space:nowrap}
 .a-page .ui-qt__link{color:inherit}
-.a-page .ui-fbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:end}
-.a-page .ui-fsearch{grid-column:span 2;order:1}
-.a-page .ui-fcount{grid-column:span 3;justify-self:end;order:2}
-.a-page .ui-fchips{grid-column:1/-1;order:3}
-.a-page .ui-fsel{order:4;min-width:0}
-.a-page .ui-fsel .ui-select{width:100%}
-@media (max-width:1100px){.a-page .ui-fbar{grid-template-columns:repeat(3,minmax(0,1fr))}.a-page .ui-fsearch{grid-column:span 2}.a-page .ui-fcount{grid-column:span 1}}
-@media (max-width:640px){.a-page .ui-fbar{grid-template-columns:repeat(2,minmax(0,1fr))}.a-page .ui-fsearch{grid-column:1/-1}.a-page .ui-fcount{grid-column:1/-1;justify-self:start}}
+.a-page .ui-fbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px 14px;align-items:end}
+.a-page .ui-fsearch{order:-1;min-width:0}
+.a-page .ui-fsel{min-width:0}
+.a-page .ui-fsel .ui-select{width:100%;text-overflow:ellipsis}
+.a-page .ui-fsel__l{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a-page .ui-fcount{display:none}
+.a-clear{display:flex;justify-content:flex-end;margin-top:-4px}
+.a-active{display:flex;gap:12px;align-items:center;font-size:var(--fs-13);color:var(--muted-700)}
+.a-active b{color:var(--ink-900)}
+@media (max-width:1100px){.a-page .ui-fbar{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.a-page .ui-fbar{grid-template-columns:repeat(2,minmax(0,1fr))}.a-page .ui-fsearch{grid-column:1/-1}}
 .a-c-case{min-width:120px}
-.a-c-units{min-width:190px}
-.a-c-dl{min-width:96px}
-/* two widths: all columns from 1280; below that the request type and the clinician leave the row (they are in the case) */
-@media (max-width:1279px){.a-page .ui-qt__table th:nth-child(3),.a-page .ui-qt__table td:nth-child(3),.a-page .ui-qt__table th:nth-child(7),.a-page .ui-qt__table td:nth-child(7){display:none}}
+.a-c-next{min-width:150px}
+.a-nx{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.a-nx__d{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.a-nx__f{font-size:var(--fs-12);line-height:var(--lh-12);color:var(--warning-fg);font-weight:600}
+.a-range__h{flex-basis:100%;font-size:var(--fs-12);color:var(--muted-700)}
+.a-c-units{min-width:150px}
 @media (max-width:760px){.a-range__f input{width:132px}.a-head__r{margin-left:0;width:100%}}
+/* phone: the table keeps its own width and scrolls inside its card (never the page); the status chip stays on one line */
+@media (max-width:767px){.a-page .ui-qt__table{table-layout:auto;min-width:520px}.a-page .ui-qt__table .ui-chip{white-space:nowrap}.a-page .ui-qt__table td{overflow-wrap:normal}.a-c-next{min-width:170px}.a-c-units{min-width:130px}}
 </style>
 </helmet>
 <main class="a-page">
@@ -52,7 +62,10 @@
     <div class="a-head__r">{{range}}{{action}}</div>
   </header>
   {{bar}}
+  {{stage}}
+  {{clear}}
   {{queue}}
+  {{pager}}
 </main>
 </x-dc>
 </body>

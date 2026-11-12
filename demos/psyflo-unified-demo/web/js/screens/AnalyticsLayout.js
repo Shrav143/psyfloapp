@@ -13,30 +13,31 @@ const must = (P, id, fn) => (P[id] ? fn(P[id]) : '');
 function geography(P, o) {
   const a = P['pop.locality'], b = P['pop.sites']; if (!a && !b) return '';
   const rows = [...(a ? a.rows : []), ...(b ? b.rows.map(r => ({ ...r, label: r.label })) : [])];
-  return Z.hbars({ ...(b || a), id: 'pop.geo', title: 'Geographic distribution', definition: [a && a.definition, b && b.definition].filter(Boolean).join(' '), rows, total: (b || a).total, note: '' }, o, { sub: 'by county and school' });
+  return Z.hbars({ ...(b || a), id: 'pop.geo', title: 'Geographic distribution', definition: [a && a.definition, b && b.definition].filter(Boolean).join(' '), rows, total: (b || a).total, note: '' }, o, { sub: 'by county and school', table: false, after: [a && Z.disclosure(a, o, `Table: ${a.title}`), b && Z.disclosure(b, o, `Table: ${b.title}`)].filter(Boolean).join('') });
 }
-const unitsTiles = (p, o) => Z.tiles({ ...p, title: 'Units and service impact', rows: (p.rows || []).map(r => ({ label: r.label, value: r.v })) }, o);
+const unitsTiles = (p, o) => Z.tiles(p, o, { title: 'Units and service impact' });
 
 const LAY = {
   outcomes: (P, o, st) => [
     Z.kpis(P['out.kpi'], o),
     Z.trend(P, o, st.om),
-    row2(must(P, 'out.feedback', p => Z.feedback(p, o)), must(P, 'out.complete', p => Z.tiles({ ...p, title: 'Data completeness', rows: p.rows }, o, { completeness: true, title: 'Data completeness' }))),
+    row2(must(P, 'out.feedback', p => Z.feedback(p, o)), must(P, 'out.complete', p => Z.tiles(p, o, { completeness: true, title: 'Data completeness' }))),
     Z.timeline(o),
     must(P, 'out.review', p => Z.review(p, o)),
-    row2(must(P, 'out.assess', p => Z.tableCard(p, o, { title: 'Assessment trends by scale' })), must(P, 'out.goals', p => Z.tableCard(p, o, { title: 'Goals and progress' })))
+    must(P, 'out.assess', p => Z.tableCard(p, o, { title: 'Assessment trends by scale', cls: 'an-card--wide' })),
+    row2(must(P, 'out.goals', p => Z.tableCard(p, o, { title: 'Goals and progress' })), must(P, 'out.usable', p => Z.tableCard(p, o)))
   ],
   payer: (P, o, st) => [
     Z.kpis(P['pay.kpi'], o),
     must(P, 'pay.by_payer', p => Z.tableCard({ ...p, wide: true }, o, { title: 'Payer comparison', cls: 'an-card--wide' })),
     row2(must(P, 'pay.trend', p => payTrend(p, o, st.pm)), must(P, 'pay.upcoming', p => Z.tableCard(p, o))),
     row2(must(P, 'pay.reasons', p => Z.hbars(p, o, { title: 'Top denial reasons' })), must(P, 'pay.docdef', p => Z.hbars(p, o, { title: 'Documentation deficiencies' }))),
-    row2(must(P, 'pay.denial_by_payer', p => Z.tableCard(p, o)), must(P, 'pay.service', p => Z.hbars(p, o, { key: 'share', sub: r => `n = ${r.decided && r.decided.suppressed ? 'fewer than 5' : r.decided}` }))),
-    row2(must(P, 'pay.appeals', p => Z.tiles({ ...p, rows: p.rows.map(r => ({ label: r.label, value: r.n })) }, o)), must(P, 'pay.units', p => unitsTiles(p, o))),
+    row2(must(P, 'pay.denial_by_payer', p => Z.tableCard(p, o)), must(P, 'pay.service', p => Z.hbars(p, o, { key: 'share', rowSub: r => `n = ${r.decided && r.decided.suppressed ? 'fewer than 5' : r.decided}` }))),
+    row2(must(P, 'pay.appeals', p => Z.tiles(p, o)), must(P, 'pay.units', p => unitsTiles(p, o))),
     must(P, 'pay.insights', p => Z.insights(p, o))
   ],
   population: (P, o) => [
-    must(P, 'pop.kpi', p => Z.tiles({ ...p, rows: p.rows }, o, { title: 'Population summary', cls: 'an-card--wide' })),
+    must(P, 'pop.kpi', p => Z.tiles(p, o, { title: 'Population summary', cls: 'an-card--wide' })),
     sec('Patient Demographics'),
     row2(must(P, 'pop.age', p => Z.hbars(p, o, { title: 'Age distribution' })), geography(P, o)),
     row2(must(P, 'pop.payer', p => Z.hbars(p, o, { title: 'Insurance coverage', sub: 'by payer' })), must(P, 'pop.referral', p => Z.hbars(p, o, { title: 'Referral sources', sub: 'ranked' }))),
@@ -52,7 +53,7 @@ const LAY = {
     must(P, 'pop.goals', p => Z.hbars(p, o, { title: 'Treatment goals', cls: 'an-card--wide' }))
   ]
 };
-const NAMED = { outcomes: ['out.kpi', 'out.trend', 'out.func', 'out.feedback', 'out.complete', 'out.review', 'out.assess', 'out.goals'], payer: ['pay.kpi', 'pay.by_payer', 'pay.trend', 'pay.upcoming', 'pay.reasons', 'pay.docdef', 'pay.denial_by_payer', 'pay.service', 'pay.appeals', 'pay.units', 'pay.insights'],
+const NAMED = { outcomes: ['out.kpi', 'out.trend', 'out.func', 'out.feedback', 'out.complete', 'out.review', 'out.assess', 'out.goals', 'out.usable'], payer: ['pay.kpi', 'pay.by_payer', 'pay.trend', 'pay.upcoming', 'pay.reasons', 'pay.docdef', 'pay.denial_by_payer', 'pay.service', 'pay.appeals', 'pay.units', 'pay.insights'],
   population: ['pop.kpi', 'pop.age', 'pop.sites', 'pop.locality', 'pop.payer', 'pop.referral', 'pop.enrollment', 'pop.dx', 'pop.cooc', 'pop.util', 'pop.service', 'pop.flow', 'pop.ivs', 'pop.goals'] };
 
 // authorization trends: metric chips switch between volume, outcome and units

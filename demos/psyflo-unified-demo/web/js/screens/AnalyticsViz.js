@@ -42,13 +42,13 @@ export function table(p, o = {}) {
   return `<div class="a-scroll" role="region" aria-label="${esc(p.title)}" tabindex="0"><table class="a-tbl"><caption class="ui-sr">${esc(p.title)}</caption><thead><tr>${th}</tr></thead><tbody>${body}</tbody></table></div>${pager}`;
 }
 export const tableCard = (p, o, k = {}) => card(p, o, table(p, { ...o, ...(o.pgOf ? o.pgOf(p.id) : {}) }), k);
-const disclosure = (p, o) => (p.rows && p.rows.length ? `<details class="an-td"><summary>Table</summary>${table(p, { ...o, ...(o.pgOf ? o.pgOf(p.id) : {}) })}</details>` : '');
+export const disclosure = (p, o, label) => (p.rows && p.rows.length ? `<details class="an-td"><summary>${esc(label || 'Table')}</summary>${table(p, { ...o, ...(o.pgOf ? o.pgOf(p.id) : {}) })}</details>` : '');
 
 // ---------- headline cards ----------
 export function kpis(p, o) {
   if (!p) return '';
   const cards = (p.rows || []).map(r => `<article class="an-kpi${r.tone === 'warn' ? ' an-kpi--warn' : ''}"><h3 class="an-kpi__l">${esc(r.label)}</h3><div class="an-kpi__v ui-num">${val(r.value)}</div><p class="an-kpi__s">${esc(r.sub || '')}</p></article>`).join('');
-  return `<section class="an-kpis" aria-label="${esc(p.title)}">${cards}</section><p class="an-kpis__n">${o.dataset ? ui.datasetChip(p.provenance || o.dataset) : ''}<span>${esc(p.definition ? 'Every figure counts patients or requests; a group under 5 is never shown.' : '')}</span>${info(p)}</p>`;
+  return `<section class="an-kpis" aria-label="${esc(p.title)}">${cards}</section><p class="an-kpis__n">${o.dataset ? ui.datasetChip(p.provenance || o.dataset) : ''}<span>${esc(p.definition ? 'Every figure counts patients or requests; a group under 5 is never shown.' : '')}</span>${info(p)}</p>${disclosure(p, o)}`;
 }
 // tiles: a small summary (data completeness, units, population summary)
 export function tiles(p, o, k = {}) {
@@ -57,7 +57,7 @@ export function tiles(p, o, k = {}) {
     const v = r.value !== undefined ? r.value : r.v !== undefined ? r.v : r.n;
     return `<div class="an-tile"><h4>${esc(r.label)}</h4><b class="ui-num">${val(v)}</b>${r.sub ? `<small>${esc(r.sub)}</small>` : ''}</div>`;
   }).join('');
-  return card(p, o, `<div class="an-tiles">${rows}</div>`, k);
+  return card(p, o, `<div class="an-tiles">${rows}</div>${disclosure(p, o)}`, k);
 }
 
 // ---------- horizontal bars ----------
@@ -69,14 +69,14 @@ export function hbars(p, o, k = {}) {
     const v = r[key]; const x = N(v);
     if (x == null && !isSup(v)) return `<li class="an-hb an-hb--sum"><span class="an-hb__l">${esc(r.label)}</span><b class="ui-num">${esc(cellText(v))}</b></li>`;
     const text = isSup(v) ? val(v) : k.pct && total ? `${esc(String(x))} <small>${Math.round((100 * x) / total)}%</small>` : esc(cellText(v));
-    const extra = k.sub ? `<small class="an-hb__s">${esc(k.sub(r))}</small>` : '';
+    const extra = k.rowSub ? `<small class="an-hb__s">${esc(k.rowSub(r))}</small>` : '';
     const d = (r._drills && r._drills[key]) || (key === 'n' ? r._drill : null);
     const shown = d && o.drill && typeof x === 'number' && x > 0 ? `<button type="button" class="a-drill" data-x="drill" data-p="${esc(d.p)}" data-k="${esc(d.k)}" aria-label="Show the patients: ${esc(r.label)}, ${x}">${text}</button>` : text;
     const lab = r._route && o.href ? `<a href="${esc(o.href(r._route))}">${esc(r.label)}</a>` : esc(r.label);
     return `<li class="an-hb${r._small ? ' an-hb--small' : ''}"><span class="an-hb__l" title="${esc(r.label)}">${lab}</span><span class="an-hb__t" aria-hidden="true"><i style="width:${x == null ? 0 : Math.max(2, Math.round((x / max) * 100))}%"></i></span><span class="an-hb__v ui-num">${shown}${extra}</span></li>`;
   }).join('');
   const tot = p.total ? `<p class="an-card__foot">${esc(p.total.label || 'In scope')}: <b class="ui-num">${val(p.total.n)}</b></p>` : '';
-  return card(p, o, `<ul class="an-hbs">${bars}</ul>${tot}`, k);
+  return card(p, o, `<ul class="an-hbs">${bars}</ul>${tot}${k.table === false ? '' : disclosure(p, o)}${k.after || ''}`, k);
 }
 
 // ---------- columns (one group per month) ----------
@@ -95,10 +95,11 @@ export function vcols(p, o, k = {}) {
 export function linesSvg(cols, rows, o = {}) {
   const series = cols.filter(c => c.key !== 'label'); const W = 900, H = 280, L = 48, R = 16, T = 14, B = 30;
   const vals = rows.flatMap(r => series.map(c => N(r[c.key]))).filter(x => x != null); if (!vals.length) return '';
-  let lo = Math.min(0, ...vals), hi = Math.max(0, ...vals); if (hi === lo) hi = lo + 1; const pad = (hi - lo) * 0.12; lo -= lo < 0 ? pad : 0; hi += pad;
+  const mn = Math.min(0, ...vals), mx = Math.max(0, ...vals); const raw = (mx - mn || 1) / 4; const pw = 10 ** Math.floor(Math.log10(raw)); const step = [1, 2, 2.5, 5, 10].map(m => m * pw).find(v => v >= raw);
+  const lo = Math.floor(mn / step) * step, hi = Math.max(Math.ceil(mx / step) * step, lo + step);
   const x = i => L + (rows.length > 1 ? (i * (W - L - R)) / (rows.length - 1) : (W - L - R) / 2), y = v => T + ((hi - v) / (hi - lo)) * (H - T - B);
-  const step = (hi - lo) / 4; const unit = o.unit || '';
-  const grid = [0, 1, 2, 3, 4].map(i => { const v = hi - step * i; return `<line x1="${L}" x2="${W - R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" class="an-gl"/><text x="${L - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${Math.round(v)}${unit}</text>`; }).join('');
+  const unit = o.unit || ''; const ticks = []; for (let v = lo; v <= hi + step / 2; v += step) ticks.push(Math.round(v * 100) / 100);
+  const grid = ticks.map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" class="an-gl"/><text x="${L - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${v}${unit}</text>`).join('');
   const zero = lo < 0 && hi > 0 ? `<line x1="${L}" x2="${W - R}" y1="${y(0).toFixed(1)}" y2="${y(0).toFixed(1)}" class="an-gz"/>` : '';
   const xl = rows.map((r, i) => `<text x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="middle">${esc(r.label)}</text>`).join('');
   const lines = series.map((c, j) => { let d = '', pen = false; const dots = [];
@@ -127,7 +128,7 @@ export function feedback(p, o) {
   const rows = p.rows || []; if (!rows.length) return card(p, o, empty(p), { title: 'Treatment Feedback & Engagement' });
   const blocks = rows.map(r => r._small ? `<div class="an-fb"><h4>${esc(r.label)}</h4><p class="an-muted">Fewer than 5 patients. Not shown.</p></div>`
     : `<div class="an-fb"><h4>${esc(r.label)} feedback</h4><span class="an-badge">${esc(FB_BADGE[r.label] || 'Reported')}</span><dl><div><dt>Typical answer</dt><dd class="ui-num">${val(r.view)}</dd></div><div><dt>Responses</dt><dd class="ui-num">${val(r.resp)}</dd></div><div><dt>Patients</dt><dd class="ui-num">${val(r.n)}</dd></div></dl></div>`).join('');
-  return card(p, o, `${blocks}<p class="an-note">Patient-reported and caregiver-reported information is labelled separately from clinician observations. Satisfaction is not treated as evidence of clinical improvement.</p>`, { title: 'Treatment Feedback & Engagement' });
+  return card(p, o, `${blocks}<p class="an-note">Patient-reported and caregiver-reported information is labelled separately from clinician observations. Satisfaction is not treated as evidence of clinical improvement.</p>${disclosure(p, o)}`, { title: 'Treatment Feedback & Engagement' });
 }
 
 // ---------- needs review: the signals as pills, buttons for a clinician ----------
@@ -138,7 +139,7 @@ export function review(p, o) {
     return o.drill && r._drill && typeof r.n === 'number' ? `<button type="button" class="an-pill an-pill--b" data-x="drill" data-p="${esc(r._drill.p)}" data-k="${esc(r._drill.k)}" aria-label="Show the patients: ${esc(r.label)}, ${r.n}">${inner}</button>` : `<span class="an-pill">${inner}</span>`;
   }).join('') : '';
   const restricted = lock ? `<p class="an-restricted">${ui.chip('Restricted · clinical access', { tone: 'neutral', icon: 'lock' })}</p><p class="an-muted">Named patients appear here with clinical-records access. Without it, only the counts above are shown.</p>` : `<p class="an-muted">Choose a signal to see the patients behind it.</p>`;
-  return card(p, o, `${pills ? `<div class="an-pills">${pills}</div>` : empty(p)}${restricted}`, { title: 'Patients requiring review', sub: 'Workflow signals, not clinical decisions' });
+  return card(p, o, `${pills ? `<div class="an-pills">${pills}</div>` : empty(p)}${restricted}${disclosure(p, o)}`, { title: 'Patients requiring review', sub: 'Workflow signals, not clinical decisions' });
 }
 export function timeline(o) {
   const body = o.prov === PROV.COHORT ? `<p class="an-muted">The generated cohort has no patient-level records, so there is no timeline to open.</p>`
@@ -151,5 +152,5 @@ export function timeline(o) {
 export function insights(p, o) {
   const rows = p.rows || []; const can = o.canDI;
   const items = rows.map(r => `<div class="an-insight"><p><b>${esc(r.text)}</b></p><p class="an-muted">Supporting figures: ${esc(r.support)}</p>${can && r._go ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(o.href({ id: 'DenialIntelligence', params: r._payer ? { payer: r._payer } : {} }))}">Investigate in Denial Intelligence</a>` : ''}</div>`).join('');
-  return card(p, o, items || empty(p), { sub: rows.length ? `${rows.length} pattern${rows.length === 1 ? '' : 's'}` : '', cls: 'an-card--wide' });
+  return card(p, o, (items || empty(p)) + disclosure(p, o), { sub: rows.length ? `${rows.length} pattern${rows.length === 1 ? '' : 's'}` : '', cls: 'an-card--wide' });
 }

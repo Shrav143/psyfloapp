@@ -108,6 +108,8 @@
 .an-notice p{margin:0;flex:1 1 360px;color:var(--ink-900)}
 .an-notice--ill{background:var(--sand-100)}
 .an-stabs{display:flex;flex-wrap:wrap;gap:4px;padding:6px;margin:0 0 16px;border-radius:var(--r-3);background:var(--sand-100);border:1px solid var(--line-200)}
+.an-stabs{align-items:center}
+.an-stabs__m{padding-right:8px}
 .an-stabs a{display:inline-flex;align-items:center;min-height:var(--h-control);padding:0 20px;border-radius:var(--r-2);font:600 var(--fs-14)/1 var(--font);color:var(--muted-700);text-decoration:none}
 .an-stabs a:hover{color:var(--ink-900)}
 .an-stabs a[aria-current=page]{background:var(--surface-0);color:var(--ink-900);box-shadow:0 1px 3px rgba(21,27,36,.12)}
@@ -133,6 +135,7 @@
 .an-card{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:14px 16px;min-width:0}
 .an-card__h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 12px}
 .an-card__h h3{margin:0;font-size:var(--fs-16);line-height:var(--lh-16);font-weight:600}
+.an-card__h .ui-infobtn,.an-kpis__n .ui-infobtn{flex:0 0 auto;min-width:24px;min-height:24px}
 .an-card__sub{font-size:var(--fs-12);color:var(--muted-700)}
 .an-card__foot{margin:10px 0 0;font-size:var(--fs-13);color:var(--muted-700)}
 .an-note{margin:10px 0 0;font-size:var(--fs-12);line-height:var(--lh-12);color:var(--muted-700)}
@@ -195,7 +198,8 @@
 .an-insight p{margin:0 0 6px}
 @media (max-width:899px){.an-row{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:767px){.an-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.an-kpi__v{font-size:var(--fs-28);line-height:var(--lh-28)}.an-stabs a{padding:0 12px;flex:1 1 auto;justify-content:center}.an-hb{grid-template-columns:minmax(70px,34%) minmax(0,1fr) auto}}
-@media (max-width:479px){.an-kpis{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:767px){.a-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:359px){.an-kpis,.a-tiles{grid-template-columns:minmax(0,1fr)}}
 </style>
 </helmet>
 <main class="a-page" aria-labelledby="a-h1">

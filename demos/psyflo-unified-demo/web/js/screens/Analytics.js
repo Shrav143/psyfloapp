@@ -69,21 +69,21 @@ register('Analytics', class extends Screen {
   banner(view, ctx) {
     const ill = this.prov === C.PROV.COHORT; const asOf = fmtDate(view.asOf, { year: true });
     const only = !ctx.drill ? `<span class="ui-sp"></span>${ui.chip('Aggregates only', { tone: 'neutral', icon: 'lock' })}${ui.infoPopover({ label: 'Why aggregates only', title: 'Aggregates only', html: '<p>Patient-level rows need clinical-records access: a clinician, own caseload. Your role sees groups of 5 or more.</p>' })}` : '';
-    if (ill) return `<div class="an-notice an-notice--ill" role="status">${ui.datasetChip(C.PROV.COHORT)}<p><b>Illustrative cohort.</b> 120 fictional patients generated for this demo (no names or initials), data through ${esc(asOf)}. Figures are not Harvest results and do not reconcile with Authorizations or Denial Intelligence. <a href="${esc(this.hash(this.state.section, 'case'))}">Back to case-backed</a></p>${only}</div>`;
-    return `<div class="an-notice" role="status">${ui.datasetChip(C.PROV.CASE)}<p><b>Case-backed.</b> Counted from the records stored in this demo, as of ${esc(asOf)}. ${esc(view.scopeLabel)}. A group of fewer than ${C.minN(this.s)} is never shown.</p>${only}</div>`;
+    if (ill) return `<div class="an-notice an-notice--ill" role="status">${ui.datasetChip(C.PROV.COHORT)}<p>Generated cohort of 120 patients for this demo (no names or initials), data through ${esc(asOf)}. Not reconciled with Authorizations or Denial Intelligence, and not Harvest results. <a href="${esc(this.hash(this.state.section, 'case'))}">Back to case-backed</a></p>${only}</div>`;
+    return `<div class="an-notice" role="status">${ui.datasetChip(C.PROV.CASE)}<p>Counted from the records stored in this demo, as of ${esc(asOf)}. ${esc(view.scopeLabel)}. A group of fewer than ${C.minN(this.s)} is never shown.</p>${only}</div>`;
   }
   tabs() {
-    return `<nav class="an-stabs" aria-label="Analytics sections">${V.SECTIONS.map(([id, l]) => `<a href="${esc(this.hash(id, this.state.dataset))}" ${this.state.section === id ? 'aria-current="page"' : ''}>${l}</a>`).join('')}</nav>`;
+    const mat = maturity('analytics.' + this.state.section);
+    return `<nav class="an-stabs" aria-label="Analytics sections">${V.SECTIONS.map(([id, l]) => `<a href="${esc(this.hash(id, this.state.dataset))}" ${this.state.section === id ? 'aria-current="page"' : ''}>${l}</a>`).join('')}${mat ? `<span class="ui-sp"></span><span class="an-stabs__m">${mat}</span>` : ''}</nav>`;
   }
   body(view, ctx) {
     const st = this.state, s = this.s;
     const title = V.SECTIONS.find(x => x[0] === st.section)[1];
-    const mat = maturity('analytics.' + st.section);
     const pgOf = id => ({ size: st.size, page: (st.pg[id] || 1) });
     const o = { drill: ctx.drill && this.prov === C.PROV.CASE, href: r => this.href(r), open: st.open, dataset: this.prov, canDI: canOpen('DenialIntelligence'), prov: this.prov, pgOf,
       onPage: (id, ch) => { try { ui.query.writeQuery({ size: ch.size === 10 ? '' : ch.size }); } catch { /* the query is a convenience */ } this.setState({ size: ch.size, pg: { ...st.pg, [id]: ch.page } }); },
       rule: (key, payer) => ui.sourceChip(rule(s, key, payer)) };
-    let head = `<div class="an-sectools"><h2 class="ui-sr">${esc(title)}</h2>${mat}`;
+    let head = `<div class="an-sectools"><h2 class="ui-sr">${esc(title)}</h2>`;
     if (st.section === 'payer') head += `<span class="ui-sp"></span>${o.canDI ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(this.href({ id: 'DenialIntelligence', params: {} }))}">Investigate in Denial Intelligence</a>` : ''}<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="guidance">Payer guidance</button>`;
     head += '</div>';
     if (view.unavailable) return head + ui.emptyState({ tone: 'empty', title: 'Aggregates not ready', body: 'Open the presenter dock and reset the demo data to rebuild them.' });

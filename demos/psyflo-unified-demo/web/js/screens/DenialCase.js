@@ -1,7 +1,7 @@
 // Denial case workspace (E3, rebuilt in the artifact's layout for R3):
 //   #/DenialCase?id=<requestId>&section=overview|said|evidence|weak|action|docreq|history&action=info|options|p2p|appeal|reconsider
 // One workspace per request that needs a payer-decision response. The old InfoRequest, Partials and PeerBrief screens are replies here
-// (section=action); the old section=decision and section=options links still open What the payer said and the Decide reply. The guardian side of
+// (section=action); the old section=decision link opens What the payer said and section=options opens the Overview with "All paths" open. The guardian side of
 // the appeal stays AppealLetter (E6). Every change goes through a dispute.* action, which calls the existing request.* actions: request.stage
 // stays the only lifecycle. The voice agent is Simulated: a person starts it and records it, nothing is dialled.
 import { register, Screen, raw, ui, M, api, hrefFor, toast, go } from '../app.js';
@@ -16,23 +16,34 @@ const esc = ui.esc;
 const field = (id, label, control, hint) => `<div class="d-f"><label for="${id}">${esc(label)}</label>${control}${hint ? `<span class="d-modal-note">${esc(hint)}</span>` : ''}</div>`;
 const SR = () => window.SpeechRecognition || window.webkitSpeechRecognition;
 
-// the Update status menu closes when you click away from it
-if (typeof document !== 'undefined' && !window.__dUpdClose) { window.__dUpdClose = true; document.addEventListener('click', ev => { const u = document.getElementById('d-upd'); if (u && u.open && !u.contains(ev.target)) u.open = false; }); document.addEventListener('keydown', ev => { const u = document.getElementById('d-upd'); if (ev.key === 'Escape' && u && u.open) { u.open = false; u.querySelector('summary').focus(); } }); }
+// the Update status menu (a menu button, not a disclosure): closes on a click away, on Escape and when an item is chosen; arrows move between items
+const updClose = (focus) => { const u = document.getElementById('d-upd'); if (!u) return; const p = u.querySelector('.d-upd__p'); const b = u.querySelector('.d-upd__b'); if (p && !p.hidden) { p.hidden = true; b.setAttribute('aria-expanded', 'false'); if (focus) b.focus(); } };
+if (typeof document !== 'undefined' && !window.__dUpdClose) {
+  window.__dUpdClose = true;
+  document.addEventListener('click', ev => { const u = document.getElementById('d-upd'); if (u && !u.contains(ev.target)) updClose(false); });
+  document.addEventListener('keydown', ev => {
+    const u = document.getElementById('d-upd'); if (!u) return; const p = u.querySelector('.d-upd__p'); if (!p || p.hidden) return;
+    if (ev.key === 'Escape') { ev.preventDefault(); updClose(true); return; }
+    const items = [...p.querySelectorAll('button')]; const i = items.indexOf(document.activeElement);
+    if (ev.key === 'ArrowDown') { ev.preventDefault(); items[(i + 1) % items.length].focus(); } else if (ev.key === 'ArrowUp') { ev.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+    else if (ev.key === 'Tab') updClose(false);
+  });
+}
 
 register('DenialCase', class extends Screen {
   init() {
     const e = V.entry(this.params);
-    this.state = { section: e.section, action: e.action, door: 'plain', editing: null, consent: false, rec: false, hist: false, paths: false, drTo: null };
+    this.state = { section: e.section, action: e.action, door: 'plain', editing: null, consent: false, rec: false, hist: false, paths: !!e.paths, drTo: null };
   }
   get reqId() { return this.params.id; }
   // one context per paint: the case view, the evidence index (lazy) and the history (lazy)
   ctx() {
     const s = this.s; const me = this.me; const cv = D.caseView(s, this.reqId, me);
-    let idx = null, hist = null;
+    let idx = null, hist = null, miss = null;
     const cl = cv.c || {}; const no = cl.lauris_no || cl.harvest_no;
     const laurisUrl = api.config && api.config.laurisURL && me ? `${api.config.laurisURL}/login?as=${encodeURIComponent(me.id || 'jperez')}&next=${encodeURIComponent(no ? `/consumers/${no}` : '/consumers')}` : '';
     return { s, me, cv, ui, M, hrefFor, st: this.state, clinical: D.canReadClinical(me), extUrl: api.config && api.config.extURL || '', laurisUrl, canLauris: !!me && can(me, 'ext.use'),
-      idx: () => idx || (idx = D.evidenceIndex(s, cv.d, cv.r, { read: D.canReadClinical(me) })), history: () => hist || (hist = D.historyEvents(s, cv.d, cv.r)) };
+      idx: () => idx || (idx = D.evidenceIndex(s, cv.d, cv.r, { read: D.canReadClinical(me) })), missing: () => D.canReadClinical(me) ? (miss || (miss = D.missingItems(s, cv.d, cv.r, idx || (idx = D.evidenceIndex(s, cv.d, cv.r, { read: true }))))) : [], history: () => hist || (hist = D.historyEvents(s, cv.d, cv.r)) };
   }
   renderVals() {
     const s = this.s; const r = M.byId(s.requests, this.reqId);
@@ -49,7 +60,7 @@ register('DenialCase', class extends Screen {
       const x = el.dataset.x;
       if (x === 'door') { el.onchange = () => this.setState({ door: el.value }); return; }
       if (x === 'consent') { el.onchange = () => { this.state.consent = el.checked; }; return; }
-      el.onclick = ev => { ev.preventDefault(); const u = document.getElementById('d-upd'); if (u && u.open) u.open = false; this.act(x, el.dataset, el); };
+      el.onclick = ev => { ev.preventDefault(); if (x === 'upd') { const p = document.getElementById('d-upd-p'); const opening = p.hidden; p.hidden = !opening; el.setAttribute('aria-expanded', String(opening)); if (opening) p.querySelector('button').focus(); return; } updClose(false); this.act(x, el.dataset, el); };
     });
     const h = root.querySelector('#d-hist'); if (h) h.addEventListener('toggle', () => { this.state.hist = h.open; });
     const pa = root.querySelector('#d-paths'); if (pa) pa.addEventListener('toggle', () => { this.state.paths = pa.open; });
@@ -102,6 +113,63 @@ register('DenialCase', class extends Screen {
       case 'rec': return this.toggleRec();
       default: return;
     }
+  }
+
+  // ---------------------------------------------------------------------------------------------- the seven recommended steps (slide-over panels)
+  async step(k, el) {
+    const d = this.d; if (!d) return; const id = d.id;
+    if (k === 'analyze' || k === 'gaps') {
+      if (!D.canWork(this.me)) return toast('Needs clinician', 'err');
+      const res = await this.call('dispute.analyze', { id, step: k }, r => k === 'analyze' ? `Analysis ready · ${r.points} point${r.points === 1 ? '' : 's'} from stored records` : `${r.missing} item${r.missing === 1 ? '' : 's'} not documented`);
+      if (res) this.panel(k, el); return;
+    }
+    if (k === 'docreq') return this.go({ section: 'docreq' });
+    if (k === 'appeal') return this.go({ section: 'action', action: 'appeal' });
+    if (k === 'p2p') return this.go({ section: 'action', action: 'p2p' });
+    if (k === 'recon') return this.go({ section: 'action', action: 'reconsider' });
+    if (k === 'review') return this.panel('review', el);
+  }
+  panel(k, el) {
+    const c = this.ctx(); const d = c.cv.d; const title = { analyze: 'Analyze Denial', gaps: 'Identify Missing Evidence', review: 'Mark for Clinical Review' }[k];
+    const review = k === 'review';
+    const h = ui.drawer({ title, body: V.panelBody(c, k), returnFocus: el, initialFocus: review ? '#d-rv' : undefined,
+      actions: review ? [{ label: 'Cancel', tone: 'secondary' }, { label: d.review ? 'Update review' : 'Mark for Clinical Review', tone: 'primary', onClick: async hh => {
+        const to = hh.dialog.querySelector('#d-rv').value; const note = hh.dialog.querySelector('#d-rvn').value;
+        const res = await this.call('dispute.markReview', { id: d.id, to, note }, r => `Marked for clinical review · ${M.staff(this.s, r.to).name}`); if (!res) return false;
+      } }] : [{ label: 'Close', tone: 'secondary' }],
+      onMount: (dlg, handle) => dlg.querySelectorAll('[data-px]').forEach(b => { b.onclick = () => { handle.close(); this.go({ section: b.dataset.section, action: b.dataset.action || null }); }; }) });
+    return h;
+  }
+  // The simulated voice agent. A person starts it and a person records it. Hours come from seed/extra/payer-hours.json (an unverified demo assumption);
+  // a closed line cannot be called (the server refuses too). Nothing is saved unless the person presses "Save the call record".
+  callFlow(el) {
+    const c = this.ctx(); const cv = c.cv; const d = cv.d; const r = cv.r; const pf = cv.payer.first; const ln = cv.line; const now = M.now(this.s);
+    const hours = `<dl class="d-hours"><div><dt>Line</dt><dd>${esc(pf)} ${esc((ln.line || 'provider services').toLowerCase())}</dd></div><div><dt>Hours</dt><dd>${esc(ln.summary)} (Eastern) ${ui.sourceChip({ category: ln.category, source: ln.source, verified_on: ln.verified_on })}</dd></div><div><dt>Right now</dt><dd>${ln.open ? ui.chip('Open now', { tone: 'success', icon: 'check' }) : ui.chip('Closed now', { tone: 'warning', icon: 'clock' })} <span class="d-sm ui-muted">Demo clock ${esc(fmtDateTime(now, { dow: true }))}${!ln.open && ln.nextOpen ? ' · opens ' + esc(ln.nextOpen.label) : ''}${!ln.known ? ' · no hours on file' : ''}</span></dd></div></dl>`;
+    const earlier = (d.calls || []).length ? `<h3 class="d-sm">Earlier call records (${d.calls.length})</h3><ul class="d-calls">${d.calls.slice().reverse().map(x => `<li><b>${esc(fmtDateTime(x.at))}</b> · ${esc(x.purpose_label)} · ${esc(M.staff(this.s, x.by).name)}${x.ref ? ' · ref ' + esc(x.ref) : ''}<br><span class="d-sm">${esc(x.outcome)}</span></li>`).join('')}</ul>` : '';
+    const body = `<div class="d-call"><p class="d-modal-note">${ui.chip('Simulated', { tone: 'outline', className: 'ui-chip--sim' })} Nothing is dialled and no payer is contacted. The call runs from a script built from this case. You record what the payer said; nothing is saved until you do. A call is never a payer decision.</p>${hours}
+      <fieldset class="d-radios"><legend>What is the call about?</legend>${D.CALL_PURPOSES.map(([k, l], i) => `<label><input type="radio" name="d-cp" value="${k}"${i === 0 ? ' checked' : ''}> ${esc(l)}</label>`).join('')}</fieldset>
+      <div class="ui-btnrow"><button type="button" class="ui-btn ui-btn--primary ui-btn--sm" id="d-run"${ln.open ? '' : ' disabled'}>${ui.icon('phone', 14)} Run the simulated call</button>${ln.open ? '' : `<span class="d-sm ui-muted">The line is closed, so no call can be run or recorded.</span>`}</div>
+      <ol class="d-script" id="d-script" aria-live="polite" hidden></ol>
+      <div id="d-rec" hidden>${field('d-out', 'What did the payer say? (required, your own words)', '<textarea class="ui-textarea" id="d-out" rows="3" maxlength="600" style="width:100%;padding:8px 12px"></textarea>', 'The script above is a placeholder: a payer answer is only what you type here.')}${field('d-ref', 'Reference number the payer gave (optional)', '<input class="ui-input" id="d-ref" maxlength="40">')}</div>${earlier}</div>`;
+    this.dialog({ title: `Call ${pf} · voice agent`, size: 'lg', confirm: 'Save the call record', returnFocus: el, initialFocus: '#d-cp', body,
+      onMount: dlg => {
+        const save = dlg.querySelector('[data-ui-action="1"]'); if (save && !ln.open) save.disabled = true;
+        const run = dlg.querySelector('#d-run'); const list = dlg.querySelector('#d-script'); const rec = dlg.querySelector('#d-rec');
+        run.onclick = () => {
+          const purpose = dlg.querySelector('[name=d-cp]:checked').value; const lines = D.callScript(this.s, d, r, purpose); dlg.dataset.ran = purpose;
+          list.innerHTML = ''; list.hidden = false; run.disabled = true;
+          const slow = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+          lines.forEach((l, i) => setTimeout(() => {
+            const li = document.createElement('li'); li.className = 'd-script__l d-script__l--' + l.who; li.innerHTML = `<span class="d-script__w">${l.who === 'agent' ? 'Voice agent · Simulated' : 'Payer line · scripted placeholder'}</span><span>${esc(l.text)}</span>`; list.appendChild(li);
+            if (i === lines.length - 1) { rec.hidden = false; run.disabled = false; run.textContent = 'Run it again'; }
+          }, slow ? i * 450 : 0));
+        };
+      },
+      onSubmit: async dlg => {
+        const purpose = dlg.dataset.ran; if (!purpose) { toast('Run the simulated call first', 'err'); return false; }
+        const outcome = dlg.querySelector('#d-out').value.trim(); if (outcome.length < 3) { toast('Write what the payer said, in your own words', 'err'); return false; }
+        const res = await this.call('dispute.logCall', { id: d.id, purpose, outcome, ref: dlg.querySelector('#d-ref').value }, 'Call record saved · simulated, with your name and the time'); if (!res) return false;
+      } });
   }
 
   // ---------------------------------------------------------------------------------------------- dialogs

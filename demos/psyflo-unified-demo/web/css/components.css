@@ -410,7 +410,7 @@ body[data-surface="parent"] .sh-rail,body[data-surface="school"] .sh-rail,body[d
 .sh-top__b:hover{background:var(--sand-100)}
 .sh-top__flo{color:var(--teal-700)}
 .sh-top__bell{padding:0}
-.sh-top__dot{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--danger-fg);color:#fff;font:600 11px/18px var(--font);text-align:center}
+.sh-top__dot{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--danger-fg);color:#fff;font:600 12px/20px var(--font);text-align:center}
 .sh-top__dot[hidden]{display:none}
 
 /* ---- document rows: the "Open in Lauris" link sits beside the other action (Documentation table, patient chart) ---- */
