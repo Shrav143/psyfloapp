@@ -144,7 +144,7 @@ try {
     await p.locator('.flo-empty [data-flo="q"]', { hasText: 'Who is behind on notes?' }).click(); await p.waitForSelector('.flo-m--f');
     const a = p.locator('.flo-m--f').first(); assert.match(await a.locator('.flo-sum').innerText(), /notes? (is|are) behind/); assert.ok(await a.locator('table.flo-t').count(), 'a table'); assert.ok(await a.locator('.flo-ln a').count(), 'a link'); assert.match(await a.locator('.flo-src').innerText(), /source/i); assert.ok(await a.locator('.flo-fu button').count(), 'follow-ups');
     await ask(p, 'Which authorizations are running low?'); assert.ok(await p.locator('.flo-bars').count(), 'bars for units'); assert.match(await p.locator('.flo-m--f').nth(1).locator('.flo-src').innerText(), /75/);
-    await p.screenshot({ path: SHOTS + '/flo-clinician-1440.png' });
+    await p.waitForTimeout(600); await p.screenshot({ path: SHOTS + '/flo-clinician-1440.png' });
     await p.keyboard.press('Escape'); await openFlo(p); assert.eq(await p.locator('.flo-m--f').count(), 2, 'the conversation is still there'); assert.eq(await p.locator('.flo-m--u').count(), 2);
     await p.locator('.flo-fu button').last().click(); await p.waitForFunction(() => document.querySelectorAll('.flo-m--f').length === 3); await p.click('[data-flo="new"]'); await p.waitForSelector('[data-flo-empty]'); assert.eq(await p.locator('.flo-m').count(), 0);
     assert.eq(await p.evaluate(() => document.activeElement.id), 'flo-in', 'focus stays in the input');
@@ -173,7 +173,7 @@ try {
     const cl = await actorOf('jperez'); const secret = ((cl.s.notes || []).map(n => [n.dictation, n.narrative].map(v => (typeof v === 'string' ? v : v && (v.narrative || v.text))).find(t => t && t.length >= 40)).find(Boolean) || '').slice(0, 40);
     const p = await open('dowens', '/#/Dashboard'); await openFlo(p);
     await ask(p, 'Which authorizations are running low?'); assert.ok(await p.locator('.flo-m--f').last().locator('table').count()); await ask(p, 'What did the note for M.R. say?'); assert.eq(await p.locator('.flo-m--f').last().getAttribute('data-kind'), 'blocked');
-    await p.screenshot({ path: SHOTS + '/flo-admin-1440.png' });
+    await p.waitForTimeout(600); await p.screenshot({ path: SHOTS + '/flo-admin-1440.png' });
     if (secret) assert.ok(!(await p.evaluate(() => document.body.innerText)).includes(secret), 'no note text on the page');
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
@@ -181,7 +181,7 @@ try {
     const p = await open('cdiaz', '/#/Dashboard', { w: 390, h: 844 }); await openFlo(p); await ask(p, 'Who is behind on notes?');
     const g = await p.evaluate(() => { const d = document.querySelector('.flo-drawer').getBoundingClientRect(), i = document.getElementById('flo-in').getBoundingClientRect(), b = document.querySelector('.flo__form button').getBoundingClientRect(); return { dw: d.width, iw: innerWidth, sx: document.documentElement.scrollWidth, ib: Math.round(i.bottom), ih: innerHeight, bh: Math.round(b.height), bw: Math.round(b.width) }; });
     assert.ok(g.dw <= g.iw + 1, 'drawer fits: ' + JSON.stringify(g)); assert.ok(g.sx <= g.iw + 1, 'no horizontal page scroll'); assert.ok(g.ib <= g.ih, 'input on screen'); assert.ok(g.bh >= 24 && g.bw >= 24, 'Send target size');
-    await p.screenshot({ path: SHOTS + '/flo-supervisor-390.png' }); assert.deepEq(fatal(p), [], 'console errors'); await done();
+    await p.waitForTimeout(600); await p.screenshot({ path: SHOTS + '/flo-supervisor-390.png' }); assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
 } finally { await done(); await browser.close(); }
 const r = await T.done(); process.exit(r.fail ? 1 : 0);
