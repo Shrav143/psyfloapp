@@ -64,7 +64,7 @@ await T.test('R4 every item carries the Lauris page where its work is done: note
   assert.eq(one(by(ds, 'AG'), i => i.type === 'assessment', 'A.G. SUDS').lauris, '/consumers/3322?tab=active', 'an assessment opens the consumer\'s Active File');
   assert.eq(one(by(cl, 'DP'), i => i.type === 'isp', 'D.P. treatment plan').lauris, '/consumers/3320/session/isp');
   assert.eq(one(by(cl, 'MR'), i => i.type === 'quarterly', 'M.R. quarterly report').lauris, '/consumers/3310/session/quarterly');
-  assert.eq(one(by(cl, 'TW'), i => i.type === 'intake', 'T.W. intake form').lauris, '/consumers/4492/session/screening', 'an intake form is the Admission Screening');
+  assert.eq(one(by(cl, 'TW'), i => i.type === 'intake', 'T.W. intake form').lauris, '/consumers/new?referral=REF-118', 'T.W. is a referral Lauris does not know yet (the screening creates the consumer): the intake form opens the Add consumer page, not a session page that would not exist');
   assert.eq(one(by(cl, 'DW'), i => i.type === 'cna', 'D.W. CNA').lauris, '/consumers/4102/session/cna');
   assert.eq(one(by(cl, 'JO'), i => i.type === 'discharge', 'J.O. discharge summary').lauris, '/consumers/4400/session/discharge');
   const rev = one(by(sup, 'DW'), i => i.kind === 'review', 'D.W. note waiting for a review'); assert.eq(rev.lauris, '/consumers/4102?tab=active', 'a filed note without a Lauris session id opens the Active File'); assert.eq(rev.canReview, true, 'a supervisor may review it');
@@ -76,7 +76,7 @@ await T.test('R4 every item carries the Lauris page where its work is done: note
   const steps = all.filter(i => i.kind === 'auth' || i.kind === 'referral'); assert.ok(steps.length >= 4, 'authorization steps exist');
   assert.ok(steps.every(i => i.lauris === ''), 'authorization and referral steps stay in Psyflo: no Lauris page');
   const ehr = outstandingByClient(cl.s, cl.actor); let n = 0;
-  for (const list of ehr.values()) for (const i of list) if (i.kind !== 'auth' && i.kind !== 'referral') { n++; assert.match(i.lauris, /^\/(consumers\/\d+(\/session\/[\w-]+|\?tab=active)|sessions\/\d+)$/, `${i.title} for ${i.client} has a Lauris page: ${i.lauris}`); }
+  for (const list of ehr.values()) for (const i of list) if (i.kind !== 'auth' && i.kind !== 'referral') { n++; assert.match(i.lauris, /^\/(consumers\/\d+(\/session\/[\w-]+|\?tab=active)|consumers\/new\?referral=[\w-]+|sessions\/\d+)$/, `${i.title} for ${i.client} has a Lauris page: ${i.lauris}`); }
   assert.ok(n >= 40, 'every EHR item checked: ' + n);
 });
 await T.test('R4 the Lauris link helper fails closed: no actor, no path, or a role without ext.use (the administrator) gives nothing; the URL is /login?as=<id>&next=<path>', async () => {
@@ -231,9 +231,9 @@ try {
     await p.mouse.move(5, 5); await a.focus(); await p.waitForTimeout(150); assert.eq(await p.locator('.ui-hint__t[data-on]').count(), 1, 'keyboard focus shows it too'); await p.keyboard.press('Escape'); assert.eq(await p.locator('.ui-hint__t[data-on]').count(), 0, 'Escape hides it');
     await p.close();
     p = await open('jperez', '/#/Dashboard?open=all');
-    has(await links('TW'), /^Open in Lauris: T\.W\., Intake form/, want('jperez', '/consumers/4492/session/screening'), 'an intake form opens the Admission Screening');
-    has(await links('TW'), /^Open in Lauris: T\.W\., CNA/, want('jperez', '/consumers/4492/session/cna'), 'a CNA');
-    has(await links('TW'), /^Open in Lauris: T\.W\., Treatment plan/, want('jperez', '/consumers/4492/session/isp'), 'a treatment plan');
+    has(await links('TW'), /^Open in Lauris: T\.W\., Intake form/, want('jperez', '/consumers/new?referral=REF-118'), 'an intake form for a referral not yet in Lauris opens the Add consumer page');
+    has(await links('TW'), /^Open in Lauris: T\.W\., CNA/, want('jperez', '/consumers/new?referral=REF-118'), 'a CNA for a referral not yet in Lauris: the same page');
+    has(await links('TW'), /^Open in Lauris: T\.W\., Treatment plan/, want('jperez', '/consumers/new?referral=REF-118'), 'a treatment plan: the same page');
     has(await links('DW'), /^Open in Lauris: D\.W\., CNA/, want('jperez', '/consumers/4102/session/cna'), 'a CNA waiting for a review');
     has(await links('DW'), /^Open in Lauris: D\.W\., Quarterly report/, want('jperez', '/consumers/4102/session/quarterly'), 'a quarterly report');
     has(await links('MR'), /^Open in Lauris: M\.R\., Quarterly report/, want('jperez', '/consumers/3310/session/quarterly'), 'a quarterly report');

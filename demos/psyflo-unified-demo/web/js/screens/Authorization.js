@@ -245,7 +245,7 @@ register('Authorization', class extends Screen {
     const c = this.c;
     this.form({ title: `Add to history · ${c.id}`, label: 'Add', focus: '#a-h-t',
       body: `<label class="ui-field"><span class="ui-field__l">What happened</span><select class="ui-select" id="a-h-k">${HIST_ENTRY_KINDS.map(([v, l]) => `<option value="${v}">${esc(l)}</option>`).join('')}</select></label><label class="ui-field"><span class="ui-field__l">Details</span><textarea class="ui-input" id="a-h-t" rows="3" maxlength="400" placeholder="For example: called the payer, spoke to intake, they will reply by Friday"></textarea><span class="ui-field__h">Recorded with your name and the time. It sends nothing to anyone. No clinical details.</span></label>`,
-      run: async d => { const text = d.querySelector('#a-h-t').value.trim(); if (text.length < 3) { toast('Write what happened.', 'err'); d.querySelector('#a-h-t').focus(); return false; } const r = await this.run('history.add', { id: c.id, kind: d.querySelector('#a-h-k').value, text }, 'Added to the history'); return r ? undefined : false; } });
+      run: async d => { const text = d.querySelector('#a-h-t').value.trim(); if (text.length < 3) { toast('Write what happened first: enter a few words about it.', 'err'); d.querySelector('#a-h-t').focus(); return false; } const r = await this.run('history.add', { id: c.id, kind: d.querySelector('#a-h-k').value, text }, 'Added to the history'); return r ? undefined : false; } });
   }
   sec_payer(c) {
     const r = c.req; const k = c.caps; const s = this.s;

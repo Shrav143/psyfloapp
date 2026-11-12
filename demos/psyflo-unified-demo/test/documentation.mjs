@@ -64,7 +64,7 @@ await T.test('R4 one rail item: there is no Documentation item in the navigation
 await T.test('R4 documents carry the Lauris page of the document and the Lauris number apart (the number is what a person reads)', async () => {
   const { s, actor } = await actorOf('jperez'); const all = allDocs(s, actor);
   assert.ok(all.every(d => /^\d{4}$/.test(String(d.laurisNo))), 'every row has a four-digit Lauris number: ' + [...new Set(all.map(d => d.laurisNo))].slice(0, 5));
-  assert.ok(all.every(d => !d.lauris || /^\/(consumers\/\d+(\/session\/[\w-]+|\?tab=active)|sessions\/\d+)$/.test(d.lauris)), 'every row\'s Lauris page is a mock Lauris path');
+  assert.ok(all.every(d => !d.lauris || /^\/(consumers\/\d+(\/session\/[\w-]+|\?tab=active)|consumers\/new\?referral=[\w-]+|sessions\/\d+)$/.test(d.lauris)), 'every row\'s Lauris page is a mock Lauris path');
   const am = all.find(d => d.client === 'AM' && d.type === 'intake'); assert.ok(am, 'A.M. has an intake form'); assert.eq(am.lauris, '/consumers/3360/session/screening', 'an intake form is the Admission Screening'); assert.eq(am.laurisNo, 3360);
   const isp = all.find(d => d.client === 'DP' && d.type === 'isp'); assert.eq(isp.lauris, '/consumers/3320/session/isp');
   const pending = all.find(d => d.status === 'pending_review' && d.group === 'note'); assert.match(pending.lauris, /^\/consumers\/\d+\?tab=active$|^\/sessions\/\d+$/, 'a note waiting for a review opens where it is filed');

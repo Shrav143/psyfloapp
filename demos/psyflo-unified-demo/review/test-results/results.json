@@ -1,15 +1,15 @@
 {
- "runId": "2026-11-12T17-43-18Z",
- "commit": "c072a02",
+ "runId": "2026-11-12T20-04-23Z",
+ "commit": "4b2aa44",
  "release": false,
  "releaseReady": false,
  "env": {
   "node": "v22.22.0",
   "time": "15:30",
   "preset": "live",
-  "workers": 1,
+  "workers": 2,
   "repeat": 1,
-  "basePort": 7500
+  "basePort": 7960
  },
  "summary": {
   "pass": 2,
@@ -18,129 +18,22 @@
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 126060,
+  "durationMs": 47970,
   "tests": {
-   "pass": 40,
+   "pass": 43,
    "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "settings",
+   "name": "dashboard",
    "tags": [],
    "instance": 0,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 63412,
-   "counts": {
-    "pass": 18,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "roles: a raise needs a second person (not the proposer, an administrator or a clinician); a lowering applies at once; never your own",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "people: new users start as direct support or supervisor; clinician and administrator go through a role change",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "designated access: proposed by an administrator, confirmed by someone else, never for yourself, never a clinical-record grant for an administrator",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rules: a reason is required, only the administrator edits, the type is kept, and a change is audited with its values",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rules: the dependent screen changes (day-5 follow-up makes the Aetna request a follow-up call in My Work); reset restores it",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "units: the alternate bands change the units a day earns; restore returns the official bands (audited)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signature mode per document type: default remote (not validated); In person changes the rule the family screens read",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "family link questions: ask and required switches (the guardian link reads them); the insurance question is locked",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the administrator has no clinical-record access: Settings never carries note text, and the matrix says so",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Settings: opens on the workflow map (no tab bar), the six older pages open from More settings with one h1 and a way back, no console errors; only the administrator opens it",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rule library (the old Rules tab, now in the workflow map): filter by source, search, edit in the drawer (reason required, value type kept), and the audit tab shows it",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "units tab: the try-it box follows the bands; switching to the alternate asks why and is audited",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "roles tab: the matrix is drawn from permissions.js; designate in the UI, the clinician confirms from My Work, the grant takes effect",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "people tab: change a role with a reason (a lowering applies, a raise waits), the second person confirms in Settings or My Work",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "family tab: In person changes the rule, asks why, shows Policy not validated; the family-link question switches work",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "presenter tab: how it fits, architecture, maturity legend with all four levels, the unresolved decisions with where each is set",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Login at 1440: a small card near the top of the window, not a page of boxes: under 440 px wide, no role cards, no scrolling",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Login: one small card with one dropdown of people grouped by role, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-12T17-43-18Z"
-  },
-  {
-   "name": "workflows-ui",
-   "tags": [],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 62444,
+   "durationMs": 40337,
    "counts": {
     "pass": 22,
     "fail": 0,
@@ -149,116 +42,238 @@
    "tests": [
     {
      "status": "PASS",
-     "title": "model: links obey the rules of the map (no self link, none into a When block, none into the locked guardrail, no loop, no duplicate), an exit may fan out, removing a block removes its links",
+     "title": "fail closed: no actor, no patients; a portal actor has none either",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "model: the summary of a rule-bound block reads the live rule; the outline keeps every block (joins shown once, strays under Not connected); draftKey ignores order; tidy puts blocks on the grid",
+     "title": "scope by role: direct support own caseload, supervisor the staff they manage, clinician and administrator everyone",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Settings opens on the workflow map: one h1 and the Pilot chip, no seven-tab bar, the toolbar, the locked guardrail drawn, the seeded workflows listed",
+     "title": "units: the flag is the rules-table threshold (75% used) and nothing else; 0 left is out",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "More settings: People, Roles, Units, Family link, Audit and Presenter open their own page with a way back; ?tab=rules opens the map with the rule library",
+     "title": "filters: attention chips, search by Lauris number, units flagged, staff, due overdue; counts match the rows",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "palette: When, If, Then, Always groups with a hover definition, the rule library with a verification icon, and the locked steps with the reason",
+     "title": "sorting: default is attention (red first); patient, units and staff sorts are stable and reversible",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "drag: a block moves with the pointer and snaps to the 20 px grid, its lines follow, Save lights up, Undo puts it back; nothing is stored until Save",
+     "title": "R4 every item carries the Lauris page where its work is done: notes by type, existing notes by session, rejected, intake, CNA, plan, quarterly, discharge, assessments; authorization and referral steps carry none",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "keyboard: Tab to a block, arrows move it by one grid step (Shift by five), Enter opens the editor, Delete removes it (Undo returns it); no drag needed",
+     "title": "R4 the Lauris link helper fails closed: no actor, no path, or a role without ext.use (the administrator) gives nothing; the URL is /login?as=<id>&next=<path>",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the locked guardrail cannot be selected, moved or removed; the palette lists it as always on",
+     "title": "R4 view rule: Documents and Staff need the documentation capability; direct support always gets Patients",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "palette: a block is dragged onto the canvas and lands on the grid; Enter or a click adds one too (after the selected block, linked to its free exit)",
+     "title": "direct support: one h1, no paragraphs, only own patients, items under the patient with a verb, units bar with the flag, no console errors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "link: drag from an exit dot to a block; a loop, a self link and a link into a When block are refused with a reason; click a line and Delete removes it; the inspector pickers do the same without dragging",
+     "title": "expand and collapse: per-row chevron, Expand all / Collapse all, the choice lands in the address",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "rules: drop a rule from the library onto a block (or Add a rule in the inspector); the card shows a rules badge; detach removes it",
+     "title": "supervisor: roster for their staff, Staff filter, chips filter the table, search by Lauris number, a patient opens the chart",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "inspector: typed settings from the catalog (number, select, roles, text); the card summary follows; a rule-bound number shows the live rule and its Edit asks why and changes the rule everywhere",
+     "title": "filter state survives a reload and Clear filters resets it; an empty result says so with a way out",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Save calls workflow.save: version and history move on, Save goes quiet (Saved · v2); a workflow with a problem is refused and the problems are listed; Reload keeps the draft saved",
+     "title": "clinician: all patients, Responsible column, authorization chip with the unit bar, sort by Patient, items open their screen",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the On / Off switch calls workflow.enable on the saved workflow; unsaved changes ask for a Save first; a workflow with errors cannot be turned on",
+     "title": "administrator: statuses and dates only, no Lauris link, no write or review action, no note text; every EHR item opens the chart, an authorization step opens its screen",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Test run: runs the current (unsaved) workflow on the live demo data, says test only, shows counts and a table; a match lights its path; nothing is written",
+     "title": "two-person confirmations: after the administrator proposes a designation the clinician sees the strip with a Review button; the proposer does not, and no strip when nothing waits",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Outline: the same workflow as an indented list with kind, summary, edit and remove, and Add a block here; everything the map does works without dragging",
+     "title": "R4 every action is an icon link into Lauris at the note or form: the right href for each item kind, a hover definition, a new tab; no text buttons",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "390 px: the Outline is the default, the palette is an Add block picker, editing opens a drawer, no sideways scroll, targets 24 px or more, every control labelled",
+     "title": "R4 a note waiting for a reviewer has two icons, Open in Lauris and Review (the drawer, in place); direct support sees Lauris only; the drawer opens the note in Lauris too",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "1024 px: the map, toolbar and editor fit without sideways scroll; the palette opens over the layout on request",
+     "title": "R4 Open in Lauris lands on the form with the Psyflo panel already beside it, showing the same patient (from the icon, and for the intake, daily note and CNA pages)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "accessibility at 1440 with the palette, the editor and a test run open: targets 24 px or more, every control named, ids unique, nodes and lines reachable by keyboard, one h1, no text under 12 px",
+     "title": "phone width: no horizontal scroll, patients become cards, buttons are 44 px",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the \"second person\" guardrail: a saved change waits (the live version does not change), Settings says so, a different person (the clinician, from the Dashboard) confirms, the proposer cannot",
+     "title": "the old My Work, Do next and Staff dashboard routes land on the Dashboard (the review and team sections on its Documents and Staff views, see documentation.mjs)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "New workflow (blank or from a template), Duplicate and Delete (a reason of four letters or more); the new workflow is off",
+     "title": "feedback Nov 12: no date or time and no \"N of M\" above the table; rows per page 10, 25, 50, 100 at the bottom, kept in the address",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "roles: only the administrator opens Settings; the other roles never see a definition in the UI and read enabled workflows only (they see the bell items); the portals read none",
+     "title": "the rail is dark navy with a teal active item, the top bar carries FLO and the bell on every platform page, and a note waiting for review gives no date",
      "note": ""
     }
    ],
-   "runId": "2026-11-12T17-43-18Z"
+   "runId": "2026-11-12T20-04-23Z"
+  },
+  {
+   "name": "documentation",
+   "tags": [],
+   "instance": 1,
+   "attempt": 1,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 47803,
+   "counts": {
+    "pass": 21,
+    "fail": 0,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "scope per role: supervisor = the staff they manage and their sites, clinician and administrator = every patient; every row is a patient in scope",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "statuses: Open = behind + due + in progress + needs review + sent back; the on-time share counts filed notes only; types come from the documents",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the administrator's state carries no note text; the supervisor and clinician may",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the server refuses what the screen hides: administrator and direct support cannot review; nobody reviews their own note",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "R4 one rail item: there is no Documentation item in the navigation for any role; the Dashboard item lights up for the old ids",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "R4 documents carry the Lauris page of the document and the Lauris number apart (the number is what a person reads)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "supervisor: one h1 (Dashboard), Documents is a view of it, Open is the default, the table has Patient to Open, the status chips carry counts, nothing outside the scope",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "R4 every document row opens in Lauris: an icon with the Lauris page of that document; Review only on a note waiting for this reviewer; the chart icon",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "R4 the switch: Patients | Documents | Staff are real links (a view is an address); q, site and staff travel with it; Back keeps the view",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "filters: status chip, document type, search, group; each persists in the URL and survives a reload; Clear filters returns to Open",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "sorting by Due and Status; the pager (rows per page 10, 25, 50, 100) replaces the count and Show more; header stays",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "review drawer: ?id= opens it on load; approve end to end (status changes in the table, audit event, toast); the decided note leaves Needs review",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "return with a note: the note is required, the drawer stays open on the error; then the note goes back (status Sent back, audit event, reviewer named)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "\"That didn't happen\" needs a note too and flags the note (sent back, flagged in the audit trail)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "old links land on the Dashboard's Documents view and keep their filters: #/Documentation, #/ReviewQueue, My Work review and team, a note deep link opens the drawer, ?legacy=1 bounces there",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "Staff view: one row per staffer in scope; a row opens the Documents view for that person; approval mode changes through staff.reviewMode",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "clinician: every patient, Review on notes waiting, no review on their own notes, forms marked as sample data",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "administrator: statuses and dates, no Review button, no Open in Lauris, no note text in the page or in any response, the drawer link does nothing",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "direct support has no Documents view: no switch, ?view=documents and #/Documentation fall back to Patients (their own caseload), no table of documents, nothing named Documentation in the rail",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the rail has one item for all of it: Dashboard, lit on Patients, Documents and Staff; no Documentation item for the supervisor, clinician or administrator either",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "phone width: no sideways scroll for the supervisor (all three views), the clinician and the administrator; documents become cards with 44 px icons",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-12T20-04-23Z"
   }
  ],
  "manual": [

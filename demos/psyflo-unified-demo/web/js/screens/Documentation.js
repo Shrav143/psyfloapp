@@ -11,7 +11,7 @@
 // bypasses every redirect) and sends the person to the same place.
 import { register, Screen, M, raw, esc, ui, api, hrefFor } from '../app.js';
 import { can } from '../shared/permissions.js';
-import { documentRows, normalizeDocs, laurisNotePath, docLabel } from '../shared/sel/roster.js';
+import { documentRows, normalizeDocs, laurisNotePath, laurisKey, docLabel } from '../shared/sel/roster.js';
 import { teamView, pendingFor } from '../shared/sel/mywork.js';
 import { laurisLink } from '../shared/lauris-link.js';
 import { reviewModel } from './MyWorkViews.js';
@@ -144,7 +144,7 @@ export class DocumentsView {
     if (!canText) body += `<div class="doc-hidden">${ui.hint('lock', 'Clinical text hidden for your role', { tone: 'n' })}</div>`;
     else body += `<div class="doc-rv__cmp"><section><h3>${esc(c.wroteLabel)}</h3><div class="doc-rv__txt">${c.wrote ? esc(c.wrote) : '<span class="doc-muted">Nothing typed or dictated: the note was written in Lauris directly.</span>'}</div></section><section><h3>Psyflo added ${ui.chip('Marked', { tone: 'success', size: 'sm' })}</h3><div class="doc-rv__txt">${c.hasEnhanced ? c.enhanced : '<span class="doc-muted">Not enhanced. Nothing was added; the checks run on what the staffer wrote.</span>'}</div></section></div><div class="doc-rv__checks" aria-label="Checks">${c.checks}</div>`;
     if (canText && c.repeat) body += `<div class="doc-rv__pat">${ui.icon('flag', 14)}<span>Same words in ${c.repeat.count} of ${esc(c.repeat.name)}'s last ${c.repeat.of} notes (${esc(c.repeat.dates)})</span></div>`;
-    body += `<p class="doc-rv__lau">${laurisLink(api.config.laurisURL, a, laurisNotePath(M.client(s, n.client).harvest_no, n), { who: label, title: `${docLabel(n.type)} ${M.fmtDate(n.date)}`, variant: 'button' })}</p>`;
+    body += `<p class="doc-rv__lau">${laurisLink(api.config.laurisURL, a, laurisNotePath(laurisKey(M.client(s, n.client)), n), { who: label, title: `${docLabel(n.type)} ${M.fmtDate(n.date)}`, variant: 'button' })}</p>`;
     body += `<div class="doc-rv__trail">${esc(c.trail)}</div><div class="ui-field"><label class="ui-field__l" for="doc-rv-c">Note to ${esc(who)}</label><textarea class="ui-input ui-textarea" id="doc-rv-c" rows="3"></textarea><div class="doc-err" id="doc-rv-err" role="alert"></div></div></div>`;
     const decide = (decision, h) => this.decide(n, decision, h);
     return ui.drawer({

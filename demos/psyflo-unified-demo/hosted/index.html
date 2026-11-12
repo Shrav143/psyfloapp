@@ -10120,7 +10120,7 @@ ${x.text}`).join("\n\n");
     };
     const isDS = actor.role === "direct_support";
     const writes = can(actor, "notes.own") && isDS;
-    const hn = (id) => (byId4(s.clients, id) || {}).harvest_no || "";
+    const hn = (id) => laurisKey(byId4(s.clients, id));
     for (const m of noteMisses(s, actor, scope2)) {
       const lbl = DOC_LABEL[m.type];
       add({ client: m.client, kind: "note", type: m.type, title: lbl, sub: periodLabel(m.type, m.date), due: m.dueAt.slice(0, 10), dueText: dueText(m.dueAt, t), sev: m.behind ? "r" : sevOfDue(m.dueAt, t), status: m.behind ? "behind" : "due", rank: m.behind ? 10 : 40, verb: writes ? "Write note" : "Open", to: writes ? WRITE[m.type] + m.client : chartHref(m.client, "documentation"), lauris: laurisPath(hn(m.client), m.type), who: staffShort2(s, m.staff) });
@@ -10271,16 +10271,16 @@ ${x.text}`).join("\n\n");
       const dueAt = n3.type === "daily" ? addDaysHour(n3.date, hours) : n3.type === "weekly_guardian" ? addDays(mondayOf(n3.date), 4) + "T23:59" : monthEnd2(n3.date) + "T23:59";
       const late = !!n3.processed_at && n3.processed_at > dueAt;
       const st = n3.review === "pending" ? "pending_review" : ["returned", "flagged"].includes(n3.review) ? "returned" : late ? "late" : "done";
-      out.push(base(n3.client, { id: "note:" + n3.id, noteId: n3.id, group: "note", type: n3.type, typeLabel: DOC_LABEL[n3.type], date: n3.date, dateText: periodLabel(n3.type, n3.date), due: dueAt.slice(0, 10), dueText: fmtDate(dueAt.slice(0, 10)), status: st, statusLabel: STATUS_LABEL2[st], sev: STATUS_SEV[st], staff: n3.staff, staffShort: staffShort2(s, n3.staff), reviewer: n3.reviewed_by ? staffShort2(s, n3.reviewed_by) : "", filedAt: n3.processed_at || "", lauris: st === "returned" ? laurisPath(cl(n3.client).harvest_no, n3.type, n3.session) : laurisNotePath(cl(n3.client).harvest_no, n3), to: chartHref(n3.client, "documentation") }));
+      out.push(base(n3.client, { id: "note:" + n3.id, noteId: n3.id, group: "note", type: n3.type, typeLabel: DOC_LABEL[n3.type], date: n3.date, dateText: periodLabel(n3.type, n3.date), due: dueAt.slice(0, 10), dueText: fmtDate(dueAt.slice(0, 10)), status: st, statusLabel: STATUS_LABEL2[st], sev: STATUS_SEV[st], staff: n3.staff, staffShort: staffShort2(s, n3.staff), reviewer: n3.reviewed_by ? staffShort2(s, n3.reviewed_by) : "", filedAt: n3.processed_at || "", lauris: st === "returned" ? laurisPath(laurisKey(cl(n3.client)), n3.type, n3.session) : laurisNotePath(laurisKey(cl(n3.client)), n3), to: chartHref(n3.client, "documentation") }));
     }
     for (const m of noteMisses(s, actor, scope2)) {
       const st = m.behind ? "behind" : "due";
-      out.push(base(m.client, { id: `miss:${m.client}:${m.type}:${m.date}`, group: "note", type: m.type, typeLabel: DOC_LABEL[m.type], date: m.date, dateText: periodLabel(m.type, m.date), due: m.dueAt.slice(0, 10), dueText: dueText(m.dueAt, t), status: st, statusLabel: STATUS_LABEL2[st], sev: m.behind ? "r" : sevOfDue(m.dueAt, t), staff: m.staff, staffShort: staffShort2(s, m.staff), reviewer: "", filedAt: "", missing: true, lauris: laurisPath(cl(m.client).harvest_no, m.type), to: chartHref(m.client, "documentation") }));
+      out.push(base(m.client, { id: `miss:${m.client}:${m.type}:${m.date}`, group: "note", type: m.type, typeLabel: DOC_LABEL[m.type], date: m.date, dateText: periodLabel(m.type, m.date), due: m.dueAt.slice(0, 10), dueText: dueText(m.dueAt, t), status: st, statusLabel: STATUS_LABEL2[st], sev: m.behind ? "r" : sevOfDue(m.dueAt, t), staff: m.staff, staffShort: staffShort2(s, m.staff), reviewer: "", filedAt: "", missing: true, lauris: laurisPath(laurisKey(cl(m.client)), m.type), to: chartHref(m.client, "documentation") }));
     }
     for (const d of s.documents || []) {
       if (!scope2.has(d.client)) continue;
       const st = d.status === "done" ? "done" : d.due < t ? "behind" : d.status === "needs_review" ? "pending_review" : d.status === "in_progress" ? "in_progress" : "due";
-      out.push(base(d.client, { id: "doc:" + d.id, docId: d.id, group: "form", type: d.kind, typeLabel: DOC_LABEL[d.kind], date: d.done_on || d.due, dateText: d.done_on ? "Done " + fmtDate(d.done_on) : "", due: d.due, dueText: dueText(d.due, t), status: st, statusLabel: st === "due" ? "Not started" : STATUS_LABEL2[st], sev: STATUS_SEV[st], staff: cl(d.client).staff || "", staffShort: cl(d.client).staff ? staffShort2(s, cl(d.client).staff) : "", owner: d.owner || "", ownerShort: d.owner ? staffShort2(s, d.owner) : "", reviewer: "", filedAt: d.done_on || "", illustrative: !!d.illustrative, lauris: laurisPath(cl(d.client).harvest_no, d.kind), to: chartHref(d.client, "documentation") }));
+      out.push(base(d.client, { id: "doc:" + d.id, docId: d.id, group: "form", type: d.kind, typeLabel: DOC_LABEL[d.kind], date: d.done_on || d.due, dateText: d.done_on ? "Done " + fmtDate(d.done_on) : "", due: d.due, dueText: dueText(d.due, t), status: st, statusLabel: st === "due" ? "Not started" : STATUS_LABEL2[st], sev: STATUS_SEV[st], staff: cl(d.client).staff || "", staffShort: cl(d.client).staff ? staffShort2(s, cl(d.client).staff) : "", owner: d.owner || "", ownerShort: d.owner ? staffShort2(s, d.owner) : "", reviewer: "", filedAt: d.done_on || "", illustrative: !!d.illustrative, lauris: laurisPath(laurisKey(cl(d.client)), d.kind), to: chartHref(d.client, "documentation") }));
     }
     return out;
   }
@@ -10354,7 +10354,7 @@ ${x.text}`).join("\n\n");
       can: { reviewNotes: can(actor, "notes.review"), openCase: !!(row5.auth && row5.auth.requestId && can(actor, "authorizations")), writeNotes: actor.role === "direct_support" && can(actor, "notes.own"), text: can(actor, "notes.view") }
     };
   }
-  var SEV_N, worse, tone2, plural3, siteShort2, DOC_LABEL, DOC_TYPES, NOTE_TYPES, docLabel, WRITE, LAURIS_FORM, laurisPath, laurisNotePath, formKeyOf, viewFor, chartHref, inScopeSet, dueText, sevOfDue, periodLabel, matchRow, ROW_SORT, STATUS_LABEL2, STATUS_SEV, mondayOf, monthEnd2, addDaysHour, OPEN, DOC_SORT;
+  var SEV_N, worse, tone2, plural3, siteShort2, DOC_LABEL, DOC_TYPES, NOTE_TYPES, docLabel, WRITE, LAURIS_FORM, laurisKey, NEW, laurisPath, laurisNotePath, formKeyOf, viewFor, chartHref, inScopeSet, dueText, sevOfDue, periodLabel, matchRow, ROW_SORT, STATUS_LABEL2, STATUS_SEV, mondayOf, monthEnd2, addDaysHour, OPEN, DOC_SORT;
   var init_roster = __esm({
     "web/js/shared/sel/roster.js"() {
       init_inject();
@@ -10392,8 +10392,14 @@ ${x.text}`).join("\n\n");
         "sra-initial": "sra-initial",
         "sra-continued": "sra-continued"
       };
-      laurisPath = (harvestNo, type, session2) => !harvestNo ? "" : session2 ? "/sessions/" + session2 : LAURIS_FORM[type] ? `/consumers/${harvestNo}/session/${LAURIS_FORM[type]}` : `/consumers/${harvestNo}?tab=active`;
-      laurisNotePath = (harvestNo, note2) => !harvestNo ? "" : note2 && note2.session ? "/sessions/" + note2.session : `/consumers/${harvestNo}?tab=active`;
+      laurisKey = (c) => {
+        c = c || {};
+        const no2 = c.lauris_no || (c.id === "TW" ? "" : c.harvest_no);
+        return no2 || (c.referral ? "new:" + c.referral : "");
+      };
+      NEW = (k) => /^new:/.test(String(k || "")) ? "/consumers/new?referral=" + encodeURIComponent(String(k).slice(4)) : "";
+      laurisPath = (harvestNo, type, session2) => NEW(harvestNo) || (!harvestNo ? "" : session2 ? "/sessions/" + session2 : LAURIS_FORM[type] ? `/consumers/${harvestNo}/session/${LAURIS_FORM[type]}` : `/consumers/${harvestNo}?tab=active`);
+      laurisNotePath = (harvestNo, note2) => NEW(harvestNo) || !harvestNo ? NEW(harvestNo) : note2 && note2.session ? "/sessions/" + note2.session : `/consumers/${harvestNo}?tab=active`;
       formKeyOf = (text) => {
         const t = String(text || "").toLowerCase();
         return /daily|dpn|progress/.test(t) ? "daily" : /weekly|guardian/.test(t) ? "weekly_guardian" : /collateral|monthly/.test(t) ? "monthly_collateral" : /intake|screening/.test(t) ? "intake" : /cna|needs assess/.test(t) ? "cna" : /plan|isp/.test(t) ? "isp" : /quarterly/.test(t) ? "quarterly" : /discharge/.test(t) ? "discharge" : /incident/.test(t) ? "incident" : "";
@@ -12601,8 +12607,8 @@ ${x.text}`).join("\n\n");
     const hasScores = sc && sc.rows && sc.rows.length > 1 && sc.columns.length > 1;
     const hasBeh = bh && bh.rows && bh.rows.some((r) => N2(r.inc) > 0 || N2(r.off) > 0);
     const cur = st === "behavior" && hasBeh ? "behavior" : hasScores ? "scores" : hasBeh ? "behavior" : "scores";
-    const chip4 = (v, l, on2) => `<button type="button" class="an-chip" data-x="om" data-v="${v}" aria-pressed="${cur === v}"${on2 ? "" : " disabled"}>${l}</button>`;
-    const chips2 = `<div class="an-chips" role="group" aria-label="Measure shown">${chip4("scores", "Assessment scores", hasScores)}${chip4("behavior", "Behavior and school", hasBeh)}</div>`;
+    const chip4 = (v, l, on2, why) => `<button type="button" class="an-chip" data-x="om" data-v="${v}" aria-pressed="${cur === v}"${on2 ? "" : ` disabled title="${why}" data-reason="${why}"`}>${l}</button>`;
+    const chips2 = `<div class="an-chips" role="group" aria-label="Measure shown">${chip4("scores", "Assessment scores", hasScores, "Not shown: a trend needs at least two readings of a scale for a group of 5 or more patients")}${chip4("behavior", "Behavior and school", hasBeh, "Not shown: no incidents or office referrals in this period")}</div>`;
     const p3 = cur === "scores" ? sc : bh;
     if (!p3) return "";
     const cols = cur === "scores" ? p3.columns : [{ key: "label" }, ...p3.columns.filter((c) => c.key !== "label" && p3.rows.some((r) => N2(r[c.key]) != null))];
@@ -15144,7 +15150,7 @@ html:not([data-maturity="all"]) .fp-pres{display:none}
             run: async (d) => {
               const text = d.querySelector("#a-h-t").value.trim();
               if (text.length < 3) {
-                toast3("Write what happened.", "err");
+                toast3("Write what happened first: enter a few words about it.", "err");
                 d.querySelector("#a-h-t").focus();
                 return false;
               }
@@ -15954,7 +15960,7 @@ ${me ? me.name + (me.credential ? ", " + me.credential : "") : "Harvest staff"} 
           if (!canText) body += `<div class="doc-hidden">${ui.hint("lock", "Clinical text hidden for your role", { tone: "n" })}</div>`;
           else body += `<div class="doc-rv__cmp"><section><h3>${esc3(c.wroteLabel)}</h3><div class="doc-rv__txt">${c.wrote ? esc3(c.wrote) : '<span class="doc-muted">Nothing typed or dictated: the note was written in Lauris directly.</span>'}</div></section><section><h3>Psyflo added ${ui.chip("Marked", { tone: "success", size: "sm" })}</h3><div class="doc-rv__txt">${c.hasEnhanced ? c.enhanced : '<span class="doc-muted">Not enhanced. Nothing was added; the checks run on what the staffer wrote.</span>'}</div></section></div><div class="doc-rv__checks" aria-label="Checks">${c.checks}</div>`;
           if (canText && c.repeat) body += `<div class="doc-rv__pat">${ui.icon("flag", 14)}<span>Same words in ${c.repeat.count} of ${esc3(c.repeat.name)}'s last ${c.repeat.of} notes (${esc3(c.repeat.dates)})</span></div>`;
-          body += `<p class="doc-rv__lau">${laurisLink(api2.config.laurisURL, a, laurisNotePath(model_exports.client(s, n3.client).harvest_no, n3), { who: label4, title: `${docLabel(n3.type)} ${model_exports.fmtDate(n3.date)}`, variant: "button" })}</p>`;
+          body += `<p class="doc-rv__lau">${laurisLink(api2.config.laurisURL, a, laurisNotePath(laurisKey(model_exports.client(s, n3.client)), n3), { who: label4, title: `${docLabel(n3.type)} ${model_exports.fmtDate(n3.date)}`, variant: "button" })}</p>`;
           body += `<div class="doc-rv__trail">${esc3(c.trail)}</div><div class="ui-field"><label class="ui-field__l" for="doc-rv-c">Note to ${esc3(who)}</label><textarea class="ui-input ui-textarea" id="doc-rv-c" rows="3"></textarea><div class="doc-err" id="doc-rv-err" role="alert"></div></div></div>`;
           const decide = (decision, h) => this.decide(n3, decision, h);
           return ui.drawer({

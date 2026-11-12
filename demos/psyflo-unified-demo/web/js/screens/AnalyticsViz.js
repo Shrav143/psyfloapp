@@ -115,8 +115,8 @@ export function trend(P, o, st) {
   const sc = P['out.trend'], bh = P['out.func']; if (!sc && !bh) return '';
   const hasScores = sc && sc.rows && sc.rows.length > 1 && sc.columns.length > 1; const hasBeh = bh && bh.rows && bh.rows.some(r => N(r.inc) > 0 || N(r.off) > 0);
   const cur = st === 'behavior' && hasBeh ? 'behavior' : hasScores ? 'scores' : hasBeh ? 'behavior' : 'scores';
-  const chip = (v, l, on) => `<button type="button" class="an-chip" data-x="om" data-v="${v}" aria-pressed="${cur === v}"${on ? '' : ' disabled'}>${l}</button>`;
-  const chips = `<div class="an-chips" role="group" aria-label="Measure shown">${chip('scores', 'Assessment scores', hasScores)}${chip('behavior', 'Behavior and school', hasBeh)}</div>`;
+  const chip = (v, l, on, why) => `<button type="button" class="an-chip" data-x="om" data-v="${v}" aria-pressed="${cur === v}"${on ? '' : ` disabled title="${why}" data-reason="${why}"`}>${l}</button>`;
+  const chips = `<div class="an-chips" role="group" aria-label="Measure shown">${chip('scores', 'Assessment scores', hasScores, 'Not shown: a trend needs at least two readings of a scale for a group of 5 or more patients')}${chip('behavior', 'Behavior and school', hasBeh, 'Not shown: no incidents or office referrals in this period')}</div>`;
   const p = cur === 'scores' ? sc : bh; if (!p) return '';
   const cols = cur === 'scores' ? p.columns : [{ key: 'label' }, ...p.columns.filter(c => c.key !== 'label' && p.rows.some(r => N(r[c.key]) != null))];
   const body = cur === 'scores' && !hasScores ? empty(p) : `${linesSvg(cols, p.rows, { unit: cur === 'scores' ? '%' : '', label: cur === 'scores' ? 'Average percent change from the first reading, by scale' : 'Incidents and office referrals by month' })}${legendOf(cols, p.n)}`;

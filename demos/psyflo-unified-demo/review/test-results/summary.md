@@ -1,13 +1,13 @@
-# Test results · 2026-11-12T17-43-18Z
+# Test results · 2026-11-12T20-04-23Z
 
-2 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 40 pass, 0 fail, 0 skip · 126 s
+2 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 43 pass, 0 fail, 0 skip · 48 s
 
-Commit c072a02 · node v22.22.0 · demo time 15:30 · workers 1 · base port 7500
+Commit 4b2aa44 · node v22.22.0 · demo time 15:30 · workers 2 · base port 7960
 
 | Suite | Status | Pass | Fail | Skip | Seconds |
 |---|---|---|---|---|---|
-| [settings](settings.md) | PASS | 18 | 0 | 0 | 63.4 |
-| [workflows-ui](workflows-ui.md) | PASS | 22 | 0 | 0 | 62.4 |
+| [dashboard](dashboard.md) | PASS | 22 | 0 | 0 | 40.3 |
+| [documentation](documentation.md) | PASS | 21 | 0 | 0 | 47.8 |
 
 ## Manual checklist (not automatable)
 
