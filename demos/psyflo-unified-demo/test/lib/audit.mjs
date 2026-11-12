@@ -179,7 +179,7 @@ export function classify(b, a, ev, c) {
 }
 
 // never clicked by the sweep: ending the session (covered by roles/presenter), presenter actions (covered by presenter.mjs)
-export const DEFAULT_DENY = c => /^sign out$/i.test(c.name) ? 'sign out (covered separately)' : /^(reset|advance a day|receive a reply)$/i.test(c.name) ? 'presenter action (covered by presenter.mjs)' : null;
+export const DEFAULT_DENY = c => /^sign out( .+)?$/i.test(c.name) ? 'sign out (covered separately; the rail link is named "Sign out <person>", and clicking it ends the session for the rest of the group)' : /^(reset|advance a day|receive a reply)$/i.test(c.name) ? 'presenter action (covered by presenter.mjs)' : null;
 export async function lauSnap(base) {
   try { const r = await fetch(base.replace(/\/$/, '') + '/__test/lauris'); const t = await r.text(); let h = 5381; for (let i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); } catch { return ''; }
 }
