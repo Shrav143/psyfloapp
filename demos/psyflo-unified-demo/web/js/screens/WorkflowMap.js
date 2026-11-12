@@ -22,7 +22,7 @@ import { showValue, CATEGORY_CHIPS } from './SettingsData.js';
 
 const icon = (n, s) => ui.icon(n, s);
 const narrow = () => (typeof matchMedia === 'function' ? matchMedia('(max-width: 899px)').matches : false);
-const wide = () => (typeof innerWidth === 'number' ? innerWidth >= 1280 : true);
+const roomy = () => (typeof innerWidth === 'number' ? innerWidth >= 1600 : true);   // room for the palette and the editor side by side with a full canvas
 const CATLABEL = Object.fromEntries(CATEGORY_CHIPS);
 
 export class WorkflowMap {
@@ -32,9 +32,9 @@ export class WorkflowMap {
     this.sel = null; this.lit = { nodes: new Set(), edges: new Set() }; this.linking = null; this.test = null; this.drawer = null; this.focusAfter = null;
     this.view = p.view === 'outline' || p.view === 'map' ? p.view : (narrow() ? 'outline' : 'map');
     this.userView = !!(p.view === 'outline' || p.view === 'map');
-    this.ui = { pal: p.tab === 'rules' || (typeof innerWidth === 'number' && innerWidth >= 1600), insp: false, open: { trigger: true, condition: true, action: true, guardrail: false, rules: p.tab === 'rules', locked: false } };
+    this.ui = { pal: p.tab === 'rules' || roomy(), insp: false, open: p.tab === 'rules' ? { trigger: false, condition: false, action: false, guardrail: false, rules: true, locked: false } : { trigger: true, condition: true, action: true, guardrail: false, rules: false, locked: false } };
     this.lib = { q: p.tab === 'rules' ? p.q || '' : '', cat: p.tab === 'rules' ? p.cat || '' : '', area: p.tab === 'rules' ? p.area || '' : '' };
-    this.ptr = false; this.pendingDraw = false; this.drag = null; this.picker = null; this.serverProblems = null; this.suppressClick = false; this.root = null;
+    this.ptr = false; this.pendingDraw = false; this.drag = null; this.picker = null; this.serverProblems = null; this.drawerSummary = false; this.lastEdit = null; this.focusAt = 0; this.suppressClick = false; this.root = null;
   }
   get s() { return this.h.s; }
 
@@ -80,13 +80,13 @@ export class WorkflowMap {
     for (const p of problems) if (p.node) (byNode[p.node] = byNode[p.node] || []).push(p);
     const saved = this.saved() || {}; const me = this.h.actor || {};
     const pend = saved.pending;
-    return { s: this.s, wf: this.draft, saved, sel: this.sel, lit: this.lit, linking: this.linking, problems, byNode, open: this.ui.open, lib: this.lib, dirty: this.dirty(), narrowish: !wide(),
+    return { s: this.s, wf: this.draft, saved, sel: this.sel, lit: this.lit, linking: this.linking, problems, byNode, open: this.ui.open, lib: this.lib, dirty: this.dirty(), narrowish: !roomy(),
       staffName: id => this.h.staffName(id), fmt: at => (at ? M.fmtDateTime(at) : ''), canConfirm: !!pend && pend.by !== me.id && (can(me, 'admin.settings') || can(me, 'drafts.clinical')) };
   }
   html() { this.sync(); return `<div class="wm" id="wm" data-view="${this.view}">${this.inner()}</div>`; }
   inner() {
     if (!this.workflows().length || !this.draft) return `<div class="wm-none">${ui.emptyState({ title: 'No workflows yet', body: 'Workflows are not available on this server yet.' })}</div>`;
-    const c = this.ctx(); const nr = narrow(); const showPal = !nr && this.ui.pal; const showInsp = !nr && (wide() || !!this.sel || this.ui.insp);
+    const c = this.ctx(); const nr = narrow(); const showPal = !nr && this.ui.pal; const showInsp = !nr && (roomy() || !!this.sel || this.ui.insp);
     const main = this.view === 'outline' ? outlineHtml(c) : canvasHtml(c);
     return `${this.barHtml(c)}
       <div class="wm-body${showPal ? ' has-pal' : ''}${showInsp ? ' has-insp' : ''}">
@@ -115,6 +115,7 @@ export class WorkflowMap {
         ${pend ? ui.hint('clock', 'A saved change is waiting for a second person to confirm it.', { tone: 'y', text: 'Waiting', label: 'Waiting for a second person' }) : ''}
         <span class="wm-bar__sp"></span>
         ${nr ? `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" id="wm-blocks" data-wm="openPicker">${icon('plus', 14)} Add block</button>` : `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" id="wm-blocks" data-wm="palToggle" aria-pressed="${this.ui.pal}">${icon('plus', 14)} Blocks</button>`}
+        ${ui.hint('info', 'Details: problems, history and what this workflow is for', { cls: 'ui-hint--act wm-h-info', label: 'Workflow details', extra: `data-wm="showProblems" id="wm-details" aria-pressed="${!this.sel && !nr && (roomy() || this.ui.insp)}"` })}
         ${ui.hint('undo', 'Undo the last change (Ctrl+Z)', { cls: 'ui-hint--act wm-h-undo', label: 'Undo', extra: `data-wm="undo" id="wm-undo"${this.undo.length ? '' : ' aria-disabled="true"'}` })}
         ${ui.hint('tidy', 'Tidy up: lay the blocks out left to right on the grid', { cls: 'ui-hint--act wm-h-tidy', label: 'Tidy up', extra: 'data-wm="tidy" id="wm-tidy"' })}
         <button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" id="wm-test" data-wm="test">${icon('play', 14)} Test run</button>
@@ -163,7 +164,7 @@ export class WorkflowMap {
   find(key) { const r = this.el(); return (r && r.querySelector(key)) || (this.drawer && this.drawer.dialog.querySelector(key)) || null; }
   syncDrawer() {
     if (!this.drawer) return;
-    if (!this.draft || !this.sel) { this.drawer.close('sync'); return; }
+    if (!this.draft || (!this.sel && !this.drawerSummary)) { this.drawer.close('sync'); return; }
     this.drawer.update({ body: inspectorHtml(this.ctx()) });
   }
   // soft updates while typing: no re-render, so a caret never jumps
@@ -182,7 +183,7 @@ export class WorkflowMap {
   }
   openInspDrawer() {
     if (this.drawer) return;
-    this.drawer = ui.drawer({ title: 'Edit', body: inspectorHtml(this.ctx()), onClose: () => { this.drawer = null; }, initialFocus: '#wm-insp-t' });
+    this.drawer = ui.drawer({ title: this.sel ? 'Edit' : 'This workflow', body: inspectorHtml(this.ctx()), onClose: () => { this.drawer = null; this.drawerSummary = false; }, initialFocus: '#wm-insp-t' });
     this.bindTo(this.drawer.dialog);
     this.drawer.closed.then(() => { if (this.sel && narrow()) { this.sel = null; this.redraw(); } });
   }
@@ -193,6 +194,8 @@ export class WorkflowMap {
     if (!el.__wm) {
       el.__wm = true; this.bindTo(el);
       el.addEventListener('pointerdown', e => this.onPointerDown(e));
+      el.addEventListener('focusin', () => { this.focusAt = performance.now(); });
+      el.addEventListener('scroll', () => { const a = document.activeElement; if (performance.now() - this.focusAt < 400 && a && a.closest && a.closest('[data-ui-hint]')) requestAnimationFrame(() => a.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))); }, true);   // hint.js hides a bubble on any scroll, including the one focus causes in a long palette
       el.addEventListener('toggle', e => { const d = e.target.closest && e.target.closest('details[data-g]'); if (d) this.ui.open[d.dataset.g] = d.open; }, true);
       if (typeof matchMedia === 'function' && !this.mq) {
         this.mq = matchMedia('(max-width: 899px)'); this.mq.addEventListener('change', () => { if (!this.el()) return; if (!this.userView) this.view = narrow() ? 'outline' : 'map'; if (!narrow() && this.drawer) this.drawer.close('wide'); this.draw(); });
@@ -231,7 +234,7 @@ export class WorkflowMap {
       case 'editNode': this.select({ type: 'node', id }, { focusInsp: true }); break;
       case 'selectNode': this.select({ type: 'node', id }); break;
       case 'closeInsp': this.ui.insp = false; this.sel = null; this.redraw(); break;
-      case 'showProblems': this.ui.insp = true; this.sel = null; this.redraw(); break;
+      case 'showProblems': this.sel = null; if (narrow()) { this.drawerSummary = true; this.openInspDrawer(); } else { this.ui.insp = true; this.redraw(); } break;
       case 'tidy': this.mut(d => { const t = ENGINE.tidy({ ...this.wfNow(), nodes: d.nodes, edges: d.edges }); d.nodes = t.nodes; d.edges = t.edges; }); h.toast('Blocks laid out on the grid'); break;
       case 'undo': this.doUndo(); break;
       case 'test': this.runTest(); break;
@@ -372,8 +375,10 @@ export class WorkflowMap {
     else if (t === 'bool') v = el.checked;
     else if (t === 'set') { const grp = [...el.closest('fieldset').querySelectorAll(`[data-wmp="${key}"]`)]; v = grp.filter(x => x.checked).map(x => x.dataset.v); }
     else v = el.value;
-    this.undo.push(MD.clone(this.draft)); if (this.undo.length > 40) this.undo.shift();
-    const n = MD.nodeById(this.draft, id); n.params = { ...n.params, [key]: v };
+    const n = MD.nodeById(this.draft, id); if (JSON.stringify(n.params[key]) === JSON.stringify(v)) { if (redraw) this.redraw(); return; }
+    const now = performance.now(); const same = this.lastEdit && this.lastEdit.id === id && this.lastEdit.key === key && now - this.lastEdit.t < 1500;   // typing in one field is one Undo step
+    if (!same) { this.undo.push(MD.clone(this.draft)); if (this.undo.length > 40) this.undo.shift(); }
+    this.lastEdit = { id, key, t: now }; this.serverProblems = null; n.params = { ...n.params, [key]: v };
     if (redraw) this.redraw(); else this.softBar();
   }
   addBlock(block, x, y, opts = {}) {

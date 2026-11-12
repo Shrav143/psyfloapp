@@ -360,14 +360,17 @@ async function analytics() {
 
 // ---------------------------------------------------------------- Settings: edit a rule, open the audit log
 async function settings() {
-  console.log('settings · rules edit');
+  console.log('settings · workflow map, rules edit');
   const H = await fresh(); const { ui, page } = H;
   await H.signIn('Admin');
-  await H.go('#/Settings?tab=rules'); await ui.locator('.ui-qt tbody tr').first().waitFor();
-  ok(await ui.locator('.ui-qt tbody tr').count() >= 70, 'all rules are listed');
-  await ui.locator('.ui-fsearch input').fill('follow-up'); await page.waitForTimeout(400);
-  ok(await ui.locator('.ui-qt tbody tr').count() === 1, 'search narrows to one rule');
-  await ui.locator('.ui-qt [data-x="rule"]').click(); await ui.locator('.ui-dialog--drawer').waitFor();
+  await H.go('#/Settings'); await ui.locator('.wm-node').first().waitFor();
+  ok(await ui.locator('#root h1').count() === 1 && await ui.locator('.se-tab').count() === 0 && await ui.locator('.wm-locked').count() === 1, 'Settings opens on the workflow map with the locked guardrail drawn');
+  await ui.locator('#wm-test').click(); await ui.locator('#wm-testp').waitFor(); ok(/Test only: nothing is sent or changed/.test(await ui.locator('#wm-testp').innerText()), 'a test run says test only');
+  await H.go('#/Settings?tab=rules'); await ui.locator('#wm-pal .wm-pl--rules li').first().waitFor();
+  ok(await ui.locator('#wm-pal .wm-pl--rules li').count() >= 70, 'all rules are in the library');
+  await ui.locator('#wm-rq').fill('follow-up'); await page.waitForTimeout(400);
+  ok(await ui.locator('#wm-pal .wm-pl--rules li').count() === 1, 'search narrows to one rule');
+  await ui.locator('#wm-pal [data-wm="editRule"]').click(); await ui.locator('.ui-dialog--drawer').waitFor();
   ok(/Harvest-reported/.test(await ui.locator('.ui-dialog--drawer').innerText()), 'the rule carries its verification label');
   await ui.locator('#se-rv').fill('7'); await ui.locator('.ui-dialog--drawer [data-ui-action="1"]').click(); await page.waitForTimeout(250);
   ok(/Say why/.test(await ui.locator('#se-rerr').innerText()), 'no reason, no change');

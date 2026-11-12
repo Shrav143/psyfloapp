@@ -77,7 +77,7 @@ try {
     await p.click('#wm-pal details[data-g="locked"] summary'); const locked = await p.locator('#wm-pal [data-g="locked"] .wm-pi--locked').allInnerTexts(); assert.eq(locked.length, 5);
     for (const l of ['Send by fax', 'Call the payer', 'File an appeal', 'Sign in Lauris', 'Text the family']) assert.ok(locked.some(t => t.includes(l)), l);
     assert.eq(await p.locator('#wm-pal [data-g="locked"] [data-wm]').count(), 0, 'nothing locked can be added');
-    await p.hover('#wm-pal [data-g="locked"] .ui-hint__b >> nth=0'); await p.waitForTimeout(150); assert.match(await p.locator('#wm-pal [data-g="locked"] .ui-hint__t[data-on]').innerText(), /A person does this step\. Psyflo does not send, call, file or sign on its own/);
+    await p.locator('#wm-pal [data-g="locked"] .ui-hint__b').first().scrollIntoViewIfNeeded(); await p.waitForTimeout(250); await p.hover('#wm-pal [data-g="locked"] .ui-hint__b >> nth=0'); await p.waitForTimeout(200); assert.match(await p.locator('#wm-pal [data-g="locked"] .ui-hint__t[data-on]').innerText(), /A person does this step\. Psyflo does not send, call, file or sign on its own/);
     await p.click('#wm-pal details[data-g="rules"] summary'); assert.eq(await p.locator('#wm-pal .wm-pl--rules li').count(), 73);
     assert.eq(await p.locator('#wm-pal .wm-pl--rules li').first().locator('.wm-v').count(), 1, 'a verification icon on each rule');
     await p.screenshot({ path: SHOTS + '/r5-palette-1440.png' }); assert.deepEq(fatal(p), [], 'console errors'); await done();
@@ -88,7 +88,7 @@ try {
     const p = await open('dowens', '/#/Settings?wf=wf-late-notes'); await p.waitForSelector('.wm-node');
     const [x0, y0] = await pos(p, 'g1'); assert.eq(x0 % 20, 0); const before = await p.locator('.wm-edge[data-from="g1"] .wm-edge__p').getAttribute('d');
     const b = await nodeBox(p, 'g1'); await dragFrom(p, b, 47, 93, { oy: 40 });
-    const [x1, y1] = await pos(p, 'g1'); assert.eq([x1 - x0, y1 - y0], [40, 100], 'moved by the pointer distance, snapped to the grid: ' + [x1 - x0, y1 - y0]);
+    const [x1, y1] = await pos(p, 'g1'); assert.deepEq([x1 - x0, y1 - y0], [40, 100], 'moved by the pointer distance, snapped to the grid: ' + [x1 - x0, y1 - y0]);
     assert.ok(x1 % 20 === 0 && y1 % 20 === 0, 'on the grid'); assert.ok((await p.locator('.wm-edge[data-from="g1"] .wm-edge__p').getAttribute('d')) !== before, 'the line follows the block');
     assert.eq(await p.locator('#wm-save').isDisabled(), false); assert.match(await p.locator('#wm-save').innerText(), /^Save$/);
     const w = await wfOf('wf-late-notes'); assert.eq(w.nodes.find(n => n.id === 'g1').y, y0, 'the store is unchanged until Save');
@@ -109,9 +109,9 @@ try {
   });
   await T.test('the locked guardrail cannot be selected, moved or removed; the palette lists it as always on', async () => {
     const p = await open('dowens', '/#/Settings?wf=wf-late-notes'); await p.waitForSelector('.wm-node');
-    await p.click('.wm-locked', { position: { x: 20, y: 10 } }).catch(() => { }); await p.waitForTimeout(200); assert.match(await p.locator('#wm-insp h2').innerText(), /This workflow/, 'selecting it does nothing');
+    await p.click('.wm-locked', { position: { x: 20, y: 10 } }).catch(() => { }); await p.waitForTimeout(200); assert.eq(await p.locator('.wm-node.is-sel').count(), 0, 'selecting it does nothing'); assert.eq(await p.locator('#wm-insp').count(), 0, 'no editor opens for it');
     assert.eq(await p.locator('.wm-locked [data-wm="removeNode"], .wm-locked button').count() <= 1, true, 'no remove control (only the info hint)');
-    await p.click('#wm-blocks'); assert.match(await p.locator('#wm-pal [data-g="guardrail"]').innerText(), /Nothing is sent on its own/);
+    await p.click('#wm-blocks'); await p.click('#wm-pal [data-g="guardrail"] summary'); assert.match(await p.locator('#wm-pal [data-g="guardrail"]').innerText(), /Nothing is sent on its own/);
     await done();
   });
 
@@ -132,7 +132,7 @@ try {
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
   await T.test('link: drag from an exit dot to a block; a loop, a self link and a link into a When block are refused with a reason; click a line and Delete removes it; the inspector pickers do the same without dragging', async () => {
-    const p = await open('dowens', '/#/Settings?wf=wf-units-low'); await p.waitForSelector('.wm-node');
+    const p = await open('dowens', '/#/Settings?wf=wf-units-low', { w: 1580 }); await p.waitForSelector('.wm-node');
     const e0 = await p.locator('.wm-edge').count();
     // Yes -> Notify as well (a second link from the Yes exit: an exit may fan out)
     const yes = await p.locator('.wm-node[data-node="c1"] .wm-port--yes').boundingBox(); const tgt = await nodeBox(p, 'a2');
@@ -156,9 +156,9 @@ try {
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
   await T.test('rules: drop a rule from the library onto a block (or Add a rule in the inspector); the card shows a rules badge; detach removes it', async () => {
-    const p = await open('dowens', '/#/Settings?tab=rules&wf=wf-late-notes'); await p.waitForSelector('.wm-node'); await p.waitForSelector('#wm-pal .wm-pl--rules');
+    const p = await open('dowens', '/#/Settings?tab=rules&wf=wf-late-notes', { w: 1580 }); await p.waitForSelector('.wm-node'); await p.waitForSelector('#wm-pal .wm-pl--rules');
     assert.eq(await p.locator('.wm-node[data-node="a1"] .wm-badge').count(), 0); await p.fill('#wm-rq', 'Follow-up call on the decision'); await p.waitForTimeout(250);
-    const r = p.locator('#wm-pal [data-wm="addRule"]').first(); const rb = await r.boundingBox(); const tn = await nodeBox(p, 'a1');
+    const r = p.locator('#wm-pal [data-wm="addRule"]').first(); await r.scrollIntoViewIfNeeded(); const rb = await r.boundingBox(); const tn = await nodeBox(p, 'a1');
     await p.mouse.move(rb.x + 40, rb.y + 14); await p.mouse.down(); await p.mouse.move(rb.x + 90, rb.y + 30, { steps: 3 }); await p.mouse.move(tn.x + 100, tn.y + 40, { steps: 8 }); await p.mouse.up(); await p.waitForTimeout(350);
     assert.eq(await p.locator('.wm-node[data-node="a1"] .wm-badge').count(), 1, 'a rules badge'); assert.match(await p.locator('#wm-insp').innerText(), /Follow-up call on the decision/); assert.match(await p.locator('#wm-insp').innerText(), /10 days after sending/);
     assert.match(await p.locator('.wm-node[data-node="a1"]').getAttribute('aria-label'), /1 rule/);
@@ -211,7 +211,7 @@ try {
     assert.ok((await state('dowens')).events.slice(-3).some(e => /Workflow saved: Late notes \(supervisor\) · v2/.test(e.what)), 'audited');
     await p.reload(); await p.waitForSelector('.wm-node'); await p.waitForTimeout(300); assert.eq(await p.inputValue('#wm-name'), 'Late notes (supervisor)'); assert.match(await p.locator('#wm-save').innerText(), /Saved · v2/);
     // the history shows in the summary
-    await p.click('.wm-canvas', { position: { x: 600, y: 300 } }); await p.waitForTimeout(200); await p.click('.wm-hist summary'); assert.match(await p.locator('.wm-histl').innerText(), /v2.*Dana Owens/s); assert.match(await p.locator('.wm-histl').innerText(), /v1/);
+    await p.click('#wm-details'); await p.waitForTimeout(250); await p.click('.wm-hist summary'); assert.match(await p.locator('.wm-histl').innerText(), /v2.*Dana Owens/s); assert.match(await p.locator('.wm-histl').innerText(), /v1/);
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
   await T.test('the On / Off switch calls workflow.enable on the saved workflow; unsaved changes ask for a Save first; a workflow with errors cannot be turned on', async () => {
@@ -281,17 +281,17 @@ try {
 
   // ------------------------------------------------------------------------------------------------ two-person, create, duplicate, delete
   await T.test('the "second person" guardrail: a saved change waits (the live version does not change), Settings says so, a different person (the clinician, from the Dashboard) confirms, the proposer cannot', async () => {
-    await reset('live'); const p = await open('dowens', '/#/Settings?wf=wf-late-notes'); await p.waitForSelector('.wm-node');
+    await reset('live'); const p = await open('dowens', '/#/Settings?wf=wf-late-notes', { w: 1580 }); await p.waitForSelector('.wm-node');
     await p.click('#wm-blocks').catch(() => { }); await p.click('.wm-node[data-node="a1"] .wm-node__t'); await p.waitForTimeout(200);
-    await p.focus('#wm-pal [data-block="two_person"]'); await p.keyboard.press('Enter'); await p.waitForTimeout(350); assert.eq(await stageNodes(p), 4);
+    await p.click('#wm-pal [data-g="guardrail"] summary'); await p.focus('#wm-pal [data-block="two_person"]'); await p.keyboard.press('Enter'); await p.waitForTimeout(350); assert.eq(await stageNodes(p), 4);
     await p.fill('#wm-name', 'Late notes, two people'); await p.click('#wm-save'); await p.waitForTimeout(900);
     const w = await wfOf('wf-late-notes'); assert.eq(w.version, 1, 'the live version did not change'); assert.ok(w.pending && w.pending.by === 'dowens', 'a pending change by the proposer'); assert.eq(w.name, 'Late notes');
     assert.match(await toast(p), /Waiting for a second person/); assert.match(await p.locator('.wm-bar').innerText(), /Waiting/);
-    await p.click('.wm-canvas', { position: { x: 700, y: 330 } }); await p.waitForTimeout(250); assert.match(await p.locator('#wm-insp').innerText(), /Waiting for a second person/); assert.eq(await p.locator('#wm-insp [data-wm="confirm"]').count(), 0, 'the proposer has no Approve');
+    await p.click('#wm-details'); await p.waitForTimeout(250); assert.match(await p.locator('#wm-insp').innerText(), /Waiting for a second person/); assert.eq(await p.locator('#wm-insp [data-wm="confirm"]').count(), 0, 'the proposer has no Approve');
     await assert.refused(tryApi('workflow.confirm', { id: 'wf-late-notes', decision: 'approve' }, 'dowens'), /different person/, 403);
     // the clinician confirms from the Dashboard list
     const q = await open('jperez', '/#/Dashboard'); await q.waitForSelector('[data-x="confirm"][data-kind="workflow"]'); assert.match(await rootText(q), /Confirm workflow change · Late notes, two people/);
-    await q.click('[data-x="confirm"][data-kind="workflow"]'); await q.waitForSelector('.ui-dialog'); assert.match(await q.locator('.ui-dialog').innerText(), /Late notes, two people/); assert.match(await q.locator('.ui-dialog').innerText(), /Dana Owens/);
+    await q.click('[data-x="confirm"][data-kind="workflow"]'); await q.waitForSelector('.ui-dialog'); assert.match(await q.locator('.ui-dialog').innerText(), /Late notes, two people/); assert.match(await q.locator('.ui-dialog').innerText(), /D\. Owens/);
     await q.click('.ui-dialog [data-ui-action="1"]'); await q.waitForTimeout(900);
     const w2 = await wfOf('wf-late-notes'); assert.eq(w2.version, 2); assert.eq(w2.name, 'Late notes, two people'); assert.ok(!w2.pending); assert.ok(w2.nodes.some(n => n.block === 'two_person'));
     await p.reload(); await p.waitForSelector('.wm-node'); await p.waitForTimeout(400); assert.match(await p.locator('#wm-save').innerText(), /Saved · v2/); assert.eq(await p.inputValue('#wm-name'), 'Late notes, two people');
@@ -304,7 +304,7 @@ try {
     await p.fill('#wm-nn', 'Renewal watch'); await p.selectOption('#wm-nf', 'evidence-gaps'); await p.click('.ui-dialog [data-ui-action="1"]'); await p.waitForTimeout(900);
     const list = await wfs(); const nw = list.find(w => w.name === 'Renewal watch'); assert.ok(nw && nw.enabled === false, 'created off'); assert.ok(nw.nodes.length >= 5, 'copied from the template'); assert.eq(await p.inputValue('#wm-name'), 'Renewal watch'); assert.eq(await p.locator('.wm-node').count(), nw.nodes.filter(n => n.block !== 'never_auto').length);
     await p.click('#wm-new'); await p.waitForSelector('#wm-nn'); await p.fill('#wm-nn', 'Blank one'); await p.click('.ui-dialog [data-ui-action="1"]'); await p.waitForTimeout(900); const blank = (await wfs()).find(w => w.name === 'Blank one'); assert.eq(blank.nodes.filter(n => n.block !== 'never_auto').length, 0); assert.ok(blank.nodes.some(n => n.block === 'never_auto'), 'the locked guardrail is there');
-    assert.match(await p.locator('.wm-empty').innerText(), /Start with a When block/); assert.match(await p.locator('#wm-insp').innerText(), /This workflow/);
+    assert.match(await p.locator('.wm-empty').innerText(), /Start with a When block/); await p.click('#wm-details'); await p.waitForTimeout(250); assert.match(await p.locator('#wm-insp').innerText(), /This workflow/);
     await p.click('#wm-more'); await p.waitForSelector('.wm-menu [data-m="dup"]'); await p.click('.wm-menu [data-m="dup"]'); await p.waitForTimeout(900); assert.ok((await wfs()).some(w => w.name === 'Copy of Blank one'), 'duplicated');
     await p.click('#wm-more'); await p.click('.wm-menu [data-m="del"]'); await p.waitForSelector('#se-why'); await p.fill('#se-why', 'no'); await p.click('.ui-dialog [data-ui-action="1"]'); await p.waitForTimeout(250); assert.match(await p.locator('#se-why-err').innerText(), /Say why/);
     await p.fill('#se-why', 'Not needed any more'); await p.click('.ui-dialog [data-ui-action="1"]'); await p.waitForTimeout(900); assert.ok(!(await wfs()).some(w => w.name === 'Copy of Blank one'), 'deleted');

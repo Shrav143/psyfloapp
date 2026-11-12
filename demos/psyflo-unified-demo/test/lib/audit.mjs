@@ -402,7 +402,8 @@ export const VARIANTS = {
   DenialCase: { clinician: [{ id: 'R-0402', section: 'decision' }, { id: 'R-0402', section: 'evidence' }, { id: 'R-0402', section: 'options' }, { id: 'R-0402', section: 'action', action: 'options' }, { id: 'R-0402', section: 'history' },
     { id: 'R-0408', section: 'action', action: 'info' }, { id: 'R-0388', section: 'action', action: 'p2p' }, { id: 'R-0384', section: 'action', action: 'appeal' }, { id: 'R-0384', section: 'action', action: 'reconsider' }], admin: [{ id: 'R-0402', section: 'decision' }] },
   Analytics: { clinician: [{ section: 'outcomes', dataset: 'case' }, { section: 'outcomes', dataset: 'illustrative' }, { section: 'payer', dataset: 'case' }, { section: 'payer', panel: 'guidance' }, { section: 'population', dataset: 'illustrative' }], supervisor: [{ section: 'outcomes' }], admin: [{ section: 'outcomes' }, { section: 'payer' }, { section: 'population', dataset: 'illustrative' }] },
-  Settings: { admin: ['people', 'roles', 'units', 'rules', 'audit', 'family', 'presenter'].map(tab => ({ tab })) },
+  // R5: Settings opens on the workflow map (Outline is its other view; ?tab=rules opens the rule library); the six older pages open from More settings
+  Settings: { admin: [{}, { view: 'outline' }, { tab: 'rules' }, ...['people', 'roles', 'units', 'audit', 'family', 'presenter'].map(tab => ({ tab }))] },
   Referrals: { '*': [{}] },
   Referral: { clinician: [{ id: 'REF-118' }, { id: 'REF-121' }, { id: 'REF-119' }, { id: 'REF-117' }, { id: 'REF-118', panel: 'eligibility' }] }
 };

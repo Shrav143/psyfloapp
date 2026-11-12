@@ -78,7 +78,7 @@ const PLATFORM = {
     ['Analytics', { section: 'outcomes', dataset: 'case' }], ['Analytics', { section: 'outcomes', dataset: 'illustrative' }], ['Analytics', { section: 'payer', dataset: 'case' }], ['Analytics', { section: 'population', dataset: 'illustrative' }]]],
   supervisor: ['cdiaz', [['Dashboard', {}], ['Dashboard', { open: 'all' }], ['Dashboard', { view: 'documents' }], ['Dashboard', { view: 'staff' }], ['Patient', { id: 'MR' }], ['Authorizations', {}], ['Authorization', { id: 'R-0411' }], ['Analytics', { section: 'outcomes' }]]],
   admin: ['dowens', [['Dashboard', {}], ['Dashboard', { open: 'all' }], ['Dashboard', { view: 'documents' }], ['Authorizations', {}], ['Authorization', { id: 'R-0402' }], ['DenialIntelligence', {}], ['DenialCase', { id: 'R-0402', section: 'decision' }], ['Analytics', { section: 'outcomes' }], ['Analytics', { section: 'payer' }],
-    ...['people', 'roles', 'units', 'rules', 'audit', 'family', 'presenter'].map(tab => ['Settings', { tab }])]],
+    ['Settings', {}], ['Settings', { view: 'outline' }], ...['rules', 'people', 'roles', 'units', 'audit', 'family', 'presenter'].map(tab => ['Settings', { tab }])]],
   direct_support: ['khale', [['Dashboard', {}], ['Dashboard', { open: 'all' }], ['Patient', { id: 'MR' }], ['ExtHome', {}], ['ExtDPN', {}]]]
 };
 for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
@@ -236,7 +236,8 @@ for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
     { role: 'jperez', route: ['DenialCase', { id: 'R-0408' }], label: 'Denial case clinical review panel', open: p => p.getByRole('button', { name: /^Mark for Clinical Review/ }).click(), kind: 'drawer' },
     { role: 'jperez', route: ['Referral', { id: 'REF-118' }], label: 'Referral schedule, hold or route', open: p => p.getByRole('button', { name: /Schedule|Reschedule|Hold|Route/i }).first().click(), kind: 'any' },
     { role: 'dowens', route: ['Settings', { tab: 'people' }], label: 'Settings people action', open: p => p.locator('#root .ui-btn--primary, #root button.ui-btn').first().click(), kind: 'any' },
-    { role: 'dowens', route: ['Settings', { tab: 'rules' }], label: 'Settings rule drawer', open: p => p.locator('#root table tbody tr button, #root table tbody tr a').first().click(), kind: 'any' }
+    { role: 'dowens', route: ['Settings', { tab: 'rules' }], label: 'Settings rule drawer', open: p => p.locator('#root [data-wm="editRule"]').first().click(), kind: 'any' },
+    { role: 'dowens', route: ['Settings', {}], label: 'Settings block editor (narrow screens open it as a drawer)', open: p => p.locator('#root .wm-node').first().click(), kind: 'any' }
   ];
   for (const role of ['jperez', 'dowens']) {
     const page = await newPage({ who: role });

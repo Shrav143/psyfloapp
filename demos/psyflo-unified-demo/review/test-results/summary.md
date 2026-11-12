@@ -1,12 +1,16 @@
-# Test results · 2026-11-12T17-15-09Z
+# Test results · 2026-11-12T17-18-53Z
 
-1 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 38 pass, 0 fail, 0 skip · 59 s
+0 suites pass · 1 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 18 pass, 1 fail, 0 skip · 58 s
 
-Commit 9d0f8c7 · node v22.22.0 · demo time 15:30 · workers 1 · base port 7640
+Commit b6843f8 · node v22.22.0 · demo time 15:30 · workers 1 · base port 7500
 
 | Suite | Status | Pass | Fail | Skip | Seconds |
 |---|---|---|---|---|---|
-| [ui-kit](ui-kit.md) | PASS | 38 | 0 | 0 | 59.3 |
+| [workflows-ui](workflows-ui.md) | FAIL | 18 | 1 | 0 | 57.7 |
+
+## Failures
+
+- **workflows-ui** · the "second person" guardrail: a saved change waits (the live version does not change), Settings says so, a different person (the clinician, from the Dashboard) confirms, the proposer cannot — "Confirm a workflow change\nWorkflow\nLate notes, two people\nChange\n1 block added, 1 link added, renamed\nProposed by\nD. Owens · Oct 29, 3:30 pm\n\nA workflow only de" does not match /Dana Owens/
 
 ## Manual checklist (not automatable)
 

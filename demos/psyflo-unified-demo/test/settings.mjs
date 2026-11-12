@@ -1,5 +1,6 @@
 // Settings (E1): people and roles (two-person raises, no self change), designated access (second person, no self grant, audit rows),
-// the rules table edited through settings.rule (reason required, audited, forward only, the dependent screen changes), unit bands,
+// the rules table edited through settings.rule (reason required, audited, forward only, the dependent screen changes; since R5 it is edited from the
+// workflow map's rule library, see also workflows-ui.mjs), unit bands,
 // signature mode per document type, family-link questions, the audit log, the presenter tab, and Login.
 import { suite, assert, api, tryApi, state, reset, session, playwright, errors, login, BASE, SHOTS } from './lib/index.mjs';
 import { worklist } from '../web/js/shared/sel/mywork.js';
@@ -111,31 +112,31 @@ const rootText = p => p.evaluate(() => document.getElementById('root').innerText
 await reset('live');
 
 try {
-  await T.test('Settings: seven tabs, one h1, every tab renders without console errors; only the administrator opens it', async () => {
-    const p = await open('dowens', '/#/Settings?tab=people');
-    assert.eq(await p.locator('#root h1').count(), 1); assert.eq(await p.locator('.se-tab').count(), 7);
-    for (const t of ['people', 'roles', 'units', 'rules', 'audit', 'family', 'presenter']) {
+  await T.test('Settings: opens on the workflow map (no tab bar), the six older pages open from More settings with one h1 and a way back, no console errors; only the administrator opens it', async () => {
+    const p = await open('dowens', '/#/Settings');
+    assert.eq(await p.locator('#root h1').count(), 1); assert.eq(await p.locator('.se-tab').count(), 0, 'the seven-tab bar is gone'); assert.ok(await p.locator('.wm-node').count() >= 3, 'the workflow map is the default'); assert.eq(await p.locator('#se-more').count(), 1, 'one More settings menu');
+    for (const t of ['people', 'roles', 'units', 'audit', 'family', 'presenter']) {
       await p.goto(BASE + '/#/Settings?tab=' + t); await p.waitForTimeout(400);
-      assert.eq(await p.locator('.se-tab[aria-current=page]').getAttribute('href'), '#/Settings?tab=' + t, t);
-      assert.eq(await p.locator('#root h1').count(), 1, t);
+      assert.eq(await p.locator('.se-crumb a[href="#/Settings"]').count(), 1, t + ' has a way back to Workflows');
+      assert.eq(await p.locator('#root h1').count(), 1, t); assert.eq(await p.locator('.wm').count(), 0, t);
     }
     assert.deepEq(fatal(p), [], 'console errors'); await p.close();
     for (const u of ['jperez', 'cdiaz', 'khale']) { const q = await open(u, '/#/Settings'); assert.ok(await q.evaluate(() => !!document.querySelector('#root .denied')), u + ' is denied'); await q.close(); }
     await done();
   });
-  await T.test('rules tab: filter by source, search, edit in the drawer (reason required, value type kept), history and the audit tab show it', async () => {
+  await T.test('rule library (the old Rules tab, now in the workflow map): filter by source, search, edit in the drawer (reason required, value type kept), and the audit tab shows it', async () => {
     const p = await open('dowens', '/#/Settings?tab=rules');
-    const total = await p.locator('.ui-qt tbody tr').count(); assert.ok(total >= 70, 'all rules listed: ' + total);
-    await p.click('.ui-fchip[data-value="OFFICIAL-VERIFIED"]'); await p.waitForTimeout(300);
-    const off = await p.locator('.ui-qt tbody tr').count(); assert.ok(off > 0 && off < total, 'filtered to officially verified');
-    await p.click('.ui-fchip[data-value="OFFICIAL-VERIFIED"]'); await p.fill('.ui-fsearch input', 'follow-up'); await p.waitForTimeout(400);
-    assert.eq(await p.locator('.ui-qt tbody tr').count(), 1);
-    await p.click('.ui-qt [data-x="rule"]'); await p.waitForSelector('.ui-dialog--drawer');
+    await p.waitForSelector('#wm-pal .wm-pl--rules li'); const total = await p.locator('#wm-pal .wm-pl--rules li').count(); assert.ok(total >= 70, 'all rules listed: ' + total);
+    await p.selectOption('#wm-rcat', 'OFFICIAL-VERIFIED'); await p.waitForTimeout(300);
+    const off = await p.locator('#wm-pal .wm-pl--rules li').count(); assert.ok(off > 0 && off < total, 'filtered to officially verified');
+    await p.selectOption('#wm-rcat', ''); await p.fill('#wm-rq', 'follow-up'); await p.waitForTimeout(400);
+    assert.eq(await p.locator('#wm-pal .wm-pl--rules li').count(), 1);
+    await p.click('#wm-pal [data-wm="editRule"]'); await p.waitForSelector('.ui-dialog--drawer');
     assert.match(await p.locator('.ui-dialog--drawer').innerText(), /Harvest-reported/); assert.match(await p.locator('.ui-dialog--drawer').innerText(), /Default\s+10/);
     await p.fill('#se-rv', '7'); await p.click('.ui-dialog--drawer [data-ui-action="1"]'); await p.waitForTimeout(250);
     assert.match(await p.locator('#se-rerr').innerText(), /Say why/, 'no reason, no change'); assert.eq(rule(await state('dowens'), 'decision.followup_day').value, 10);
     await p.fill('#se-why', 'The clinic calls on day seven'); await p.click('.ui-dialog--drawer [data-ui-action="1"]'); await p.waitForTimeout(700);
-    assert.eq(rule(await state('dowens'), 'decision.followup_day').value, 7); assert.match(await rootText(p), /7 days after sending/); assert.match(await rootText(p), /Changed/);
+    assert.eq(rule(await state('dowens'), 'decision.followup_day').value, 7); assert.eq(rule(await state('dowens'), 'decision.followup_day').history.length, 1, 'the change is kept with its reason'); assert.match(await p.locator('#wm-pal .wm-pl--rules').innerText(), /7 days after sending/);
     await p.goto(BASE + '/#/Settings?tab=audit'); await p.waitForTimeout(500);
     const t = await rootText(p); assert.match(t, /Rule changed: Follow-up call on the decision · 10 days after sending → 7 days after sending/, 'the audit log shows the values'); assert.match(t, /Dana Owens/);
     await p.screenshot({ path: SHOTS + '/settings-audit.png' }); await p.click('[data-ui-fchip][data-value="refused"]'); await p.waitForTimeout(300);
