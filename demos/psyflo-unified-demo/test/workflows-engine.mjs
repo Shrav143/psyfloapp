@@ -266,6 +266,18 @@ await T.test('newId: n-xxxx, unique among the ids taken', async () => {
   const taken = new Set(); for (let i = 0; i < 400; i++) { const id = newId('n', taken); assert.ok(!taken.has(id)); taken.add(id); }
 });
 
+await T.test('run options: actor limits the records (direct support: their own patients, a portal actor: none) and never hides an effect; role keeps only the effects for that role; the alert limit is per role', async () => {
+  const s = S(); const w = wf([mk('t', 'units_used'), mk('g', 'max_per_day', { n: 2 }), notify('a', ['supervisor', 'clinician'])], [['t', 'g'], ['g', 'a']]);
+  const all = run(s, w); assert.eq(all.counts.effects, 3); assert.ok(all.matches.every(m => m.effects[0].roles.join() === 'supervisor,clinician'), 'the Test run lists every role');
+  assert.deepEq(run(s, w, { actor: { id: 'dowens', role: 'admin' } }).matches.map(m => m.record.id), ['MR', 'SB', 'TN'], 'the administrator, testing, sees everything');
+  assert.deepEq(run(s, w, { actor: { id: 'khale', role: 'direct_support' } }).matches.map(m => m.record.id), ['MR'], 'direct support: their own patient only');
+  assert.deepEq(run(s, w, { actor: { id: 'g', role: 'guardian' } }).matches, [], 'a portal actor: no records');
+  const clin = run(s, w, { role: 'clinician' }); assert.eq(clin.counts.effects, 3); assert.eq(clin.counts.limited, 1, 'the third is over the clinician\'s limit of two');
+  assert.deepEq(run(s, w, { role: 'direct_support' }).matches, [], 'nothing is for direct support');
+  const m = all.matches.find(x => x.record.id === 'SB'); assert.deepEq(m.effects[0].limited_roles, ['supervisor', 'clinician'], 'S.B. is the third: over the limit for both roles'); assert.eq(m.effects[0].limited, true);
+  assert.ok(all.matches.every(x => x.why && x.sev && x.at), 'each match says why it matched');
+});
+
 // ------------------------------------------------------------------------------------------------------------------ determinism, no writes, bell items
 await T.test('run and workflowItems are deterministic and never write: a deep-frozen state and workflow give the same answer twice', async () => {
   const s = S(); s.workflows = TEMPLATES.map(t => ({ id: 'wf-' + t.key, name: t.name, description: t.description, enabled: true, version: 1, nodes: t.nodes, edges: t.edges }));

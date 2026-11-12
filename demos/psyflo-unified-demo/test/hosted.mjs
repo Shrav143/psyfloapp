@@ -462,8 +462,9 @@ async function flowA() {
   ok(await until(async () => (await P.locator('.cr.done').count()) === 6, 25000, 250), 'six prompts tick while the scripted call plays');
   await P.getByText('Stop and draft the boxes').click(); await P.getByText(/Fill the \d+ boxes/).click();
   ok(await until(async () => /Piedmont/.test(await L.locator('#lauris-form textarea').evaluateAll(ts => ts.map(t => t.value).join(' '))), 30000), 'the draft fills the boxes with what the call said (Piedmont Counseling)');
-  const vals = await L.locator('#lauris-form label[for]').evaluateAll(ls => Object.fromEntries(ls.map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
-  const prior = vals['Prior / current services (provider · dates · outcome)'] || '';
+  const readPrior = async () => ((await L.locator('#lauris-form label[for]').evaluateAll(ls => Object.fromEntries(ls.map(l => [l.textContent, document.getElementById(l.htmlFor).value]))))['Prior / current services (provider · dates · outcome)'] || '');
+  await until(async () => /Piedmont Counseling, Mar–Jun/.test(await readPrior()), 15000, 250);   // the boxes are typed one after another: wait for this one before reading it
+  const prior = await readPrior();
   ok(/Piedmont Counseling, Mar–Jun/.test(prior) && !/School counseling weekly since Sep 2025/.test(prior), 'only what was said: nothing the call did not say');
   await H.shot('flowA-drafted');
   await L.getByRole('button', { name: 'Process Form' }).click(); await H.lwait(null, /processed=/);

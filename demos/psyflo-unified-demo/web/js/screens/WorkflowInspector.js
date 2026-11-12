@@ -70,7 +70,7 @@ function nodeInspector(c, n) {
   const b = BLOCKS[n.block];
   const probs = (c.byNode[n.id] || []);
   const params = Object.entries(b.params || {});
-  return `${head(`<span class="wm-kind wm-kind--${b.kind}">${icon(KIND_ICON[b.kind], 14)}${KIND_LABEL[b.kind]}</span><h2 class="wm-h" id="wm-insp-t" tabindex="-1">${esc(b.label)}</h2>${ui.hint('info', b.def, { label: 'What this block does' })}`)}
+  return `${head(`<span class="wm-kind wm-kind--${b.kind}">${icon(KIND_ICON[b.kind], 14)}${KIND_LABEL[b.kind]}</span><h2 class="wm-h" id="wm-insp-t" tabindex="-1">${esc(b.short || b.label)}</h2>${ui.hint('info', b.def, { label: 'What this block does' })}`)}
   ${problemList(probs, false)}
   <section class="wm-sec" aria-label="Settings">${params.length ? params.map(([k, p]) => field(c, n, k, p)).join('') : '<p class="wm-muted">This block has no settings. It works as it is.</p>'}</section>
   <section class="wm-sec" aria-labelledby="wm-h-rules"><h3 class="wm-h3" id="wm-h-rules">Rules and requirements ${ui.hint('info', 'Rows of the rules table this block relies on, each with its source and check. A change to a rule here changes it everywhere.', { size: 14 })}</h3>${ruleRows(c, n)}<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-wm="pickRule" data-id="${esc(n.id)}">${icon('plus', 14)} Add a rule</button></section>

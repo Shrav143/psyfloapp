@@ -32,7 +32,7 @@ export class WorkflowMap {
     this.sel = null; this.lit = { nodes: new Set(), edges: new Set() }; this.linking = null; this.test = null; this.drawer = null; this.focusAfter = null;
     this.view = p.view === 'outline' || p.view === 'map' ? p.view : (narrow() ? 'outline' : 'map');
     this.userView = !!(p.view === 'outline' || p.view === 'map');
-    this.ui = { pal: wide(), insp: false, open: { trigger: true, condition: true, action: true, guardrail: false, rules: p.tab === 'rules', locked: false } };
+    this.ui = { pal: p.tab === 'rules' || (typeof innerWidth === 'number' && innerWidth >= 1600), insp: false, open: { trigger: true, condition: true, action: true, guardrail: false, rules: p.tab === 'rules', locked: false } };
     this.lib = { q: p.tab === 'rules' ? p.q || '' : '', cat: p.tab === 'rules' ? p.cat || '' : '', area: p.tab === 'rules' ? p.area || '' : '' };
     this.ptr = false; this.pendingDraw = false; this.drag = null; this.picker = null; this.serverProblems = null; this.suppressClick = false; this.root = null;
   }
@@ -42,8 +42,13 @@ export class WorkflowMap {
   workflows() { return this.s.workflows || []; }
   saved() { return this.workflows().find(w => w.id === this.wfId) || null; }
   idn(prefix) { const d = this.draft || { nodes: [], edges: [] }; return ENGINE.newId(prefix, [...d.nodes.map(n => n.id), ...d.edges.map(e => e.id)]); }
-  proposalKey() { const w = this.saved(); const pw = w && w.pending && (w.pending.workflow || w.pending.wf || w.pending.proposed); return pw && pw.nodes ? MD.draftKey(MD.draftOf(pw)) : null; }
-  dirty() { if (!this.draft) return false; const k = MD.draftKey(this.draft); return k !== this.baseKey && k !== this.proposalKey(); }
+  // the change a first person saved that waits for a second (workflow.pending.workflow), compared the way the server stores it
+  proposalKey() { const w = this.saved(); const pw = w && w.pending && w.pending.workflow; return pw && pw.nodes ? MD.draftKey(MD.draftOf(ENGINE.normalize(pw))) : null; }
+  dirty() {
+    if (!this.draft) return false; const k = MD.draftKey(this.draft); if (k === this.baseKey) return false;
+    const pk = this.proposalKey(); if (!pk) return true;
+    try { return MD.draftKey(MD.draftOf(ENGINE.normalize(this.wfNow()))) !== pk; } catch { return true; }
+  }
   loadDraft(w) {
     this.draft = w ? MD.draftOf(w) : null; this.baseKey = w ? MD.draftKey(this.draft) : ''; this.baseVer = w ? w.version : null;
     this.undo = []; this.sel = null; this.lit = { nodes: new Set(), edges: new Set() }; this.linking = null; this.test = null;
@@ -78,7 +83,7 @@ export class WorkflowMap {
     return { s: this.s, wf: this.draft, saved, sel: this.sel, lit: this.lit, linking: this.linking, problems, byNode, open: this.ui.open, lib: this.lib, dirty: this.dirty(), narrowish: !wide(),
       staffName: id => this.h.staffName(id), fmt: at => (at ? M.fmtDateTime(at) : ''), canConfirm: !!pend && pend.by !== me.id && (can(me, 'admin.settings') || can(me, 'drafts.clinical')) };
   }
-  html() { return `<div class="wm" id="wm" data-view="${this.view}">${this.inner()}</div>`; }
+  html() { this.sync(); return `<div class="wm" id="wm" data-view="${this.view}">${this.inner()}</div>`; }
   inner() {
     if (!this.workflows().length || !this.draft) return `<div class="wm-none">${ui.emptyState({ title: 'No workflows yet', body: 'Workflows are not available on this server yet.' })}</div>`;
     const c = this.ctx(); const nr = narrow(); const showPal = !nr && this.ui.pal; const showInsp = !nr && (wide() || !!this.sel || this.ui.insp);
@@ -110,8 +115,8 @@ export class WorkflowMap {
         ${pend ? ui.hint('clock', 'A saved change is waiting for a second person to confirm it.', { tone: 'y', text: 'Waiting', label: 'Waiting for a second person' }) : ''}
         <span class="wm-bar__sp"></span>
         ${nr ? `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" id="wm-blocks" data-wm="openPicker">${icon('plus', 14)} Add block</button>` : `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" id="wm-blocks" data-wm="palToggle" aria-pressed="${this.ui.pal}">${icon('plus', 14)} Blocks</button>`}
-        ${ui.hint('undo', 'Undo the last change (Ctrl+Z)', { cls: 'ui-hint--act', label: 'Undo', extra: `data-wm="undo" id="wm-undo"${this.undo.length ? '' : ' aria-disabled="true"'}` })}
-        ${ui.hint('tidy', 'Tidy up: lay the blocks out left to right on the grid', { cls: 'ui-hint--act', label: 'Tidy up', extra: 'data-wm="tidy" id="wm-tidy"' })}
+        ${ui.hint('undo', 'Undo the last change (Ctrl+Z)', { cls: 'ui-hint--act wm-h-undo', label: 'Undo', extra: `data-wm="undo" id="wm-undo"${this.undo.length ? '' : ' aria-disabled="true"'}` })}
+        ${ui.hint('tidy', 'Tidy up: lay the blocks out left to right on the grid', { cls: 'ui-hint--act wm-h-tidy', label: 'Tidy up', extra: 'data-wm="tidy" id="wm-tidy"' })}
         <button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" id="wm-test" data-wm="test">${icon('play', 14)} Test run</button>
         ${errs || warns ? ui.hint('alert', `${errs ? errs + ' to fix' : ''}${errs && warns ? ', ' : ''}${warns ? warns + ' to look at' : ''}. Select nothing to see them.`, { tone: errs ? 'r' : 'y', text: String(errs + warns), cls: 'wm-probhint', label: `${errs + warns} problem${errs + warns === 1 ? '' : 's'} in this workflow`, extra: 'data-wm="showProblems"' }) : ''}
         <button type="button" class="ui-btn ui-btn--primary ui-btn--sm" id="wm-save" data-wm="save"${dirty ? '' : ' disabled'}>${dirty ? 'Save' : `Saved · v${esc(w.version || 1)}`}</button>
@@ -123,7 +128,7 @@ export class WorkflowMap {
     const byId = new Map(this.draft.nodes.map(n => [n.id, n]));
     const title = id => { const n = byId.get(id); return n ? MD.nodeTitle(n) : id; };
     const rows = (res.matches || []).map((m, i) => `<tr class="${t.i === i ? 'is-on' : ''}" data-wm="litMatch" data-i="${i}">
-      <th scope="row"><span class="wm-tt__p">${esc(m.label || '')}</span><small>${esc((m.record && m.record.id) || '')}</small></th>
+      <th scope="row"><span class="wm-tt__p">${esc(m.label || '')}</span>${m.record && m.record.type === 'request' ? `<small>${esc(m.record.id)}</small>` : ''}</th>
       <td>${(m.effects || []).length ? `<ul class="wm-tt__fx">${m.effects.map(e => `<li>${esc(e.text || e.action || '')}${e.roles && e.roles.length ? ` <small>to ${esc(e.roles.join(', '))}</small>` : ''}</li>`).join('')}</ul>` : '<span class="wm-muted">Nothing shown to anyone</span>'}</td>
       <td class="wm-tt__path">${(m.path || []).map(id => esc(title(id))).join(' › ')}</td>
       <td>${m.stopped ? `<span class="wm-tt__stop">${icon('lock', 12)} Stopped at ${esc(title(m.stopped.node))}: ${esc(m.stopped.why)}</span>` : ''}</td>
@@ -205,7 +210,7 @@ export class WorkflowMap {
     if (this.suppressClick) { this.suppressClick = false; e.preventDefault(); e.stopPropagation(); return; }
     const t = e.target; const a = t.closest('[data-wm]');
     if (a) { e.preventDefault(); this.act(a.dataset.wm, a, e); return; }
-    const port = t.closest('.wm-port--out');
+    const port = t.closest('.wm-port[data-port]');
     if (port) { e.preventDefault(); this.togglePort(port.dataset.node, port.dataset.port); return; }
     const edge = t.closest('.wm-edge'); if (edge) { this.select({ type: 'edge', id: edge.dataset.edge }, { focusInsp: false }); return; }
     if (t.closest('.wm-node')) return;
@@ -283,7 +288,7 @@ export class WorkflowMap {
     this.ptrT = setTimeout(() => { if (this.ptr && !(this.drag && this.drag.moved)) { this.ptr = false; this.h.noRepaint = false; if (this.pendingDraw) { this.pendingDraw = false; this.draw(); } } }, 900);
     if (this.up) { removeEventListener('pointermove', this.mv); removeEventListener('pointerup', this.up); removeEventListener('pointercancel', this.up); }
     const t = e.target;
-    const port = t.closest('.wm-port--out');
+    const port = t.closest('.wm-port[data-port]');
     const pal = !narrow() && t.closest('#wm-pal [data-wm="addBlock"], #wm-pal [data-wm="addRule"]');
     const node = t.closest('.wm-node');
     if (port) this.drag = { type: 'link', node: port.dataset.node, port: port.dataset.port, x0: e.clientX, y0: e.clientY, moved: false };
@@ -384,8 +389,8 @@ export class WorkflowMap {
     // a block added while another is selected follows it, and joins its free exit
     const from = sel && b.kind !== 'trigger' && MD.portsFree(this.draft, sel);
     const opts = sel && !MD.isLocked(sel) ? { near: sel, ...(from ? { from: sel.id, port: from } : {}) } : {};
+    if (this.picker) this.picker.close('added');
     this.addBlock(block, null, null, opts);
-    if (this.picker) { this.picker.close('added'); }
   }
   addFromOutline(selEl) {
     const block = selEl.value; if (!block) return; const nodeId = selEl.dataset.node; const port = selEl.dataset.port;

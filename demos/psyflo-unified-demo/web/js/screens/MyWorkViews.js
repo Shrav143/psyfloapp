@@ -187,6 +187,7 @@ export function tabsHtml(role, current, counts, hrefs) {
 // Shared by My Work (the confirmer's list) and Settings (People, Roles). kind: 'designation' | 'role'.
 // run(action, args) performs the action and returns a promise; the modal closes when it resolves.
 export function confirmAccess({ s, kind, id, me, run, opener }) {
+  if (kind === 'workflow') return confirmWorkflow({ s, id, me, run, opener });
   const item = kind === 'role' ? M.byId(s.role_changes, id) : M.byId(s.designations, id);
   if (!item) return null;
   const u = M.byId(s.staff, item.user); const by = M.staffShort(s, item.by);
@@ -199,6 +200,20 @@ export function confirmAccess({ s, kind, id, me, run, opener }) {
     actions: [
       { label: 'Decline', tone: 'secondary', disabled: mine, onClick: async () => { try { await run(act, { id, decision: 'decline' }); } catch { return false; } }, result: 'declined' },
       { label: 'Confirm', tone: 'primary', disabled: mine, onClick: async () => { try { await run(act, { id, decision: 'approve' }); } catch { return false; } }, result: 'approved' }
+    ]
+  });
+}
+
+// a workflow change that holds the "second person" guardrail waits for a different administrator or clinician (R5). The list shows what changed, not a diff.
+function confirmWorkflow({ s, id, me, run, opener }) {
+  const item = M.byId(s.workflow_confirmations, id); if (!item) return null;
+  const mine = item.by === me;
+  const body = `<dl class="ui-dl"><div class="ui-dl__r"><dt>Workflow</dt><dd>${esc(item.name)}</dd></div><div class="ui-dl__r"><dt>Change</dt><dd>${esc(item.changes || 'A change')}</dd></div><div class="ui-dl__r"><dt>Proposed by</dt><dd>${esc(M.staffShort(s, item.by))} · ${esc(M.fmtDateTime(item.at))}</dd></div>${item.note ? `<div class="ui-dl__r"><dt>Note</dt><dd>${esc(item.note)}</dd></div>` : ''}</dl>${mine ? '<p class="mw-err" role="status">A different person must confirm. You proposed this.</p>' : '<p>A workflow only decides what the bell shows a person; nothing it does sends, calls or files. Confirming writes a row to the audit log with both names.</p>'}`;
+  return ui.modal({
+    title: 'Confirm a workflow change', size: 'sm', returnFocus: opener, body,
+    actions: [
+      { label: 'Decline', tone: 'secondary', disabled: mine, onClick: async () => { try { await run('workflow.confirm', { id, decision: 'decline' }); } catch { return false; } }, result: 'declined' },
+      { label: 'Confirm', tone: 'primary', disabled: mine, onClick: async () => { try { await run('workflow.confirm', { id, decision: 'approve' }); } catch { return false; } }, result: 'approved' }
     ]
   });
 }

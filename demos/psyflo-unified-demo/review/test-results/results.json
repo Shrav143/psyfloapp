@@ -1,6 +1,6 @@
 {
- "runId": "2026-11-12T17-05-05Z",
- "commit": "adeb3f9",
+ "runId": "2026-11-12T17-15-09Z",
+ "commit": "9d0f8c7",
  "release": false,
  "releaseReady": false,
  "env": {
@@ -9,199 +9,231 @@
   "preset": "live",
   "workers": 1,
   "repeat": 1,
-  "basePort": 7400
+  "basePort": 7640
  },
  "summary": {
-  "pass": 0,
-  "fail": 1,
+  "pass": 1,
+  "fail": 0,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 931,
+  "durationMs": 59409,
   "tests": {
-   "pass": 26,
-   "fail": 6,
+   "pass": 38,
+   "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "workflows-engine",
-   "tags": [],
+   "name": "ui-kit",
+   "tags": [
+    "ui"
+   ],
    "instance": 0,
    "attempt": 1,
-   "status": "FAIL",
-   "exit": 1,
-   "durationMs": 829,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 59308,
    "counts": {
-    "pass": 26,
-    "fail": 6,
+    "pass": 38,
+    "fail": 0,
     "skip": 0
    },
    "tests": [
     {
      "status": "PASS",
-     "title": "the catalog: every kind has blocks, every block has a definition and a parameter shape the engine reads, ports follow the kind",
+     "title": "token pairs: every text pair 4.5:1, every UI pair 3:1 (computed in the page from tokens.css)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "trigger units_used: the authorizations at the warning share; the rule-bound number is the rule (a stored 99 does not win), and editing the rule moves the line",
-     "note": ""
-    },
-    {
-     "status": "FAIL",
-     "title": "trigger payer_reply: one stage group each (info, partial, denied, p2p, overdue); an empty choice starts nothing",
-     "note": "expected [\"R-0399\"] but got []"
-    },
-    {
-     "status": "PASS",
-     "title": "trigger deadline_near: within N days or past it; the kind of deadline narrows it (renewal, decision, appeal)",
+     "title": "type floor and brand: DM Sans, paper background, 12 px smallest kit size, teal primary",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "trigger followup_day: a submitted request on or past the follow-up day (the rule), judged on the day given",
+     "title": "status vocabulary: every stage and dispute status resolves; chips carry text and an icon (never colour alone)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "trigger note_late: notes behind (daily, weekly guardian, monthly collateral), filtered by type, labelled by initials",
+     "title": "maturity chips: Working is hidden until the presenter overlay is on; Simulated, Pilot and Future always show",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "trigger eligibility_due: a check older than the interval (the rule) is a candidate; a patient with no recorded check is not",
-     "note": ""
-    },
-    {
-     "status": "FAIL",
-     "title": "conditions route a record down Yes or No: payer is, service is, units left, partial award, owner is, evidence has gaps",
-     "note": "expected 5 but got 4"
-    },
-    {
-     "status": "FAIL",
-     "title": "condition evidence_missing: Yes for a patient whose stored evidence has gaps, No for one without (a one-day window and a note on file)",
-     "note": "T.N. has a note for the one day in the window expected [\"TN\"] but got [\"MR\",\"TN\"]"
-    },
-    {
-     "status": "PASS",
-     "title": "actions: notify, add a task and suggest a flag each give one effect with its roles; messages fill only {patient}, {payer}, {date}",
+     "title": "modal: role=dialog, aria-labelledby, focus trap both ways, Escape, scrim click, focus return",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "branching: a fan-out reaches every branch once; a chain passes through guardrails; a record that falls off the map is counted, not matched",
+     "title": "drawer: same contract as the modal",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "guardrail roles_only: only those roles receive what follows; no role left stops the path and says why",
+     "title": "popover: Escape closes it and focus returns to the control",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "guardrail person_confirms: the item waits for the named roles (\"needs your confirmation\"); other roles are not asked",
+     "title": "confirm resolves true on Confirm and false on Cancel; the toast has role=status (alert for errors)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "guardrail max_per_day: at most n items per role; the most urgent stay, the rest are counted as limited and not shown",
+     "title": "the old modal(html, onMount) helper is now an accessible dialog (screens keep working)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "guardrail source_required: stops a path whose rule is an unverified demo assumption (and says which); lets a Harvest-reported or verified one through",
-     "note": ""
-    },
-    {
-     "status": "FAIL",
-     "title": "guardrail evidence_required: stops a record with evidence gaps and keeps the one without",
-     "note": "expected [\"TN\"] but got [\"MR\",\"TN\"]"
-    },
-    {
-     "status": "PASS",
-     "title": "two_person and the locked never_auto have no effect at run time: the locked guardrail takes no links and is never walked",
+     "title": "filter chips: aria-pressed, state in the URL query, survives a reload, Clear",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "validate: a good workflow is ok; errors for no trigger, an unknown block, a link to a missing block, a port the block lacks, a link into a trigger or the locked block",
+     "title": "search keeps focus while typing and filters rows",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "validate: a cycle, a block no trigger reaches (the locked guardrail needs no link), a rule key that is not in the rules table",
+     "title": "queue table: aria-sort, sort toggles, real links, ArrowDown moves between rows, Enter opens",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "validate: a parameter out of range or of the wrong type (number, whole number, select, multi, roles, payers, text, bool)",
+     "title": "queue table: sticky header, empty, loading and error states",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "validate warns (does not refuse): nothing after a trigger, a Yes or No exit that leads nowhere",
+     "title": "evidence chip opens a popover with the quote and closes on Escape",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "tidy: x and y are multiples of the grid, triggers sit at the left, Yes is above No, the locked guardrail is bottom right, the input is untouched and it is idempotent",
+     "title": "timeline: an event opens a drawer with What, When, Who, Document, Source, Next action",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "tidy: two triggers stack, a block nobody links to is placed (not lost), a cycle does not hang it",
+     "title": "draft review: edit text survives repaints; no bulk accept; Restore previous appears after a save",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "normalize and ensureLocked: positions snap to the grid, settings come from the catalog, one locked guardrail is always present, duplicate links go",
+     "title": "a store change (SSE) while someone is typing does not wipe the field; the repaint waits for blur",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "newId: n-xxxx, unique among the ids taken",
+     "title": "skip link is the first tab stop and moves focus to the main landmark",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "run and workflowItems are deterministic and never write: a deep-frozen state and workflow give the same answer twice",
+     "title": "landmarks: <html lang>, a labelled nav, exactly one main, real links in the rail",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the same answer from the clinician, supervisor and administrator projections (the engine reads status, never note text)",
+     "title": "focus moves to main on a route change and the route is announced",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "workflowItems: enabled workflows only, items for the role named, ids \"wf:<workflow>:<record>:<node>\", group Workflows, a source and a link the role may open",
+     "title": "the old demo bar is gone from the product viewport",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "workflowItems for direct support: only their own patients, linked to the patient chart",
+     "title": "rail: dark navy (the Nov 8 look), 232 px wide, collapses to icons at 1024; counts only where meaningful",
      "note": ""
-    },
-    {
-     "status": "FAIL",
-     "title": "notificationsFor appends the workflow items (unread, group Workflows) without changing the others; read state works on their ids",
-     "note": "expected 12 but got 11"
     },
     {
      "status": "PASS",
-     "title": "seed: five workflows (two on, three off), each valid and laid out on the grid with the locked guardrail; the same graphs as the templates",
+     "title": "rail by role follows the permission table (supervisor, clinician, admin, direct support)",
      "note": ""
     },
     {
-     "status": "FAIL",
-     "title": "seed behaviour on the Oct 29 canvas: the partial offer gives the clinician a task (to confirm) and the supervisor a notice; follow-up day gives nothing yet; templates run when turned on",
-     "note": "M.R. (25% left), S.B. and T.N.: "
+     "status": "PASS",
+     "title": "dock: hidden by default in Presentation, Ctrl+Shift+P toggles, label PRESENTER, mode always visible, above the viewport",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: ?present=1 opens it; ?mode=explore docks it open (no hide control) and is stored in psyflo_mode",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: role switcher changes the signed-in role without a page reload",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: scenario selector calls demo.scenario, signs in as the scenario role and opens its route",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: simulation controls (receive a reply, advance a day) live in the dock",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: notes drawer \"How the data gets in\" with maturity chips, focus returns to Notes",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: All screens picker is role-aware and searchable",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "UiKit is presenter-only: without the dock it says so; with ?present=1 it shows the gallery",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "prefers-reduced-motion: overlay animation is switched off",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "no console errors on the gallery, the stubs and the shell routes",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail foot stays reachable at 1024 px: Sign out and Help as named controls, \"Demo data · nothing is real\" visible",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail foot stays reachable at 700 px: Sign out and Help as named controls, \"Demo data · nothing is real\" visible",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the wordmark on the navy rail is the reverse logo (white, teal, marigold), not the full-colour one",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "framed Lauris routes: a slim top bar with \"Back to Psyflo\", the route title as the h1 and no developer text",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "hint: an icon whose definition shows on hover and on keyboard focus, is named for assistive tech, is not clipped by a scroll region, and Escape hides it",
+     "note": ""
     }
    ],
-   "runId": "2026-11-12T17-05-05Z"
+   "runId": "2026-11-12T17-15-09Z"
   }
  ],
  "manual": [

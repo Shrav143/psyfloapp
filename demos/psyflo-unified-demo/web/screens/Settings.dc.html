@@ -8,16 +8,17 @@
 <x-dc>
 <helmet>
 <style>
-/* Settings (E1). Prefix se-. Tokens and the shared kit come from tokens.css and components.css. */
+/* Settings (E1). Prefix se-. Tokens and the shared kit come from tokens.css and components.css. The workflow map (round 5) is styled in components.css under R5 MAP (wm-). */
 .se{max-width:1180px;margin:0 auto;padding:24px var(--gutter) 56px;color:var(--ink-900)}
-.se-head{display:flex;align-items:center;gap:12px;margin:0 0 8px}
+.se-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 12px}
 .se-head h1{margin:0;font:600 var(--fs-28)/var(--lh-28) var(--font);letter-spacing:-.01em}
 .se{min-width:0}
-.se-tabs{max-width:100%;display:flex;gap:2px;border-bottom:1px solid var(--line-200);margin:0 0 20px;overflow-x:auto}
-.se-tab{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;color:var(--muted-700);font:600 var(--fs-14)/1 var(--font);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
-.se-tab:hover{color:var(--ink-900)}
-.se-tab[aria-current=page]{color:var(--ink-900);border-bottom-color:var(--teal-600)}
-.se-tab b{font-size:var(--fs-12);line-height:20px;min-width:20px;text-align:center;background:var(--info-bg);color:var(--info-fg);border-radius:var(--r-pill);padding:0 7px}
+.se-head__sp{flex:1}
+.se-n{display:inline-block;font-size:var(--fs-12);line-height:20px;min-width:20px;text-align:center;background:var(--info-bg);color:var(--info-fg);border-radius:var(--r-pill);padding:0 7px;margin-left:6px}
+.se-crumb{display:flex;align-items:center;gap:8px;margin:0 0 16px;font-size:var(--fs-14);color:var(--muted-700)}
+.se-crumb .ui-linkbtn{font-size:var(--fs-14);min-height:24px}
+.se--wf{max-width:1680px}
+.se-lead--rule{margin:0 0 12px;padding:10px 12px;background:var(--sand-100);border-radius:var(--r-2);font-size:var(--fs-13)}
 .se-body{display:flex;flex-direction:column;gap:20px}
 .se-card{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:16px 20px}
 .se-h2{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 8px;font:600 var(--fs-18)/var(--lh-18) var(--font)}
@@ -88,13 +89,13 @@
 .se-more{margin-top:12px;display:flex;align-items:center;gap:12px}
 @media (max-width:900px){.se-two{grid-template-columns:1fr}.se-arch>div{grid-template-columns:1fr;gap:2px}}
 @media (max-width:760px){
-  .se-tabs{flex-wrap:wrap;overflow-x:visible}.se{padding:16px 16px 40px}.se-card{padding:14px}}
+  .se{padding:16px 16px 40px}.se-card{padding:14px}}
 .mw-asof,.se-asof{font-size:var(--fs-12);line-height:var(--lh-12);color:var(--muted-700);white-space:nowrap}
 </style>
 </helmet>
-<main class="se">
-  <header class="se-head"><h1>Settings</h1></header>
-  {{tabs}}
+<main class="se {{cls}}">
+  <header class="se-head"><h1>Settings</h1>{{chip}}<span class="se-head__sp"></span>{{more}}</header>
+  {{lead}}
   <div class="se-body" id="se-body">{{body}}</div>
 </main>
 </x-dc>

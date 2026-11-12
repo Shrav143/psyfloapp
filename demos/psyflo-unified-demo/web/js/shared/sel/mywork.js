@@ -366,6 +366,8 @@ export function worklist(s, actor) {
       const u = M.byId(s.staff, d.user);
       add({ record: d.id, kind: 'confirm-designation', rank: 10, when: 'today', title: `Confirm access · ${u ? u.name : d.user}`, sub: `${d.grant ? 'Grant' : 'Remove'} "${capName(d.cap)}" · proposed by ${staffShort(s, d.by)} · ${d.reason}`, chip: { text: 'Second person needed', tone: 'info' }, verb: 'Review', action: { type: 'confirm', kind: 'designation', id: d.id } });
     }
+    // a workflow change held for a second person (R5, Settings > Workflows): the clinician confirms it here, as with a designation
+    for (const w of (s.workflow_confirmations || []).filter(x => x.by !== actor.id)) add({ record: 'wf:' + w.id, kind: 'confirm-workflow', rank: 10, when: 'today', title: `Confirm workflow change · ${w.name}`, sub: `${w.changes || 'A change'} · proposed by ${staffShort(s, w.by)}${w.note ? ' · ' + w.note : ''}`, chip: { text: 'Second person needed', tone: 'info' }, verb: 'Review', action: { type: 'confirm', kind: 'workflow', id: w.id } });
     for (const rc of (s.role_changes || []).filter(x => x.status === 'pending' && x.by !== actor.id)) {
       const u = M.byId(s.staff, rc.user);
       add({ record: rc.id, kind: 'confirm-role', rank: 10, when: 'today', title: `Confirm role · ${u ? u.name : rc.user}`, sub: `${rc.from.replace('_', ' ')} to ${rc.to.replace('_', ' ')} · proposed by ${staffShort(s, rc.by)} · ${rc.reason}`, chip: { text: 'Second person needed', tone: 'info' }, verb: 'Review', action: { type: 'confirm', kind: 'role', id: rc.id } });

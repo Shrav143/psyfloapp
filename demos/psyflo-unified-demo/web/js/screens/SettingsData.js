@@ -2,9 +2,8 @@
 // Sources: review/00-unified-recommendations.md section 3 (resolutions marked Validate) and 6 (open questions), review/01 section 8 (who answers).
 import { CAP_LIST, CAP_NOTE, MATRIX, STAFF_ROLES } from '../shared/permissions.js';
 
-export const TABS = [
-  ['people', 'People'], ['roles', 'Roles'], ['units', 'Units'], ['rules', 'Rules'], ['audit', 'Audit'], ['family', 'Family link'], ['presenter', 'Presenter']
-];
+// The older pages, opened from the "More settings" menu (?tab=...). The Rules table moved into the workflow map (rule library, block inspector); ?tab=rules opens the map with the library open.
+export const MORE_TABS = [['people', 'People'], ['roles', 'Roles'], ['units', 'Units'], ['family', 'Family link'], ['audit', 'Audit'], ['presenter', 'Presenter']];
 
 // ---- permission matrix ------------------------------------------------------------------------------------------------------
 export const CAP_GROUPS = [

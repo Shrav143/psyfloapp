@@ -70,7 +70,7 @@ export function canvasHtml(c) {
   }).join('');
   const marker = (id, cls) => `<marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="${cls}" d="M1 1L9 5L1 9z"/></marker>`;
   return `<div class="wm-cv">
-    <div class="wm-canvas" id="wm-canvas" role="region" aria-label="Workflow map" tabindex="-1">
+    <div class="wm-canvas" id="wm-canvas" role="region" aria-label="Workflow map" tabindex="-1" style="height:min(var(--wm-h),${Math.max(400, h + 20)}px)">
       <div class="wm-stage" id="wm-stage" style="min-width:${w}px;min-height:${h}px">
         <svg class="wm-lines" width="${w}" height="${h}" role="group" aria-label="Links"><defs>${marker('wm-arr', 'wm-arr')}${marker('wm-arr-sel', 'wm-arr wm-arr--sel')}${marker('wm-arr-lit', 'wm-arr wm-arr--lit')}</defs>${paths}<path id="wm-temp" class="wm-edge__tmp" d="" hidden/></svg>
         ${nodes.map(n => nodeHtml(c, n)).join('')}

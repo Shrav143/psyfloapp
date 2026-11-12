@@ -139,7 +139,7 @@ register('Dashboard', class extends Screen {
   // two-person confirmations (a designation or a role raise someone else proposed): a clinician has no Settings access, so they wait here
   confirmsHtml(a) {
     if (a.role !== 'clinician' && a.role !== 'admin') return '';
-    const list = worklist(this.s, a).items.filter(i => (i.kind === 'confirm-designation' || i.kind === 'confirm-role') && i.action && i.action.type === 'confirm');
+    const list = worklist(this.s, a).items.filter(i => (i.kind === 'confirm-designation' || i.kind === 'confirm-role' || i.kind === 'confirm-workflow') && i.action && i.action.type === 'confirm');
     if (!list.length) return '';
     return `<ul class="d-confirms" aria-label="Waiting for a second person">${list.map(i => `<li class="d-confirm"><span class="d-confirm__i">${ui.icon('users', 16)}</span><span class="d-confirm__t">${esc(i.title)}</span><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="confirm" data-kind="${esc(i.action.kind)}" data-id="${esc(i.action.id)}">Review<span class="ui-sr"> ${esc(i.title)}</span></button></li>`).join('')}</ul>`;
   }

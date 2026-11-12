@@ -43,8 +43,8 @@ export const authz = {
 const lite = w => { const { history, pending, ...rest } = w; return rest; };
 const enabledOnly = (s, actor, val) => (val || []).filter(w => w && w.enabled).map(lite);
 export const projection = {
-  workflows: { admin: true, supervisor: enabledOnly, clinician: enabledOnly, direct_support: enabledOnly, default: [] },
-  workflow_confirmations: { admin: true, clinician: true, default: [] }
+  workflows: { admin: true, supervisor: enabledOnly, clinician: enabledOnly, direct_support: enabledOnly, default: false },   // false = empty (guardian, school)
+  workflow_confirmations: { admin: true, clinician: true, default: false }
 };
 
 const find = (s, id) => { const w = byId(s.workflows, id); if (!w) refuse('That workflow is not there any more.', { status: 404, audit: false, record: 'workflows' }); return w; };
@@ -104,7 +104,13 @@ export default {
     const who = this.who(), at = this.now(), why = clean(note, 140);
     const live = normalize(cur);
     if (cur.pending && cur.pending.by !== who) refuse(`A change by ${staffName(s, cur.pending.by)} is waiting for a second person. Confirm or decline it first.`, { status: 409, audit: false, record: 'workflows', code: 'two_person_pending' });
-    if (sameGraph(live, next) && !cur.pending) return { id, version: cur.version, problems: v.problems, unchanged: true };
+    if (sameGraph(live, next)) {
+      if (!cur.pending) return { id, version: cur.version, problems: v.problems, unchanged: true };
+      // the proposer saves the live graph again: that withdraws their waiting change
+      delete cur.pending; s.workflow_confirmations = (s.workflow_confirmations || []).filter(c => c.id !== cur.id);
+      this.event(`Workflow change withdrawn: ${cur.name} · back to v${cur.version}`, who, 'workflows', { kind: 'workflow' });
+      return { id, version: cur.version, problems: v.problems, withdrawn: true };
+    }
     if (hasTwoPerson(live) || hasTwoPerson(next)) {
       cur.pending = { by: who, at, note: why, version: (cur.version || 1) + 1, workflow: { name: next.name, description: next.description, nodes: next.nodes, edges: next.edges } };
       s.workflow_confirmations = (s.workflow_confirmations || []).filter(c => c.id !== cur.id).concat([{ id: cur.id, name: next.name, by: who, at, note: why, changes: changeText(live, next), version: cur.pending.version }]);

@@ -3,7 +3,7 @@
 // a person sees. Same state + same workflow + same `today` = same answer (matches are sorted; ids come from records and nodes).
 //
 //   validate(wf, s?)            -> { ok, problems:[{ level:'error'|'warn', node?, edge?, text }] }
-//   run(s, wf, { today?, actor? }) -> { matches:[{ record:{type,id}, client, label, path:[nodeId], effects:[effect], stopped:null|{ node, why } }],
+//   run(s, wf, { today?, actor?, role? }) -> { matches:[{ record:{type,id}, client, label, path:[nodeId], effects:[effect], stopped:null|{ node, why } }],
 //                                      counts:{ candidates, matched, stopped, effects, limited } }
 //   workflowItems(s, actor)     -> [notification-shaped items] for the enabled workflows, effects for the actor's role after the guardrails
 //   tidy(wf)                    -> a copy of wf laid out left to right (triggers first; Yes above No), x and y multiples of GRID
@@ -31,7 +31,7 @@ import { noteTimeliness } from '../sel/mywork.js';
 import { evidenceIndex } from '../enhance.js';
 
 export const LOCKED_ID = 'never_auto';
-export const LAYOUT = { x0: 40, y0: 40, colW: 300, rowH: 140 };
+export const LAYOUT = { x0: 40, y0: 40, colW: 300, rowH: 120 };   // a block is 220 x 80 on the canvas: 80 between columns, 40 between rows
 export const PORT_LABEL = { out: 'Next', yes: 'Yes', no: 'No' };
 export const TEMPLATE_RE = /\{([a-z_]+)\}/gi;
 const FILL = ['patient', 'payer', 'date'];
@@ -417,10 +417,13 @@ const inScope = (X, actor, clientId) => {
   return actor.role === 'direct_support' ? c.staff === actor.id : true;
 };
 
+// run(s, wf, { today?, actor?, role? }): `actor` limits the records to the ones that person may see (direct support: their own patients; a portal
+// actor: none) and never hides an effect; `role` keeps only the effects meant for that role (the bell). Without either, every effect is listed with
+// the roles it is for, which is what the Test run in Settings shows.
 export function run(s, wf, opts = {}) {
   const none = { matches: [], counts: { candidates: 0, matched: 0, stopped: 0, effects: 0, limited: 0 } };
   if (!s || !isObj(wf) || !Array.isArray(wf.nodes)) return none;
-  const X = context(s, opts.today); const actor = opts.actor || null; const graph = graphOf(wf);
+  const X = context(s, opts.today); const actor = opts.actor || null; const role = opts.role || null; const graph = graphOf(wf);
   const matches = []; let candidates = 0;
   for (const trig of wf.nodes) {
     const b = trig && BLOCKS[trig.block]; if (!b || b.kind !== 'trigger') continue;
@@ -429,21 +432,24 @@ export function run(s, wf, opts = {}) {
       if (!inScope(X, actor, cand.client)) continue;
       candidates++;
       const w = walk(X, wf, trig, cand, graph);
-      const effects = actor ? w.effects.filter(e => e.roles.includes(actor.role)) : w.effects;
+      const effects = role ? w.effects.filter(e => e.roles.includes(role)) : w.effects;
       if (!effects.length && !w.stopped) continue;
       matches.push({ record: cand.record, client: cand.client, label: label(X, cand.client), path: w.path, effects, stopped: w.stopped, _cand: cand });
     }
   }
-  // alert limit: per role, the first n effects of a limiting guardrail stay (most urgent first, then by record), the rest are counted and marked
-  const groups = new Map();
-  for (const m of matches) for (const e of m.effects) if (e.limit) for (const r of (actor ? [actor.role] : e.roles)) { const k = e.limit.node + '|' + r; if (!groups.has(k)) groups.set(k, []); groups.get(k).push({ m, e, n: e.limit.n }); }
-  const sevN = { r: 0, y: 1, n: 2 };
+  // alert limit: per role, the first n effects behind a limiting guardrail stay (most urgent first, then by record); the rest are counted and marked.
+  // effect.limited_roles lists the roles that no longer get it; effect.limited is true when that is every role it was meant for.
+  const groups = new Map(); const sevN = { r: 0, y: 1, n: 2 };
+  for (const m of matches) for (const e of m.effects) if (e.limit) for (const r of (role ? [role] : e.roles)) { const k = e.limit.node + '|' + r; if (!groups.has(k)) groups.set(k, []); groups.get(k).push({ m, e, r, n: e.limit.n }); }
   for (const list of groups.values()) {
     list.sort((a, c) => (sevN[a.e.sev] - sevN[c.e.sev]) || stable(a.m.record.id, c.m.record.id) || stable(a.e.node, c.e.node));
-    list.forEach((x, i) => { if (i >= x.n) x.e.limited = true; });
+    list.forEach((x, i) => { if (i >= x.n) (x.e.limited_roles = x.e.limited_roles || []).push(x.r); });
   }
   let effectsN = 0, limited = 0, stoppedN = 0, matched = 0;
-  for (const m of matches) { effectsN += m.effects.length; limited += m.effects.filter(e => e.limited).length; if (m.stopped) stoppedN++; if (m.effects.length) matched++; }
+  for (const m of matches) {
+    for (const e of m.effects) if (e.limited_roles) { e.limited = e.roles.filter(r => !role || r === role).every(r => e.limited_roles.includes(r)); if (e.limited) limited++; }
+    effectsN += m.effects.length; if (m.stopped) stoppedN++; if (m.effects.length) matched++;
+  }
   return { matches: matches.map(({ _cand, ...m }) => ({ ...m, why: _cand.why, sev: _cand.sev, at: _cand.at, date: _cand.date })), counts: { candidates, matched, stopped: stoppedN, effects: effectsN, limited } };
 }
 
@@ -464,7 +470,7 @@ export function workflowItems(s, actor) {
   const out = new Map(); const X = context(s);
   for (const wf of Array.isArray(s.workflows) ? s.workflows : []) {
     if (!wf || !wf.enabled || !Array.isArray(wf.nodes)) continue;
-    const res = run(s, wf, { actor });
+    const res = run(s, wf, { actor, role: actor.role });
     for (const m of res.matches) {
       for (const e of m.effects) {
         if (e.limited) continue;

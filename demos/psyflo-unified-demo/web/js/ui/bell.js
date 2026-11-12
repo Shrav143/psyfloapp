@@ -48,11 +48,12 @@ const CSS = `
 if (typeof document !== 'undefined' && !document.getElementById('bell-css')) { const st = document.createElement('style'); st.id = 'bell-css'; st.textContent = CSS; document.head.appendChild(st); }
 
 function itemHtml(n) {
+  const confirm = !!n.needsConfirm && !n.read;   // a workflow's "A person confirms first" guardrail: the person in that role confirms by pressing Confirm (it reads the item; nothing else happens)
   const link = `<a class="bell__t" href="${esc(hrefOf(n.to))}" data-bell="open" data-id="${esc(n.id)}">${esc(n.title)}<span class="ui-sr">${n.read ? '' : '. Unread'}</span></a>`;
   return `<li class="bell__i sev-${esc(n.sev)}${n.read ? '' : ' is-unread'}" data-bell-item="${esc(n.id)}" data-kind="${esc(n.kind)}">`
     + `<span class="bell__ic" aria-hidden="true">${icon(KIND_ICON[n.kind] || 'dot', 16)}</span>`
-    + `<div>${link}${n.sub ? `<div class="bell__s">${esc(n.sub)}</div>` : ''}${n.source && n.source.name ? `<div class="bell__s" data-bell-from>From workflow: ${esc(n.source.name)}</div>` : ''}<div class="bell__m">${n.needsConfirm ? '<b data-bell-confirm>Needs your confirmation</b>' : ''}<b>${esc(SEV_WORD[n.sev] || '')}</b><span>${esc(n.group || '')}</span><span>${esc(when(n.at))}</span></div></div>`
-    + (n.read ? '' : `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm bell__x" data-bell="read" data-id="${esc(n.id)}" aria-label="Mark as read: ${esc(n.title)}">Mark read</button>`)
+    + `<div>${link}${n.sub ? `<div class="bell__s">${esc(n.sub)}</div>` : ''}${n.source && n.source.name ? `<div class="bell__s" data-bell-from>From workflow: ${esc(n.source.name)}</div>` : ''}<div class="bell__m">${confirm ? '<b data-bell-confirm>Needs your confirmation</b>' : ''}<b>${esc(SEV_WORD[n.sev] || '')}</b><span>${esc(n.group || '')}</span><span>${esc(when(n.at))}</span></div></div>`
+    + (n.read ? '' : `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm bell__x" data-bell="read" data-id="${esc(n.id)}" aria-label="${confirm ? 'Confirm' : 'Mark as read'}: ${esc(n.title)}">${confirm ? 'Confirm' : 'Mark read'}</button>`)
     + '</li>';
 }
 function bodyHtml() {

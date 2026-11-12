@@ -155,6 +155,10 @@ register('UiKit', class extends Screen {
     // ----- registry
     const groups = LEVEL_ORDER.map(l => [l, Object.entries(MATURITY).filter(([, v]) => v.level === l)]);
     out.push(sec('registry', 'Maturity registry', groups.map(([l, list]) => `<h3>${esc(LEVELS[l].label)} (${list.length})</h3><ul class="uk-list" style="list-style:none;padding:0;margin:0">${list.map(([id, v]) => `<li style="padding:4px 0">${ui.maturity(v, { className: 'is-forced' })} <b>${esc(v.title || id)}</b> <code>${esc(id)}</code> <span class="ui-muted">${esc(v.note || '')}</span></li>`).join('')}</ul>`).join('')));
+    out.push(sec('hint', 'Hint and date card',
+      row('hint: an icon whose definition shows on hover and on focus (tones r y g b n; a link with href; a short number beside the icon)', ui.hint('clock', 'Due soon: the date is within 7 days', { tone: 'y' }) + ui.hint('alert', 'Past due', { tone: 'r' }) + ui.hint('check', 'Done', { tone: 'g' }) + ui.hint('info', 'Quiet definition') + ui.hint('inbox', 'Open the inbox', { tone: 'b', href: '#/UiKit', text: '3' })) +
+      row('dateCard: the one date-range card of Authorizations and Denial Intelligence', ui.dateCard({ id: 'uk-dc', title: 'Decision date', hint: 'Which dates the list matches', from: '', to: '', chips: [{ key: 'today', label: 'Today', from: '', to: '' }, { key: 'week', label: 'This week', from: '', to: '' }, { key: 'before', label: 'Before this week', from: '', to: '' }], onChange: () => { } }))));
+
     return out.join('');
   }
   // ----- gallery data

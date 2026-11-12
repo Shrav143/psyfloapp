@@ -1,6 +1,8 @@
-// Settings (route Settings, ?tab=people|roles|units|rules|audit|family|presenter). Admin only (admin.settings); everything here is
-// audited and takes effect on the next server call. Rules are edited through settings.rule (a reason is required, changes apply forward only);
-// people, roles and designations through the settings.* actions (a raise or a designation needs a second person).
+// Settings (route Settings). Admin only (admin.settings). It opens on the workflow map (round 5: WorkflowMap.js, a canvas of When / If / Then / Always
+// blocks with a rule library and an inspector; ?tab=rules opens it with the rule library open and filtered by q, cat, area). One small "More settings"
+// menu holds the six older pages, unchanged: ?tab=people|roles|units|family|audit|presenter. Everything here is audited and takes effect on the next
+// server call. Rules are edited through settings.rule (a reason is required, changes apply forward only); people, roles and designations through the
+// settings.* actions (a raise or a designation needs a second person).
 import { register, Screen, M, raw, esc, ui, session, hrefFor, canOpen } from '../app.js';
 import { BY_ID, resolveRoute } from '../registry.js';
 import { MATRIX, CAP_LIST, STAFF_ROLES, ROLE_LABEL, PORTAL_ACTORS, can } from '../shared/permissions.js';
@@ -8,7 +10,8 @@ import { rule, unitsFor, unitBands, unitThresholds, ruleValue } from '../shared/
 import { today as clockToday } from '../shared/clock.js';
 import { MATURITY, LEVELS, LEVEL_ORDER } from '../shared/maturity.js';
 import { confirmAccess, withDate } from './MyWorkViews.js';
-import { TABS, CAP_GROUPS, CELL, capLabel, designatable, areaOf, CATEGORY_CHIPS, CLOCK_KEYS, UNIT_KEYS, showValue, editorKind, choicesOf, parseValue, editorText, DOC_MODES, MODE_LABEL, SURFACES, ARCH, DECISIONS } from './SettingsData.js';
+import { WorkflowMap } from './WorkflowMap.js';
+import { MORE_TABS, CAP_GROUPS, CELL, capLabel, designatable, CLOCK_KEYS, UNIT_KEYS, showValue, editorKind, choicesOf, parseValue, editorText, DOC_MODES, MODE_LABEL, SURFACES, ARCH, DECISIONS } from './SettingsData.js';
 
 const RANKED = ['direct_support', 'supervisor', 'clinician', 'admin'];
 const ROLE_SHORT = { direct_support: 'Direct support', supervisor: 'Supervisor', clinician: 'Clinician', admin: 'Administrator', guardian: 'Guardian', school: 'School user' };
@@ -22,9 +25,11 @@ const KIND_LABEL = { person: 'Person', portal: 'Portal', system: 'System', bridg
 register('Settings', class extends Screen {
   init() {
     const t = this.params.tab;
-    this.tab = TABS.some(x => x[0] === t) ? t : 'people';
-    // the filter bar writes its state into the address (q, cat, area on Rules; q, kind, who, sim on Audit), so a copied link restores it
-    this.state = { f: { q: this.tab === 'rules' ? this.params.q || '' : '', cat: this.params.cat || '', area: this.params.area || '' }, a: { q: this.tab === 'audit' ? this.params.q || '' : '', kind: this.params.kind || '', who: this.params.who || '', sim: this.params.sim || '' }, auditLimit: 25, sort: null, portal: false, minutes: '180' };
+    // no tab (or ?tab=rules): the workflow map. The six older pages open from the More settings menu.
+    this.tab = MORE_TABS.some(x => x[0] === t) ? t : 'workflows';
+    // the filter bar of the Audit page writes its state into the address (q, kind, who, sim), so a copied link restores it
+    this.state = { a: { q: this.tab === 'audit' ? this.params.q || '' : '', kind: this.params.kind || '', who: this.params.who || '', sim: this.params.sim || '' }, auditLimit: 25, sort: null, portal: false, minutes: '180' };
+    this.map = this.tab === 'workflows' ? new WorkflowMap(this) : null;
   }
   get actor() { return session.actor; }
 
@@ -55,24 +60,28 @@ register('Settings', class extends Screen {
   renderVals() {
     const a = this.actor; const s = this.s;
     if (!a || !can(a, 'admin.settings')) {
-      return { tabs: raw(''), body: raw(ui.emptyState({ tone: 'denied', title: 'Needs an administrator', body: 'Settings change who can see and do what, and the rules behind every date. Ask an administrator.', action: { label: 'Go to My Work', href: '#/MyWork' } })), pending: raw('') };
+      return { cls: '', chip: raw(''), more: raw(''), lead: raw(''), body: raw(ui.emptyState({ tone: 'denied', title: 'Needs an administrator', body: 'Settings change who can see and do what, and the rules behind every date. Ask an administrator.', action: { label: 'Go to My Work', href: '#/MyWork' } })), pending: raw('') };
     }
-    const tabs = `<nav class="se-tabs" aria-label="Settings sections">${TABS.map(([id, label]) => `<a class="se-tab" href="#/Settings?tab=${id}"${id === this.tab ? ' aria-current="page"' : ''}>${esc(label)}${this.badge(id)}</a>`).join('')}</nav>`;
-    const body = { people: () => this.people(), roles: () => this.roles(), units: () => this.units(), rules: () => this.rules(), audit: () => this.audit(), family: () => this.family(), presenter: () => this.presenter() }[this.tab]();
-    return { tabs: raw(tabs), body: raw(body) };
+    const waiting = MORE_TABS.reduce((n, [id]) => n + this.count(id), 0);
+    const more = `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" id="se-more" data-x="more" aria-haspopup="menu">${ui.icon('gear', 14)} More settings${waiting ? `<b class="se-n">${waiting}<span class="ui-sr"> waiting for a second person</span></b>` : ''}${ui.icon('chevD', 14)}</button>`;
+    const lead = this.tab === 'workflows' ? '' : `<nav class="se-crumb" aria-label="Settings"><a class="ui-linkbtn" href="#/Settings">&larr; Workflows</a><span aria-hidden="true">/</span><span>${esc((MORE_TABS.find(x => x[0] === this.tab) || [, ''])[1])}</span></nav>`;
+    const body = this.tab === 'workflows' ? this.map.html() : { people: () => this.people(), roles: () => this.roles(), units: () => this.units(), audit: () => this.audit(), family: () => this.family(), presenter: () => this.presenter() }[this.tab]();
+    return { cls: this.tab === 'workflows' ? 'se--wf' : '', chip: raw(ui.maturity('settings.workflows') || ui.maturity({ level: 'pilot', note: 'Workflows only decide what the bell shows a person.' })), more: raw(more), lead: raw(lead), body: raw(body) };
   }
-  badge(id) {
-    const s = this.s;
-    const n = id === 'people' ? (s.role_changes || []).filter(x => x.status === 'pending').length : id === 'roles' ? (s.designations || []).filter(x => x.status === 'pending').length : 0;
-    return n ? `<b>${n}<span class="ui-sr"> waiting for a second person</span></b>` : '';
+  count(id) { const s = this.s; return id === 'people' ? (s.role_changes || []).filter(x => x.status === 'pending').length : id === 'roles' ? (s.designations || []).filter(x => x.status === 'pending').length : 0; }
+  moreMenu(anchor) {
+    const items = MORE_TABS.map(([id, label]) => { const n = this.count(id); return `<a class="wm-menu__b" href="#/Settings?tab=${id}"${id === this.tab ? ' aria-current="page"' : ''}>${esc(label)}${n ? `<b class="se-n">${n}<span class="ui-sr"> waiting for a second person</span></b>` : ''}</a>`; }).join('');
+    ui.popover({ anchor, placement: 'bottom-end', label: 'More settings', focus: true, body: `<nav class="wm-menu" aria-label="More settings">${this.tab === 'workflows' ? '' : `<a class="wm-menu__b" href="#/Settings">Workflows</a>`}${items}</nav>` });
   }
   after(root) {
+    if (this.map) this.map.bind(root);
     root.querySelectorAll('[data-x]').forEach(el => { el.onclick = e => { e.preventDefault(); this.act(el.dataset.x, el.dataset, el); }; });
     const m = root.querySelector('#se-min'); if (m) m.oninput = () => { this.state.minutes = m.value; const o = root.querySelector('#se-min-out'); if (o) o.textContent = this.calc(m.value); };
   }
   async act(name, d, el) {
     try {
-      if (name === 'addUser') this.addUser(el);
+      if (name === 'more') this.moreMenu(el);
+      else if (name === 'addUser') this.addUser(el);
       else if (name === 'role') this.changeRole(d.id, el);
       else if (name === 'confirm') confirmAccess({ s: this.s, kind: d.kind, id: d.id, me: this.actor.id, opener: el, run: async (a, args) => { const r = await this.do(a, args); this.toast(args.decision === 'approve' ? 'Confirmed · written to the audit log' : 'Declined · written to the audit log'); return r; } });
       else if (name === 'designate') this.designate(d.cap, el);
@@ -223,24 +232,8 @@ register('Settings', class extends Screen {
   }
 
   // ================================================================================================ Rules
-  rulesRows() { return (this.s.rules || []).map(r => ({ ...r, area: areaOf(r.key), id: r.key + '|' + (r.scope || '') })); }
-  rules() {
-    const all = this.rulesRows(); const f = this.state.f;
-    const match = r => (!f.cat || r.category === f.cat) && (!f.area || r.area === f.area) && (!f.q || (r.label + ' ' + r.key + ' ' + r.source + ' ' + showValue(r) + ' ' + (r.register || '')).toLowerCase().includes(f.q.toLowerCase()));
-    const rows = all.filter(match);
-    const areas = [...new Set(all.map(r => r.area))].sort();
-    const bar = ui.filterBar({ id: 'se-rules-f', search: { key: 'q', placeholder: 'Search rules' }, chips: CATEGORY_CHIPS.map(([v, l]) => ({ key: 'cat', value: v, label: l, count: all.filter(r => r.category === v).length })), selects: [{ key: 'area', label: 'Area', options: [['', 'All areas'], ...areas.map(a => [a, a])] }], state: f, shown: rows.length, total: all.length, noun: 'rules', onChange: nf => this.setState({ f: nf }) });
-    const cols = [
-      { key: 'label', label: 'Rule', primary: true, sort: true, render: r => `<b>${esc(r.label)}</b><small class="se-sub">${esc(r.area)} · ${esc(r.key)}${r.register ? ' · ' + esc(r.register) : ''}</small>` },
-      { key: 'value', label: 'Value', render: r => `<span>${esc(showValue(r))}</span>${r.enabled === false ? ' ' + ui.chip('Off', { tone: 'neutral', size: 'sm' }) : ''}${(r.history || []).length ? ' ' + ui.chip('Changed', { tone: 'info', size: 'sm' }) : ''}` },
-      { key: 'category', label: 'Source', sort: true, render: r => ui.sourceChip(r) },
-      { key: 'verified', label: 'Verified', hideBelow: 1024, render: r => r.verified_on ? esc(M.fmtDate(r.verified_on, { year: true })) : '<span class="se-muted">Not verified</span>' },
-      { key: 'act', label: 'Change', render: r => `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="rule" data-key="${esc(r.key)}">Edit</button>` }
-    ];
-    const sorted = this.state.sort ? ui.sortRows(rows, this.state.sort, { label: r => r.label, category: r => r.category }) : rows;
-    return `<section class="se-card">${bar}${ui.queueTable({ id: 'se-rules', caption: 'Rules table', columns: cols, rows: sorted, rowId: r => r.id, sort: this.state.sort, onSort: sort => this.setState({ sort }), maxHeight: 'none', empty: { title: 'No rule matches', body: 'Clear a filter to see more.' } })}<p class="se-foot">A change is kept with its reason and applies from now on. Stored dates and counts are not recomputed.</p></section>`;
-  }
-  editRule(key, opener) {
+  // The rules table is edited from the workflow map (the rule library and a block's inspector) and from the Units page; this drawer is the one editor.
+  editRule(key, opener, o = {}) {
     const r = rule(this.s, key); if (r.missing) return;
     const k = editorKind(r);
     const ctl = k === 'boolean' ? `<select class="ui-select" id="se-rv"><option value="true"${r.value ? ' selected' : ''}>On</option><option value="false"${!r.value ? ' selected' : ''}>Off</option></select>`
@@ -250,7 +243,7 @@ register('Settings', class extends Screen {
       : `<input class="ui-input" id="se-rv" value="${esc(editorText(r))}">`;
     const hint = k === 'list' ? 'One item per line.' : k === 'json' ? 'JSON. Unit bands are [[minutes, units], ...], both increasing.' : '';
     const hist = (r.history || []).slice().reverse();
-    const body = `<div class="se-rulehead">${ui.sourceChip(r)} ${r.register ? `<span class="se-muted">Register ${esc(r.register)}</span>` : ''} <span class="se-muted">${esc(r.verified_on ? 'Checked ' + M.fmtDate(r.verified_on, { year: true }) : 'Not verified')}</span></div>
+    const body = `${o.lead ? `<p class="se-lead se-lead--rule">${esc(o.lead)}</p>` : ''}<div class="se-rulehead">${ui.sourceChip(r)} ${r.register ? `<span class="se-muted">Register ${esc(r.register)}</span>` : ''} <span class="se-muted">${esc(r.verified_on ? 'Checked ' + M.fmtDate(r.verified_on, { year: true }) : 'Not verified')}</span></div>
       <dl class="ui-dl"><div class="ui-dl__r"><dt>Source</dt><dd>${esc(r.source || 'Not recorded')}</dd></div>${r.note ? `<div class="ui-dl__r"><dt>Note</dt><dd>${esc(r.note)}</dd></div>` : ''}<div class="ui-dl__r"><dt>Unit</dt><dd>${esc(r.unit || '—')}</dd></div><div class="ui-dl__r"><dt>Default</dt><dd>${esc(showValue({ ...r, value: r.default }))}</dd></div></dl>
       <div class="ui-field"><label class="ui-field__l" for="se-rv">Value</label>${ctl}${hint ? `<div class="ui-field__h">${hint}</div>` : ''}</div>
       <div class="ui-field"><label class="se-check"><input type="checkbox" id="se-en"${r.enabled !== false ? ' checked' : ''}> In use</label></div>
