@@ -1,0 +1,67 @@
+title: Authorizations › Eligibility & Benefits › Result › Which verdict and why
+route: /authorizations/eligibility/R-1042
+intro: The verdict is worked out from the patient's row, top question first. A check that could not run is 'Not checked'. Any failed or unconfirmed question gives 'Fix before billing'. If all pass, a missing or unknown authorization gives 'Authorization first'. Otherwise 'Cleared to bill'. The band shows the verdict and the one fact that decides it, as a label and a value. There is no headline and no reason sentence: the rows under the band carry the detail.
+dir: TD
+also: Demo only: the first five failures have a seeded patient on the list (R-1101, R-0975, R-1118, I-2275, R-0921) and every one has a chip under 'Try a sample' or 'More samples' on Verify.
+---
+start s1 "A result opens for a patient"
+decision qu "Did the check run? (Verify not paused)"
+decision q1 "Coverage active on the service date,\nunder the member ID given?"
+decision q2 "Service covered and confirmed by the plan?"
+decision q3 "Clinic enrolled and in network, and confirmed?"
+decision q4 "Every day or unit limit still has room?"
+decision q5 "Another plan pays first?"
+decision q6 "Authorization needed but not approved,\nor no rule on file?\n(required, in progress, under review, retro request open, unknown)"
+
+group gFix "Fix before billing (red): the fact is the first check that fails"
+  screen f0 "Verdict 'Fix before billing'"
+  process f1 "Coverage 'Lapsed 10/12'\nor 'Ended 09/30', and 'Ended 09/30, now with Cardinal' when the member moved"
+  process f2 "Coverage 'Not found'\nNothing else is checked and no payment line is shown"
+  process f8 "Member ID 'Plan has ID ending 5521'"
+  process f4 "Benefits 'Not covered'"
+  process f9 "Benefits 'Not confirmed'"
+  process f3 "Enrollment 'Not enrolled' or 'Not confirmed'"
+  process f7 "Limit '14 of 14 days used' (or units, for IOP)"
+  process f6 "Other insurance 'Another plan pays first'"
+endgroup
+
+group gAuth "Authorization first (amber)"
+  screen a0 "Verdict 'Authorization first'"
+  toast a1 "Authorization 'In progress', 'Payer reviewing', 'Required, not on file' or 'Retro request open'\nPrimary button 'Start authorization'"
+  toast a2 "No rule on file: Authorization 'Requirement unknown'"
+endgroup
+
+group gOk "Cleared to bill (green)"
+  screen o0 "Verdict 'Cleared to bill'"
+  toast o1 "Authorization 'On file, 11 days left' or 'Not required'"
+endgroup
+
+group gUn "Not checked (grey)"
+  screen u0 "Verdict 'Not checked'"
+  toast u1 "Coverage 'Not checked'\nNothing was asked of the plan. 'Open Settings' and 'Re-check' are the buttons"
+endgroup
+
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › The exceptions"
+
+s1 --> qu
+qu -->|No| u0 --> u1 --> g1
+qu -->|Yes| q1
+q1 -->|No: lapsed, ended| f1 --> f0
+q1 -->|No: not found| f2 --> f0
+q1 -->|No: another member ID| f8 --> f0
+q1 -->|Yes| q2
+q2 -->|No: not covered| f4 --> f0
+q2 -->|No: not confirmed| f9 --> f0
+q2 -->|Yes| q3
+q3 -->|No| f3 --> f0
+q3 -->|Yes| q4
+q4 -->|No| f7 --> f0
+q4 -->|Yes| q5
+q5 -->|Yes| f6 --> f0
+q5 -->|No| q6
+q6 -->|Yes| a0 --> a1 --> g1
+a0 -.-> a2
+q6 -->|No| o0 --> o1 --> g1
+f0 --> g1
+f0 -.-> g2

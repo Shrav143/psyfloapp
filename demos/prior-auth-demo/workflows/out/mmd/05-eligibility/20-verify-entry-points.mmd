@@ -1,0 +1,74 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  subgraph gBlank ["Opens an empty form"]
+  a1@{ shape: stadium, label: "Click 'Verify a patient' on the Eligibility & Benefits list" }
+  a2@{ shape: stadium, label: "Open 'Demo' (top right), pick item 4 'Eligibility & Benefits: verify a patient'" }
+  end
+  subgraph gLinked ["Opens a pre-filled form"]
+  a3@{ shape: stadium, label: "On a referral's 'Coverage' tab, click 'Open full Eligibility & Benefits check'" }
+  a4@{ shape: stadium, label: "On the Authorizations worklist, click the red pill 'Coverage needs a fix' on a row" }
+  a5@{ shape: stadium, label: "On a case's actions, click 'Open Eligibility & Benefits' in the coverage recommendation" }
+  end
+  p0@{ shape: rect, label: "<b>Address opens /authorizations/eligibility/verify</b><br/>with ?referral=ID (from a referral), ?case=ID (from a case) or nothing" }
+  q1@{ shape: diam, label: "Address has ?referral= ?" }
+  q2@{ shape: diam, label: "Referral found?" }
+  p1@{ shape: rect, label: "<b>Fills payer, member ID (masked), program from the referral</b><br/>Initials and age remembered for the result" }
+  t1@{ shape: odd, label: "<b>'Referral not found'</b><br/>'RF-9999 is not in the referrals.'" }
+  q3@{ shape: diam, label: "Address has ?case= ?" }
+  q4@{ shape: diam, label: "Case is a row on the Eligibility list?" }
+  p2@{ shape: rect, label: "<b>Fills payer, masked member ID, program and date of service from that row</b><br/>The case ID is remembered" }
+  q5@{ shape: diam, label: "Case is a request in the queue?" }
+  p3@{ shape: rect, label: "<b>Fills payer and program</b><br/>Member ID left empty: type it" }
+  p4@{ shape: rect, label: "Nothing is filled and no message appears" }
+  p5@{ shape: rect, label: "<b>Date of birth made up from the age, for example age 26 gives 01/15/2000</b><br/>Anything the source lacks stays empty" }
+  sc@{ shape: curv-trap, label: "<b>Verify page</b><br/>Card 'Patient and service' on the left, 'Live check' on the right" }
+  bk@{ shape: rect, label: "<b>Back links at the top</b><br/>'Eligibility & Benefits' always<br/>'Back to referral RF-2040' when ?referral= names a referral that exists<br/>With ?case= as well, 'Back to case R-1042' takes its place" }
+  nb@{ shape: rect, label: "<b>A referral that does not exist gives no back link</b><br/>Only the toast" }
+  cy@{ shape: rect, label: "<b>Both addresses are carried to the result page</b><br/>so the way back is still there after the check" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  a1 --> p0
+  a2 --> p0
+  a3 --> p0
+  a4 --> p0
+  a5 --> p0
+  p0 --> q1
+  q1 -->|"Yes"| q2
+  q2 -->|"Yes"| p1 --> p5 --> sc
+  q2 -->|"No"| t1 --> nb --> sc
+  q1 -->|"No"| q3
+  q3 -->|"No: empty form"| sc
+  q3 -->|"Yes"| q4
+  q4 -->|"Yes"| p2 --> p5
+  q4 -->|"No"| q5
+  q5 -->|"Yes"| p3 --> p5
+  q5 -->|"No"| p4 --> sc
+  sc --> g1
+  sc --> bk
+  bk --> g2 & g3
+  bk -.-> cy
+  class a1,a2,a3,a4,a5 k_start
+  class p0,p1,p2,p3,p4,p5,bk,nb,cy k_process
+  class q1,q2,q3,q4,q5 k_decision
+  class t1 k_toast
+  class sc k_screen
+  class g1,g2,g3 k_goto
+  style gBlank fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gLinked fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

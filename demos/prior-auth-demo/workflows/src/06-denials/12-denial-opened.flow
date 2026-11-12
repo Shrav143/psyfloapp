@@ -1,0 +1,45 @@
+title: Denial Intelligence › A denial opened
+route: /denials/D-3318
+intro: The page of one denial, top to bottom: the header card, Your options (the route under way says where it stands inside its own choice), what the payer said, where the denial is weak, the framework's six dimensions, then History. No headline card above the header and no separate next-step block. Each part is detailed in its own diagram.
+dir: TD
+---
+start s1 "Open /denials/D-3318 (a dashboard row, a link from another screen)"
+screen cr "Crumbs 'Denial Intelligence › D-3318'"
+click cb "Click 'Denial Intelligence' in the crumbs"
+goto g0 "Continues in: Denial Intelligence › Open denials list"
+
+screen h1 "Header card\nD-id (24 px), level of care chip, type pill ('Partial approval')\nPills: the read ('Worth challenging', 'Borderline', 'Probably accept'), '64% chance of overturning', the deadline ('Peer-to-peer window closes in 36 h')\nPayer · initials, age · diagnosis · letter file name; 'Note: ...' when one was added"
+process pv "The read comes from the chance: 50 and over, 35 to 49, under 35 (D-3306, 27%, reads 'Probably accept')\nA filed or settled denial drops the deadline pill: Your options says where it stands"
+click b2 "Click 'Appeal analysis report'"
+goto g6 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
+click b3 "Click 'Case R-0997'"
+goto g7 "Continues in: Authorizations › Case page › Ways in"
+
+screen c5 "'Your options': the first section under the header\nThree compact choices: Peer-to-peer call, Written appeal, Accept\nEach with its chance and what it gets back; 'Recommended' on one; 'Compare the options' in the header"
+goto g3 "Continues in: Denial Intelligence › Your options"
+goto g1 "Continues in: Denial Intelligence › A denial opened › Next step and where it stands"
+screen c2 "'What Cardinal said': the payer's words\n'What the chart shows': two or three sentences"
+screen c3 "'Where the denial is weak': findings with severity, source chip and fix\nButton 'Full summary' in the card header"
+goto g2 "Continues in: Denial Intelligence › A denial opened › Where the denial is weak"
+decision d1 "Is it an administrative denial?\n'Late notice' or 'Retro-authorization denied'"
+screen c4 "The framework card, titled with its name: 'ASAM Criteria' (LOCUS or CALOCUS-CASII for mental health alone)\nSix compact rows: dot, D1 to D6 with the framework's names, a word ('High concern')"
+goto g8 "Continues in: Denial Intelligence › A denial opened › Framework dimensions and their pop-ups"
+process p2 "The card is left out"
+screen fo "'History', folded: one list, newest first, a flag on the right"
+goto g9 "Continues in: Denial Intelligence › A denial opened › Folded sections"
+end e1 "Person reads the denial and acts from Your options"
+
+s1 --> cr --> cb --> g0
+cr --> h1 --> pv
+h1 --> b2 --> g6
+h1 --> b3 --> g7
+h1 --> c5 --> g3
+c5 --> g1
+c5 --> c2 --> c3 --> g2
+c3 --> d1
+d1 -->|No| c4 --> g8
+d1 -->|Yes| p2
+c4 --> fo
+p2 --> fo
+fo --> g9
+fo --> e1

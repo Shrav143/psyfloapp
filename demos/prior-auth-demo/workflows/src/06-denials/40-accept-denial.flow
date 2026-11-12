@@ -1,0 +1,44 @@
+title: Denial Intelligence › Accept the denial
+route: /denials/D-3297
+intro: Accepting closes the denial and logs it as accepted. A reason goes on the record first. Accepting is always the person's choice and is never the only option. It also reaches Authorizations and Analytics.
+dir: TD
+also: The denial's row in Authorizations reads Accepted with 'Plan the step-down', and Analytics logs it as an accepted denial. The same steps run when an upheld appeal is accepted from 'Record the payer's decision'.
+---
+start s1 "Click 'Accept the decision' in the accept choice of Your options (primary when it is recommended), or open 'Compare the options', select the 'Accept...' card and click its button"
+click c1 "Click 'Accept the decision'"
+overlay o1 "Modal 'Accept the decision?'"
+screen l1 "Sub line 'D-3297 · closes the denial, nothing regained'"
+input i1 "'Reason for the record' (required): open the menu and pick one"
+screen l2 "Menu choices\n'The chart does not yet support a challenge' (chosen at first)\n'The clinical team agrees with the payer's reasoning'\n'The member and family chose to step down'\n'The effort of an appeal outweighs the likely gain'"
+input i2 "Note (optional)\n'Anything the team should know'"
+click c2 "Click 'Accept and close'"
+click c3 "Click 'Cancel', the X, press Esc (this also closes an open menu first), or click the dimmed area"
+endx e1 "Nothing recorded\nThe denial stays open"
+
+store st1 "Accepted: reason (with the note after it) and time saved on the denial"
+store st2 "Request settled: leaves 'Appeal or call' for 'Decided'\nChip 'Accepted', 'Closed. Logged as an accepted denial'\nDeadline cleared; held by Cadence\nScheduled lines (a booked call, the daily check) leave the History"
+agent a1 "Cadence logs the accepted denial for Analytics"
+store st3 "History: 'You accepted the decision' with 'Reason: ...'\n'Cadence logged the accepted denial for Analytics and added a step-down plan to Case Manager'"
+store st4 "Shared with other screens: denial, case and payer\nAuthorizations: the denial's row reads Accepted with 'Plan the step-down'\nAnalytics logs the accepted denial"
+toast t1 "'Decision accepted'\n'Analytics logs it as an accepted denial. Case Manager has a step-down plan.'"
+toast t2 "Notification 'Denial closed' from Cadence\nOpens Authorizations, All view"
+screen sc1 "The accept choice in Your options reads 'Accepted 10/20' with the link 'Plan the step-down'\nHistory: 'You accepted the decision' flagged 'Logged decision'"
+process p1 "The accept choice reads 'Accepted 10/20' with 'Plan the step-down'; 'Compare the options' is gone\nThe dashboard lists it under 'Closed' with the outcome 'Accepted'\nSidebar badge goes down by one"
+click c4 "Click 'Plan the step-down'"
+click c5 "Open the Dashboard from the sidebar"
+goto g1 "Continues in: Authorizations › Denied › Step-down plans from accepted denials"
+goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
+process p2 "PRD guardrail: the agents never accept a denial\nA person gives the reason first"
+
+s1 --> c1 --> o1 --> l1
+l1 --> i1 --> l2
+l1 --> i2
+l2 --> c2
+i2 --> c2
+o1 --> c3 --> e1
+c2 --> st1 --> st2 --> a1 --> st3 --> st4 --> t1 --> sc1
+st4 --> t2 --> g1
+sc1 --> p1
+sc1 --> c4 --> g1
+sc1 --> c5 --> g2
+o1 -.-> p2

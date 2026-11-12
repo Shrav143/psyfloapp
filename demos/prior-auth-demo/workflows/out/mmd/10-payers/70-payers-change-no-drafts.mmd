@@ -1,0 +1,68 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open 'History & Changes'</b><br/>for a payer" }
+  dp@{ shape: diam, label: "Is a change waiting?" }
+  up@{ shape: curv-trap, label: "<b>One quiet line</b><br/>'Nothing is waiting for you. Changes here are demo data...'<br/>Only the 'What changed' history below" }
+  hv@{ shape: rect, label: "<b>Harborview's waiting change</b><br/>'Portal form change', effective 10/18<br/>The request form now asks for the expected length of stay and a second contact.<br/>The old form closes 10/31." }
+  ev@{ shape: rect, label: "<b>Evergreen's waiting change</b><br/>'Reference number on notice calls', effective 10/22<br/>It adds 'Notice call reference number' to the Residential 3.5 list" }
+  dn@{ shape: diam, label: "<b>Does the payer have an unsent draft at a site in view?</b><br/>Read live: requests in 'Preparing'<br/>and saved New Case drafts not sent, at the sites in view" }
+  none@{ shape: odd, label: "<b>'No open drafts are affected.</b><br/>New drafts for Harborview use the change once you apply it.'<br/>Buttons: 'Acknowledge change', then 'Review & apply changes'<br/>whose pop-up reads 'Apply to new drafts?'<br/>Note: 'Acknowledging records who saw it. Applying makes new drafts use the change.'" }
+  why0@{ shape: rect, label: "<b>P-1499 is not listed: it is an answer on a request</b><br/>Harborview already has. R-0975 is the same for Evergreen" }
+  one@{ shape: odd, label: "<b>'Scribe can redraft the 1 draft that is not yet sent: I-2207.'</b><br/>Buttons: 'Acknowledge change', then 'Review & apply changes'<br/>whose pop-up reads 'Update 1 draft?'" }
+  ca0@{ shape: trap-t, label: "<b>Click 'Acknowledge change' and confirm,</b><br/>then 'Review & apply changes'" }
+  mn@{ shape: win-pane, label: "<b>Apply to new drafts?</b><br/>Nothing is redrafted until you confirm.<br/>No open drafts are affected.<br/>Harborview will use the change for every new draft from now on." }
+  a1@{ shape: hex, label: "<b>Packet is setting the change up for new drafts</b><br/>(demo: 1.5 seconds)" }
+  a2@{ shape: hex, label: "<b>Integrity is checking the document lists</b><br/>(demo: 1.5 seconds)" }
+  dd@{ shape: diam, label: "Does the change add documents?" }
+  da@{ shape: cyl, label: "<b>Document lists gain the change's new rows</b><br/>Evergreen: 'Notice call reference number'<br/>Edit log: one 'Documents' entry" }
+  dn0@{ shape: rect, label: "<b>Harborview adds none: the change is about a form,</b><br/>not the list" }
+  s0@{ shape: cyl, label: "<b>No drafts touched</b><br/>No update recorded for Authorizations<br/>Change cleared, no 'checked' date is written" }
+  hh0@{ shape: cyl, label: "<b>'What changed' gets a new top row</b><br/>'Portal form change: acknowledged and applied'<br/>'No open drafts needed an update. New drafts use the change.'" }
+  t0@{ shape: odd, label: "<b>'No open drafts to update'</b><br/>The change is applied for Harborview.<br/>New drafts use it from now on." }
+  nb@{ shape: rect, label: "<b>No 'Drafts updated' bell notification</b><br/>Sidebar badge drops by one<br/>Row loses 'Change waiting', dot turns green" }
+  cx@{ shape: trap-t, label: "<b>Click 'Cancel', press Escape,</b><br/>click the X or the dimmed area" }
+  x1@{ shape: stadium, label: "Modal closes, change stays waiting" }
+  e1@{ shape: stadium, label: "The change is applied and the payer has nothing waiting" }
+  g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Review and apply a change" }
+  g2@{ shape: subproc, label: "Continues in: Payers › History & Changes › Acknowledge a change" }
+  s1 --> dp
+  dp -->|"No"| up --> e1
+  dp -->|"Yes"| hv --> dn
+  dp -->|"Yes"| ev --> dn
+  dn -->|"No"| none --> why0
+  dn -->|"Yes"| one --> g1
+  why0 --> ca0 --> mn
+  mn --> a1 --> a2 --> dd
+  dd -->|"Yes"| da --> s0
+  dd -->|"No"| dn0 --> s0
+  s0 --> hh0 --> t0 --> nb --> e1
+  mn --> cx --> x1
+  ca0 -.-> g2
+  class s1 k_start
+  class dp,dn,dd k_decision
+  class up k_screen
+  class hv,ev,why0,dn0,nb k_process
+  class none,one,t0 k_toast
+  class ca0,cx k_click
+  class mn k_overlay
+  class a1,a2 k_agent
+  class da,s0,hh0 k_store
+  class x1 k_endx
+  class e1 k_end
+  class g1,g2 k_goto

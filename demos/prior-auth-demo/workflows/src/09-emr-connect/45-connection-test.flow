@@ -1,0 +1,46 @@
+title: EMR Connect › Connect a system › Run the connection test and save
+route: /emr
+intro: Step 3 of 'Connect a system': three read-only checks run one after the other, then 'Connect {name}' saves the system. In the demo the test always passes. Reconnect runs the very same three checks.
+dir: TD
+also: Production failures below come from the PRD (09 integrations) and are not simulated by the demo.
+---
+overlay o1 "Connect a system, step 3 of 3: Test\nRead-only. Nothing is written back until a person approves it."
+
+group gTest "Connection test"
+  process k1 "Reaching the system\nAbout 0.8 seconds a check: spinner, then a green tick"
+  process k2 "Signing in with read-only access"
+  process k3 "Reading one test record"
+  toast t1 "'The test passed. Access is read-only, and nothing is written back.'"
+endgroup
+
+ext x1 "The system answers\nDemo: simulated with a demo record"
+decision q1 "Can the test fail?"
+endx f1 "Production only: sign-in rejected, a sign-in challenge, or the system unreachable\nThe feed pauses and a person is asked to fix it"
+click b0 "'Connect {name}' is dimmed until the last check passes"
+click b1 "Click 'Connect {name}'\nFor example 'Connect Lab results · Site B'"
+
+group gSave "What is saved"
+  store s1 "New system on the list\nStatus Connected, last sync now, connected since today, the contact, write-back off (its row says 'Read only')"
+  store s2 "Files pulled tile goes up by 5"
+  agent a1 "Reader logs 'Tested the read-only connection to {name} and found 5 files to pull'"
+  toast t2 "'{name} is connected'\n'Read-only. Nothing is written back.'"
+endgroup
+
+end e1 "Pop-up closes\nThe new row sits at the end of Connection health"
+click cx "Click 'Cancel', click the X, press Escape, or click the dimmed area"
+endx e2 "Test stops, nothing is saved\nThere is no 'Back' on this step"
+goto g1 "Continues in: EMR Connect › Sync › Sync now"
+goto g2 "Continues in: EMR Connect › Manage › Open the Manage drawer"
+goto g3 "Continues in: EMR Connect › Manage › Reconnect a system"
+
+o1 --> k1 --> k2 --> k3 --> t1
+k1 -.-> x1
+k3 -.-> g3
+t1 --> q1
+q1 -->|Demo: never| b0 --> b1
+q1 -->|Production| f1
+b1 --> s1 & s2 & a1 & t2
+s1 --> e1
+t2 --> e1
+e1 --> g1 & g2
+o1 -.-> cx --> e2

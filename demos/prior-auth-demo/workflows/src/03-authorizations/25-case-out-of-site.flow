@@ -1,0 +1,35 @@
+title: Authorizations › Case page › A case at another site
+route: /authorizations/case/I-2207
+intro: What a case page does with the viewer's sites. A case at a site the viewer cannot see shows a short card that names the site and no patient. A viewer who can see both sites gets a quiet site label on the header and a Site fact.
+dir: TD
+also: Demo only: the site of a case is fixed by the demo (the case ID decides; a denial belongs to the case it came from). Try it: Demo menu › 'Viewing as' › Dr. Rivera, then open /authorizations/case/I-2207 (a Site B case). A fresh load starts as Jordan Perez on Both sites.
+---
+start s1 "Open /authorizations/case/ID\n(a link, a notification, a row, or typed)"
+process r0 "The page finds the request for the ID\nA denial's number is traced back to its case"
+decision d0 "Is there a request for this ID?"
+screen nf "'Request not found'\nNothing about any request is shown, so there is nothing to hide"
+decision d1 "Is the case at a site in view?"
+screen oos "Card: 'This case is not available at Site A'\n'I-2207 belongs to Site B. Dr. Rivera can see Site A only. Access follows the site so staff see only the patients they work with.'\nNo patient, no tabs, no numbers"
+decision d2 "Can the viewer see both sites, and is one site selected in the top bar?"
+click sb "Click 'Show both sites'"
+store sc "The view becomes Both sites"
+click bd "Click 'Back to the Dashboard' on the card"
+goto g1 "Continues in: Dashboard › Arrive › What the page shows"
+endx e1 "The card stays\nThe viewer's role does not include that site, so there is no way past it"
+screen cp "The case page opens as usual\nNext action, facts, tabs, History"
+decision d3 "Can the viewer see both sites?"
+screen lb "Quiet site label at the end of the sub line\n'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested · Site A'\nand a 'Site' fact: 'Site A' with 'Main campus'"
+screen nl "No site label and no 'Site' fact\n(a viewer with one site learns nothing from it)"
+goto g2 "Continues in: Authorizations › Case page › Ways in"
+
+s1 --> r0 --> d0
+d0 -->|No| nf
+d0 -->|Yes| d1
+d1 -->|No| oos --> d2
+d1 -->|Yes| cp --> d3
+d2 -->|Yes| sb --> sc --> cp
+d2 -->|No| e1
+oos --> bd --> g1
+d3 -->|Yes| lb
+d3 -->|No| nl
+cp -.-> g2

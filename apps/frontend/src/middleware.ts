@@ -8,6 +8,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // The prior-authorization demo is public mock data; it never needs a session.
+  if (request.nextUrl.pathname.startsWith("/demo")) {
+    return NextResponse.next();
+  }
+
   console.log("Middleware running for", request.nextUrl.pathname);
 
   let supabaseResponse = NextResponse.next({ request });

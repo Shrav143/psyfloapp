@@ -1,0 +1,41 @@
+title: Analytics › Monthly report › What the files contain
+route: /analytics
+intro: The two downloaded files and the printed page are built from the same numbers as the page, for the period, payer, program, diagnosis group and site view chosen when the window opened. A figure behind fewer than 20 decisions is written as 'Not enough decisions yet', never as a number.
+dir: TD
+also: Demo only: the real monthly pack in the product requirements is one PDF, aggregate only, approved by the operator before it is sent. The demo has no PDF file. The printed page holds the same sections as the written report. A one-site viewer's report names the site and has no Site A and Site B section.
+---
+start s1 "A download button is clicked in the report window"
+
+group gMd "Written report (.md)"
+  doc m1 "'# Psyflo monthly report'\n'Period', 'Site view', 'Payer', 'Program' and 'Diagnosis group'\n'Built by Analyst from demo data. Demo values: this is sample data. A figure based on fewer than 20 decisions is left out.' and the CMS decision time note"
+  doc m2 "'## Headline figures'\nNine bullets: approval rate, denial rate, first-pass approval, average decision time (demo values, share past the CMS time), preventable denials, appeals overturned, top denial cause, advice taken works, sent without edits\nEach with its change against the earlier period"
+  doc m3 "'## Approvals and denials by month'\nTable of the twelve months: decisions, approved as requested, approved in part, denied, approval rate, denial rate"
+  doc m4 "'## Payer scorecard'\nTable: one row per payer and 'All payers', with the same columns as the page"
+  doc m5 "'## Payer by diagnosis group (approved as requested)'\nTable of rate and decisions for each cell"
+  doc m6 "'## Denial reasons'\nTable: Reason, Denials, Share of denials, Running share, Preventable"
+  doc m7 "'## Length of stay and units'\n'## Process health'\nBullets for retro-authorizations by month, referral to authorization, peer-to-peer calls, appeals and the live workload"
+  doc m8 "'## Site A and Site B'\nTable with Site A, Site B and Both sites\nLeft out for a one-site viewer or when one site is chosen"
+  doc m9 "'## How people edit agent drafts', '## Denial outcomes', '## What helps most'\nAnd '## Why recommendations were dismissed' when someone dismissed one"
+endgroup
+
+group gCsv "Figures as a table (.csv)"
+  doc v1 "One header row\nperiod, site_view, payer, program, diagnosis, section, label, value, count, unit\nUnit says percent, days or count"
+  doc v2 "Rows by section\nheadline, trend, payer scorecard, payer by diagnosis group, program, request type and population, denial reasons, length of stay, process health, sites, draft edits, what helps most\nand 'dismissed recommendations' when there are any"
+  doc v3 "Commas and quotes inside a value are wrapped in quotes\nOpens in a spreadsheet"
+endgroup
+
+decision q1 "Is the figure behind 20 or more decisions?"
+process p1 "The number is written"
+process p2 "'Not enough decisions yet' is written in its place\nThe count is kept"
+process p3 "Same view as the page: the same period, filters and site view, the same hidden figures\nNo dollar figures anywhere"
+end e1 "File matches the screen"
+
+s1 --> m1 & v1
+m1 --> m2 --> m3 --> m4 --> m5 --> m6 --> m7 --> m8 --> m9
+v1 --> v2 --> v3
+m9 --> q1
+v3 --> q1
+q1 -->|Yes| p1 --> e1
+q1 -->|No| p2 --> e1
+s1 -.-> p3
+p3 -.-> e1

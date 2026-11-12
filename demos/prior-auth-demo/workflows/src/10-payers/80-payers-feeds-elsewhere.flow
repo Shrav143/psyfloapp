@@ -1,0 +1,68 @@
+title: Payers › Configuration feeds the rest of the app
+route: /payers/:id
+intro: What a payer's workflows, rules and document lists reach outside the Payers page. New drafts use a saved edit at once: New Case reads the saved document list and rules every time it draws, and Authorizations' Reviews this week reads the submission windows. Updating drafts changes the matching requests on the Dashboard, tags them in Authorizations and sends a bell notification. Requests already sent keep what they were sent with. The diagram also marks what no edit reaches.
+dir: TD
+---
+start s1 "A payer's rule, document list, payer detail\nor workflow is saved, published or updated"
+decision dk "Which kind of save?"
+process wfp "A published workflow\nNew case finds it by payer, product, state,\nservice, request type and date, shows its name and version,\nand pins that version on the case\nA newer version never moves a case that already started"
+goto gwf "Continues in: Authorizations › New Case › Workflow › Match and pin the payer workflow"
+store cfg "Saved on the payer\nOne edit log entry per change\nOne bell notification\nNew drafts use it from now on"
+
+group gR "Read live by other screens (no Update drafts needed)"
+  process p1 "New Case: the document list\nThe Clinical documentation checklist, the file sorting and the\nReview & submit checks use the payer's saved list\nfor the draft's level of care"
+  process p2 "New Case: the rules\nBackdating: a start date that reaches back further\nthan the rule allows is flagged\nNo authorization needed: a level of care the payer names there"
+  process p3 "New Case: the approval chance\nEach thing the payer asks for that a draft does not meet\n(a required document, an early start date)\nholds the chance back, up to 12 points"
+  process p4 "Authorizations › Reviews this week: the next review\nThe 'Submission windows' rule sets the days\nbefore the next review is booked, when it names a number"
+  process p5 "Payers added with 'Add a payer'\nhave a full saved set like any payer\nand are offered wherever a payer is picked:\nNew case, Eligibility & Benefits and the Payer filter on Authorizations"
+endgroup
+
+group gW "Wired: redrafting after a payer change or edits"
+  click up "'Update N drafts' (after a payer change,\nor from the edits-waiting banner)\nN counts only the drafts at the sites in view"
+  store rq "Each unsent draft of this payer changes\nneeds a person: yes\nStatus line 'Redrafted after ... Waiting for a new signature'\nTimeline event from Scribe or the change's agent"
+  store rp "Update recorded\nChange (or 'edits-summit'), payer and the IDs of the drafts redrafted"
+  store nf "Bell notification 'Drafts updated'\nlinks to Authorizations (the last view used)"
+  process dsh "Dashboard shows the new status line\nand lists the request among those needing you"
+  process cmt "Authorizations and New Case tag those drafts\n'Updated for a payer change'"
+endgroup
+
+process sent "Requests already sent are never changed\nThey keep what they were sent with"
+
+group gC "Wired: links out of Payers"
+  click oc "Click 'Open the request'\nin 'Try it on a case'"
+  process od "Opens Dashboard with that request's drawer"
+endgroup
+
+group gP "Not read by any edit"
+  process n1 "The payer's approved-as-asked rate (74% for Summit, shown in Analytics)\nis where New Case starts the approval chance: it ends 14 points higher.\nIt comes from decision history, so no rule or list edit moves it"
+  process n2 "The Authorizations worklist order and the case page\ndo not read the saved configuration"
+endgroup
+
+process prd "In the product (PRD 06)\nA rule version is stamped on every authorization;\nPacket reads the channel, form and documents; Cadence reads windows and caps;\nAdvocate reads peer-to-peer and appeal windows"
+
+goto g1 "Continues in: Dashboard › Requests table › Order, rows and paging"
+goto g2 "Continues in: Authorizations › Worklist › Updated for a payer change"
+goto g3 "Continues in: Dashboard › Request drawer › Open and read a request"
+goto g4 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
+goto g5 "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks"
+goto g7 "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
+goto g6 "Continues in: Authorizations › Worklist › Arrive and read the views"
+
+s1 --> dk
+dk -->|Rule or documents| cfg
+dk -->|Workflow published| wfp --> gwf
+dk -->|Payer change or edits update| up --> rq --> rp --> nf
+rq --> dsh --> g1
+rq --> cmt --> g2
+up -.-> sent
+cfg --> p1 & p2 & p4
+p1 --> g4
+p1 -.-> g5
+p2 --> p3 --> g7
+cfg -.-> p5
+cfg -.-> n1
+cfg -.-> n2
+n2 -.-> g6
+oc --> od --> g3
+dk -->|Chart check| oc
+p2 -.-> prd

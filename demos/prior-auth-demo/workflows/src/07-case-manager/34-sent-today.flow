@@ -1,0 +1,38 @@
+title: Authorizations › With the payer › A request sent today joins the list
+route: /authorizations?view=payer
+intro: A case signed and sent in New Case leaves In progress and becomes a request with the payer. The ledger starts tracking it as 'New today' unless it already had the case, so the list still has one row for it, now in With the payer, with the tracked quick view. The With the payer view counts what was sent today in its header button.
+dir: TD
+also: Demo only: four requests count as sent today at the start (I-2231, R-1088, P-1611, P-1637), so the button reads '4 sent today'. The new row follows its request: Fast-forward moves its clock and Reset demo data removes it.
+---
+start s1 "New Case › Review & submit › 'Sign and send to payer (demo)'"
+goto g1 "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+store st1 "The request is on the Dashboard as 'Received'\nIts ID is added to 'sent today'"
+decision d0 "Was it already a queue request (sent from its row's 'Send to payer')?"
+process p0 "Its queue record is done: the In progress row it had leaves"
+process p0b "A new case: a queue record is added, with the payer"
+decision d1 "Did the ledger already have the case, or is it one of the demo's own requests?\n(R-0988, I-2207 and the seed requests are)"
+process p1 "No new record: the case shows its ledger row or its Dashboard request as before\ne.g. R-0988 reads Approved, its review still due"
+store p2 "The ledger adds a record for it, marked 'New today'\nInitials and age, level of care, request type, approval chance from the draft, not yet approved"
+screen r1 "One row in With the payer\n'New today' in green under the patient\nStatus 'With the payer', next action 'Wait for Lakeshore.' (or '... to decide')\nButton 'Open' (or 'Open on Dashboard'); the row opens the tracked quick view"
+process p3 "The row follows the request\nWith the payer: 'Decision expected' and 'Awaiting payer' in the quick view\nInfo requested: 'Answer due', Needs action\nApproved: Approved, '0 of 14 days used' (PHP 10, Detox 5, IOP 24 units)\nDenied: Denial route with a peer-to-peer clock, in Denied"
+process p4 "Counts move together: In progress one fewer, the view it is in now one more\nThe sidebar badge drops if the request was due now or within 24 hours"
+
+group gH "'N sent today'"
+  screen h1 "'5 sent today' before 'New Case' (only on With the payer, only when something was sent)"
+  click h2 "Click '5 sent today'"
+  process h3 "Go to /dashboard?stage=received"
+endgroup
+goto g2 "Continues in: Dashboard › Lifecycle › Click a state to filter the table"
+goto g3 "Continues in: Authorizations › Approved › Quick view of a tracked authorization"
+goto g4 "Continues in: Authorizations › Approved › Open an approved authorization"
+end e1 "The sent request is one row, with the payer"
+
+s1 --> g1
+s1 --> st1 --> d0
+d0 -->|Yes| p0 --> d1
+d0 -->|No| p0b --> d1
+d1 -->|Yes| p1 --> p4
+d1 -->|No| p2 --> r1 --> p3 --> p4 --> e1
+r1 -.-> g3
+r1 -.-> g4
+st1 --> h1 --> h2 --> h3 --> g2

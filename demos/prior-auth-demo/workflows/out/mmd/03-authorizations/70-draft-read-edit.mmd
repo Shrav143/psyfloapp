@@ -1,0 +1,64 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Clinical picture & draft'</b><br/>(or open ?tab=draft)" }
+  dr@{ shape: curv-trap, label: "<b>Main column: card 'Medical necessity request'</b><br/>'Version 3 · Scribe · Tue 10:21 am'<br/>The clinical picture rail beside it" }
+  sec@{ shape: rect, label: "<b>Sections, each a heading, the text and its source chips</b><br/>'Clinical picture', 'Why a lower level of care is not safe', 'Current severity', 'Plan'<br/>The text is the request's draft in New Case (before it has one, the text that draft would have)" }
+  cx@{ shape: rect, label: "<b>A section 'Context added' when notes were added with 'Add clinical context'</b><br/>shown, not edited here" }
+  nw@{ shape: rect, label: "<b>Sentences from applied actions follow in a green mark with a 'New' tag</b><br/>Each adds its own chip, e.g. 'Your answer'" }
+  lit@{ shape: rect, label: "'In draft' or 'Show in draft' in the clinical picture lights the sections that use that item" }
+  ch@{ shape: trap-t, label: "Click a source chip" }
+  gC@{ shape: subproc, label: "Continues in: Authorizations › Case page › Source chip" }
+  gP@{ shape: subproc, label: "Continues in: Authorizations › Case page › Clinical picture" }
+  ed@{ shape: trap-t, label: "Click 'Edit'" }
+  em@{ shape: curv-trap, label: "<b>Edit mode</b><br/>One text box per section, e.g. 'Edit Plan'<br/>Header buttons 'Cancel' and 'Save changes'" }
+  ty@{ shape: lean-r, label: "Change the text in one or more boxes" }
+  cn@{ shape: trap-t, label: "Click 'Cancel'" }
+  cd@{ shape: rect, label: "<b>Edit mode closes</b><br/>Nothing is saved" }
+  sv@{ shape: trap-t, label: "Click 'Save changes'" }
+  dCh@{ shape: diam, label: "Did any box change?" }
+  tn@{ shape: odd, label: "'No changes to save'" }
+  sd@{ shape: cyl, label: "<b>Edited sections saved, with the sentences already added by applied actions</b><br/>New version 'Edited by you'<br/>History: 'You edited the draft ...' flagged 'Logged decision'<br/>The same text is saved on the request's draft in New Case" }
+  ts@{ shape: odd, label: "<b>'Draft saved'</b><br/>'Integrity reads it again before it can be signed.'" }
+  dy@{ shape: rect, label: "<b>'Every sentence matches the chart' now warns</b><br/>the header chip drops to 'Integrity 3/4', 'Send to payer' goes off<br/>the 'Integrity checks' fold opens with 'Re-check'" }
+  bd@{ shape: rect, label: "Badge on 'Clinical picture & draft' goes up by one" }
+  lt@{ shape: rect, label: "Actions applied later add their sentences after the edited text" }
+  gK@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Checks, versions and send back" }
+  gR@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › The draft and the summary" }
+  s1 --> dr --> sec --> nw
+  sec --> ch --> gC
+  sec --> cx
+  dr --> lit --> gP
+  dr --> ed --> em --> ty
+  em --> cn --> cd
+  em --> sv --> dCh
+  dCh -->|"No"| tn
+  dCh -->|"Yes"| sd --> ts
+  sd --> dy --> bd
+  dy --> gK
+  sd -.-> lt
+  sd --> gR
+  class s1 k_start
+  class dr,em k_screen
+  class sec,cx,nw,lit,cd,dy,bd,lt k_process
+  class ch,ed,cn,sv k_click
+  class gC,gP,gK,gR k_goto
+  class ty k_input
+  class dCh k_decision
+  class tn,ts k_toast
+  class sd k_store

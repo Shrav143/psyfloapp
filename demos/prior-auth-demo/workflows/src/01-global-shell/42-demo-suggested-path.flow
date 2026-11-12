@@ -1,0 +1,45 @@
+title: Global shell › Demo menu › Suggested path
+route: Every page (Demo menu › Suggested path)
+intro: Seven numbered shortcuts for a guided walk through the demo. Each one closes the menu and opens a page. The numbers are only labels: the steps can be used in any order and as often as wanted. None of them changes any data or the clock.
+dir: LR
+---
+start s1 "Open the Demo menu"
+overlay o1 "'SUGGESTED PATH'\nSeven buttons, each with a number in a circle"
+process p0 "Every step does the same two things:\nthe menu closes, then the app goes to the address"
+
+click c1 "Click '1  Dashboard: where every request stands'"
+process r1 "Go to /dashboard"
+goto g1 "Continues in: Dashboard"
+
+click c2 "Click '2  Authorizations: every request in one list'"
+process r2 "Go to /authorizations\nA plain address: arriving from another page, the worklist reopens the last view used (All the first time)"
+goto g2 "Continues in: Authorizations › Worklist › Arrive and read the views"
+
+click c3 "Click '3  New Case: start from a referral'"
+process r3 "Go to /authorizations/new\nA blank draft is started and the address becomes /authorizations/new/draft-..."
+goto g3 "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
+
+click c4 "Click '4  Eligibility & Benefits: verify a patient'"
+process r4 "Go to /authorizations/eligibility/verify"
+goto g4 "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form"
+
+click c5 "Click '5  Denial Intelligence: D-3318'"
+process r5 "Go to /denials/D-3318"
+goto g5 "Continues in: Denial Intelligence › A denial opened"
+
+click c6 "Click '6  Payers: Cardinal, Changes'"
+process r6 "Go to /payers/cardinal?tab=changes"
+goto g6 "Continues in: Payers › History & Changes › Read what changed"
+click c7 "Click '7  Authorizations: reviews this week'"
+process r7 "Go to /authorizations?view=reviews\nThe worklist opens on the Reviews this week view"
+goto g7 "Continues in: Authorizations › Reviews this week › The view"
+
+s1 --> o1 --> p0
+p0 --> c1 & c2 & c3 & c4 & c5 & c6 & c7
+c1 --> r1 --> g1
+c2 --> r2 --> g2
+c3 --> r3 --> g3
+c4 --> r4 --> g4
+c5 --> r5 --> g5
+c6 --> r6 --> g6
+c7 --> r7 --> g7

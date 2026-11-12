@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Psyflo — Payer rules</title></head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}.nav.on .n{background:rgba(255,255,255,.22)}
+.b3-wrap{background:var(--white);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+.b3-wrap .u-tbl{border:0;border-radius:0;min-width:760px}
+.b3-wrap .u-tbl td{vertical-align:top}
+.b3-rules{background:var(--white);border:1px solid var(--line);border-radius:12px}
+.b3-rule{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;padding:10px 16px;border-top:1px solid var(--line)}
+.b3-rule:first-child{border-top:0}
+.b3-rule b{display:block}
+.b3-rule .d{color:var(--ink-2);font-size:13px;line-height:18px}
+.b3-n{color:var(--ink-3);font-weight:600}
+</style>
+</helmet>
+<div class="u-app">
+<aside style="flex:0 0 240px"></aside>
+<main class="u-main">
+  <div class="u-head"><h1 class="u-title">{{title}}</h1><span class="u-sp"></span><span class="u-date">{{today}}</span></div>
+  <div class="b3-wrap">
+    <table class="u-tbl">
+      <thead><tr><th scope="col" style="width:190px">Payer</th><th scope="col" style="width:110px">Channel</th><th scope="col">Tends to ask</th><th scope="col">What works</th></tr></thead>
+      <tbody>
+        <sc-for list="{{payers}}" as="p">
+          <tr><td style="font-weight:600">{{p.name}}</td><td>{{p.channel}}</td><td data-doc>{{p.asks}}</td><td data-doc>{{p.works}}</td></tr>
+        </sc-for>
+      </tbody>
+    </table>
+  </div>
+  <h2 class="u-sec">Drafting rules</h2>
+  <div class="b3-rules">
+    <sc-for list="{{rules}}" as="r">
+      <div class="b3-rule"><span class="b3-n">{{r.n}}</span><div><b>{{r.title}}</b><span class="d" data-doc>{{r.text}}</span></div></div>
+    </sc-for>
+  </div>
+</main>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,70 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A case is open on any step" }
+  sc1@{ shape: curv-trap, label: "<b>Header card: 'New Case', the case id once it has one</b><br/>'Authorization type' dropdown on the right<br/>Stepper under it: four steps, each a button with its name and one state label" }
+  p1@{ shape: rect, label: "<b>The current step: dark circle with its number</b><br/>Complete: a tick. Needs attention: a warning triangle. Blocked: a cross<br/>Not applicable: a dashed circle with a dash. Pending: the step number" }
+  sWf@{ shape: curv-trap, label: "<b>The workflow line under the stepper</b><br/>Name, version, payer, info tip, 'View workflow', 'At Clinical documentation'" }
+  c1@{ shape: trap-t, label: "Click any step, including a later one" }
+  p2@{ shape: rect, label: "<b>The draft's position moves to that step</b><br/>Nothing typed and nothing the agents did is lost" }
+  sc2@{ shape: curv-trap, label: "<b>Page shows that step</b><br/>No sentence under the title and no step header: the stepper says where you are" }
+  pTip@{ shape: rect, label: "<b>Hover a step: its one-line reason</b><br/>'Needs the payer, member ID and dates', '2 warnings', 'The draft is ready'" }
+  pNoStart@{ shape: rect, label: "<b>Opening Clinical documentation never starts the agents</b><br/>Its last section, 'Authorization preparation', has one button: 'Start the agents'" }
+  subgraph gFwd ["Each step's own buttons, in the bar at the bottom"]
+  b1@{ shape: trap-t, label: "Intake: 'Save as draft', 'Continue to Eligibility & Benefits'" }
+  b2@{ shape: trap-t, label: "Eligibility & Benefits: 'Back', 'Save as draft', 'Continue to Clinical documentation'" }
+  b3@{ shape: trap-t, label: "<b>Clinical documentation: 'Back', 'Save as draft'</b><br/>'Continue to Review & submit' once all ten agents are done" }
+  b4@{ shape: trap-t, label: "<b>Review & submit: 'Back', 'Save as draft'</b><br/>The button that signs is in the Sign card on the right" }
+  end
+  pBack@{ shape: rect, label: "<b>'Back' goes one step back</b><br/>From Review & submit it opens the agents' section of Clinical documentation<br/>The bar stays in view while a long step scrolls" }
+  pHint@{ shape: odd, label: "<b>The bar's only line is a payer workflow warning, when there is one</b><br/>e.g. 'Workflow: Submission window: 1 business day left'" }
+  cLink@{ shape: trap-t, label: "<b>Click the link 'Authorizations' above the title</b><br/>Opens /authorizations" }
+  gCm@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
+  sFull@{ shape: curv-trap, label: "<b>Stepper on the full referral page</b><br/>'Intake' is current<br/>The button 'Back to the case' sits beside the crumbs" }
+  gFull@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
+  gStates@{ shape: subproc, label: "Continues in: Authorizations › New Case › Step states" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Initial authorization" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › The draft and the summary" }
+  gWf@{ shape: subproc, label: "Continues in: Authorizations › New Case › Workflow › Show the workflow and its path" }
+  s1 --> sc1 --> p1 --> c1
+  sc1 --> pTip
+  sc1 --> sWf -.-> gWf
+  c1 --> p2 --> sc2
+  sc2 -.-> pNoStart --> g4
+  sc2 --> b1 --> g1
+  sc2 --> b2 --> g2
+  sc2 --> b3 --> g3
+  sc2 --> b4 --> g5
+  b2 --> pBack
+  b3 --> pBack
+  b4 --> pBack
+  b1 -.-> pHint
+  b3 -.-> pHint
+  p1 -.-> gStates
+  sc1 --> cLink --> gCm
+  sc1 -.-> sFull --> gFull
+  class s1 k_start
+  class sc1,sWf,sc2,sFull k_screen
+  class p1,p2,pTip,pNoStart,pBack k_process
+  class c1,b1,b2,b3,b4,cLink k_click
+  class pHint k_toast
+  class gCm,gFull,gStates,g1,g2,g3,g4,g5,gWf k_goto
+  style gFwd fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

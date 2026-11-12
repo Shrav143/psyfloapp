@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Insurance updates — Harvest Outreach Center</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared phone look: C_CSS in js/screens/MobileApp.js */
+
+</style>
+</helmet>
+<div class="c-ph">
+  {{hd}}
+  <main class="c-bd">
+    <sc-if value="{{!letters.length}}"><div class="c-card"><b>{{t.emptyTitle}}</b></div><sc-if value="{{example}}"><button type="button" class="c-btn" onClick="{{example}}">{{t.example}}</button></sc-if></sc-if>
+    <sc-for list="{{letters}}" as="l">
+      <section class="c-card" style="{{l.style}}">
+        <div style="display:flex;align-items:center;gap:8px"><span class="u-chip {{l.cls}}">{{l.chip}}</span><span class="c-mut c-sm" style="margin-left:auto">{{l.when}}</span></div>
+        <div style="margin-top:8px;font-weight:600">{{l.title}}</div>
+        <div data-doc class="c-mut" style="margin-top:4px">{{l.means}}</div>
+        <sc-if value="{{l.btn}}"><a class="c-btn sm {{l.btnCls}}" href="#act" data-i="{{l.i}}" style="margin-top:10px">{{l.btn}}</a></sc-if>
+      </section>
+    </sc-for>
+    <sc-if value="{{moreN}}"><button type="button" class="c-lnk" onClick="{{toggleAll}}" style="text-align:left">{{moreLabel}}</button></sc-if>
+    <section class="c-card"><button type="button" class="c-lnk" onClick="{{toggleWords}}" aria-expanded="{{wordsOpen}}">{{t.words}}</button>
+      <sc-if value="{{showWords}}"><div data-doc><sc-for list="{{glossary}}" as="w"><div style="margin-top:10px"><b style="font-weight:600">{{w.term}}</b><div class="c-mut c-sm">{{w.def}}</div></div></sc-for></div></sc-if></section>
+  </main>
+  {{ft}}
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

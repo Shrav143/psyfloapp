@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Psyflo for Lauris (demo)",
+  "version": "0.1.0",
+  "description": "Demo: reads the Lauris page you have open and types into its open form. Targets the mock Lauris on localhost:4001. Synthetic data only.",
+  "permissions": ["sidePanel", "tabs", "storage"],
+  "host_permissions": ["http://localhost:4000/*", "http://localhost:4001/*", "http://localhost:4002/*", "http://127.0.0.1:4001/*", "http://127.0.0.1:4002/*"],
+  "background": { "service_worker": "background.js" },
+  "side_panel": { "default_path": "sidepanel.html" },
+  "action": { "default_title": "Open the Psyflo panel" },
+  "content_scripts": [{
+    "matches": ["http://localhost:4001/*", "http://127.0.0.1:4001/*", "http://localhost:4002/*", "http://127.0.0.1:4002/*"],
+    "js": ["bridge.js"],
+    "run_at": "document_start"
+  }]
+}

@@ -1,0 +1,53 @@
+title: Authorizations › Eligibility & Benefits › Result › What each chip means
+route: /authorizations/eligibility
+intro: The coloured chips in the list columns and in the 'Payment checks' rows (in the side panel). Green is fine, amber needs a step, red blocks billing, grey is neutral. A chip always carries a word, never colour alone.
+dir: LR
+---
+start s1 "A coloured chip on the list or the result page"
+
+group gE "Column 'Eligibility'"
+  screen e0 "'Eligibility' chip"
+  process e1 "'Active' (green)\nThe state or plan says coverage is on for the date of service"
+  process e2 "'Lapsed 10/12' (red)\nCoverage dropped on that date. Later days are not payable until it is restored"
+  process e3 "'Ended 09/30' (red)\nCoverage ended. The patient may have a new plan: ask the payer"
+  process e4 "'Not found' (red)\nNo member matched the ID and date of birth"
+  process e5 "'ID differs' (amber)\nCoverage is active, but the plan has the member under another ID"
+  process e6 "'Not checked' (grey)\nVerify was paused, so nothing was asked"
+endgroup
+
+group gB "Column 'Benefits'"
+  screen b0 "'Benefits' chip"
+  process b1 "'Covered' (green)\nThe plan pays for this level of care"
+  process b2 "'Limited' (amber)\nPaid with conditions: diagnosis on the plan's list, each day authorized"
+  process b3 "'Not covered' (red)\nThe plan does not pay for this level of care\nFor example R-1118"
+  process b4 "'Not confirmed' (amber)\nThe plan answered for coverage but not for this service\nThe result offers 'Ask Caller to confirm the benefit'"
+endgroup
+
+group gA "Column 'Authorization'"
+  screen a0 "'Authorization' chip (the day or unit usage is on the quiet second line of the row)"
+  process a1 "'Not required' (grey)\nThe payer needs none for this level of care"
+  process a2 "'On file' (green)\nApproved. Days or units used so far, such as '9 of 14 days', are on the second line"
+  process a3 "'In progress' (grey)\nA request is being drafted"
+  process a4 "'Payer reviewing' (grey)\nA request is with the payer"
+  process a5 "'Retro request open' (amber)\nA request for days already delivered is open"
+  process a6 "'Required, not on file' (amber)\nNeeded before the first day. Not started"
+  process a7 "'Requirement unknown' (grey)\nNo rule on file for this payer and level of care. Check with the payer"
+endgroup
+
+group gV "Column 'Verdict'"
+  screen v0 "'Verdict' chip, right after the patient, with 'Checked 3 h ago' on the quiet second line"
+  process v1 "'Cleared to bill' (green)\nEverything passes"
+  process v2 "'Authorization first' (amber)\nOnly the authorization is missing"
+  process v3 "'Fix before billing' (red)\nCoverage, plan, network, another plan, a limit or the member ID failed,\nor a benefit or enrollment could not be confirmed"
+  process v5 "'Not checked' (grey)\nThe check did not run: Verify is paused in Settings"
+  process v4 "Second line: 'Checked 3 h ago' or 'Checking now'\nTime since the last check, or a re-check running\n'Re-check due Tue 11:32 am': Verify will run it\n'Re-checked automatically at 11:32 am': it did\n'Not re-checked: Verify is paused in Settings'"
+endgroup
+
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
+
+s1 --> e0 & b0 & a0 & v0
+e0 --> e1 & e2 & e3 & e4 & e5 & e6
+b0 --> b1 & b2 & b3 & b4
+a0 --> a1 & a2 & a3 & a4 & a5 & a6 & a7
+v0 --> v1 & v2 & v3 & v4 & v5
+v1 & v2 & v3 & v5 --> g1

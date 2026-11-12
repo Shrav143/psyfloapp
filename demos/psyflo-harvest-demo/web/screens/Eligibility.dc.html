@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo — Eligibility</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45}
+*{box-sizing:border-box}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}
+.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}
+.nav.on .n{background:rgba(255,255,255,.22)}
+</style>
+</helmet>
+<div class="u-app">
+  <aside style="flex:0 0 240px"></aside>
+  <main class="u-main">
+
+    <sc-if value="{{isList}}">
+      <div class="u-head">
+        <h1 class="u-title">Eligibility re-verification</h1>
+        <span class="u-sp"></span>
+        <span class="u-date">{{dateText}}</span>
+      </div>
+      <table class="u-tbl b1-tbl">
+        <thead><tr><th>Student</th><th>Last verified</th><th>Result</th><th>Proof <button type="button" class="hlp" data-help="{{helpProof}}" aria-label="About proof">?</button></th><th>Next due</th><th aria-label="Action"></th></tr></thead>
+        <tbody>
+          <sc-for list="{{rows}}" as="r">
+            <tr>
+              <td class="u-b">{{r.student}}</td>
+              <td>{{r.last}}</td>
+              <td><span class="{{r.resultCls}}">{{r.result}}</span></td>
+              <td><button type="button" class="b1-ico" title="{{r.shot}}" aria-label="Screenshot" onClick="{{r.proof}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M4 18l5-5 4 4 3-3 4 4"></path></svg></button></td>
+              <td><span class="{{r.nextCls}}">{{r.next}}</span></td>
+              <td><button type="button" class="u-btn" onClick="{{r.verify}}">{{verifyLabel}}</button></td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+      <sc-if value="{{empty}}"><p class="u-mut" style="margin:16px 0">Nothing here.</p></sc-if>
+    </sc-if>
+
+    <sc-if value="{{isRef}}">
+      <div class="u-head">
+        <a class="u-link" href="{{refHref}}" aria-label="Back to the referral" title="Referral">←</a>
+        <h1 class="u-title">{{title}}</h1>
+        <span class="{{chipCls}}">{{chip}}</span>
+        <sc-if value="{{isRecorded}}"><button type="button" class="b1-ico" title="Screenshot" aria-label="Screenshot" onClick="{{proofLast}}">{{shotIcon}}</button><button type="button" class="hlp" data-help="{{helpProof}}" aria-label="About proof">?</button></sc-if>
+        <span class="u-sp"></span>
+        <span class="u-date">{{dateText}}</span>
+      </div>
+
+      <sc-if value="{{isWaiting}}">
+        <div class="u-list" style="margin:8px 0"><div style="display:flex;align-items:center;gap:10px;min-height:36px"><span class="u-ic" aria-hidden="true"></span><span class="u-b">{{famLine}}</span></div></div>
+        <sc-if value="{{canSend}}"><button type="button" class="{{sendCls}}" onClick="{{sendLink}}">{{sendLabel}}</button></sc-if>
+      </sc-if>
+
+      <sc-if value="{{hasFacts}}">
+        <dl class="b1-facts"><sc-for list="{{facts}}" as="f"><dt>{{f.k}}</dt><dd>{{f.v}}</dd></sc-for></dl>
+      </sc-if>
+
+      <sc-if value="{{showForm}}">
+        <a class="u-btn" href="{{dmas}}" target="_blank" rel="noopener">Open DMAS ↗</a>
+        <div class="b1-form">
+          <label><span class="b1-lbl" style="margin-top:0">Result</span><select id="b1-rres" class="u-sel" onChange="{{setResult}}"><sc-for list="{{resultOpts}}" as="o"><option value="{{o.v}}" {{o.sel}}>{{o.t}}</option></sc-for></select></label>
+          <label><span class="b1-lbl" style="margin-top:0">Plan</span><select id="b1-rplan" class="u-sel" onChange="{{setPlan}}"><sc-for list="{{planOpts}}" as="o"><option value="{{o.v}}" {{o.sel}}>{{o.t}}</option></sc-for></select></label>
+          <label><span class="b1-lbl" style="margin-top:0">Effective</span><input id="b1-reff" type="date" class="u-in" value="{{form.effective}}" onChange="{{setEff}}"></label>
+          <button type="button" class="u-btn pri" onClick="{{record}}">Record</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{hasHist}}">
+        <h2 class="u-sec">{{nextText}}</h2>
+        <table class="u-tbl b1-tbl">
+          <thead><tr><th>Date</th><th>Result</th><th>Plan</th><th aria-label="Proof"></th></tr></thead>
+          <tbody><sc-for list="{{hist}}" as="h"><tr><td>{{h.date}}</td><td><span class="{{h.resultCls}}">{{h.result}}</span></td><td>{{h.plan}}</td><td><button type="button" class="b1-ico" title="Screenshot" aria-label="Screenshot" onClick="{{h.proof}}">{{shotIcon}}</button></td></tr></sc-for></tbody>
+        </table>
+      </sc-if>
+
+      <div class="u-filters" style="margin-top:16px">
+        <sc-if value="{{canRecheck}}"><button type="button" class="u-btn" onClick="{{toggleRecheck}}">{{recheckLabel}}</button></sc-if>
+        <sc-if value="{{inactive}}"><button type="button" class="u-btn" onClick="{{sebs}}">Route to SEBS</button><button type="button" class="u-btn" onClick="{{hold}}">{{holdLabel}}</button></sc-if>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo — Worklist</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45}
+*{box-sizing:border-box}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}
+.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}
+.nav.on .n{background:rgba(255,255,255,.22)}
+</style>
+</helmet>
+<div class="u-app">
+  <aside style="flex:0 0 240px"></aside>
+  <main class="u-main" style="max-width:1100px">
+    <div class="u-head">
+      <h1 class="u-title">Worklist</h1>
+      <span class="u-sp"></span>
+      <span class="u-date">{{dateText}}</span>
+    </div>
+    <p class="u-headline">{{headline}}</p>
+    <div class="u-rows">
+      <sc-for list="{{rows}}" as="r">
+        <div class="u-row" style="--cols:112px minmax(0,1fr) auto">
+          <span class="{{r.chipCls}}" style="justify-self:start">{{r.chip}}</span>
+          <div><span class="who">{{r.who}}</span> <span class="what">{{r.sep}} {{r.what}}</span></div>
+          <div class="b1-btns">
+            <sc-if value="{{r.isLink}}"><a class="{{r.btnCls}}" href="{{r.href}}">{{r.btn}}</a></sc-if>
+            <sc-if value="{{r.isNote}}"><button type="button" class="u-btn txt" onClick="{{r.ret}}">Return</button><button type="button" class="{{r.btnCls}}" onClick="{{r.approve}}">{{r.btn}}</button></sc-if>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{showAwait}}"><div class="b1-line"><span>{{awaitText}}</span><a class="u-link" href="{{awaitHref}}">View</a></div></sc-if>
+    <sc-if value="{{showReview}}"><div class="b1-line"><span>Chart review</span><a class="u-link" href="{{reviewHref}}">View</a></div></sc-if>
+  </main>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,51 @@
+title: Denial Intelligence › Ways in
+route: /denials
+intro: Every way a person lands on Denial Intelligence. The sidebar and Analytics land on the dashboard of open denials (/denials); every link that names a denial lands on that denial's own page (/denials/D-xxxx). An older link with ?id= goes to the page too. Only denials at the sites in view count. How the sidebar badge counts open denials.
+dir: TD
+---
+start s1 "Click 'Denial Intelligence' in the sidebar"
+start s5 "Analytics: a reason's 'Open in Denial Intelligence'\nor a row of 'Common denial reasons by payer'"
+start s2 "Demo menu, Suggested path\n'Denial Intelligence: D-3318'"
+start s3 "Click a notification\n'Denied today', 'Denied', 'Partly approved' or 'Denial analyzed'"
+start s4 "Ask FLO 'Which denial is due first?'\nClick 'Open Denial Intelligence'"
+start s6 "Dashboard: Do next 'Open denial', or the request drawer's 'Open in Denial Intelligence'"
+start s7 "Authorizations case page (also reached from the Authorizations worklist)\nClick 'Open in Denial Intelligence'"
+start s9 "Analytics case panel\nClick 'Open the denial'"
+
+process p0 "Address /denials, maybe with ?payer= and ?reason="
+screen sc1 "Dashboard of open denials\nTitle row 'Denial Intelligence' and 'Add a denial letter'\nSix figures, payer chips, one table"
+goto g1 "Continues in: Denial Intelligence › Open denials list"
+goto g5 "Continues in: Denial Intelligence › Open denials list › Filter by payer and reason"
+
+process p1 "Address /denials/D-xxxx"
+process pl "An older link /denials?id=D-xxxx (seeded notifications, the Dashboard demo control) is replaced by /denials/D-xxxx"
+decision dsite "Does that denial belong to a site the viewer is looking at?"
+screen sos "Out-of-site card\n'This denial is not available at Site A'\nNames the site, no patient or detail"
+goto gs "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links"
+decision d2 "Is it an open denial, or one settled on this screen?"
+screen nf "'We could not find denial D-xxxx'\nLink 'Back to Denial Intelligence'"
+goto g2 "Continues in: Denial Intelligence › A denial opened"
+
+start s8 "Look at the badge beside 'Denial Intelligence' in the sidebar"
+process b1 "Badge = requests in the Dashboard's 'Appeal or call' stage at the sites in view\n8 for Both sites at the start (Site A 4, Site B 4), the same as the 'Open' figure"
+process b2 "Goes up by one: a letter is analyzed, or the Dashboard demo control 'Denies' or 'Approves part' is used"
+process b3 "Goes down by one: the denial is accepted, a call outcome 'Overturned' or 'Partly restored' is logged, or the payer's decision on an appeal is 'Overturned' or 'Partly overturned'"
+
+s1 --> p0
+s5 --> p0
+p0 --> sc1 --> g1
+p0 -.->|with a payer or reason| g5
+s2 --> p1
+s3 --> pl --> p1
+s3 --> p1
+s4 --> p1
+s6 --> p1
+s7 --> p1
+s9 --> p1
+p1 --> dsite
+dsite -->|No| sos --> gs
+dsite -->|Yes| d2
+d2 -->|Yes| g2
+d2 -->|No| nf --> sc1
+
+s8 --> b1 --> b2 & b3

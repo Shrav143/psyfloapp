@@ -1,0 +1,64 @@
+title: Authorizations › Case page › Recommended actions › One card
+route: /authorizations/case/R-1042?tab=actions
+intro: Everything on one recommendation card: leaving it out, the question some cards ask, notes to the agent that does the work, the 'Why this matters' note and the links.
+dir: TD
+also: Demo only: the note box saves your words on the case and logs them. The agent does not read them again until the next Apply.
+---
+screen cd "Recommendation card\nCheckbox, title, pills, bullets, 'Why this matters', agent line, buttons"
+process pl "Pills\n'+11 pts' on every card ('+1 pt' for one point)\n'Needs your input' or 'Answer added' on cards that ask a question\n'Added for your focus' on the card that Refine recommendations added"
+process bl "Up to three bullets say what the agent will add"
+click tk "Click the checkbox or the title"
+process tg "Card is included in, or left out of, the draft\nSide-panel count follows\nNothing is logged"
+
+click wy "Click 'Why this matters'"
+process wo "A short reason opens under the bullets\nClick again to close"
+
+decision dQ "Does the card ask a question?"
+group gQ "Cards with a question"
+  input an "Type the answer in the box\ne.g. 'Step-down program and first appointment'"
+  decision dA "Is there an answer?"
+  process er "After a failed Apply, red text under the box\n'Type your answer before Scribe can apply this.'"
+  click sn "Click 'Send note'\n(off until there is an answer)"
+  process cp "No caption\nAfter a note: 'Sent to Scribe'"
+endgroup
+
+group gN "Cards without a question"
+  click an2 "Click 'Add a note'"
+  input ni "Type in 'Add context or a note for the agent…'"
+  click sn2 "Click 'Send note'\n(off until something is typed)"
+  click cn "Click 'Cancel'"
+  process cx "The note box closes\nWhat you typed is kept if you open it again"
+process sh "Under the card: 'Note sent to Packet: “...”'"
+endgroup
+
+store nt "Note saved on the case\nLog: 'You sent Scribe a note: ...'"
+toast tn "'Note sent to Scribe'\n'It will be used the next time the draft is updated.'"
+
+agent ag "Agent: badge and name, e.g. 'Scribe', then 'Why this matters'\nScribe writes the plan, Packet attaches documents, Integrity settles dates, Reader finds chart notes, Verify fixes coverage"
+decision dL "Is it the coverage card?"
+click lk "Click 'Open Eligibility & Benefits'"
+goto gE "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill"
+click ds "Click 'Dismiss'"
+goto gD "Continues in: Authorizations › Case page › Recommended actions › Dismiss and bring back"
+process lk2 "While the agents are updating the draft\nthe checkbox, answer box, 'Send note' and 'Dismiss' are locked"
+
+cd --> pl --> bl
+cd --> tk --> tg
+cd --> wy --> wo
+cd --> dQ
+dQ -->|Yes| an --> dA
+dA -->|No| er
+dA -->|Yes| sn
+sn --> nt
+sn --> cp
+dQ -->|No| an2 --> ni
+ni --> sn2 --> nt
+an2 --> cn --> cx
+sn2 --> sh
+nt --> tn
+cd --> ag --> dL
+dL -->|Yes| lk --> gE
+dL -->|No| ds
+lk --> ds
+ds --> gD
+cd -.-> lk2

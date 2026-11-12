@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo — Authorizations</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+/* All Authorizations (R3 after the artifact; R4: the page, header, date card, filter grid and table come from the shared kit, components.css "R4 FMT"). Own classes: a- prefix. */
+.a-case-l{display:block}
+.a-muted{color:var(--muted-700);font-size:var(--fs-13)}
+.a-nw{white-space:nowrap}
+.a-page a:not(.ui-btn):not(.ui-qt__link){color:var(--teal-700)}
+.a-page a:not(.ui-btn):not(.ui-qt__link):hover{text-decoration:underline}
+.a-c-case{min-width:100px}
+.a-c-next{min-width:150px}
+.a-c-units{min-width:130px}
+.a-c-units .ui-units{flex-wrap:wrap;white-space:normal;gap:2px 8px}
+.a-nx{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.a-nx__a{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.a-nx__f{font-size:var(--fs-12);line-height:var(--lh-12);color:var(--warning-fg);font-weight:600}
+@media (max-width:767px){.a-c-next{min-width:170px}.a-c-units{min-width:130px}}
+</style>
+</helmet>
+<main class="ui-page a-page">
+  <header class="ui-phead">
+    <div class="ui-phead__t"><h1>Authorizations</h1>{{maturity}}{{help}}{{action}}</div>
+    <div class="ui-phead__r">{{range}}</div>
+  </header>
+  <div class="ui-fcard ui-fgrid">{{bar}}</div>
+  {{stage}}
+  {{clear}}
+  <div class="ui-tlist">{{queue}}</div>
+  {{pager}}
+</main>
+</x-dc>
+</body>
+</html>

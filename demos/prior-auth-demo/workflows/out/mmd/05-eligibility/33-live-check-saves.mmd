@@ -1,0 +1,97 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Last step ticks, the timer pill reads 'Opening the result'" }
+  w1@{ shape: delay, label: "Half a second" }
+  qp@{ shape: diam, label: "Is Verify paused in Settings?" }
+  q1@{ shape: diam, label: "Opened from a case that is a row on the list?" }
+  q2@{ shape: diam, label: "J.M.'s card (sample 'Authorization first' or the referral): Summit, Residential 3.5, member ID ending 4821?" }
+  st1@{ shape: cyl, label: "<b>Existing record updated</b><br/>'Checked just now', its re-check time cleared, date of service as typed" }
+  p1@{ shape: rect, label: "The card matches J.M., case R-1042" }
+  p2@{ shape: rect, label: "<b>Answers are not asked again</b><br/>The row keeps its verdict" }
+  subgraph gPaused ["Verify is paused"]
+  sp1@{ shape: cyl, label: "<b>Known patient: the last result is kept with the warning</b><br/>'Verification service unavailable', check time unchanged" }
+  sp2@{ shape: cyl, label: "<b>Anyone else: a new check with no answers</b><br/>Eligibility, benefits and authorization 'Not checked'<br/>Warning 'Verification service unavailable'" }
+  sp3@{ shape: rect, label: "<b>Verdict 'Not checked' · Coverage 'Not checked'</b><br/>Buttons 'Open Settings' and 'Re-check'" }
+  end
+  subgraph gNew ["A new patient"]
+  n1@{ shape: rect, label: "<b>Check gets the next ID: V-1001, V-1002 ...</b><br/>The ID is picked so it belongs to the site in view<br/>(Site A when both are in view). Initials and age only if known from a referral or a case" }
+  n2@{ shape: rect, label: "<b>Member ID kept as '…1234' (last four)</b><br/>Scripted answers from the member ID and plan" }
+  n3@{ shape: diam, label: "Which scripted answer?" }
+  n4@{ shape: rect, label: "<b>ID ends 1012</b><br/>Eligibility 'Lapsed 10/12'" }
+  n5@{ shape: rect, label: "<b>ID ends 9999</b><br/>Eligibility 'Not found'" }
+  n6@{ shape: rect, label: "<b>Evergreen with Detox</b><br/>Clinic not enrolled" }
+  n7@{ shape: rect, label: "<b>Beacon with IOP or PHP</b><br/>Authorization 'Not required'" }
+  n8@{ shape: rect, label: "<b>Harborview with PHP</b><br/>Benefits 'Limited'" }
+  n10@{ shape: rect, label: "<b>ID ends 3030</b><br/>Benefits 'Not covered', authorization 'Not required'" }
+  n11@{ shape: rect, label: "<b>ID ends 6060</b><br/>Another plan found: it pays first" }
+  n12@{ shape: rect, label: "<b>ID ends 9090</b><br/>Authorization 'On file' with every day or unit used<br/>for example '14 of 14 days'" }
+  n13@{ shape: rect, label: "<b>ID ends 7070</b><br/>Coverage ended 09/30, the member is with another plan since 10/01" }
+  n14@{ shape: rect, label: "<b>ID ends 8080</b><br/>Coverage active, but the plan has the member under another ID" }
+  n15@{ shape: rect, label: "<b>ID ends 5050</b><br/>Coverage active, the service was not confirmed" }
+  n16@{ shape: rect, label: "<b>ID ends 4040</b><br/>The clinic's enrollment could not be confirmed" }
+  n17@{ shape: rect, label: "<b>ID ends 2020</b><br/>No rule on file for the authorization" }
+  n9@{ shape: rect, label: "<b>Anything else</b><br/>Active, covered, authorization 'Required'" }
+  st2@{ shape: cyl, label: "<b>New verification record added for the site in view</b><br/>It is a row at once on the Eligibility list" }
+  end
+  p3@{ shape: rect, label: "List counts, tiles and sidebar badge recompute from the records inside the site view" }
+  p7@{ shape: rect, label: "<b>Counts, tiles and badge stay as they were</b><br/>Only the check time and date of service changed" }
+  q3@{ shape: diam, label: "Is the verdict 'Cleared to bill'?" }
+  p4@{ shape: rect, label: "Badge unchanged" }
+  p5@{ shape: rect, label: "Badge goes up by one" }
+  p6@{ shape: rect, label: "<b>Opens /authorizations/eligibility/V-1001</b><br/>or the existing case ID<br/>If the check began from a referral, ?referral= (and ?case=) go along, so the result has its back link" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The shared verification record" }
+  s1 --> w1 --> qp
+  qp -->|"Yes, known patient"| sp1 --> sp3
+  qp -->|"Yes, anyone else"| sp2 --> sp3
+  qp -->|"No"| q1
+  sp3 --> p6
+  q1 -->|"Yes"| st1
+  q1 -->|"No"| q2
+  q2 -->|"Yes"| p1 --> st1
+  q2 -->|"No"| n1 --> n2 --> n3
+  st1 --> p2 --> p7 --> p6
+  n3 -->|"Lapsed"| n4 --> st2
+  n3 -->|"Not found"| n5 --> st2
+  n3 -->|"Not enrolled"| n6 --> st2
+  n3 -->|"No authorization"| n7 --> st2
+  n3 -->|"Limited"| n8 --> st2
+  n3 -->|"Not covered"| n10 --> st2
+  n3 -->|"Other plan"| n11 --> st2
+  n3 -->|"Limit reached"| n12 --> st2
+  n3 -->|"Payer changed"| n13 --> st2
+  n3 -->|"ID mismatch"| n14 --> st2
+  n3 -->|"Benefit not confirmed"| n15 --> st2
+  n3 -->|"Provider not confirmed"| n16 --> st2
+  n3 -->|"Requirement unknown"| n17 --> st2
+  n3 -->|"Otherwise"| n9 --> st2
+  st2 --> p3
+  p3 --> q3
+  q3 -->|"Yes"| p4 --> p6
+  q3 -->|"No"| p5 --> p6
+  p6 --> g1
+  st2 -.-> g2
+  class s1 k_start
+  class w1 k_wait
+  class qp,q1,q2,n3,q3 k_decision
+  class st1,sp1,sp2,st2 k_store
+  class p1,p2,sp3,n1,n2,n4,n5,n6,n7,n8,n10,n11,n12,n13,n14,n15,n16,n17,n9,p3,p7,p4,p5,p6 k_process
+  class g1,g2 k_goto
+  style gPaused fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gNew fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

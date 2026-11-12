@@ -1,0 +1,44 @@
+title: Settings › Agents › Which steps need a person
+route: /settings
+intro: The PRD guardrail matrix, step by step: what each kind of agent action may do on its own and which human step it still needs. The Settings page only hints at this in its Gates card.
+dir: TD
+also: From the PRD on agents and automation (07), section 7, the guardrail matrix. The demo does not enforce any of it from this page.
+---
+start s1 "An agent wants to take a step"
+decision q1 "What kind of step is it?"
+
+process a1 "Auto + notify\nA person acts only on exceptions"
+process a2 "Stage\nIntake confirms before the coverage change lands"
+process a3 "Auto when the reading is sure\nStage when it is not, and always for a partial approval\nThe coordinator checks against the letter"
+process a4 "Stage\nThe coordinator confirms before the EMR is written"
+process a5 "Draft\nThe clinician edits the clinical content and signs"
+process a6 "Human-initiated, after a signature\nThe clinician's signature is bound to the packet hash"
+process a7 "Auto + notify, a later phase\nThe coordinator reviews the outcome"
+process a8 "Human-initiated\nThe coordinator schedules, a clinician attends the peer-to-peer"
+process a9 "Auto + notify\nThe operator acknowledges the proposed rule"
+endx x1 "Never\nThe clinician authors clinical content and sets units, frequency and dates\nCallers never answer clinical questions"
+
+click h1 "Clinician signs\nA licensed clinician signs every request and appeal"
+click h2 "Case owner confirms the write-back"
+goto g1 "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+goto g2 "Continues in: Dashboard › Request drawer › Approve the write-back"
+goto g3 "Continues in: Payers › History & Changes › Acknowledge a change"
+goto g4 "Continues in: Denial Intelligence › Written appeal › Edit, sign and file"
+s1 --> q1
+q1 -->|Read, poll or check: eligibility, packet completeness, status, decision letters| a1
+q1 -->|Change coverage on the chart: Verify| a2
+q1 -->|Put units, window and reason in the ledger: Navigator| a3
+q1 -->|Write the approval number and dates to the EMR: Navigator| a4
+q1 -->|Draft a cover sheet or an appeal letter: Packet, Advocate| a5
+q1 -->|Submit, fax, email an appeal or message a payer: Navigator| a6
+q1 -->|Call a payer for receipt or status: Caller| a7
+q1 -->|Call a payer for denial criteria or a peer-to-peer: Caller| a8
+q1 -->|Propose a payer rule from a bulletin: Sentinel, Packet, Advocate| a9
+q1 -->|Write clinical content, choose units or dates, answer clinical questions| x1
+a5 --> h1
+a6 --> h1
+a4 --> h2
+h1 --> g1
+h1 -.-> g4
+h2 --> g2
+a9 -.-> g3

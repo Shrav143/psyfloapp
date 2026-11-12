@@ -1,0 +1,18 @@
+title: Payers › Workflow Builder › Test a workflow
+route: /payers/summit?tab=builder
+intro: The 'Test' button takes the open workflow to Test Workflow with it already selected. The edits on screen are saved as a draft first, because the test runs the saved workflow, not the picture.
+dir: TD
+---
+start s1 "Click 'Test' in the bar"
+decision d1 "Unsaved changes on a workflow that is not archived?"
+store st1 "The draft is saved first\nVersion line describes the change"
+toast t1 "'Draft saved'"
+process p1 "The address becomes ?tab=test&workflow=the-id\nThe view switches to Test Workflow"
+screen tw "Test Workflow opens with that workflow in 'Workflow to test'\n'You chose this workflow.'\nA draft is labelled 'Draft: not used for cases yet' in the results"
+end e1 "The workflow is ready to run on a made-up case"
+goto g1 "Continues in: Payers › Test Workflow › Run a test case"
+
+s1 --> d1
+d1 -->|Yes| st1 --> t1 --> p1
+d1 -->|No| p1
+p1 --> tw --> e1 --> g1

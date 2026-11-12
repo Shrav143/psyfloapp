@@ -1,0 +1,59 @@
+title: EMR Connect › Problems › Every error state and what it needs
+route: /emr
+intro: A way to read the page when something looks wrong. Start from what the page shows, find what the person has to do, and see how the page recovers. The demo has two real problem states, and every click that cannot go ahead says why.
+dir: TD
+also: Production-only problems (from the PRD) are shown in orange. The demo cannot reach them.
+---
+start s1 "Something on EMR Connect looks wrong"
+decision q1 "What does the page show?"
+
+group gA "Amber pill: 'Needs attention'"
+  process a1 "The read-only sign-in expired\nThe row names the problem and says renew it with Fix"
+  click a2 "Click 'Fix'\nNeeds: a person who approves, and a tick for read-only access"
+  goto a3 "Continues in: EMR Connect › Problems › Fix a system that needs attention"
+  end a4 "Re-test: three checks. Row turns Connected"
+endgroup
+
+group gR "Red pill: 'Disconnected'"
+  process r1 "Someone disconnected it\nRow: 'Not syncing'. Charts from this system are not arriving. New Case cannot pull a chart from it until it is connected."
+  click r2 "Click 'Reconnect' on the row or in the Manage drawer\nNeeds: a passed connection test, and the Fix steps first if it was on 'Needs attention'"
+  goto r4 "Continues in: EMR Connect › Manage › Reconnect a system"
+  end r3 "Re-test: the same three checks as Connect\nRow turns Connected only after they pass. Any earlier issue text is cleared"
+endgroup
+
+group gT "Last sync figure"
+  process t1 "'None': every system is Disconnected\nSmall line: 'N systems are disconnected'"
+  process t2 "Needs: every Disconnected row reconnected"
+endgroup
+
+group gM "'Action required' names fields waiting for a mapping"
+  process m1 "'2 fields need a mapping, so New Case leaves them blank.'\nPill '2 to map' on 'Advanced'"
+  click m2 "Click 'Map field', or open 'Advanced' and click 'Map'\nNeeds: a value picked for each field"
+endgroup
+
+group gQ "Clicks that stop with a message"
+  toast d1 "'Sync now' with no Connected system\n'Nothing to sync'\n'No system is connected. Fix or reconnect one first.'"
+  toast d5 "An agent is paused in Settings\n'Reader is paused' or 'Navigator is paused'\n'Resume it in Settings to sync.' (or to connect a system, fix it, reconnect it)"
+  endx d3 "Contact left blank while connecting\n'Add the person at the practice who can approve read-only access.'"
+  endx d4 "Fix form incomplete\n'Name the person who approves and confirm read-only access.'"
+endgroup
+
+group gP "Production only, from the PRD"
+  ext p1 "The record system changes its screens\nThe feed pauses and falls back to file upload"
+  ext p2 "A sign-in challenge or lockout\nThe run pauses and a task goes to the credential owner"
+  toast p3 "A feed goes stale\nA banner and a task after the stale limit, 36 hours for attendance"
+endgroup
+
+s1 --> q1
+q1 -->|Amber pill on a row| a1 --> a2 --> a3
+a3 --> a4
+q1 -->|Red pill on a row| r1 --> r2 --> r4 --> r3
+q1 -->|Last sync figure says None or a disconnected system| t1 --> t2
+t2 --> r2
+q1 -->|The banner or the pill names fields| m1 --> m2
+q1 -->|A toast after a click| d1
+q1 -->|A toast after a click| d5
+q1 -.->|A message under a field| d3
+q1 -.->|A message under a field| d4
+q1 -.->|Not in the demo| p1
+p1 --> p2 --> p3

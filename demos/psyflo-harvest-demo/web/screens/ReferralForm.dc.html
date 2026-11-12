@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Referral form — Harvest Outreach Center</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared school look: SCHOOL_CSS in js/screens/SchoolPortal.js */
+.s-form{max-width:860px;margin:16px auto 0;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:8px 32px 32px}
+.s-form h2{font-size:16px;line-height:24px;font-weight:600;margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px}
+.s-drop{margin-top:10px;border:1px dashed var(--line-strong);border-radius:8px;padding:12px;text-align:center;color:var(--ink-3)}
+.s-ask{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+</style>
+</helmet>
+
+<div class="s-pg">
+  <header class="s-hd">
+    <b>Harvest Outreach Center</b><span class="m">Referral</span>
+    <span class="r">{{signedIn}}</span>
+  </header>
+
+  <form class="s-form" id="refform" novalidate>
+    <div class="s-top" style="min-height:64px"><h1 class="u-title">Referral form</h1></div>
+    <sc-if value="{{draftNote}}"><div class="u-mut" style="margin-bottom:8px">{{draftNote}} · <a class="u-link" href="#fresh">Start new</a></div></sc-if>
+
+    <h2 style="margin-top:8px">Student</h2>
+    <div class="s-g3">
+      <div><label for="fn">First name</label><input class="u-in" id="fn" type="text"></div>
+      <div><label for="mn">Middle name</label><input class="u-in" id="mn" type="text"></div>
+      <div><label for="ln">Last name</label><input class="u-in" id="ln" type="text"></div>
+    </div>
+    <div class="s-g4" style="margin-top:12px">
+      <div><label for="dob">Birth date</label><input class="u-in" id="dob" type="date"></div>
+      <div><label for="age">Age</label><input class="u-in" id="age" type="number"></div>
+      <div><label for="gr">Grade</label><input class="u-in" id="gr" type="text"></div>
+      <div><label for="sch">School</label><select class="u-sel" id="sch"><option value="LC-MS2">Lynchburg City · MS-2</option><option value="LC-ES3">Lynchburg City · ES-3</option><option value="CC-ES1">Campbell County · ES-1</option><option value="CC-ES2">Campbell County · ES-2</option><option value="CC-MS1">Campbell County · MS-1</option><option value="CC-HS1">Campbell County · HS-1</option></select></div>
+    </div>
+
+    <h2>Guardian</h2>
+    <div class="s-g3">
+      <div><label for="gn">Guardian name</label><input class="u-in" id="gn" type="text"></div>
+      <div><label for="gp">Phone</label><input class="u-in" id="gp" type="tel"></div>
+      <div><label for="ad">Address</label><input class="u-in" id="ad" type="text"></div>
+    </div>
+    <div class="s-g3" style="margin-top:12px">
+      <div id="gafield" style="grid-column:1 / -1"><div class="s-ask"><label id="galbl" style="margin:0;font-size:14px;line-height:20px">Guardian agrees to the referral</label><div class="s-rad" role="radiogroup" aria-labelledby="galbl" aria-required="true"><label><input type="radio" name="ga" value="yes"> Yes</label><label><input type="radio" name="ga" value="no"> No</label></div><sc-if value="{{gaErr}}"><span class="s-err" role="alert">{{gaErr}}</span></sc-if></div></div>
+      <div><label>Student has Medicaid?</label><div class="s-rad"><label><input type="radio" name="med" value="yes" checked=""> Yes</label><label><input type="radio" name="med" value="no"> No</label><label><input type="radio" name="med" value="not_sure"> Not sure</label></div></div>
+      <div><label>IEP or 504 plan?</label><div class="s-rad"><label><input type="radio" name="iep" value="yes" checked=""> Yes</label><label><input type="radio" name="iep" value="no"> No</label></div></div>
+    </div>
+
+    <h2>Attachments {{help}}</h2>
+    <div class="s-g3">
+      <div class="s-ck"><input type="checkbox" id="a1" checked=""><label for="a1">Behaviour report</label></div>
+      <div class="s-ck"><input type="checkbox" id="a2" checked=""><label for="a2">Attendance log</label></div>
+      <div class="s-ck"><input type="checkbox" id="a3"><label for="a3">Schedule and grades</label></div>
+    </div>
+    <div class="s-drop" id="drop"><a class="u-link" href="#up">Add files</a> · {{attachedText}}<input type="file" id="files" multiple data-nobind="" accept=".pdf,image/*,.doc,.docx,.xls,.xlsx,.txt" style="display:none"></div>
+
+    <h2>Concerns, last 30 days</h2>
+    <div class="s-g3">
+      <sc-for list="{{concerns}}" as="c"><div class="s-ck"><input type="checkbox" id="{{c.id}}" {{c.chk}}><label for="{{c.id}}">{{c.label}}</label></div></sc-for>
+    </div>
+    <div style="margin-top:12px"><label for="oth">Other concerns</label><textarea class="u-in" id="oth"></textarea></div>
+
+    <h2>Interventions tried</h2>
+    <textarea class="u-in" id="int" aria-label="Interventions tried" data-doc>Behaviour interventionist twice a week since September, check-in/check-out, IEP accommodations. Two office referrals this month. Family was given information about outpatient counseling last year.</textarea>
+
+    <h2>Referral for</h2>
+    <div class="s-g4">
+      <div class="s-ck"><input type="checkbox" id="r1" checked=""><label for="r1">TDT</label></div>
+      <div class="s-ck"><input type="checkbox" id="r2"><label for="r2">Outpatient</label></div>
+      <div class="s-ck"><input type="checkbox" id="r3"><label for="r3">SEBS</label></div>
+      <div class="s-ck"><input type="checkbox" id="r4"><label for="r4">Grant-funded</label></div>
+    </div>
+
+    <h2>Referred by</h2>
+    <div class="s-g4">
+      <div><label for="rn">Your name</label><input class="u-in" id="rn" type="text"></div>
+      <div><label for="ra">Role</label><input class="u-in" id="ra" type="text" value="School counselor"></div>
+      <div><label for="rc">Contact</label><input class="u-in" id="rc" type="text"></div>
+      <div><label for="rd">Referral date</label><input class="u-in" id="rd" type="date" value="2026-10-13"></div>
+    </div>
+
+    <div style="display:flex;gap:10px;align-items:center;margin-top:28px;flex-wrap:wrap">
+      <a class="u-btn pri" href="#submit">Submit referral</a>
+      <button class="u-btn" type="button" onClick="{{saveLater}}">Save for later</button>
+      <sc-if value="{{err}}"><span class="s-err" role="alert">{{err}}</span></sc-if>
+      <sc-if value="{{savedNote}}"><span class="u-mut">{{savedNote}}</span></sc-if>
+    </div>
+  </form>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

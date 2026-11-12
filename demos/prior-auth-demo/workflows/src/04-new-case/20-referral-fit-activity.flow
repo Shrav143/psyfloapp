@@ -1,0 +1,49 @@
+title: Authorizations › New Case › Referral › Full page: Fit, Activity and notes
+route: /authorizations/new/referral/RF-2053?draft=draft-1001
+intro: The two read-mostly tabs, Fit (Placement's view of the level of care and the beds left) and Activity (what happened and private notes), plus the 'Add note' dialog from the header.
+dir: TD
+---
+start s1 "Click 'Fit'"
+start s2 "Click 'Activity'"
+start s3 "Click 'Add note' in the header"
+
+group gFit "Fit tab"
+  screen f1 "'Level of care'\n'Placement reads the referral against the six ASAM dimensions'\n'The referral supports' PHP, 92% confident · 'Next best' IOP, 63%"
+  toast f2 "Amber banner when Placement suggests another program\n'The referral asks for IOP. Placement suggests PHP.'\n'You choose the program when you accept. Placement only reads the referral. A clinician decides the level of care.'"
+  screen f3 "Six dimensions, each with a note and four bars\nIntoxication and withdrawal · Medical conditions · Mood, behavior and thinking · Readiness to change · Relapse and continued use · Recovery environment"
+  screen f4 "'Capacity'\n'Open this week. Accepting a referral takes one bed or slot.'\nOne row per program: 'PHP: 5 slots open this week', chips 'Requested' and 'Suggested', '19 of 24 full'\nRed 'no beds open this week' at zero"
+  process f5 "Read only: nothing on the Fit tab can be clicked"
+endgroup
+
+group gAct "Activity tab"
+  screen a1 "'Activity' 'Agents and people, oldest first'\nTimeline: received, read, checked, suggested, assigned, asked, decided\nUpcoming steps are dashed"
+  screen a2 "'Notes' with the count\nThe card subtitle adds '· private, visible only to you and your team'\n'No notes yet.' or each note with its author and time"
+  input a3 "Type in 'Add a note'\nPlaceholder 'Type your note'"
+  decision a4 "Anything typed?"
+  process a5 "'Add note' is disabled"
+  click a6 "Click 'Add note'"
+endgroup
+
+group gMod "Header 'Add note' dialog"
+  overlay m1 "'Add a note'\nAmber banner 'These notes are private and only visible to you and your team. The referrer cannot see them.'"
+  input m2 "Type in the box\nPlaceholder 'Type your note'"
+  decision m3 "Anything typed?"
+  process m4 "'Add note' is disabled"
+  click m5 "Click 'Add note'"
+  click m6 "Click 'Cancel' or 'Close', press Escape,\nor click outside the dialog"
+  endx m7 "No note is saved"
+endgroup
+
+store n1 "Note is saved with its author and time\nTimeline 'Jordan Perez added a note' with the text"
+toast n2 "'Note added'\n'Only you and your team can see it.'"
+screen n3 "Notes list shows the new note first\nThe text box empties (Activity tab)"
+
+s1 --> f1 --> f2 --> f3 --> f4 --> f5
+s2 --> a1 --> a2 --> a3 --> a4
+a4 -->|No| a5
+a4 -->|Yes| a6 --> n1
+s3 --> m1 --> m2 --> m3
+m3 -->|No| m4 --> m6
+m3 -->|Yes| m5 --> n1
+m1 --> m6 --> m7
+n1 --> n2 --> n3

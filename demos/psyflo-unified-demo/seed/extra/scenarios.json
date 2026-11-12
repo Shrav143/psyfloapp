@@ -1,0 +1,178 @@
+{
+ "_about": "Presenter scenarios (prompt Part 14.2, run sheet review/06-demo-and-qa.md a3). demo.scenario {id} resets to the preset, applies the tweaks (or, with from_fixture, builds that checkpoint through the same internal actions the UI path runs) and returns {route, role, staff, client, steps}. The presenter dock and the QA harness read this table. login: how the dock signs in (staffId by default). clock: the beat's place in the 14-minute walkthrough. message: what the audience should conclude (prompt Part 14.2). fixture: the checkpoint demo.scenario can reload in about ten seconds if a beat fails. Steps are click paths, one action each; a person presses Process Form, Get Signature and Send.",
+ "scenarios": [
+  {
+   "id": "s1",
+   "title": "Direct staff daily documentation",
+   "role": "direct_support",
+   "staff": "khale",
+   "surface": "phone",
+   "case": {
+    "client": "MR",
+    "label": "M.R."
+   },
+   "route": "MobileApp",
+   "preset": "live",
+   "tweaks": [],
+   "steps": [
+    "Sign in as Kayla Hale (direct support)",
+    "Select M.R. on the phone",
+    "Say what happened, or use the example",
+    "Review the draft against the ISP objectives, then Looks right",
+    "Open M.R. in the mock Lauris and the daily note: 1 dictation waiting",
+    "Open What Psyflo added and check each source",
+    "Fill the open form (yellow boxes) and confirm the units",
+    "A person presses Process Form",
+    "My Work shows 5 of 6 daily notes in"
+   ],
+   "clock": "0:45",
+   "minutes": 2.5,
+   "message": "PsyFlo reduces documentation friction without removing staff judgment.",
+   "fixture": "mr-daily"
+  },
+  {
+   "id": "s2",
+   "title": "School referral through intake",
+   "role": "school",
+   "staff": null,
+   "login": {
+    "schoolUser": "rbell"
+   },
+   "surface": "school",
+   "case": {
+    "client": "TW",
+    "referral": "REF-118",
+    "label": "T.W."
+   },
+   "route": "SchoolPortal",
+   "preset": "live",
+   "tweaks": [],
+   "steps": [
+    "School counselor submits the referral (REF-118)",
+    "Clinician reviews it and sends the family link (simulated text)",
+    "Guardian fills the five steps on the phone",
+    "Eligibility shows details received; a person records the check",
+    "Screening call starts in Lauris: create the consumer, open Admission screening",
+    "Missing questions show in the panel; play the scripted call",
+    "Stop: the draft waits for the clinician; a person presses Process Form",
+    "Intake opens with the answers carried forward (CNA: copied from screening)"
+   ],
+   "clock": "5:45",
+   "minutes": 2,
+   "message": "Information is captured once and reused appropriately.",
+   "fixture": "tw-referral"
+  },
+  {
+   "id": "s3",
+   "title": "Initial authorization",
+   "role": "clinician",
+   "staff": "jperez",
+   "surface": "platform",
+   "case": {
+    "client": "TW",
+    "request": "R-0416",
+    "label": "T.W."
+   },
+   "route": "Authorization?id=R-0416&section=submission",
+   "preset": "live",
+   "tweaks": [],
+   "from_fixture": "tw-isp-ready",
+   "steps": [
+    "Review the treatment plan (checkpoint: plan ready)",
+    "Open the initial request draft in the panel",
+    "Trace each statement to its source chip",
+    "Edit criterion 1; Fill all 7 boxes",
+    "A person presses Process Form, then the approver approves internally",
+    "A licensed person presses Get Signature in Forms to Approve",
+    "A person presses Send (simulated Sfax receipt)",
+    "Authorizations shows Submitted with the decision clock"
+   ],
+   "clock": "7:45",
+   "minutes": 2.25,
+   "message": "Documentation, signatures, submission and tracking form one connected workflow.",
+   "fixture": "tw-isp-ready"
+  },
+  {
+   "id": "s4",
+   "title": "Continued-stay evidence",
+   "role": "clinician",
+   "staff": "jperez",
+   "surface": "platform",
+   "case": {
+    "client": "MR",
+    "request": "R-0411",
+    "label": "M.R."
+   },
+   "route": "Authorization?id=R-0411&section=evidence",
+   "preset": "canvas",
+   "tweaks": [],
+   "steps": [
+    "Open M.R.'s continued-stay request (Evidence review)",
+    "Pick the evidence period",
+    "Review the daily notes counted from stored records",
+    "Review guardian and collateral contacts",
+    "Check intervention counts and dates",
+    "Exclude what should stay out",
+    "Read the Evidence missing list",
+    "Fill the yellow boxes for the clinician to review (do not process)"
+   ],
+   "clock": "3:15",
+   "minutes": 2.5,
+   "message": "The system reduces repetitive chart review without inventing evidence.",
+   "fixture": "mr-corpus"
+  },
+  {
+   "id": "s5",
+   "title": "Payer decision",
+   "role": "clinician",
+   "staff": "jperez",
+   "surface": "platform",
+   "case": {
+    "client": "DW",
+    "request": "R-0402",
+    "label": "D.W. · K.T. · T.N. · E.C."
+   },
+   "route": "DenialIntelligence",
+   "preset": "canvas",
+   "tweaks": [],
+   "steps": [
+    "Open the partial offer for D.W. (Partial: decide)",
+    "Open it in Denial Intelligence: evidence and valid options",
+    "Peer-to-peer preparation for T.N.; schedule the call",
+    "Record the decision with its document reference",
+    "Back to the authorization: status and units updated"
+   ],
+   "clock": "10:00",
+   "minutes": 2.25,
+   "message": "The clinic does not lose continuity when a payer decision requires further work.",
+   "fixture": "payer-decision"
+  },
+  {
+   "id": "s6",
+   "title": "Leadership view",
+   "role": "admin",
+   "staff": "dowens",
+   "alt_role": "clinician",
+   "alt_staff": "jperez",
+   "surface": "platform",
+   "case": {
+    "label": "Aggregate"
+   },
+   "route": "Analytics?section=outcomes",
+   "preset": "canvas",
+   "tweaks": [],
+   "steps": [
+    "Sign in as Dana Owens (administrator)",
+    "Open Analytics: Pilot scorecard",
+    "Payer performance; a payer row opens Denial Intelligence",
+    "Patient population (illustrative cohort banner)",
+    "Drill down as a clinician, own caseload only",
+    "Export a report with the period and dataset in the file"
+   ],
+   "clock": "12:15",
+   "minutes": 1.25,
+   "message": "Operational data without another spreadsheet.",
+   "fixture": "analytics-case"
+  }
+ ]
+}

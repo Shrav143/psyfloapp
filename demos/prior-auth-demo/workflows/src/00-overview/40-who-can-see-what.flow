@@ -1,0 +1,74 @@
+title: Who can see what › Roles, sites and a record at the other site
+route: Every page (top bar, Demo menu › Viewing as)
+intro: A clinic can run more than one site, and staff at one site must not see the other site's patients (minimum necessary access). The demo has Site A and Site B and four viewers. What a viewer may see sets the sites in view, and every screen reads it.
+dir: TD
+also: Demo only: the viewer is chosen in the Demo menu. In a real clinic it follows the person who signs in. Payers, agents and Settings are clinic-wide and do not follow the site.
+---
+start s1 "Psyflo opens\nDefault viewer: Jordan Perez, UR coordinator, on Both sites"
+
+group gRoles "The four demo viewers (src/data/viewers.ts)"
+  process r1 "Jordan Perez, UR coordinator\nSite A and Site B"
+  process r2 "Alex Morgan, clinic owner\nSite A and Site B"
+  process r3 "Dr. Rivera, clinician\nSite A only"
+  process r4 "Sam Okafor, billing\nSite B only"
+endgroup
+
+click cView "Choose a viewer\nDemo menu › 'Viewing as', or Settings › Sites and access › 'View as'"
+goto gView "Continues in: Global shell › Demo menu › Viewing as"
+decision d1 "May this viewer see both sites?"
+
+group gBoth "Both sites"
+  screen tb1 "Top bar shows the switch\n'Both sites | Site A | Site B'\nStarts on 'Both sites'"
+  input pick "Choose 'Both sites', 'Site A' or 'Site B'"
+  goto gSw "Continues in: Global shell › Top bar › Site switcher"
+endgroup
+
+group gOne "One site only"
+  screen tb2 "Top bar shows a locked label\n'Site A only' or 'Site B only', with an info note on why"
+  process one "There is no 'Both sites' choice and nothing to switch"
+endgroup
+
+process view "The view is the sites chosen (or the one site the viewer may see)"
+store site "Every case belongs to a site\nsiteOf(case id): the headline cases are placed by hand, every other id by a stable hash\nThe same case is at the same site on every screen"
+process read "Every screen reads the view\nLists, counts, sidebar badges, charts, search, pickers, notifications, Ask FLO answers, exports"
+process sum "Site A plus Site B always equals Both sites\nIn the default view every number is as it was before sites"
+
+decision d2 "Is the record the person opens inside the view?"
+screen rec "The record opens as usual"
+screen oos "Notice: 'This case is not available at Site A'\nIt names no patient. It says which site the record belongs to and which sites this viewer can see"
+decision d3 "Can this viewer see the record's site?"
+click showSite "Click 'Show Site B'\n(only for a viewer who may see both sites)"
+process sw2 "The view becomes the record's site"
+click back "Click 'Back to the Dashboard'"
+endx stop "The one-site viewer cannot reach the other site's record from any screen, link or search"
+
+group gWide "Not site data: clinic-wide"
+  process cw1 "Payers: rules, documents and changes are the clinic's\nThe Payers badge never changes with the view"
+  process cw2 "Agents and Settings: the sixteen agents and Pause all"
+  process cw3 "Payer changes: 'Update N drafts' counts only the drafts in the view"
+endgroup
+
+group gEmr "Per site"
+  process e1 "EMR Connect: each site has its own clinical record system\nThe billing system serves both\nA one-site viewer sees and changes only their own"
+endgroup
+
+goto gOut "Continues in: EMR Connect › Page › Arrive and read the page"
+end e1x "Each viewer works only with the patients at their site"
+
+s1 --> r1 & r2 & r3 & r4
+r1 & r2 & r3 & r4 --> d1
+s1 --> cView --> gView
+d1 -->|Yes| tb1 --> pick --> gSw
+d1 -->|No| tb2 --> one
+pick --> view
+one --> view
+view --> site --> read --> sum
+read --> d2
+d2 -->|Yes| rec --> e1x
+d2 -->|No| oos --> d3
+d3 -->|Yes| showSite --> sw2 --> rec
+d3 -->|No| back
+back --> stop
+read -.-> cw1 & cw2 & cw3
+read -.-> e1
+e1 --> gOut

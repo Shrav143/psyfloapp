@@ -1,0 +1,85 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  cp@{ shape: curv-trap, label: "<b>Case page</b><br/>'Send to payer' appears once, in the 'Next:' block in the header, on every tab" }
+  d1@{ shape: diam, label: "Does the request already have a result (decided)?" }
+  r1@{ shape: rect, label: "<b>The button becomes a greyed-out 'Sent to payer'</b><br/>Tooltip: 'Approved. Nothing left to send'<br/>(the result word comes from the request)" }
+  d2@{ shape: diam, label: "Is it already with the payer?" }
+  r2@{ shape: rect, label: "<b>The button becomes a greyed-out 'Sent to payer'</b><br/>Tooltip: 'With the payer'<br/>The status pill in the title says the same" }
+  d3@{ shape: diam, label: "Is it a denial?" }
+  r3@{ shape: rect, label: "Greyed out. Tooltip: 'Denied. Advocate has the next step'" }
+  d4@{ shape: diam, label: "Do all four Integrity checks pass?" }
+  r4@{ shape: rect, label: "<b>Greyed out, next to the primary button for the next action</b><br/>Chip 'Integrity 2/4'; tooltip 'Integrity 2/4: apply the matching actions'" }
+  on@{ shape: rect, label: "<b>'Send to payer' is on, chip 'Integrity 4/4'</b><br/>In the 'Next:' block it is the one primary button<br/>Tooltip: 'Opens review and sign. A clinician signs before anything is sent.'" }
+  subgraph gChk ["What keeps a check open"]
+  k1@{ shape: rect, label: "<b>'Every sentence matches the chart'</b><br/>open after you edit the draft, until 'Re-check'" }
+  k2@{ shape: rect, label: "<b>'Payer criteria are covered'</b><br/>open until its action is applied (e.g. 'Name the step-down provider')" }
+  k3@{ shape: rect, label: "<b>'Dates are consistent'</b><br/>open until its action is applied (e.g. 'Settle the sertraline start date')" }
+  k4@{ shape: rect, label: "<b>'Identifiers are protected'</b><br/>always passes in the demo" }
+  end
+  dm@{ shape: rect, label: "<b>Dismissing the action does not clear its check</b><br/>The dismiss dialog warns about this" }
+  b1@{ shape: trap-t, label: "<b>Click 'Open in review and sign'</b><br/>(header, always on)" }
+  b2@{ shape: trap-t, label: "<b>Click 'Send to payer'</b><br/>(only when on)" }
+  rp@{ shape: rect, label: "<b>Find this request's draft in New Case</b><br/>The draft named like 'draft-r1042', or any draft with this case ID<br/>Or make one: draftFromRequest" }
+  d5@{ shape: diam, label: "Does the request already have a draft?" }
+  mk@{ shape: rect, label: "<b>A draft is created from the request</b><br/>Patient, payer, level of care, request type, a reason and diagnoses from the case page<br/>The documents the payer's saved list asks for, as sample files<br/>Not saved, so Authorizations does not list it as a draft" }
+  up@{ shape: rect, label: "<b>A draft that exists is brought up to date</b><br/>Answers from applied actions (sertraline date, step-down provider) are added<br/>The therapy note is added when that action was applied<br/>When every check passes the run is marked finished" }
+  d6@{ shape: diam, label: "Where does the request stand?" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › After sending" }
+  dRec@{ shape: diam, label: "Is the request on the Dashboard (recorded in the store)?" }
+  sent@{ shape: stadium, label: "<b>New Case shows 'R-0912 was sent'</b><br/>'Open it on the Dashboard' and 'Back to Authorizations'<br/>The draft is marked sent, so it cannot be signed again" }
+  sent2@{ shape: stadium, label: "<b>New Case shows 'R-1131 is with the payer'</b><br/>'It is already with the payer, so there is nothing to sign here.'<br/>'Back to the case' and 'Back to Authorizations'<br/>It does not say it was sent by you, because the store has no such request" }
+  ns@{ shape: rect, label: "<b>Nothing has been sent</b><br/>A licensed clinician signs in New Case" }
+  cp --> d1
+  d1 -->|"Yes"| r1
+  d1 -->|"No"| d2
+  d2 -->|"Yes"| r2
+  d2 -->|"No"| d3
+  d3 -->|"Yes"| r3
+  d3 -->|"No"| d4
+  d4 -->|"No"| r4
+  d4 -->|"Yes"| on
+  r4 -.-> k1
+  r4 -.-> k2
+  r4 -.-> k3
+  r4 -.-> k4
+  k2 --> dm
+  k3 --> dm
+  cp --> b1
+  on --> b2
+  b1 --> rp
+  b2 --> rp
+  rp --> d5
+  d5 -->|"No"| mk --> d6
+  d5 -->|"Yes"| up --> d6
+  d6 -->|"Agents still have work, e.g. R-1042 before its actions are applied"| g1
+  d6 -->|"Ready or all four checks passed, e.g. R-0988, R-1142, R-1042 after its actions"| g2
+  d6 -->|"Already with the payer or decided"| dRec
+  dRec -->|"Yes"| sent
+  dRec -->|"No"| sent2
+  rp -.-> ns
+  sent --> g3
+  class cp k_screen
+  class d1,d2,d3,d4,d5,d6,dRec k_decision
+  class r1,r2,r3,r4,on,k1,k2,k3,k4,dm,rp,mk,up,ns k_process
+  class b1,b2 k_click
+  class g1,g2,g3 k_goto
+  class sent,sent2 k_endx
+  style gChk fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

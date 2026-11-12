@@ -1,0 +1,66 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Window shows 'Your report is ready'" }
+  sc@{ shape: curv-trap, label: "<b>Three buttons</b><br/>'Download report' (dark)<br/>'Download data (CSV)'<br/>'Print'<br/>Footer button 'Done'" }
+  c1@{ shape: trap-t, label: "Click 'Download report'" }
+  c2@{ shape: trap-t, label: "Click 'Download data (CSV)'" }
+  c3@{ shape: trap-t, label: "Click 'Print'" }
+  q2@{ shape: diam, label: "Is this the hosted preview?" }
+  t3@{ shape: odd, label: "<b>'Print is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'" }
+  pp@{ shape: rect, label: "<b>The browser's print window opens</b><br/>It prints a plain page of the report: title, period, site view, payer, program, diagnosis group and every section<br/>Not the sidebar, the menus or the window" }
+  pq@{ shape: rect, label: "<b>Cancel or Print in the browser window</b><br/>The report window stays open" }
+  q1@{ shape: diam, label: "<b>Is this the hosted preview?</b><br/>(the host page blocks downloads and printing)" }
+  t1@{ shape: odd, label: "<b>'Download is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'" }
+  p0@{ shape: rect, label: "<b>No file is made and no second toast</b><br/>The window stays open" }
+  subgraph gFile ["In the single-file demo"]
+  f1@{ shape: doc, label: "<b>Markdown file</b><br/>psyflo-monthly-report-quarter-all-all-all-both.md" }
+  f2@{ shape: doc, label: "<b>CSV file</b><br/>psyflo-monthly-report-quarter-all-all-all-both.csv" }
+  p1@{ shape: rect, label: "Browser saves the file to the person's computer" }
+  t2@{ shape: odd, label: "<b>'Report downloaded'</b><br/>'psyflo-monthly-report-quarter-all-all-all-both.md has the figures you see on this page.'" }
+  p2@{ shape: rect, label: "Window stays open, so the other file can be saved too" }
+  end
+  n1@{ shape: rect, label: "Name pattern: psyflo-monthly-report, then the period (quarter, last_quarter, year), then the payer (all or cardinal, summit ...), then the program (all, res, iop, php or wm), the diagnosis group (all, aud, oud, stim, mood, trauma or cooc) and the site view (both, a or b)" }
+  d1@{ shape: doc, label: "<b>Production, not in the demo</b><br/>One PDF monthly pack, aggregate only, drafted on the first business day<br/>The operator approves it before it is sent<br/>The demo prints through the browser instead" }
+  k1@{ shape: trap-t, label: "Click 'Done', press Escape, click the X or click outside" }
+  e1@{ shape: stadium, label: "Window closes, back on Analytics" }
+  g1@{ shape: subproc, label: "Continues in: Analytics › Monthly report › What the files contain" }
+  s1 --> sc
+  sc --> c1 & c2 & c3
+  c3 --> q2
+  q2 -->|"Yes"| t3 --> k1
+  q2 -->|"No"| pp --> pq --> k1
+  c1 & c2 --> q1
+  q1 -->|"Yes"| t1 --> p0 --> k1
+  q1 -->|"No"| p1 --> t2 --> p2 --> k1
+  p1 --> f1 & f2
+  p1 -.-> n1
+  f1 & f2 --> g1
+  sc --> k1
+  k1 --> e1
+  sc -.-> d1
+  class s1 k_start
+  class sc k_screen
+  class c1,c2,c3,k1 k_click
+  class q2,q1 k_decision
+  class t3,t1,t2 k_toast
+  class pp,pq,p0,p1,p2,n1 k_process
+  class f1,f2,d1 k_doc
+  class e1 k_end
+  class g1 k_goto
+  style gFile fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

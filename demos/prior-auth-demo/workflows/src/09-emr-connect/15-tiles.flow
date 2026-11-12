@@ -1,0 +1,54 @@
+title: EMR Connect › Page › What the health figures show
+route: /emr
+intro: The four figures at the top of 'Connection health' follow the state below them and the site view. They are not buttons. This diagram shows what each one says and what moves it.
+dir: TD
+also: Times follow the Demo clock. Demo, Fast-forward ages the 'ago' labels and adds missed syncs for a system that needs attention, but never runs a sync. A missed sync is one per hour since the last good one (demo values).
+---
+screen p1 "EMR Connect\nFour figures at the top of the Connection health card"
+
+group gSync "Figure 1: Last sync"
+  decision q1 "Is any system in the site view not disconnected?\n(only the systems that serve a site in view are counted)"
+  process a1 "'None'\nSmall line: 'no system connected' (empty list) or 'N systems are disconnected'"
+  process a2 "Value is the time since the newest sync\n'Just now', '6 min', '1 h 6 min'"
+  decision q2 "Is any system disconnected?"
+  process a3 "Small line 'all systems answering'"
+  process a4 "Small line '1 system is disconnected' or 'N systems are disconnected'"
+endgroup
+
+group gCharts "Figure 2: Charts matched today"
+  process b1 "23 for Both sites, from 13 at Site A and 10 at Site B\nStarts there on reset. One site shows its own count"
+  store b2 "Each finished sync adds its charts to the sites of the systems it pulled from\n1 to 3, at least 1 per sync. Site A plus Site B is always Both sites"
+endgroup
+
+group gFiles "Figure 3: Files pulled this week"
+  process c1 "142 for Both sites, from 80 at Site A and 62 at Site B\nStarts there on reset. One site shows its own count"
+  store c2 "Each finished sync adds its files to the sites it pulled from\nA new system adds 5 and a finished Fix adds 12 remittances, split across the sites the system serves"
+endgroup
+
+group gFail "Figure 4: Sync failures"
+  process d1 "The missed syncs of every system in the site view, added up. The Billing system serves both sites, so it counts once in Both sites and in each site's view\nA Connected system has 0\nA system that Needs attention misses one each hour since its last good sync: 2 at the start\nA Disconnected system is not asked, so it shows 'Sync paused' and adds nothing"
+  process d2 "Fix and Reconnect bring it back to 0\nFast-forward adds one per hour while the problem stays"
+endgroup
+
+process n1 "A system that Needs attention still counts as answering\nOnly Disconnected systems change the Last sync figure"
+process n3 "The fields waiting for a mapping are not a figure any more\nThey show in 'Action required' and in 'Advanced'"
+goto g1 "Continues in: EMR Connect › Sync › Sync now"
+goto g2 "Continues in: EMR Connect › Connect a system › Run the connection test and save"
+goto g3 "Continues in: EMR Connect › Needs a mapping › Map a field"
+goto g4 "Continues in: EMR Connect › Manage › Disconnect and reconnect"
+goto g5 "Continues in: EMR Connect › Problems › Fix a system that needs attention"
+
+p1 --> q1 & b1 & c1 & d1
+q1 -->|No| a1
+q1 -->|Yes| a2 --> q2
+q2 -->|No| a3
+q2 -->|Yes| a4
+a2 -.-> n1
+a1 --> g4
+a4 --> g4
+b1 --> b2 --> g1
+c1 --> c2
+c2 --> g1
+c2 --> g2
+d1 --> d2 --> g5
+p1 -.-> n3 --> g3

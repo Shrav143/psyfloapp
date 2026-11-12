@@ -1,0 +1,62 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Header of the table card" }
+  sc@{ shape: curv-trap, label: "<b>Five controls</b><br/>'Needs me today', 'All payers', 'All programs', 'All statuses', 'All request types'<br/>A 'Clear filters' button joins them when any is set" }
+  subgraph gToggle ["Needs me today"]
+  t1@{ shape: trap-t, label: "<b>Click 'Needs me today'</b><br/>Keyboard: Tab, then Enter or Space" }
+  t2@{ shape: rect, label: "<b>The table shows only rows owned by You today</b><br/>Waiting on a person now, ready to sign, a write-back to approve, a late payer to chase, or a denial deadline inside 2 days" }
+  t3@{ shape: curv-trap, label: "<b>Button is outlined green and pressed</b><br/>The sentence under the title starts 'Needs you today.'" }
+  t4@{ shape: trap-t, label: "Click it again" }
+  t5@{ shape: rect, label: "The table shows every row again" }
+  end
+  subgraph gMenus ["The four menus"]
+  m1@{ shape: trap-t, label: "<b>Click a menu</b><br/>Payer, Program, Status or Request type" }
+  m2@{ shape: win-pane, label: "<b>Menu opens under the button, to the left for the right-hand ones</b><br/>Payer: every payer, including one added on Payers<br/>Status: Awaiting sign-off 5, Submitted 4, Decision pending 14, Info requested 3, Decided today 8, Denied / appeal 8" }
+  m3@{ shape: trap-t, label: "Pick an option" }
+  m4@{ shape: rect, label: "<b>Menu closes</b><br/>The table, its title and the sentence under it follow" }
+  m5@{ shape: rect, label: "<b>Menu keys: ArrowDown, ArrowUp, Enter to pick, Escape to close</b><br/>A click outside or on the button again also closes it" }
+  m6@{ shape: curv-trap, label: "A menu that is not 'All' turns green and bold" }
+  end
+  w1@{ shape: cyl, label: "<b>Filters saved</b><br/>Payer, Program, Request type, Status" }
+  w2@{ shape: cyl, label: "<b>Address gets ?payer=, ?program=, ?type= or ?stage=</b><br/>Only values that are not 'All'" }
+  p1@{ shape: rect, label: "<b>Lifecycle counts follow Payer, Program and Request type</b><br/>A Status pick shows as the pressed chip" }
+  p2@{ shape: rect, label: "Table goes back to its first 8 rows" }
+  d1@{ shape: diam, label: "Any rows left?" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Table controls › Clear filters and empty states" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Lifecycle › Click a state to filter the table" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
+  s1 --> sc
+  sc --> t1 --> t2 --> t3 --> t4 --> t5
+  sc --> m1 --> m2 --> m3 --> m4 --> m6
+  m2 -.-> m5
+  m4 --> w1 --> w2 --> p1 --> p2 --> d1
+  t2 --> p2
+  d1 -->|"Yes"| g3
+  d1 -->|"No"| g1
+  p1 -.-> g2
+  class s1 k_start
+  class sc,t3,m6 k_screen
+  class t1,t4,m1,m3 k_click
+  class t2,t5,m4,m5,p1,p2 k_process
+  class m2 k_overlay
+  class w1,w2 k_store
+  class d1 k_decision
+  class g1,g2,g3 k_goto
+  style gToggle fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gMenus fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

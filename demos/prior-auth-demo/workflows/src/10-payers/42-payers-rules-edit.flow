@@ -1,0 +1,54 @@
+title: Payers › Rules & Instructions › Edit a rule
+route: /payers/summit?tab=rules
+intro: 'Edit' on a rule row opens a right-hand panel with the rule's structured values, its free text, who and what it applies to, and its dates. Saving asks for a reason, says which version it becomes, and writes the edit audit. A verified rule that is edited goes back to Needs review. A rule read through from the payer's saved rules writes its change back to those saved rules, so New Case and Eligibility read it at once; a rule the library owns is saved in the library.
+dir: TD
+---
+start s1 "Open a group, open a rule row,\nclick 'Edit'"
+overlay pn "Edit rule (right-hand panel)\n'Submission windows. Version 1 now, 2 when you save.'"
+screen f1 "Title, 'What it says'"
+screen f2 "Structured values for that rule\nToggle (Authorization required), number with its unit (Window, days),\nchoice (Counted in: Business days or Calendar days), short text (Portal, Phone, Fax),\nlong text (Exceptions, Historical-date rule, Documentation prerequisites)\n'Other values for this group' holds the rest of the group's values"
+screen f3 "Instructions\nFree text for people and agents\nFor a read-through rule it is the payer's saved lines, one per line"
+screen f4 "Closed 'Applies to and dates'\nServices, request types (none ticked means all),\nEffective from, Effective until, Product, Provider type"
+input i1 "Change a value, the text or a date"
+process cnt "Footer counts the changes\n'2 changes not saved yet'"
+click sv "Click 'Save rule'"
+decision dt "Is the title empty?"
+toast et "Under the title: 'Add a title.'"
+decision dn "Did anything change?"
+process nc "The panel closes\nNothing is saved or logged"
+overlay rm "Save the rule?\nThis becomes version 2. (A verified rule goes back to Needs review.)\nWorkflows that use it read the new version; History & Changes lists what it touches.\nList of the changes"
+input ir "Type 'Reason for the edit' (required)"
+click cs "Click 'Save and log the edit'"
+decision dre "Is the reason empty?"
+toast er "Add a reason. It goes in the edit log."
+decision dk "Where does the rule live?"
+store pc "A rule read through from the payer's saved rules\nThe change is written back as that payer's saved lines, documents or script\n'Edits waiting' goes up by one for rules and document lists\nNew drafts use it at once"
+store lb "A rule the library owns\nSaved in the library with a new version and a history line"
+store lg "Edit audit gets one line per changed value\nArea 'Rules' (or 'Documents', 'Caller instructions', 'Payer details')\nwith before, after, your name, the time and the reason"
+store vs "Version goes up by one\nLast verified date stays until it is verified again"
+toast t1 "Saved toast\nNew drafts use it at once.\nClick Update drafts to redraft open ones."
+screen out "Row shows the new values and 'Version 2'\nBanner '1 edit applies to new drafts only' (rules and document lists)"
+click cx "Click 'Cancel', the X, or press Escape\nEscape closes the reason pop-up first, then the panel"
+endx x1 "Panel closes\nNothing saved"
+end e1 "Edited rule is in force for new drafts"
+goto g1 "Continues in: Payers › Edits waiting › Update drafts"
+goto g2 "Continues in: Payers › Edit log"
+goto g3 "Continues in: Payers › Rules & Instructions › Mark a rule as verified"
+goto g4 "Continues in: Payers › Configuration feeds the rest of the app"
+
+s1 --> pn --> f1 --> f2 --> f3 --> f4 --> i1 --> cnt --> sv --> dt
+dt -->|Yes| et --> f1
+dt -->|No| dn
+dn -->|No| nc --> x1
+dn -->|Yes| rm --> ir --> cs --> dre
+dre -->|Yes| er --> ir
+dre -->|No| dk
+dk -->|Payer's saved rules| pc --> lg
+dk -->|Library| lb --> lg
+lg --> vs --> t1 --> out --> e1
+pn --> cx --> x1
+rm --> cx
+out --> g1
+lg -.-> g2
+out -.-> g3
+pc -.-> g4

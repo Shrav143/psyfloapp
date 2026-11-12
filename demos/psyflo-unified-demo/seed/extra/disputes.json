@@ -1,0 +1,115 @@
+{
+  "_about": "Denial Intelligence seed (E3). `disputes` is the working layer over a request that needs a payer-decision response; request.stage stays the only lifecycle and the dispute status is derived from it (web/js/shared/sel/disputes.js, reconciled after every action by server/psyflo/actions/x-disputes.js). `dispute_evidence` are dated records the workspace reads (synthetic, provenance 'seed': shown as Illustrative sample). `drafting_rules` is the list of rules Psyflo applies to every draft (read by Settings and the payer guidance drawer). Synthetic data only.",
+  "disputes": [
+    {
+      "id": "DI-0402", "request": "R-0402", "client": "DW", "payer": "sentara", "issue": "partial", "status": "decide", "path": null,
+      "owner": "jperez", "backup": "cdiaz", "opened": "2026-10-27", "closed": null,
+      "units": { "requested": 150, "offered": 110 },
+      "notice": { "date": "2026-10-27", "via": "phone", "doc_ref": null, "source": "Call log · Oct 27, 3:30 pm · S. Lane" },
+      "concerns": [
+        { "text": "\"We'd really like to give you 110.\"", "source": "Call log · Sentara called Oct 27, 3:30 pm", "date": "2026-10-27" }
+      ],
+      "docs": {}, "tried": [], "excluded": [], "provenance": "seed"
+    },
+    {
+      "id": "DI-0408", "request": "R-0408", "client": "KT", "payer": "anthem", "issue": "info", "status": "info-req", "path": "info",
+      "owner": "jperez", "backup": "cdiaz", "opened": "2026-10-28", "closed": null,
+      "units": { "requested": 150, "offered": null },
+      "notice": { "date": "2026-10-28", "via": "availity", "doc_ref": "Availity request for information · Oct 28, 5:40 pm", "source": "Read from the open Availity page by the extension · Oct 28, 5:40 pm" },
+      "concerns": [
+        { "text": "Frequency and duration of physical aggression within the last 30 days", "source": "Availity request for information · item 1", "date": "2026-10-28" },
+        { "text": "Prior outpatient treatment and outcome", "source": "Availity request for information · item 2", "date": "2026-10-28" },
+        { "text": "Current IEP supports and why they are insufficient", "source": "Availity request for information · item 3", "date": "2026-10-28" }
+      ],
+      "docs": {}, "tried": [], "excluded": [], "provenance": "seed"
+    },
+    {
+      "id": "DI-0388", "request": "R-0388", "client": "TN", "payer": "sentara", "issue": "partial", "status": "p2p", "path": "p2p",
+      "owner": "jperez", "backup": "cdiaz", "opened": "2026-10-27", "closed": null,
+      "units": { "requested": 150, "offered": 65 },
+      "notice": { "date": "2026-10-27", "via": "phone", "doc_ref": null, "source": "Call log · Oct 27, 10:15 am · J. Perez" },
+      "concerns": [
+        { "text": "Partial award: 65 of 150 units. The payer's reason was not recorded.", "source": "Call log · Oct 27, 10:15 am (48 min on hold)", "date": "2026-10-27" }
+      ],
+      "p2p": { "ref": null, "reviewer": null, "source": "Slot offered by Sentara on Oct 27 (call log)" },
+      "docs": {}, "tried": [], "excluded": [], "provenance": "seed"
+    },
+    {
+      "id": "DI-0384", "request": "R-0384", "client": "EC", "payer": "anthem", "issue": "denial", "status": "appeal-prep", "path": "appeal",
+      "owner": "jperez", "backup": "cdiaz", "opened": "2026-10-22", "closed": null,
+      "units": { "requested": 90, "offered": 0 },
+      "notice": { "date": "2026-10-22", "via": "availity", "doc_ref": "Availity determination notice · Oct 22", "source": "Read from the open Availity page · Oct 22, 4:20 pm" },
+      "concerns": [
+        { "text": "\"already connected to other services\"", "source": "Availity determination notice · Oct 22", "date": "2026-10-22" }
+      ],
+      "docs": {
+        "appeal": {
+          "seeded": true,
+          "gen": { "at": "2026-10-26T10:00", "by": "Psyflo", "sim": true, "seeded": true },
+          "sections": [
+            { "key": "letter", "title": "Letter", "text": "I am Ethan's guardian. I am appealing Anthem's decision of October 22. Ethan's school counseling has not stopped his behavior at school: 4 office referrals this month. Harvest's program is the only daily support available to him. Please review the attached records and approve the 90 units requested.", "evidence": [], "missing": [], "seeded": true }
+          ],
+          "reviewed": null, "sent": null, "versions": []
+        }
+      },
+      "tried": [], "excluded": [], "provenance": "seed"
+    }
+  ],
+  "dispute_evidence": [
+    { "id": "EV-DW-01", "client": "DW", "kind": "incident", "date": "2026-10-05", "label": "Physical aggression toward a peer", "behavior": "physical aggression", "minutes": 10, "intensity": "moderate", "setting": "unstructured", "where": "hallway", "quote": "Physical aggression toward a peer in the hallway; separated by staff; about 10 minutes.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-DW-02", "client": "DW", "kind": "incident", "date": "2026-10-14", "label": "Physical aggression toward a peer", "behavior": "physical aggression", "minutes": 15, "intensity": "moderate", "setting": "unstructured", "where": "lunch", "quote": "Physical aggression toward a peer at lunch; staff de-escalation; about 15 minutes.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-DW-03", "client": "DW", "kind": "incident", "date": "2026-10-21", "label": "Left class without permission", "behavior": "elopement", "minutes": 20, "intensity": "moderate", "setting": "structured", "where": "classroom", "quote": "Left the classroom without permission; located and returned by staff; about 20 minutes.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-DW-04", "client": "DW", "kind": "safety_plan", "date": "2026-10-03", "label": "Safety plan reviewed", "quote": "Safety plan reviewed with the guardian on Oct 3.", "source": "Clinical record · safety plan", "provenance": "seed" },
+
+    { "id": "EV-KT-01", "client": "KT", "kind": "incident", "date": "2026-10-02", "label": "Physical aggression toward a peer", "behavior": "physical aggression", "minutes": 10, "intensity": "moderate", "setting": "unstructured", "where": "recess", "quote": "Physical aggression toward a peer at recess; staff de-escalation; about 10 minutes.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-KT-02", "client": "KT", "kind": "incident", "date": "2026-10-06", "label": "Physical aggression toward a peer", "behavior": "physical aggression", "minutes": 5, "intensity": "moderate", "setting": "structured", "where": "classroom", "quote": "Physical aggression toward a peer in class; about 5 minutes.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-KT-03", "client": "KT", "kind": "incident", "date": "2026-10-09", "label": "Physical aggression toward a peer", "behavior": "physical aggression", "minutes": 15, "intensity": "moderate", "setting": "unstructured", "where": "lunch", "quote": "Physical aggression toward a peer at lunch; office referral; about 15 minutes.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-KT-04", "client": "KT", "kind": "incident", "date": "2026-10-14", "label": "Physical aggression toward a peer", "behavior": "physical aggression", "minutes": 10, "intensity": "moderate", "setting": "unstructured", "where": "hallway", "quote": "Physical aggression toward a peer in the hallway; about 10 minutes.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-KT-05", "client": "KT", "kind": "incident", "date": "2026-10-17", "label": "Physical aggression toward a peer", "behavior": "physical aggression", "minutes": 10, "intensity": "moderate", "setting": "structured", "where": "classroom", "quote": "Physical aggression toward a peer in class; about 10 minutes.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-KT-06", "client": "KT", "kind": "incident", "date": "2026-10-22", "label": "Physical aggression toward a peer", "behavior": "physical aggression", "minutes": 15, "intensity": "moderate", "setting": "unstructured", "where": "recess", "quote": "Physical aggression toward a peer at recess; office referral; about 15 minutes.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-KT-07", "client": "KT", "kind": "incident", "date": "2026-10-27", "label": "Physical aggression toward a peer", "behavior": "physical aggression", "minutes": 5, "intensity": "moderate", "setting": "unstructured", "where": "lunch", "quote": "Physical aggression toward a peer at lunch; about 5 minutes.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-KT-08", "client": "KT", "kind": "office_referral", "date": "2026-10-09", "label": "Office referral", "quote": "Office referral after the Oct 9 incident.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-KT-09", "client": "KT", "kind": "office_referral", "date": "2026-10-22", "label": "Office referral", "quote": "Office referral after the Oct 22 incident.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-KT-10", "client": "KT", "kind": "prior_service", "date": "2026-04-30", "label": "Weekly outpatient counseling · Piedmont Counseling", "provider": "Piedmont Counseling", "from": "2026-01", "to": "2026-04", "sessions": 9, "outcome": "Ended in April 2026 when the family lost transportation. The school's incident count did not decrease during or after treatment (four incidents in March, five in April).", "quote": "Nine weekly sessions, January to April 2026. Ended when the family lost transportation.", "source": "Piedmont Counseling record (family link upload)", "provenance": "seed" },
+    { "id": "EV-KT-11", "client": "KT", "kind": "iep", "date": "2026-03-15", "label": "IEP reviewed March 2026", "supports": ["a behaviour plan", "preferential seating", "a check-in/check-out system"], "quote": "Supports listed: behaviour plan, preferential seating, check-in/check-out.", "source": "IEP summary, March 2026", "provenance": "seed" },
+    { "id": "EV-KT-12", "client": "KT", "kind": "screening", "date": "2026-10-09", "label": "Screening call", "quote": "Guardian reported physical aggression toward peers 2 to 3 times a week.", "source": "Screening call Oct 9", "provenance": "seed" },
+
+    { "id": "EV-TN-01", "client": "TN", "kind": "incident", "date": "2026-10-01", "label": "Hitting or pushing a peer", "behavior": "physical aggression", "minutes": 5, "intensity": "moderate", "setting": "structured", "where": "classroom", "quote": "Hitting or pushing a peer; staff separated them.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-02", "client": "TN", "kind": "incident", "date": "2026-10-03", "label": "Hitting or pushing a peer", "behavior": "physical aggression", "minutes": 10, "intensity": "moderate", "setting": "unstructured", "where": "lunch", "quote": "Hitting or pushing a peer at lunch; staff separated them.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-03", "client": "TN", "kind": "incident", "date": "2026-10-08", "label": "Hitting or pushing a peer", "behavior": "physical aggression", "minutes": 10, "intensity": "moderate", "setting": "unstructured", "where": "transition", "quote": "Hitting or pushing a peer during a transition; office referral.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-04", "client": "TN", "kind": "incident", "date": "2026-10-10", "label": "Hitting or pushing a peer", "behavior": "physical aggression", "minutes": 5, "intensity": "moderate", "setting": "unstructured", "where": "lunch", "quote": "Hitting or pushing a peer at lunch.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-05", "client": "TN", "kind": "incident", "date": "2026-10-15", "label": "Hitting or pushing a peer", "behavior": "physical aggression", "minutes": 5, "intensity": "moderate", "setting": "structured", "where": "classroom", "quote": "Hitting or pushing a peer in class.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-06", "client": "TN", "kind": "incident", "date": "2026-10-17", "label": "Hitting or pushing a peer", "behavior": "physical aggression", "minutes": 10, "intensity": "moderate", "setting": "unstructured", "where": "transition", "quote": "Hitting or pushing a peer during a transition; office referral.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-07", "client": "TN", "kind": "incident", "date": "2026-10-22", "label": "Hitting or pushing a peer", "behavior": "physical aggression", "minutes": 5, "intensity": "moderate", "setting": "unstructured", "where": "lunch", "quote": "Hitting or pushing a peer at lunch.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-08", "client": "TN", "kind": "incident", "date": "2026-10-24", "label": "Hitting or pushing a peer", "behavior": "physical aggression", "minutes": 10, "intensity": "moderate", "setting": "unstructured", "where": "transition", "quote": "Hitting or pushing a peer during a transition; office referral.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-09", "client": "TN", "kind": "incident", "date": "2026-10-28", "label": "Hitting or pushing a peer", "behavior": "physical aggression", "minutes": 5, "intensity": "moderate", "setting": "structured", "where": "classroom", "quote": "Hitting or pushing a peer in class.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-10", "client": "TN", "kind": "office_referral", "date": "2026-10-08", "label": "Office referral", "quote": "Office referral after the Oct 8 incident.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-11", "client": "TN", "kind": "office_referral", "date": "2026-10-17", "label": "Office referral", "quote": "Office referral after the Oct 17 incident.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-12", "client": "TN", "kind": "office_referral", "date": "2026-10-24", "label": "Office referral", "quote": "Office referral after the Oct 24 incident.", "source": "School incident log (counselor portal)", "provenance": "seed" },
+    { "id": "EV-TN-13", "client": "TN", "kind": "current_service", "date": "2025-09-01", "label": "School counseling, weekly", "provider": "School counselor", "from": "2025-09", "to": null, "outcome": "Ongoing; no change in behavior at school.", "quote": "Weekly school counseling since September 2025, ongoing, no change.", "source": "School counselor letter", "provenance": "seed" },
+    { "id": "EV-TN-14", "client": "TN", "kind": "prior_service", "date": "2026-05-31", "label": "Outpatient counseling", "provider": "Outpatient provider (name on file)", "from": "2026-01", "to": "2026-05", "sessions": 11, "outcome": "Ended by the provider as \"not making progress\".", "quote": "Eleven sessions, January to May 2026; the provider ended treatment as \"not making progress\".", "source": "Outpatient provider record (family link upload)", "provenance": "seed" },
+    { "id": "EV-TN-15", "client": "TN", "kind": "placement_risk", "date": "2026-10-14", "label": "IEP meeting: alternative placement raised", "quote": "The school raised an alternative placement at the Oct 14 IEP meeting.", "source": "IEP meeting note, Oct 14", "provenance": "seed" },
+
+    { "id": "EV-EC-01", "client": "EC", "kind": "office_referral", "date": "2026-10-05", "label": "Office referral", "quote": "Office referral for aggression toward a peer.", "source": "School counselor letter", "provenance": "seed" },
+    { "id": "EV-EC-02", "client": "EC", "kind": "office_referral", "date": "2026-10-12", "label": "Office referral", "quote": "Office referral for aggression toward a peer.", "source": "School counselor letter", "provenance": "seed" },
+    { "id": "EV-EC-03", "client": "EC", "kind": "office_referral", "date": "2026-10-19", "label": "Office referral", "quote": "Office referral for leaving the classroom.", "source": "School counselor letter", "provenance": "seed" },
+    { "id": "EV-EC-04", "client": "EC", "kind": "office_referral", "date": "2026-10-26", "label": "Office referral", "quote": "Office referral for aggression toward a peer.", "source": "School counselor letter", "provenance": "seed" },
+    { "id": "EV-EC-05", "client": "EC", "kind": "current_service", "date": "2026-09-01", "label": "School counseling (care coordination)", "provider": "School counselor", "from": "2026-09", "to": null, "outcome": null, "quote": "Weekly school counseling; listed under care coordination, not as a failed prior service.", "source": "School counselor letter", "provenance": "seed" }
+  ],
+  "drafting_rules": [
+    { "n": 1, "title": "Dates within the last 30 days", "text": "anything offered as current evidence; older facts carry their date", "rule": "evidence.current_window_days" },
+    { "n": 2, "title": "Counts, never percentages", "text": "\"3 of 5 escalations\", \"6 dated occasions (Oct 2, 6, 9, 14, 20, 22)\": the forms ask that way", "rule": "style.counts_not_percentages" },
+    { "n": 3, "title": "Frequency, duration, intensity", "text": "for every behaviour named (2 to 3 times a week · 5 to 20 min · moderate)", "rule": null },
+    { "n": 4, "title": "Interventions named from Harvest's list", "text": "with why it was used (movement for regulation), not just that it happened", "rule": null },
+    { "n": 5, "title": "Every note names an ISP objective", "text": "and states progress as a count", "rule": null },
+    { "n": 6, "title": "No \"observed\"", "text": "direct-support notes say what the staffer did (\"worked with\", \"prompted\", \"used\")", "rule": "style.flag_terms" },
+    { "n": 7, "title": "Prior services carry provider, dates and outcome", "text": "an empty outcome blocks the draft and asks the question; \"information about outpatient\" and pro-bono contacts do not count as prior care", "rule": "evidence.prior_service_required_fields" },
+    { "n": 8, "title": "School counseling goes under care coordination", "text": "never as the failed prior service", "rule": null },
+    { "n": 9, "title": "Criterion 3 is left blank when 1 and 2 are met", "text": "two of three is enough; the panel says so", "rule": "drafting.blank_criterion3_when_met" },
+    { "n": 10, "title": "Nothing the clinician marked exclude", "text": "and nothing from the family that is not on the form's question; household disclosures stay out unless the clinician presses Include", "rule": null },
+    { "n": 11, "title": "Trauma-informed care and the admission decision are never drafted", "text": "Psyflo notes when the section was discussed and leaves the box to the clinician", "rule": null },
+    { "n": 12, "title": "Answer the question and stop", "text": "on information requests: three items asked, three answered, nothing added", "rule": null },
+    { "n": 13, "title": "Vary language across days", "text": "if a staffer's last 30 notes share a paragraph, the enhancer varies it and the supervisor sees the pattern", "rule": null },
+    { "n": 14, "title": "Quiet day rule", "text": "a day with nothing to report says what was maintained and what still needed staff presence", "rule": null }
+  ]
+}

@@ -1,0 +1,48 @@
+title: Global shell › Demo menu › Viewing as
+route: Every page (Demo menu › Viewing as)
+intro: The Demo menu lists the four demo people. Choosing one changes who is viewing, and with it the sites that can be seen on every screen. The menu stays open, so people can be compared one after another.
+dir: TD
+also: Demo only. The default viewer is Jordan Perez on Both sites. 'Reset demo data' puts the viewer back to Jordan Perez on Both sites. The same switch is in Settings › Sites and access › 'View as'.
+---
+start s1 "Open the Demo menu\nSection 'Viewing as'"
+overlay o1 "'Access is by site (minimum necessary). Try Dr. Rivera, who sees Site A only.'\nFour rows, each with initials, name and role"
+
+group gRows "The four rows"
+  process v1 "Jordan Perez\nUR coordinator, both sites"
+  process v2 "Alex Morgan\nClinic owner, both sites"
+  process v3 "Dr. Rivera\nClinician, Site A"
+  process v4 "Sam Okafor\nBilling, Site B"
+  process cur "The current viewer has a green tick\nEach row says whether it is pressed, for screen readers"
+endgroup
+
+click c1 "Click a row, for example 'Dr. Rivera'"
+decision d1 "Is it the viewer already shown?"
+process same "Nothing changes except the toast"
+process sw "The viewer changes\nThe site view becomes the viewer's only site, or Both sites for a viewer with two"
+store st "Session saved: viewer and site view"
+toast t1 "'Now viewing as Dr. Rivera'\n'Clinician, Site A. Only Site A is visible; the other site's records are not available.'\nFor Jordan or Alex: 'UR coordinator. Both sites are visible.'"
+
+group gAll "Everything on screen follows at once"
+  process e1 "Top bar: the switch for a viewer with both sites, or the locked 'Site A only' label for one site"
+  process e2 "Sidebar: the user card shows the viewer's name and role\nEvery badge recounts for the sites in view (Payers is clinic-wide and stays 3)"
+  process e3 "The open page: lists, figures, charts and pickers leave out the other site"
+  process e4 "A record that belongs to the other site now opens the notice 'This case is not available at Site A'"
+  process e5 "Edits and acknowledgements made from now on carry the viewer's name\n(Payers edit log, 'Acknowledged by')"
+endgroup
+
+goto g1 "Continues in: Who can see what › Roles, sites and a record at the other site"
+goto g2 "Continues in: Settings › Sites and access › Read the roles and switch with View as"
+goto g3 "Continues in: Global shell › Demo menu › Reset demo data"
+end e9 "The whole demo is seen as that person"
+
+s1 --> o1
+o1 --> v1 & v2 & v3 & v4 & cur
+v3 --> c1
+c1 --> d1
+d1 -->|Yes| same --> e9
+d1 -->|No| sw --> st --> t1
+t1 --> e1 & e2 & e3 & e4 & e5
+e1 & e2 & e3 & e4 & e5 --> e9
+e9 --> g1
+e9 -.-> g2
+e9 -.-> g3

@@ -1,0 +1,35 @@
+title: Payers › Workflow Builder › Configure a step › Documents
+route: /payers/summit?tab=builder
+intro: Document steps ask for items from the payer's own document list for the workflow's services. The list is edited in Rules & Instructions, never copied into the workflow. A step that names no items asks for every item on the list.
+dir: TD
+---
+start s1 "Select Collect documents, Validate documents or Missing information"
+screen cl "'Required documents'\n'Summit Medicaid HMO's document list for Residential 3.5 has 9 items. 9 chosen.'\nOne checkbox per item with its requirement and level of care"
+decision d1 "Does the payer have a list for these services?"
+screen e1 "'This payer has no document list for these services yet.'"
+click c1 "Tick or untick items"
+process p1 "The count follows: '2 chosen'\nWith none chosen the step asks for every item on the list"
+click c2 "Click 'Choose all' or 'Clear'"
+process p2 "All items chosen, or none (so every item is asked for)"
+decision d2 "Is a chosen item no longer on the payer's list?"
+screen w1 "'N chosen items are no longer on the payer's list. Choose again, or clear them.'"
+click c3 "Click 'Edit the list in Rules & Instructions'"
+decision d3 "Unsaved changes?"
+overlay o1 "'Leave without saving?'"
+process p3 "Opens Rules & Instructions on the Clinical documentation group"
+process p4 "Edits are held in the builder until 'Save draft'"
+end e2 "The step names the documents it needs"
+goto g1 "Continues in: Payers › Rules & Instructions › Read the document list"
+goto g2 "Continues in: Payers › Test Workflow › Run a test case"
+
+s1 --> cl --> d1
+d1 -->|No| e1
+d1 -->|Yes| c1 --> p1 --> d2
+cl --> c2 --> p2 --> d2
+d2 -->|Yes| w1 --> p4
+d2 -->|No| p4
+cl --> c3 --> d3
+d3 -->|Yes| o1 --> p3
+d3 -->|No| p3
+p3 --> g1
+p4 --> e2 --> g2

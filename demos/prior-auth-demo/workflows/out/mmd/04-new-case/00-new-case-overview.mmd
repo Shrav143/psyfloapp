@@ -1,0 +1,80 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open New Case</b><br/>Sidebar 'New Case', a 'New Case' button, the Demo menu, FLO's link or the old /referrals address" }
+  s2@{ shape: stadium, label: "<b>Click 'Create authorization from verification' or 'Start authorization'</b><br/>on a result in Eligibility & Benefits" }
+  s3@{ shape: stadium, label: "<b>Click 'Start a case from this referral'</b><br/>on the full referral page, or type ?referral=RF-2051" }
+  s4@{ shape: stadium, label: "<b>Click 'Start renewal' in the Dashboard's what-to-do list</b><br/>(opens ?type=reauth&patient=CASE-ID)" }
+  s5@{ shape: stadium, label: "<b>Type a link with ?type=</b><br/>initial, concurrent, reauth, modify or retro" }
+  subgraph gMake ["No case id in the address: make one"]
+  d1@{ shape: diam, label: "What is in the address?" }
+  dRefSite@{ shape: diam, label: "?referral=ID: is the referral at a site in view?" }
+  scRefOut@{ shape: curv-trap, label: "<b>'This referral is not available at Site A'</b><br/>Names the id and its site, nothing about the patient<br/>No case is made" }
+  d2@{ shape: diam, label: "Is RF-2051 in the demo?" }
+  p2@{ shape: rect, label: "<b>Case is filled from the referral</b><br/>Patient, payer, member ID, level of care, diagnoses, reason, referrer<br/>Request type: Initial request if routine, else Admission<br/>The case is at the referral's site" }
+  st1@{ shape: cyl, label: "<b>Case created on Intake, referral attached</b><br/>The referral is the first document" }
+  t1@{ shape: odd, label: "<b>'Referral RF-2051 is in this case'</b><br/>'K.R., 29. Check the details below, then go on to Eligibility & Benefits.'" }
+  t2@{ shape: odd, label: "<b>Amber toast 'Referral not found'</b><br/>'We could not find RF-9999. Start from a blank case instead.'" }
+  dVer@{ shape: diam, label: "?verification=ID: is that check at a site in view?" }
+  p3@{ shape: rect, label: "<b>Case is filled from the check</b><br/>Patient, payer, plan, member ID, level of care and the dates the check covers<br/>The case uses that same verification record" }
+  dPat@{ shape: diam, label: "?patient=ID: is that patient at a site in view?" }
+  p4@{ shape: rect, label: "<b>The patient's details, treatment episode and authorization are filled in</b><br/>No second patient is made" }
+  p5@{ shape: rect, label: "<b>?type= picks the Authorization type</b><br/>Its request type is recorded: Initial request, Continued stay, Recertification, Modification or Retro-authorization" }
+  p6@{ shape: rect, label: "<b>Filled from ?payer=, ?program=, ?member=, ?initials=, ?age=</b><br/>Request type: Admission<br/>An unknown payer or program is ignored" }
+  st3@{ shape: cyl, label: "<b>Blank case created at Intake</b><br/>It belongs to the site you are working at<br/>Not in Authorizations until 'Save as draft'" }
+  end
+  p7@{ shape: rect, label: "<b>?step= opens that step: intake, eligibility, documentation or review</b><br/>preparation and the older agents open Clinical documentation scrolled to 'Authorization preparation'<br/>The older referral and records land on Intake and Clinical documentation" }
+  p8@{ shape: rect, label: "<b>Case opens at /authorizations/new/draft-ID</b><br/>It replaces the address, so Back does not loop" }
+  gOpen@{ shape: subproc, label: "Continues in: Authorizations › New Case › Reopen and resume a case" }
+  gStep@{ shape: subproc, label: "Continues in: Authorizations › New Case › The stepper and the four steps" }
+  gType@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization type" }
+  gSites@{ shape: subproc, label: "Continues in: Authorizations › New Case › Sites and scope" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
+  s1 --> d1
+  s2 --> d1
+  s3 --> d1
+  s4 --> d1
+  s5 --> d1
+  d1 -->|"?referral=ID"| dRefSite
+  dRefSite -->|"No"| scRefOut
+  dRefSite -->|"Yes"| d2
+  d2 -->|"Yes"| p2 --> st1 --> t1 --> p7
+  d2 -->|"No"| t2 --> st3
+  d1 -->|"?verification=ID"| dVer
+  dVer -->|"Yes"| p3 --> p7
+  dVer -->|"No"| st3
+  d1 -->|"?patient=ID"| dPat
+  dPat -->|"Yes"| p4 --> p7
+  dPat -->|"No"| st3
+  d1 -->|"?type="| p5 --> p7
+  d1 -->|"payer or program valid"| p6 --> p7
+  d1 -->|"Nothing usable"| st3 --> p7
+  p7 --> p8
+  p8 --> gOpen
+  p8 -.-> gStep
+  p8 -.-> gType
+  scRefOut -.-> gSites
+  st1 -.-> g1
+  class s1,s2,s3,s4,s5 k_start
+  class d1,dRefSite,d2,dVer,dPat k_decision
+  class scRefOut k_screen
+  class p2,p3,p4,p5,p6,p7,p8 k_process
+  class st1,st3 k_store
+  class t1,t2 k_toast
+  class gOpen,gStep,gType,gSites,g1 k_goto
+  style gMake fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

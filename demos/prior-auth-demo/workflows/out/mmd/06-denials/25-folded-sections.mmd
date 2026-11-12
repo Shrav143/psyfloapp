@@ -1,0 +1,56 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A denial is on screen" }
+  f1@{ shape: curv-trap, label: "'History', folded, with a chevron and nothing under the title" }
+  c1@{ shape: trap-t, label: "Click the header, or Tab to it and press Enter or Space" }
+  p1@{ shape: rect, label: "aria-expanded becomes true, the list shows" }
+  pm@{ shape: rect, label: "<b>The list: the request's own events (the Dashboard shows the same) and the agents' reading of the letter, newest first</b><br/>A reading already in the events is not listed twice" }
+  h1@{ shape: curv-trap, label: "One line each: who (agent, 'You' or 'Payer'), when, what" }
+  dq@{ shape: diam, label: "Who did it?" }
+  fa@{ shape: curv-trap, label: "<b>Flag 'Agent': a Psyflo agent did it</b><br/>(Reader, Advocate, Historian, Cadence, Navigator)" }
+  fd@{ shape: curv-trap, label: "<b>Flag 'Decision': the payer decided</b><br/>Red when it denied or upheld, ochre when it approved part ('did not approve the full request' on a partial approval), green when it overturned or restored" }
+  fl@{ shape: curv-trap, label: "<b>Flag 'Logged decision': a person logged it by hand</b><br/>'You logged the call outcome', 'You recorded the payer's decision', 'You accepted the decision'" }
+  fs@{ shape: curv-trap, label: "<b>Flag 'Scheduled': planned, not done</b><br/>'Peer-to-peer call with Cardinal', 'Navigator checks for the decision each day'" }
+  fn@{ shape: curv-trap, label: "No flag: anything else a person did ('You signed the appeal as Medical director', 'You chose a written appeal')" }
+  px@{ shape: rect, label: "A scheduled line leaves once the answer is in (call outcome, payer decision, accept)" }
+  c2@{ shape: trap-t, label: "Click the header again, or Enter or Space" }
+  e1@{ shape: stadium, label: "History folds away" }
+  f2@{ shape: curv-trap, label: "<b>On the brief page, folded</b><br/>'Key dates and numbers' (no summary line)<br/>'Have these open' with the count '0 of 3' on the right" }
+  p4@{ shape: rect, label: "Both stay in the page while closed; Print opens them on paper and drops the chevron" }
+  p6@{ shape: rect, label: "A section starts closed again each time a denial is opened, also when moving from one denial to the next" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › The brief" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
+  s1 --> f1 --> c1 --> p1 --> pm --> h1 --> dq
+  dq -->|"Agent"| fa
+  dq -->|"Payer"| fd
+  dq -->|"A person logged an outcome"| fl
+  dq -->|"Planned"| fs
+  dq -->|"A person, otherwise"| fn
+  fs -.-> px
+  h1 --> c2 --> e1
+  p1 -.-> p6
+  s1 -.-> g4
+  s1 -.-> f2 --> p4 --> g3
+  class s1 k_start
+  class f1,h1,fa,fd,fl,fs,fn,f2 k_screen
+  class c1,c2 k_click
+  class p1,pm,px,p4,p6 k_process
+  class dq k_decision
+  class e1 k_end
+  class g3,g4 k_goto

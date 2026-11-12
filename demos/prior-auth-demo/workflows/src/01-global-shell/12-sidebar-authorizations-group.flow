@@ -1,0 +1,59 @@
+title: Global shell › Sidebar › Authorizations group › Open and close the group
+route: Every page (sidebar, the 'Authorizations' row)
+intro: The 'Authorizations' row has two parts. The label and the rest of the row are a link to /authorizations. The arrow at its right is its own button: it shows or hides the three sub rows without leaving the page. The group opens by itself when the address enters Authorizations and closes by itself when the address leaves it; in between it keeps the person's choice.
+dir: TD
+also: The open or closed choice lives in the page, not in the demo data. 'Reset demo data' goes to /dashboard, so it closes the group when it is made on an Authorizations page. A browser reload starts again: open when the page is an Authorizations page, closed anywhere else. Authorizations pages are /authorizations (every view), a case page, New Case and Eligibility & Benefits.
+---
+start s1 "Psyflo opens on a page"
+decision d0 "Is it an Authorizations page?"
+process o0 "Group open\nSub rows 'All Authorizations', 'New Case' 4, 'Eligibility & Benefits' 9\nArrow points down"
+process c0 "Group closed\nOnly the 'Authorizations' row, badge 19\nArrow points right"
+screen row "'Authorizations' row\nIcon, label, badge, then the arrow"
+decision d1 "Which part does the person use?"
+
+group gArrow "The arrow button"
+  click a1 "Click the arrow\nTooltip 'Expand' or 'Collapse'"
+  click aK "Tab to the arrow and press Enter or Space\nScreen readers hear 'Expand Authorizations' or 'Collapse Authorizations', and whether it is expanded"
+  decision d2 "Is the group open?"
+  process a2 "The three sub rows hide\nArrow points right"
+  process a3 "The three sub rows show under 'Authorizations'\nArrow points down"
+  process a4 "The address does not change and the page stays exactly as it was\nFrom the Dashboard, for example, the group opens in place and 'Dashboard' stays green"
+endgroup
+
+group gLabel "The label link"
+  click l1 "Click 'Authorizations'\n(the label, the icon, the badge or any empty part of the row)"
+  process l2 "Go to /authorizations"
+  goto gW "Continues in: Authorizations › Worklist › Arrive and read the views"
+endgroup
+
+process p0 "The address changes"
+start s2 "Any other link, sidebar row, redirect or the Back button changes the address"
+decision d3 "Did the address just come into Authorizations, or just leave it?"
+process u1 "Came in: the group opens by itself\neven if the person closed it the last time"
+process u3 "Left: the group closes by itself\neven if the person opened it with the arrow"
+process u2 "Neither: the group keeps the person's choice\nClosed stays closed while moving between Authorizations pages\nOpened with the arrow on the Dashboard, it stays open on Analytics or any other page outside Authorizations"
+
+decision d4 "Is the group closed while an Authorizations page is open?"
+process h1 "The whole 'Authorizations' row, arrow included, is the green row\nThe place is never lost while the sub rows are hidden"
+process h2 "The green row is a sub row ('All Authorizations', 'New Case', 'Eligibility & Benefits') or a row outside the group"
+goto gHi "Continues in: Global shell › Sidebar › Which row is green"
+end e1 "Sidebar shows the group the way the person left it"
+
+s1 --> d0
+d0 -->|Yes| o0 --> row
+d0 -->|No| c0 --> row
+row --> d1
+d1 -->|The arrow| a1 --> d2
+d1 -->|Keyboard| aK --> d2
+d2 -->|Open| a2 --> a4
+d2 -->|Closed| a3 --> a4
+d1 -->|The label| l1 --> l2 --> p0
+l2 --> gW
+s2 --> p0 --> d3
+d3 -->|Came in| u1 --> d4
+d3 -->|Left| u3 --> d4
+d3 -->|Neither| u2 --> d4
+a4 --> d4
+d4 -->|Yes| h1 --> e1
+d4 -->|No| h2 --> e1
+h2 -.-> gHi

@@ -1,0 +1,38 @@
+title: Denial Intelligence › A denial opened › Folded sections
+route: /denials/D-3318
+intro: The one folded section on a denial is History: everything on the denial in one list, newest first, with one standard flag on the right. It replaces 'What the agents did' and 'What has happened', and has no summary line under its title. The brief folds 'Key dates and numbers' and 'Have these open'. Longer detail that is not a section is in pop-ups and right-hand panels.
+dir: TD
+---
+start s1 "A denial is on screen"
+screen f1 "'History', folded, with a chevron and nothing under the title"
+click c1 "Click the header, or Tab to it and press Enter or Space"
+process p1 "aria-expanded becomes true, the list shows"
+process pm "The list: the request's own events (the Dashboard shows the same) and the agents' reading of the letter, newest first\nA reading already in the events is not listed twice"
+screen h1 "One line each: who (agent, 'You' or 'Payer'), when, what"
+decision dq "Who did it?"
+screen fa "Flag 'Agent': a Psyflo agent did it\n(Reader, Advocate, Historian, Cadence, Navigator)"
+screen fd "Flag 'Decision': the payer decided\nRed when it denied or upheld, ochre when it approved part ('did not approve the full request' on a partial approval), green when it overturned or restored"
+screen fl "Flag 'Logged decision': a person logged it by hand\n'You logged the call outcome', 'You recorded the payer's decision', 'You accepted the decision'"
+screen fs "Flag 'Scheduled': planned, not done\n'Peer-to-peer call with Cardinal', 'Navigator checks for the decision each day'"
+screen fn "No flag: anything else a person did ('You signed the appeal as Medical director', 'You chose a written appeal')"
+process px "A scheduled line leaves once the answer is in (call outcome, payer decision, accept)"
+click c2 "Click the header again, or Enter or Space"
+end e1 "History folds away"
+
+screen f2 "On the brief page, folded\n'Key dates and numbers' (no summary line)\n'Have these open' with the count '0 of 3' on the right"
+process p4 "Both stay in the page while closed; Print opens them on paper and drops the chevron"
+process p6 "A section starts closed again each time a denial is opened, also when moving from one denial to the next"
+goto g3 "Continues in: Denial Intelligence › Peer-to-peer › The brief"
+goto g4 "Continues in: Denial Intelligence › Your options"
+
+s1 --> f1 --> c1 --> p1 --> pm --> h1 --> dq
+dq -->|Agent| fa
+dq -->|Payer| fd
+dq -->|A person logged an outcome| fl
+dq -->|Planned| fs
+dq -->|A person, otherwise| fn
+fs -.-> px
+h1 --> c2 --> e1
+p1 -.-> p6
+s1 -.-> g4
+s1 -.-> f2 --> p4 --> g3

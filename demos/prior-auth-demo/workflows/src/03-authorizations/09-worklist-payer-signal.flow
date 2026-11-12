@@ -1,0 +1,51 @@
+title: Authorizations › Worklist › Cardinal payer signal
+route: /authorizations?signal=1
+intro: The one banner on the page: a single line about a payer trend, its info icon, the filter it switches on and the ways to turn that filter off or hide the banner. The same filter is also a button under 'More'.
+dir: TD
+also: Demo only: the banner text and the four affected requests (I-2207, I-2218, I-2271 at Site B and I-2236 at Site A) are seed data; nothing re-scores them live. The count is the affected open requests at the sites in view: Both sites four, Site A one, Site B three.
+---
+screen q "Authorizations"
+decision d0 "Is an open request at the sites in view affected, and was the banner not dismissed?"
+endx e0 "No banner, and no 'Cardinal payer signal' button under 'More'\n(none affected; a dismissed banner keeps the button)"
+screen bn "One-line banner: 'Payer signal. Cardinal Health Plan: 31% more IOP continued-stay denials this week.'\nInfo icon, 'Review the four', X"
+click inf "Hover or focus the info icon 'More about this signal'"
+overlay tip "Tip: 'The denials were mostly for thin recertification evidence. Four of your open requests are affected, and the agents have re-scored them.'\nEsc closes it"
+process wd "The words follow the count in view\n'Review the three'; for one: 'Review it', '... is affected ... re-scored it' and 'Showing the request affected by the Cardinal signal'"
+
+click r "Click 'Review the four'"
+click mb "Or: 'More' › click 'Cardinal payer signal · 4'"
+store sf "The payer-signal filter turns on\nThe address gets ?signal=1"
+screen ls "The table lists only the affected rows: '4 authorizations'\nChips: All 4, Needs attention 2, In progress 2, With the payer 2, Reviews this week 3"
+screen chip "Chip under the filter bar\n'Showing the 4 affected by the Cardinal signal' with an X"
+screen bb "The banner button reads 'Show all requests'\n'More' reads 'More · on'"
+
+click sa "Click 'Show all requests'"
+click cx "Click the X on the chip ('Remove the Cardinal signal filter')"
+click cf "Click 'Clear filters'"
+click mo "Click 'Cardinal payer signal · 4' under 'More' again"
+process off "The filter turns off and ?signal=1 leaves the address\nEvery row returns, the chip goes, the button reads 'Review the four' again"
+
+click dis "Click the X on the banner ('Dismiss signal')"
+store hid "The banner stays hidden for the session, until the demo data is reset"
+process stay "If the filter was on, it stays on\nThe chip, 'Clear filters' and the button under 'More' still turn it off"
+
+click op "Click a row's button or its request ID"
+goto gC "Continues in: Authorizations › Worklist › A row's action button"
+process sh "Once an affected request is signed and sent it is no longer an open request\nThe number in the banner drops"
+
+q --> d0
+d0 -->|No| e0
+d0 -->|Yes| bn --> wd
+bn --> inf --> tip
+bn --> r --> sf
+q -.-> mb --> sf
+sf --> ls
+sf --> chip
+sf --> bb
+bb --> sa --> off
+chip --> cx --> off
+ls --> cf --> off
+ls --> mo --> off
+bn --> dis --> hid --> stay
+ls --> op --> gC
+ls -.-> sh

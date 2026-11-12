@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo — Denial Intelligence</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+/* Denial Intelligence queue (E3; R4: the page, header, date card, filter grid and table come from the shared kit, components.css "R4 FMT"). Own classes: d- prefix. */
+.d-caseid b{display:block;font-weight:600;white-space:nowrap}
+.d-dec b{font-weight:500}
+.d-nx{display:block}
+.d-who{white-space:nowrap}
+.d-page a:not(.ui-btn):not(.ui-qt__link){color:var(--teal-700)}
+@media (max-width:767px){.d-page .ui-qt__table{min-width:760px}}
+</style>
+</helmet>
+<main class="ui-page d-page">
+  <header class="ui-phead">
+    <div class="ui-phead__t"><h1>Denial Intelligence</h1>{{mat}}{{help}}</div>
+    <div class="ui-phead__r">{{date}}</div>
+  </header>
+  <div class="ui-fcard ui-fgrid">{{bar}}</div>
+  {{clear}}
+  <div class="ui-tlist">{{table}}</div>
+  {{pager}}
+</main>
+</x-dc>
+</body>
+</html>

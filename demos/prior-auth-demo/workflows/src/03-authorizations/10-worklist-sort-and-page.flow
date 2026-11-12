@@ -1,0 +1,55 @@
+title: Authorizations › Worklist › Sort and page
+route: /authorizations
+intro: Four of the table's headers sort: Patient / request, Status, Deadline (Due on Reviews this week) and Chance. Each click moves the sort one step on: up, down, then back to the list's own order (Chance starts with the highest first, so it has only two steps). The table shows 15 rows a page. A new view, a filter or a sort always starts again on page 1.
+dir: TD
+also: The sort lives in the page, not in the address, so a reload or leaving the page goes back to the list's own order. Next action, Owner and the button column do not sort.
+---
+start s1 "The table is on screen, in the list's own order"
+process df "The list's own order: by deadline band, waiting on a person first, soonest due, lower chance\nOn Reviews this week: by the review's time"
+screen h1 "Headers\n'Patient / request', 'Status', 'Next action' (or 'Review'), 'Deadline' (or 'Due'), 'Owner', 'Chance', and the hidden 'Action'\nThe sortable ones have an up-and-down arrow ('Sort by Deadline')"
+click c0 "Click 'Next action', 'Owner' or the button column"
+process p0 "Nothing happens: they do not sort"
+click c1 "Click a sortable header"
+decision d1 "Is it the header the table is sorted by now?"
+decision d2 "Which way does it sort now?"
+process up "Sorted up (A to Z, soonest first): the arrow points up\n'Chance' starts down instead: highest first, arrow down"
+process dn "The order flips: the arrow points down"
+process of "Back to the list's own order: the up-and-down arrow again"
+
+group gK "What each header sorts by"
+  process k1 "'Patient / request': the request ID, A to Z"
+  process k2 "'Status': In progress, With the payer, Approved, Denied, the rows that need a person first in each"
+  process k3 "'Deadline': the soonest due first, rows with no clock last\nOn Reviews this week, 'Due': the review's time"
+  process k4 "'Chance': the approval chance; rows without one last"
+endgroup
+process tb "Ties fall back to the list's own order\nThe table goes back to page 1"
+
+group gPg "Pager, past 15 rows"
+  screen pg "'1 to 15 of 95'   'Previous'   'Page 1 of 7'   'Next'"
+  click n1 "Click 'Next'"
+  click n2 "Click 'Previous'"
+  decision d3 "Is there a page that way?"
+  process g1 "The next 15 rows; the line reads '16 to 30 of 95', 'Page 2 of 7'"
+  process g2 "The button is greyed out: 'Previous' on page 1, 'Next' on the last page"
+endgroup
+process p3 "Picking a view, a filter or a sort goes back to page 1\nWith 15 rows or fewer there is no pager"
+end e1 "Rows in the new order or on the new page"
+
+s1 --> h1
+s1 -.-> df
+h1 --> c0 --> p0
+h1 --> c1 --> d1
+d1 -->|No: another header| up
+d1 -->|Yes| d2
+d2 -->|Up| dn
+d2 -->|Down| of --> df
+up --> k1 & k2 & k3 & k4
+k1 & k2 & k3 & k4 --> tb
+dn --> tb
+tb --> e1
+h1 --> pg
+pg --> n1 --> d3
+pg --> n2 --> d3
+d3 -->|Yes| g1 --> e1
+d3 -->|No| g2
+pg -.-> p3

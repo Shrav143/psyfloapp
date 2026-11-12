@@ -1,0 +1,163 @@
+{
+  "_about": "Staff / review / compliance / analytics / settings seed (screens 27, 28, 41-45). Synthetic. Merged over seed.json.",
+  "clients": [
+    { "id": "NK", "initials": "N.K.", "age": 8, "grade": 3, "school": "CC-ES1", "harvest_no": 3341, "staff": "rowens", "stage": "in_service" },
+    { "id": "PS", "initials": "P.S.", "age": 10, "grade": 4, "school": "CC-ES1", "harvest_no": 3342, "staff": "rowens", "stage": "in_service" },
+    { "id": "RD", "initials": "R.D.", "age": 7, "grade": 2, "school": "CC-ES1", "harvest_no": 3343, "staff": "rowens", "stage": "in_service" }
+  ],
+  "notes": [
+    { "id": "rq-lb-1029", "client": "LB", "staff": "rowens", "type": "daily", "date": "2026-10-29", "units": 3, "direct_time_min": 320, "objective": 1, "interventions": ["Clinical 2.1", "QMHP 1.3"], "processed_at": "2026-10-29T15:02", "review": "pending",
+      "dictation": "played basketball with L.B. after he got upset in math, he cooled down after and went back",
+      "enhanced": "Following an escalation in math (raised voice, left seat), staff used a [[movement intervention (basketball, 6 minutes)]] for [[co-regulation toward Goal 1]]. L.B. [[identified \"frustrated\"]] when prompted and returned to class within 10 minutes." },
+    { "id": "rq-nk-1029", "client": "NK", "staff": "rowens", "type": "daily", "date": "2026-10-29", "units": 3, "direct_time_min": 305, "objective": 2, "interventions": ["QMHP 1.5"], "processed_at": "2026-10-29T15:08", "review": "pending",
+      "dictation": "N.K. had a hard time at recess with another kid, we talked about it and practiced what to say, she played with the group after",
+      "enhanced": "At recess N.K. [[withdrew from a peer group after a disagreement (about 10 minutes, mild)]]. Staff [[used Make or maintain friendships]] to rehearse an entry phrase with her [[(2 practice rounds)]], and she rejoined the group for the rest of recess. [[Addresses ISP Objective 2 · 1 of 1 recess today]]." },
+    { "id": "rq-ps-1028", "client": "PS", "staff": "rowens", "type": "daily", "date": "2026-10-28", "units": 2, "direct_time_min": 200, "processed_at": "2026-10-28T15:30", "review": "pending",
+      "dictation": "P.S. was observed during reading and math. he was on task most of the day. no problems.",
+      "enhanced": null },
+    { "id": "rq-rd-1028", "client": "RD", "staff": "rowens", "type": "daily", "date": "2026-10-28", "units": 3, "direct_time_min": 315, "objective": 3, "interventions": ["QMHP 1.4b"], "processed_at": "2026-10-28T15:21", "review": "pending",
+      "dictation": "R.D. refused to start the writing assignment, I broke it into steps with him and he did 3 of the 4 parts",
+      "enhanced": "R.D. [[refused to begin the writing assignment (2 refusals, 5–8 min each, moderate)]]. Staff [[used Structured problem solving]], breaking the task into four steps; R.D. completed 3 of 4 steps [[with one prompt per step]]. [[Addresses ISP Objective 3]] (starts work after one direction)." },
+    { "id": "rq-lb-1028", "client": "LB", "staff": "rowens", "type": "daily", "date": "2026-10-28", "units": 3, "direct_time_min": 310, "objective": 1, "interventions": ["Clinical 2.1"], "processed_at": "2026-10-28T15:12", "review": "pending",
+      "dictation": "L.B. got mad at lunch when someone took his seat, we walked the hallway and he calmed down",
+      "enhanced": "At lunch L.B. [[became angry when a peer took his seat (yelled once, about 3 minutes)]]. Staff used a [[Movement walk in the hallway (5 minutes) to bring arousal down]] before talking it through; he returned to the table calm. [[Addresses ISP Objective 1 · strategy used with 1 prompt]]." },
+    { "id": "rq-nk-1027", "client": "NK", "staff": "rowens", "type": "daily", "date": "2026-10-27", "units": 3, "direct_time_min": 300, "objective": 2, "interventions": ["QMHP 1.5"], "processed_at": "2026-10-27T15:05", "review": "pending",
+      "dictation": "N.K. worked with me on asking to join a game, she did it once on her own",
+      "enhanced": "Staff [[used Make or maintain friendships]] to practice asking to join a game before recess [[(10 minutes)]]. N.K. asked to join once [[without a prompt (1 of 2 recesses)]]. [[Addresses ISP Objective 2]]." },
+    { "id": "rq-rd-1027", "client": "RD", "staff": "rowens", "type": "daily", "date": "2026-10-27", "units": 3, "direct_time_min": 305, "objective": 3, "interventions": ["QMHP 1.4b"], "processed_at": "2026-10-27T15:17", "review": "pending",
+      "dictation": "R.D. did ok today, finished most work with reminders",
+      "enhanced": "R.D. [[started 2 of 3 assignments after one direction]]; staff [[used Structured problem solving (visual checklist, 3 prompts across the day)]]. [[Quiet day: maintained work start with prompts; still needed staff presence for transitions]]. [[Addresses ISP Objective 3 · 2 of 3]]." },
+    { "id": "rq-dw-1028", "client": "DW", "staff": "slane", "type": "daily", "date": "2026-10-28", "units": 3, "direct_time_min": 305, "objective": 1, "interventions": ["QMHP 1.3"], "processed_at": "2026-10-28T16:40", "review": "pending",
+      "dictation": "Staff worked with D.W. on coping skills throughout the day. D.W. was cooperative and engaged with staff. Quiet in class, ate lunch alone.",
+      "enhanced": "D.W. [[ate lunch alone and was quiet in two classes]]; staff [[used Psychoeducation (12-minute check-in at lunch)]] and he [[named no coping skill today]]. [[Quiet day: maintained class attendance; still needed staff presence at lunch]]. [[Addresses ISP Objective 1 · 0 of 1]]." },
+    { "id": "rq-dw-1027", "client": "DW", "staff": "slane", "type": "daily", "date": "2026-10-27", "units": 3, "direct_time_min": 300, "objective": 1, "interventions": ["QMHP 1.3"], "processed_at": "2026-10-28T08:15", "review": "pending",
+      "dictation": "Staff worked with D.W. on coping skills throughout the day. D.W. was cooperative and engaged with staff. Went to the nurse once.",
+      "enhanced": "During [[two check-ins (10 and 20 minutes)]] staff [[used Psychoeducation]] to review D.W.'s coping plan; he [[chose deep breathing once]] before a visit to the nurse. [[Addresses ISP Objective 1 · 1 of 2]]." },
+    { "id": "rq-dw-1026", "client": "DW", "staff": "slane", "type": "daily", "date": "2026-10-26", "units": 3, "direct_time_min": 310, "objective": 1, "interventions": ["QMHP 1.3"], "processed_at": "2026-10-28T08:02", "review": "pending",
+      "dictation": "Staff worked with D.W. on coping skills throughout the day. D.W. was cooperative and engaged with staff. Talked about the weekend at home.",
+      "enhanced": "Staff [[used Psychoeducation on coping skills (two 15-minute check-ins, 9:10 and 1:30)]]. D.W. [[named one coping skill (music) when prompted]] and talked about the weekend at home. [[Addresses ISP Objective 1 · 1 of 2 check-ins with a skill named]]." },
+
+    { "id": "kh-jt-1023", "client": "JT", "staff": "khale", "type": "daily", "date": "2026-10-23", "units": 3, "objective": 1, "review": "approved", "processed_at": "2026-10-23T15:10", "dictation": "Redirected J.T. back to task several times and J.T. completed his work with staff support. Good day at lunch." },
+    { "id": "kh-dp-1022", "client": "DP", "staff": "khale", "type": "daily", "date": "2026-10-22", "units": 3, "objective": 1, "review": "approved", "processed_at": "2026-10-22T15:12", "dictation": "Redirected D.P. back to task several times and D.P. completed his work with staff support. Used the calm corner once." },
+    { "id": "kh-jt-1026", "client": "JT", "staff": "khale", "type": "daily", "date": "2026-10-26", "units": 3, "objective": 1, "review": "approved", "processed_at": "2026-10-26T15:09", "dictation": "Redirected J.T. back to task several times and J.T. completed his work with staff support." },
+    { "id": "kh-dp-1027", "client": "DP", "staff": "khale", "type": "daily", "date": "2026-10-27", "units": 3, "objective": 2, "review": "approved", "processed_at": "2026-10-27T15:15", "dictation": "Redirected D.P. back to task several times and D.P. completed his work with staff support. Shared markers with a peer." },
+    { "id": "kh-jt-1028", "client": "JT", "staff": "khale", "type": "daily", "date": "2026-10-28", "units": 3, "objective": 1, "review": "approved", "processed_at": "2026-10-28T15:11", "dictation": "Redirected J.T. back to task several times and J.T. completed his work with staff support. Read aloud in group." },
+    { "id": "kh-dp-1028", "client": "DP", "staff": "khale", "type": "daily", "date": "2026-10-28", "units": 3, "objective": 1, "review": "approved", "processed_at": "2026-10-28T15:13", "dictation": "Redirected D.P. back to task several times and D.P. completed his work with staff support." },
+
+    { "id": "kh-wk-jt", "client": "JT", "staff": "khale", "type": "weekly_guardian", "date": "2026-10-26", "review": "approved", "processed_at": "2026-10-26T16:02" },
+    { "id": "kh-wk-dp", "client": "DP", "staff": "khale", "type": "weekly_guardian", "date": "2026-10-27", "review": "approved", "processed_at": "2026-10-27T16:10" },
+    { "id": "kh-wk-ag", "client": "AG", "staff": "khale", "type": "weekly_guardian", "date": "2026-10-27", "review": "approved", "processed_at": "2026-10-27T16:25" },
+    { "id": "kh-wk-es", "client": "ES", "staff": "khale", "type": "weekly_guardian", "date": "2026-10-28", "review": "approved", "processed_at": "2026-10-28T16:05" },
+    { "id": "kh-wk-cb", "client": "CB", "staff": "khale", "type": "weekly_guardian", "date": "2026-10-28", "review": "approved", "processed_at": "2026-10-28T16:20" },
+    { "id": "kh-mc-mr", "client": "MR", "staff": "khale", "type": "monthly_collateral", "date": "2026-10-08", "review": "approved", "processed_at": "2026-10-08T15:40" },
+    { "id": "kh-mc-jt", "client": "JT", "staff": "khale", "type": "monthly_collateral", "date": "2026-10-13", "review": "approved", "processed_at": "2026-10-13T15:35" },
+    { "id": "kh-mc-es", "client": "ES", "staff": "khale", "type": "monthly_collateral", "date": "2026-10-20", "review": "approved", "processed_at": "2026-10-20T15:50" },
+    { "id": "kh-mc-cb", "client": "CB", "staff": "khale", "type": "monthly_collateral", "date": "2026-10-22", "review": "approved", "processed_at": "2026-10-22T15:30" }
+  ],
+  "staff_dashboard": {
+    "source": "Sample data, illustrative",
+    "provenance": "harvest_export",
+    "site_avg_24h": 81,
+    "staff": {
+      "khale": { "students": 6, "in_24h": 92, "flags": ["Goal 3 untouched for M.R. (6 weeks)"],
+        "rejected": [{ "client": "MR", "form": "daily note", "date": "2026-10-27", "why": "\"observed\" in the intervention line. Scan & enhance rewrites it as what you did.", "href": "ExtDPN.dc.html?client=MR" }],
+        "goals": [["Notes in before 3:30", "4 of 5 days this week", 80], ["Vary interventions", "3 different ones per student this week, goal 3", 100], ["Name the goal in every note", "18 of 22 notes this month", 82], ["Safety plan whenever SI is mentioned", "2 of 2", 100]] },
+      "rowens": { "students": 4, "in_24h": 97, "flags": [], "rejected": [],
+        "goals": [["Name the goal in every note", "9 of 14 notes this month", 64], ["Say what you did, not what you saw", "no \"observed\" in 11 of 14 notes", 79], ["New-hire week", "week 9 of 12 · clinical supervision weekly", 75]] },
+      "slane": { "students": 6, "other_done": 1, "in_24h": 61, "status": "needs support", "flags": ["4 dailies not in Lauris since Oct 21"],
+        "rejected": [{ "client": "DW", "form": "daily note", "date": "2026-10-21", "why": "units do not match the contact time", "href": "ExtDPN.dc.html?client=DW" }, { "client": "DW", "form": "weekly call", "date": "2026-10-20", "why": "no release on file named", "href": "ExtWeekly.dc.html?client=DW" }, { "client": "DW", "form": "daily note", "date": "2026-10-19", "why": "no ISP objective named", "href": "ExtDPN.dc.html?client=DW" }],
+        "goals": [["Dailies in within 24 h", "61% this month · goal 90%", 61], ["Catch-up block", "20 minutes after dismissal, 2 of 5 days", 40]] },
+      "jreyes": { "students": 6, "other_done": 6, "in_24h": 95, "flags": [], "chip_flags": ["3 safety-care holds in 30 days · site average 0.7"], "rejected": [], "goals": [] }
+    },
+    "assessments_due": [
+      { "client": "AG", "staff": "khale", "instrument": "SUDS", "note": "third of the semester; two questions, takes a minute." },
+      { "client": "ES", "staff": "khale", "instrument": "DSM cross-cutting", "note": "parent and child versions; the parent half goes to the portal." }
+    ],
+    "collateral_who": { "DP": "school counselor", "AG": "pediatrician", "MR": "school counselor", "JT": "teacher", "ES": "school counselor", "CB": "teacher" },
+    "goal_watch": {
+      "MR": { "touched": "Goal 1 emotional regulation · 22 notes. Goal 2 peer interaction · 9.", "warn": "Goal 3 following directions · 0 in 6 weeks", "trend": "improving (2.1 → 3.4)", "prompt": "Try a structured game with one peer; see the library." },
+      "JT": { "touched": "Goal 1 · 25. Goal 2 · 18. Goal 3 · 12.", "trend": "flat (2.8 → 2.9)", "prompt": "Same intervention 6 times running; 2 alternatives suggested." },
+      "DP": { "touched": "Goal 1 · 20. Goal 2 · 20.", "trend": "improving (1.9 → 3.1)", "prompt": "On track; quarterly due Nov 14." },
+      "AG": { "touched": "Goal 1 · 17. Goal 2 · 11. Goal 3 · 6.", "trend": "improving (2.4 → 2.9)", "prompt": "SUDS due; ask it on the phone." },
+      "ES": { "touched": "Goal 1 · 14. Goal 2 · 4.", "trend": "flat (2.5 → 2.5)", "prompt": "No authorization on file; notes still count for the request." },
+      "CB": { "touched": "Goal 1 · 19. Goal 2 · 15.", "trend": "improving (2.0 → 2.7)", "prompt": "On track." }
+    },
+    "patterns": [
+      { "who": "J. Reyes · restraints.", "text": "3 safety-care interventions in 30 days against a site average under 1. Two were the same student at lunch." },
+      { "who": "S. Lane · backlog.", "text": "Dailies slipped after Oct 21; 4 not in Lauris. Offer the phone app and a 20-minute catch-up block." }
+    ]
+  },
+  "compliance": {
+    "incident_breakdown": "9 client · 5 staff · 11 TDT · 3 outpatient",
+    "highest_need": [
+      { "client": "AM", "what": "4 CPS reports · 1 higher level of care · 2 incident reports", "status": "measures assigned", "chip": "g" },
+      { "client": "DW", "what": "2 hospitalizations · 1 incident report", "status": "meeting Nov 3", "chip": "y" },
+      { "client": "JO", "what": "3 safety-care holds", "status": "measures assigned", "chip": "g" },
+      { "client": "LV", "what": "2 incident reports · 1 CPS report", "status": "meeting Nov 3", "chip": "y" }
+    ],
+    "critical_meeting": "2026-11-03",
+    "risk_trigger": { "count": 0, "text": "MS-2 has 2 hospitalizations this quarter · 1 more triggers" },
+    "qi": [
+      { "id": "1.1", "text": "All staff CPR and first-aid trained · 41 of 44 current", "status": "3 expiring", "chip": "y", "checked": "2026-10-28" },
+      { "id": "1.3", "text": "Incident reports reviewed within 5 days · 14 of 14", "status": "checked Oct 28", "chip": "g", "checked": "2026-10-28" },
+      { "id": "2.1", "text": "Highest-need students have clinical measures · 4 of 4", "status": "checked Oct 28", "chip": "g", "checked": "2026-10-28" },
+      { "id": "2.3", "text": "Risk-analysis meeting held when triggered · none triggered", "status": "log the check", "chip": "n", "checked": null },
+      { "id": "3.2", "text": "Supervision documented for every staffer monthly · 44 of 44", "status": "checked Oct 28", "chip": "g", "checked": "2026-10-28" }
+    ],
+    "supervision": [
+      { "date": "2026-10-28", "staff": "rowens", "text": "clinical supervision · new-hire week 9 of 12 · reviewed 14 notes, goal naming improving", "signed": "jperez" },
+      { "date": "2026-10-27", "staff": "slane", "text": "administrative · backlog plan: phone app, 20-min block, check-in Nov 3", "signed": "cdiaz" },
+      { "date": "2026-10-24", "staff": "jreyes", "text": "clinical · restraint pattern reviewed with footage; de-escalation refresher booked", "signed": "jperez" }
+    ]
+  },
+  "analytics_baseline": {
+    "source": "Sample data, illustrative",
+    "provenance": "harvest_export",
+    "by_locality": {
+      "cc": { "n": 84, "partial": 0.55, "awarded_ratio": 0.73, "median_award_on_150": 110, "full_denials": 5, "median_decision_days": 6, "early_discharge_restarts": 6, "unpaid_hours": 170, "share": 0.58 },
+      "lc": { "n": 62, "partial": 0.63, "awarded_ratio": 0.68, "median_award_on_150": 100, "full_denials": 4, "median_decision_days": 7, "early_discharge_restarts": 5, "unpaid_hours": 142, "share": 0.42 }
+    },
+    "payer_awarded": { "sentara": 0.61, "anthem": 0.72, "aetna": 0.70, "humana": 0.75, "uhc": 0.83, "ffs": 0.90 },
+    "division_report": [
+      { "school": "CC-ES1", "students": 23, "office_referrals_change": "-38%", "incidents": 5 },
+      { "school": "CC-ES2", "students": 9, "office_referrals_change": "-22%", "incidents": 2 },
+      { "school": "CC-MS1", "students": 6, "office_referrals_change": "-15%", "incidents": 1 },
+      { "school": "CC-HS1", "students": 5, "office_referrals_change": "-10%", "incidents": 3 },
+      { "school": "LC-MS2", "students": 6, "office_referrals_change": "-30%", "incidents": 2 },
+      { "school": "LC-ES3", "students": 3, "office_referrals_change": "n/a (new)", "incidents": 1 }
+    ]
+  },
+  "migration": {
+    "plans_cnas": 104,
+    "incident_rows": 14,
+    "discharged_total": "~1,100",
+    "tables": [
+      { "name": "Consumers · authorizations · units", "cadence": "weekly", "rows_key": "active_students" },
+      { "name": "Daily, weekly, monthly notes", "cadence": "weekly", "rows_key": "daily_notes" },
+      { "name": "Treatment plans · CNAs", "cadence": "weekly", "rows_key": "plans_cnas" },
+      { "name": "Surveys and assessments", "cadence": "monthly", "rows_key": "assessments" },
+      { "name": "Incident and CPS reports", "cadence": "monthly", "rows_key": "incident_rows" },
+      { "name": "Discharged consumers (2014–2026)", "cadence": "once", "rows_key": "discharged_total", "scheduled": true }
+    ],
+    "missing": [
+      { "client": "MR", "form": "Quarterly report", "date": "2026-08-14", "what": "scanned copy found in Documents", "status": "resolved" },
+      { "client": "JT", "form": "Treatment plan", "date": "2026-09-02", "what": "no signed copy anywhere", "status": "guardian" },
+      { "client": "DP", "form": "Quarterly report", "date": "2026-10-10", "what": "printed, not back", "status": "guardian" },
+      { "client": "CB", "form": "Treatment plan", "date": "2026-09-15", "what": "guardian signature line blank", "status": "guardian" },
+      { "client": "AG", "form": "Quarterly report", "date": "2026-07-30", "what": "signed by staff, not by the guardian", "status": "guardian" }
+    ]
+  },
+  "library": [
+    { "kind": "Consent", "name": "AI recording of screening and intake", "note": "in the informed-consent packet · attorney-reviewed Oct 2026", "status": "in packet", "chip": "g" },
+    { "kind": "Consent", "name": "Note enhancement", "note": "staff notice · in onboarding", "status": "in packet", "chip": "g" },
+    { "kind": "Consent", "name": "Parent portal and check-ins", "note": "", "status": "in packet", "chip": "g" },
+    { "kind": "Consent", "name": "Scope", "note": "TDT clients only · outpatient and SEBs records never read", "status": "enforced", "chip": "n" },
+    { "kind": "Consent", "name": "Business associate agreement", "note": "", "status": "signed Oct 3", "chip": "g" },
+    { "kind": "Knowledge", "name": "Harvest's intervention list and rationale", "note": "QMHP 1.1–1.10 · clinical 2.1 · written with the documentation trainer", "status": "current", "chip": "g" },
+    { "kind": "Knowledge", "name": "Harvest's eight approaches and note-writing training", "note": "", "status": "current", "chip": "g" },
+    { "kind": "Knowledge", "name": "DMAS forms and the CMHRS manual", "note": "checked weekly for changes", "status": "Oct 2026", "chip": "g" },
+    { "kind": "Knowledge", "name": "Each MCO's provider manual", "note": "5 plans · checked monthly", "status": "Sentara updated Oct 20", "chip": "y" },
+    { "kind": "Knowledge", "name": "DSM-5-TR · published evidence", "note": "citation library · reviewed quarterly", "status": "current", "chip": "g" },
+    { "kind": "Knowledge", "name": "Redesign draft (CPST, 15-minute units, CANS)", "note": "", "status": "tracking", "chip": "n" }
+  ]
+}

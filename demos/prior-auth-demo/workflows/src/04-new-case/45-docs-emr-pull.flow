@@ -1,0 +1,42 @@
+title: Authorizations › New Case › Clinical documentation › Bring notes in from the EMR, a file or a screenshot
+route: /authorizations/new/:draftId (step 3 of 4, the row under the drop bar)
+intro: Under the drop bar sits the same import row as on Intake: Pull from EMR (only when a clinical record system is connected at a site in view), Import a file and Paste a screenshot. Here it brings documents: the chart's earlier notes, the rows of a document export, or a pasted note. They land on the checklist, where Reader reads them. A document already in the case is never replaced.
+dir: TD
+---
+start s1 "On step 3, under the drop bar"
+decision dSys "Is a clinical record system connected at a site in view?\n'Needs attention' and disconnected systems do not count"
+process pNo "No 'Pull from EMR' button"
+click cEmr "Click 'Pull from EMR', pick a chart, click 'Pull'"
+click cFile "Click 'Import a file'\nA document export: title and date columns, one document per row"
+click cShot "Click 'Paste a screenshot', or press Ctrl+V or Cmd+V\nA screenshot of a note"
+goto gEmr "Continues in: Authorizations › New Case › Import › Pull from EMR"
+goto gFile "Continues in: Authorizations › New Case › Import › Import a file with field mapping"
+goto gShot "Continues in: Authorizations › New Case › Import › Paste a screenshot"
+screen sRev "Review: '3 documents found'\nA box for each: 'Psychiatric evaluation · 10/18/2026'"
+click cApply "Click 'Apply 3'"
+decision dSlot "Does a document's title match a slot on the payer's list?"
+process pSlot "It takes that slot: 'Progress note' goes to 'Therapy note from the last 14 days'"
+process pExtra "It is listed as 'Not on the list'"
+decision dTaken "Is that slot already filled?"
+process pKeep "Kept as it is; the toast names it\n'Already in the case: Medication list.'"
+agent aRead "Reader reads each new document\nThe row shows 'Reader is reading', then its checks"
+toast t1 "'Applied 3 documents'\n'Pulled from Clinical record · Site A'"
+process pStale "If the agents had already run, the run starts over\nBecause the records changed"
+toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
+goto gRec "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
+
+s1 --> dSys
+dSys -->|No| pNo
+dSys -->|Yes| cEmr --> gEmr
+s1 --> cFile --> gFile
+s1 --> cShot --> gShot
+gEmr -.-> sRev
+gFile -.-> sRev
+gShot -.-> sRev
+sRev --> cApply --> dSlot
+dSlot -->|Yes| dTaken
+dSlot -->|No| pExtra --> aRead
+dTaken -->|No| pSlot --> aRead
+dTaken -->|Yes| pKeep --> t1
+aRead --> t1 --> gRec
+aRead -.-> pStale -.-> tStale

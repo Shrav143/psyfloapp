@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Appeal letter</title></head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2;font-size:17px}
+.ap-wrap{width:100%;height:844px;background:var(--paper);display:flex;flex-direction:column;overflow:hidden;color:var(--navy)}
+.ap-top{background:var(--navy);color:#fff;padding:16px 56px 14px 20px;display:flex;align-items:flex-start;gap:12px}
+.ap-top b{font-size:17px;line-height:24px}
+.ap-top .s{font-size:14px;line-height:20px;color:var(--ink-4);margin-top:2px}
+.ap-lang{margin-left:auto;display:inline-flex;border:1px solid var(--ink-3);border-radius:999px;overflow:hidden;flex:0 0 auto}
+.ap-lang button{border:0;background:transparent;color:#fff;font:600 13px/20px 'DM Sans',system-ui,sans-serif;min-height:32px;padding:0 12px;cursor:pointer}
+.ap-lang button.on{background:var(--teal)}
+.ap-body{flex:1;padding:14px 20px 0;display:flex;flex-direction:column;gap:12px;overflow-y:auto}
+.ap-chips{display:flex;gap:8px;flex-wrap:wrap}
+.ap-chips .u-chip{font-size:13px;line-height:20px;padding:3px 12px}
+.ap-card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.ap-card h2{margin:0 0 8px;font-size:16px;line-height:24px;font-weight:600}
+.ap-card a{color:var(--teal-dark);font-weight:600}
+.ap-letter{margin:0;white-space:pre-line;line-height:24px;font-size:16px}
+.ap-ta{width:100%;min-height:220px;border:1.5px solid var(--line-strong);border-radius:10px;padding:12px 14px;font:inherit;font-size:16px;line-height:24px;resize:vertical;color:var(--navy);background:var(--white)}
+.ap-in{width:100%;min-height:50px;border:1.5px solid var(--line-strong);border-radius:10px;padding:12px 14px;font:inherit;font-size:17px;background:var(--white);color:var(--navy)}
+.ap-lbl{display:block;font-size:15px;font-weight:600;margin-bottom:6px}
+.ap-sig{border:1.5px dashed var(--line-strong);border-radius:12px;height:110px;background:var(--white);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:14px}
+.ap-btn{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:12px;font:600 17px/24px 'DM Sans',system-ui,sans-serif;border:0;width:100%;cursor:pointer;flex-shrink:0}
+.ap-btn.p{background:var(--teal);color:#fff}.ap-btn.p:hover{background:var(--teal-dark)}
+.ap-txt{background:transparent;border:0;color:var(--teal-dark);font:600 15px/24px 'DM Sans',system-ui,sans-serif;min-height:44px;cursor:pointer;align-self:center}
+.ap-foot{padding:8px 20px 20px;border-top:1px solid var(--line);text-align:center}
+.ap-foot button{background:transparent;border:0;color:var(--teal-dark);font:600 14px/20px 'DM Sans',system-ui,sans-serif;min-height:44px;cursor:pointer}
+</style>
+</helmet>
+
+<div class="ap-wrap">
+  <div class="ap-top">
+    <div><b>Harvest Outreach Center</b><div class="s">{{t.sub}}</div></div>
+    <div class="ap-lang" role="group" aria-label="Language"><button type="button" class="{{enCls}}" onClick="{{setEn}}" aria-pressed="{{en}}">EN</button><button type="button" class="{{esCls}}" onClick="{{setEs}}" aria-pressed="{{es}}">ES</button></div>
+  </div>
+  <div class="ap-body">
+    <sc-if value="{{!r}}"><div class="ap-card"><b>{{t.none}}</b></div></sc-if>
+    <sc-if value="{{r}}">
+      <div class="ap-chips"><span class="u-chip late">{{t.said}}</span><sc-if value="{{!sentOne}}"><span class="u-chip watch">{{t.left}}</span></sc-if></div>
+      <div class="ap-card">
+        <h2>{{t.letter}}</h2>
+        <sc-if value="{{!editing}}"><p class="ap-letter" data-doc>{{text}}</p></sc-if>
+        <sc-if value="{{editing}}"><textarea class="ap-ta" id="letter" data-doc aria-label="{{t.letter}}" onInput="{{edit}}">{{text}}</textarea></sc-if>
+      </div>
+      <div class="ap-card"><h2>{{t.attachedBy}}</h2><div data-doc>{{attached}}</div></div>
+      <sc-if value="{{sent}}">
+        <div class="ap-card" style="border-color:var(--teal);background:var(--teal-tint)"><h2>{{t.sentTitle}}</h2><div>{{sent.sub}}<sc-if value="{{sent.file}}"> · <a href="{{sent.file}}" target="_blank" rel="noopener">{{t.pdf}}</a></sc-if></div></div>
+      </sc-if>
+      <sc-if value="{{signing}}">
+        <div><label class="ap-lbl" for="signer">{{t.yourName}}</label><input class="ap-in" id="signer" type="text" value="{{signer}}" onInput="{{setSigner}}"></div>
+        <div><label class="ap-lbl" for="sig">{{t.signHere}}</label><div class="ap-sig"><canvas id="sig" aria-label="{{t.signHere}}" style="position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair"></canvas><span id="sigph" style="pointer-events:none;position:relative">{{signer}}</span></div>
+          <div style="text-align:right"><button type="button" class="ap-txt" onClick="{{clear}}">{{t.clear}}</button></div></div>
+      </sc-if>
+      <sc-if value="{{!sentOne}}">
+        <button type="button" class="ap-btn p" onClick="{{sign}}">{{signBtn}}</button>
+        <button type="button" class="ap-txt" onClick="{{toggleEdit}}">{{t.change}}</button>
+      </sc-if>
+    </sc-if>
+  </div>
+  <div class="ap-foot"><button type="button" onClick="{{call}}">{{t.call}}</button></div>
+</div>
+</x-dc>
+</body>
+</html>

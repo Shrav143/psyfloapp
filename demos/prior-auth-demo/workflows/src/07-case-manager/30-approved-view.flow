@@ -1,0 +1,46 @@
+title: Authorizations › Approved › Approved authorizations and their units
+route: /authorizations?view=approved
+intro: The Approved view is what Case Manager's tracker was for: every approved authorization at the sites in view, with how much of the approval is used, what is due next and the one thing to do. It is a view of the same table, so search, filters, sort, pages and the quick view work as on every other view.
+dir: TD
+also: Demo only, at the start: 32 approved authorizations (Site A 17, Site B 15), all from the ledger. A request approved since (on the Dashboard or after it was sent today) joins them as 'Approved' or 'Partial approval'. The tracker's four status tiles (Needs action, Review due, Awaiting payer, On track) are gone: Needs action and Review due are chips on the row, and the quick view keeps the ledger status.
+---
+start s1 "Click the view chip 'Approved 32'"
+start s2 "A link with ?view=approved, or the Dashboard's 'Active' or 'Renewal due' (All with a Showing chip)"
+goto gS "Continues in: Authorizations › Worklist › Deadline, More and the Showing chip"
+store ad "?view=approved in the address\nThe table goes back to page 1; the other chips keep their counts"
+screen tb "The table: '32 authorizations'\nIn the list's own order: by deadline band, waiting on a person first, soonest due"
+
+group gRow "What an approved row says"
+  process c1 "Status: 'Approved' (green), plus 'Needs action', 'Review due' or 'Needs your update' when the ledger or the review says so"
+  process c2 "Under it: '12 of 14 days used' (units for IOP), a thin bar, and 'Runs out before review' when the data shows it"
+  process c3 "Next action: the first sentence of the case's next step\n'Review 2 is drafted.', 'Add your update to review 2 so it can be signed.', 'Review 2 has no draft yet.'"
+  process c4 "Deadline: the ledger's next binding event\n'Review today', '14 h left', '24 units left', 'Next review Tue 10/27'"
+  process c5 "Owner: the agent drafting its review (Scribe for Residential and Detox, Cadence for PHP and IOP)\nChance: the stored approval chance"
+  process c6 "Button: the review's own ('Update the review', 'Review and sign', 'Check the review', 'Open the review'), else 'Open'"
+endgroup
+
+goto gU "Continues in: Authorizations › Approved › Units used and the run-out flag"
+goto gD "Continues in: Authorizations › Approved › What a tracked row's deadline says"
+goto gO "Continues in: Authorizations › Approved › Open an approved authorization"
+click cq "Click the row or its quick view icon"
+goto gQ "Continues in: Authorizations › Approved › Quick view of a tracked authorization"
+click cs "Sort by 'Deadline' or 'Chance', or page with 'Next'"
+goto gP "Continues in: Authorizations › Worklist › Sort and page"
+click ci "Hover the info icon 'About units and approval chance'"
+overlay oi "Tip: units or days left at the usual pace, a day a day or about three units a week for IOP\nApproval chance bands: Strong 80 and above, Moderate 55 to 79, At risk below 55"
+process na "Needs attention among them: a case marked Needs action, or a review that needs your update"
+goto gR "Continues in: Authorizations › Reviews this week › The view"
+end e1 "Every approved authorization in one list"
+
+s1 --> ad --> tb
+s2 -.-> gS
+tb --> c1 --> c2 --> c3 --> c4 --> c5 --> c6
+c2 -.-> gU
+c4 -.-> gD
+c6 --> gO
+c1 -.-> na
+tb --> cq --> gQ
+tb --> cs --> gP
+tb --> ci --> oi
+c3 -.-> gR
+c6 --> e1

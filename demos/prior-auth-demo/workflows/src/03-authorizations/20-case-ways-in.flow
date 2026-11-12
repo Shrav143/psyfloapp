@@ -1,0 +1,67 @@
+title: Authorizations › Case page › Ways in
+route: /authorizations/case/R-1042
+intro: Every link that opens a case page, and what the page does with the ID it is given: find the request, load your earlier work, pick the tab.
+dir: TD
+also: Demo only: R-1042 is the one hand-written case. Every other case page is generated from its queue record or Dashboard request, so the numbers are consistent but the wording is a template. An ID that is an approved authorization with no open request opens the ledger case page. An ID in neither ends at 'Request not found'.
+---
+group gIn "Links that open a case page"
+  start a1 "Authorizations: click a row's request ID"
+  start a2 "Authorizations: click a row's 'Go to action', 'Open the draft', 'Open' or 'Open case'"
+  start a3 "Dashboard: click 'Open case' in a request drawer"
+  start a4 "Authorizations: click 'Open case' in an approved authorization's quick view"
+  start a6 "Authorizations › Reviews this week: click 'Open case' in a review drawer"
+  start a7 "Eligibility & Benefits result: click 'Open case'"
+  start a8 "Notification 'Approval chance updated'"
+  start a9 "Type the address /authorizations/case/ID"
+  start a10 "Authorizations: open a request's quick view, then click 'Open case'"
+endgroup
+
+process r0 "Case page reads the ID from the address"
+decision d1 "Is the ID R-1042?"
+process hand "Hand-written case\n9 requirements, 6 actions, chance 62% rising to 88%"
+decision d2 "Is there a queue record for this ID, or for the Dashboard request it belongs to?"
+process fq "Page is built from the queue record\nand from its Dashboard request when there is one"
+decision d3 "Is there a Dashboard request with this ID or this case ID?"
+process fr "Page is built from the Dashboard request\nDecided ones show their result and have nothing left to send"
+process gen "Chance, actions, criteria, draft and checks are generated\nfrom the payer, level of care and chance"
+
+decision d5 "Is the ID in the approved-authorization ledger?"
+goto gL "Continues in: Authorizations › Ledger case page › Open and read"
+screen nf "'Request not found'\n'No request X' and 'Back to Authorizations'"
+click bq "Click 'Back to Authorizations' or the 'Authorizations' crumb"
+goto gQ "Continues in: Authorizations › Worklist › Arrive and read the views"
+
+store ld "Your earlier work on this case is loaded\nAnswers, applied and dismissed actions, focus, clinical context, draft edits, log"
+decision dS "Is the case at a site the viewer has in view?"
+screen oos "Card 'This case is not available at Site A'\nNames the site, not the patient"
+goto gO "Continues in: Authorizations › Case page › A case at another site"
+decision d4 "Does ?tab= name one of the three tabs, or one of the five old names?"
+screen tab1 "That tab opens, an old name on its merged tab\ne.g. a review drawer opens '?tab=draft' on 'Clinical picture & draft'"
+screen tab0 "'Recommended actions' opens"
+goto gH "Continues in: Authorizations › Case page › Header and buttons"
+
+a1 --> r0
+a2 --> r0
+a3 --> r0
+a4 --> r0
+a6 --> r0
+a7 --> r0
+a8 --> r0
+a9 --> r0
+a10 --> r0
+r0 --> d1
+d1 -->|Yes| hand --> dS
+d1 -->|No| d2
+d2 -->|Yes| fq --> gen
+d2 -->|No| d3
+d3 -->|Yes| fr --> gen
+d3 -->|No| d5
+d5 -->|Yes| gL
+d5 -->|No| nf
+nf --> bq --> gQ
+gen --> dS
+dS -->|Yes| ld
+dS -->|No| oos --> gO
+ld --> d4
+d4 -->|Yes| tab1 --> gH
+d4 -->|No or missing| tab0 --> gH

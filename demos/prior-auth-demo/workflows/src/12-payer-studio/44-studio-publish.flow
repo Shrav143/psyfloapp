@@ -1,0 +1,41 @@
+title: Payers › Workflow Builder › Publish a workflow
+route: /payers/summit?tab=builder
+intro: Publishing needs a clean check and a reason. It snapshots a version, makes it the one New Case matches, and replaces the earlier published version. Cases already in progress keep the version they started with, and nothing already sent is changed.
+dir: TD
+---
+start s1 "Click 'Publish'"
+decision d1 "Do the checks block it?"
+goto g0 "Continues in: Payers › Workflow Builder › Check a workflow before publishing"
+overlay o1 "Pop-up 'Publish version N?'\nThe workflow's name\n'This replaces published version M.' or 'Once published, new cases can use it.'\n'Cases already in progress keep the version they started with. Nothing already sent is changed.'"
+decision d2 "Unsaved changes?"
+screen u1 "'Your unsaved changes are saved with it.'"
+decision d3 "Any warnings?"
+screen w1 "'N things to check, none of them blocking' with the first four"
+input i1 "Type the 'Reason for this version'"
+click c1 "Click 'Publish version N'"
+decision d4 "Is a reason typed?"
+screen r1 "'A reason is needed so the history says why.'"
+store st1 "Draft saved if needed, then checked again\nSnapshot of the version stored with who, when and the reason\nThe live record becomes version N, status Published\nThe draft of the next version is gone"
+toast t1 "'Summit Initial Authorization is published'\n'Version N now matches new cases. Cases already open keep the version they started with.'"
+store st2 "Edit log entry and Version history line"
+process p1 "Bar shows 'Published' and the version\nNew case now matches this workflow for its service, request type and dates"
+click c2 "Click 'Cancel' or Escape"
+endx e2 "Nothing published"
+toast t2 "If the store's own check finds a blocker: 'cannot be published yet'\nwith the first problem, and the panel lists them"
+end e1 "Published"
+goto g1 "Continues in: Authorizations › New Case › Workflow › Match and pin the payer workflow"
+
+s1 --> d1
+d1 -->|Yes| g0
+d1 -->|No| o1 --> d2
+d2 -->|Yes| u1 --> d3
+d2 -->|No| d3
+d3 -->|Yes| w1 --> i1
+d3 -->|No| i1
+i1 --> c1 --> d4
+d4 -->|No| r1 --> i1
+d4 -->|Yes| st1
+st1 --> t1 --> st2 --> p1 --> e1
+st1 -.-> t2
+o1 --> c2 --> e2
+e1 --> g1

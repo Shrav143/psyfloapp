@@ -1,0 +1,62 @@
+title: Global shell › Top bar › Ask FLO › What FLO answers
+route: Every page (Ask FLO drawer)
+intro: FLO lowercases the question and tries its rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts, names and the request or denial it points to come from the live demo data. Only the Cardinal answer is fixed text, and even that counts only the unsent drafts at the sites in view. Five rules read the screen the person is on and are drawn in the next diagram. Every rule reads only the cases at the sites in view.
+dir: LR
+also: Typed questions use the same rules as the suggestion chips. Most rules ignore the page; the five on the next diagram use the open case page when the question does not name a case. Every link opens a view that matches the answer. PRD 08 describes row-level citations, thumbs and an escalate action on each answer; the demo gives one paragraph and one link instead.
+---
+start s1 "A question is sent\n(a chip or typed text)"
+process sx "FLO first narrows the data to the cases the viewer may see\nBoth sites, Site A or Site B; a viewer limited to one site gets that site only\nCounts and names are for those cases, and a count says 'at Site A' when one site is in view\nA case at the other site is never named, counted or linked: 'I did not find I-2207 among the cases you can see.'"
+
+decision d1 "Contains 'slow', or both 'payer' and 'late'?"
+agent a1 "FLO lists every payer slower than its typical time, worst first:\n'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...\nCaller phones when a payer passes twice its typical time.'\nIf none is slower: 'Every payer is deciding within its typical time right now.'"
+click l1 "Click 'Open Analytics, turnaround'"
+process r1 "Opens /analytics\nThe Analytics page opens; Turnaround is one of its four figures"
+goto g1 "Continues in: Analytics › Headline figures"
+
+decision dn "Contains 'billing', 'eligib' or 'fix before'?\nOr 'missing' or 'incomplete'?\nOr 'expir', 'run out', 'units' or 'end' (not with 'denial')?\nOr 'require'?\nOr 'review' (not 'under review')?"
+agent an "FLO answers from the screen you are on or the case you name:\nwhat is missing for a case, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing\nEach names the case, quotes live data, says once that it is FLO's reading, and ends with a link to the exact place"
+goto gn "Continues in: Global shell › Top bar › Ask FLO › Answers that read the screen"
+
+decision d2 "Contains 'denial'?"
+agent a2 "'8 denials are open. The nearest deadline is D-3318 (Cardinal), peer-to-peer window, 36 h left. Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%. 3 more deadlines fall this week.'\nThe count, the nearest open denial and the time left are live, so the sentence follows the data and the clock\nOne muted line: 'This is FLO's reading of the demo data, not a payer confirmation.'\nFLO gives no dollar figure: a question that only asks about money gets the fallback answer"
+click l2 "Click 'Open Denial Intelligence'"
+process r2 "Opens /denials/D-3318, the nearest denial\nWith no deadline left to name, it opens the dashboard of open denials"
+goto g2 "Continues in: Denial Intelligence › A denial opened"
+decision d2b "Contains 'due', 'soon' or 'deadline'?"
+agent a2b "'R-0988 (Beacon) is due soonest: review due in 3 h. Its approval chance is 79%. After it: R-1042 (Summit), notice due in 5 h; I-2207 (Cardinal), recert due in 5 h. 56 requests are open in Authorizations.'\nFor one site: 'is due soonest at Site A: ...' and only that site's open requests are counted\nRead from the open requests, soonest due first. Two due at the same time: the lower approval chance first\nNothing open: 'Nothing is due. Every open request has been sent or handled.' with 'Open Authorizations'"
+click l2b "Click 'Open R-0988'"
+process r2b "Opens /authorizations/case/R-0988\nThe case page of the request due soonest"
+goto g2b "Continues in: Authorizations › Case page › Ways in"
+decision d3 "Contains 'cardinal' or 'approval rate'?"
+agent a3 "'Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.'\nFixed text"
+click l3 "Click 'Open Payers, Cardinal, Changes'"
+goto g3 "Continues in: Payers › History & Changes › Read what changed"
+decision d4 "Contains 'need', 'today' or 'first'?"
+agent a4 "'3 requests need you: R-1042, I-2207, P-1499. Start with this: Review and sign R-0988, review due in 3 h.' then one line each for the next four, e.g. 'Answer Scribe's question on R-1042, notice due in 5 h.'\nIt is the same list as Do next on the Dashboard, so the two never disagree; counts and IDs are live, and a Site A viewer gets 'need you at Site A' and only Site A cases\nOne muted line: 'This is the Do next list on the Dashboard, worked out from today's demo data.'\nNothing waiting: 'Nothing needs you right now.' with 'Open Dashboard'"
+click l4 "Click 'Open Do next on the Dashboard'"
+process r4 "Opens /dashboard\nThe Do next card is the first card under the Lifecycle"
+goto g4 "Continues in: Dashboard › Do next › What to do now and where each button leads"
+
+decision d5 "Contains 'referral'?"
+agent a5 "'New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.'"
+click l5 "Click 'Start a case from a referral'"
+goto g5 "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
+
+agent a6 "'I did not find an answer to that in the demo data. Try one of the suggestions below.'\nNo link. The four suggestion chips stay right under this answer, so the sentence is true"
+end e1 "Answer stays in the chat"
+
+s1 --> sx --> d1
+d1 -->|Yes| a1 --> l1 --> r1 --> g1
+d1 -->|No| dn
+dn -->|Yes| an --> gn
+dn -->|No| d2
+d2 -->|Yes| a2 --> l2 --> r2 --> g2
+d2 -->|No| d2b
+d2b -->|Yes| a2b --> l2b --> r2b --> g2b
+d2b -->|No| d3
+d3 -->|Yes| a3 --> l3 --> g3
+d3 -->|No| d4
+d4 -->|Yes| a4 --> l4 --> r4 --> g4
+d4 -->|No| d5
+d5 -->|Yes| a5 --> l5 --> g5
+d5 -->|No| a6 --> e1

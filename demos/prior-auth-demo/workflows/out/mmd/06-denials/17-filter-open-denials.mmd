@@ -1,0 +1,50 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>On the dashboard, or open /denials?payer=cardinal&reason=... from Analytics</b><br/>('Open in Denial Intelligence' on a reason, a row of 'Common denial reasons by payer')" }
+  fg@{ shape: curv-trap, label: "Figures 'Open', 'Deadlines this week', 'To decide', 'Peer-to-peer booked', 'Appeals in progress', 'Closed'" }
+  cf@{ shape: trap-t, label: "Click a figure" }
+  pf@{ shape: rect, label: "<b>'Deadlines this week': 7 days or less on our own clock, overdue included</b><br/>'To decide': nothing under way; 'Peer-to-peer booked': chip 'Call booked'<br/>'Appeals in progress': drafting or with the payer; 'Closed': settled here" }
+  pc@{ shape: curv-trap, label: "<b>Payer chips: 'All payers', then each payer with a denial in the current figure and its count, most first</b><br/>('Cardinal 3', 'Summit 2', 'Beacon 1', ...)" }
+  cp@{ shape: trap-t, label: "Click a payer chip" }
+  pp@{ shape: rect, label: "<b>Only that payer's rows; the chip is outlined; address ?payer=cardinal</b><br/>Click it again, or 'All payers', to clear it" }
+  pr@{ shape: rect, label: "<b>?reason= matches by inclusion: the reason and the denial's type or its words contain each other</b><br/>Example: 'Late notice' fits D-3290; 'Continued-stay evidence incomplete' fits D-3318" }
+  rc@{ shape: curv-trap, label: "Chip 'Reason: Late notice' with an X ('Clear the reason')" }
+  cr@{ shape: trap-t, label: "Click the X" }
+  pq@{ shape: rect, label: "?reason= leaves the address" }
+  d1@{ shape: diam, label: "Any rows left?" }
+  e0@{ shape: curv-trap, label: "<b>'No denials match these filters'</b><br/>Button 'Clear filters' (payer, reason and figure)" }
+  tb@{ shape: curv-trap, label: "The table shows only the matches, in the chosen order" }
+  p8@{ shape: rect, label: "An unknown payer id (?payer=zzz) has no chip and matches nothing: the empty state offers 'Clear filters'" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  g3@{ shape: subproc, label: "Continues in: Analytics › Denial reasons" }
+  s1 --> fg --> cf --> pf --> d1
+  s1 --> pc --> cp --> pp --> d1
+  s1 -.-> pr --> rc --> cr --> pq --> d1
+  pr --> d1
+  d1 -->|"Yes"| tb --> g2
+  d1 -->|"No"| e0 --> g1
+  pp -.-> p8
+  s1 -.-> g3
+  class s1 k_start
+  class fg,pc,rc,e0,tb k_screen
+  class cf,cp,cr k_click
+  class pf,pp,pr,pq,p8 k_process
+  class d1 k_decision
+  class g1,g2,g3 k_goto

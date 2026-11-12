@@ -1,0 +1,36 @@
+title: Analytics › Denial reasons
+route: /analytics
+intro: Why decisions were not approved as requested. A Pareto of the most common reasons with the preventable ones marked, a donut of preventable against not, the preventable denials by payer, and the reasons behind each diagnosis group. Every row, slice and bar opens its cases.
+dir: TD
+also: A denial is anything not approved as requested, so a cut in days or units counts. Preventable means the team could have fixed the documentation or the timing before sending: thin or missing documentation, late notice, an incomplete certification, a duplicate request.
+---
+start s1 "Scroll to 'Denial reasons'"
+screen sc "'311 denials, 207 of them preventable (67%).'\n'Most common reasons': Continued-stay evidence incomplete 73 (23%), Partial approval without a stated reason 34, Units requested above criteria 34 ...\nA 'Preventable' tag and a striped bar on the preventable ones, a running share on the right, and a dashed line where 80% is reached\n'N other reasons' rolls up the rest"
+screen d1 "Donut 'Preventable or not': 207 (67%) and 104 (33%), with a legend\n'Preventable denials by payer' bars"
+screen d2 "'Reasons by diagnosis group'\nOne bar for each group, split into four kinds: Documentation or evidence, Timing or notice, Level of care or days, Administrative\nThe number is the group's denials"
+
+click c1 "Click a reason row, for example 'Continued-stay evidence incomplete'"
+process p1 "Opens the case list panel for those 73 cases"
+decision q1 "Does the reason belong to one payer?"
+screen l1 "The panel offers 'Open in Denial Intelligence'\nIt carries the payer and the reason"
+goto g1 "Continues in: Denial Intelligence › Open denials list"
+screen l2 "A reason two payers give, such as 'Recertification filed too late', lists both payers' cases\nNo Denial Intelligence link"
+click c2 "Click a donut slice or its legend row"
+process p2 "Opens the preventable or not-preventable denials"
+click c3 "Click a payer bar"
+process p3 "Opens that payer's preventable denials"
+click c4 "Click a diagnosis group bar"
+process p4 "Opens that group's denials; hover a segment for its kind and count"
+goto g2 "Continues in: Analytics › Case list panel"
+click d3 "Click 'View data table' under a chart"
+process d4 "A table of the same numbers"
+
+s1 --> sc --> d1 --> d2
+sc --> c1 --> p1 --> q1
+q1 -->|Yes| l1 --> g1
+q1 -->|No| l2
+l1 & l2 --> g2
+d1 --> c2 --> p2 --> g2
+d1 --> c3 --> p3 --> g2
+d2 --> c4 --> p4 --> g2
+sc --> d3 --> d4

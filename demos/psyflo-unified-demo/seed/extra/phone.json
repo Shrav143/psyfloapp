@@ -1,0 +1,7 @@
+{
+  "_about": "Phone seed (E7). Synthetic. phone_examples = the scripted sentence (seed/scripts/dictation_MR.md) the presenter's Use the example loads on the phone. mic_consents starts empty: a person's recorded microphone answer is added by dictation.micConsent. (Track Time and its time_entries were removed on Nov 11.)",
+  "mic_consents": [],
+  "phone_examples": {
+    "MR": "played basketball with M.R. after he got upset in math, he cooled down after and went back to class"
+  }
+}

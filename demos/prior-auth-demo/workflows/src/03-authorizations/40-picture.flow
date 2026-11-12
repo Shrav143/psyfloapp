@@ -1,0 +1,52 @@
+title: Authorizations › Case page › Clinical picture
+route: /authorizations/case/R-1042?tab=draft
+intro: The clinical picture is a narrow rail beside the draft on 'Clinical picture & draft': diagnosis, the screener chart, the six dimensions of the case's framework, then medications, what stands out and engagement folded. Any item can light the draft sections that use it.
+dir: TD
+also: Demo only: the chart content is generated for every request except R-1042, which is hand-written. At 1024 px and narrower the rail sits under the draft, folded.
+---
+start s1 "Click 'Clinical picture & draft'\n(or open an old ?tab=picture link)"
+decision dW "Wider than 1024 px?"
+screen rl "Rail 'Clinical picture' beside the draft, about 340 px"
+screen rf "'Clinical picture' under the draft, folded"
+click of "Click 'Clinical picture' to open it"
+
+group gR "The rail, top to bottom"
+  screen dx "Diagnosis line, status pill and source chip"
+  click ind "Click 'In draft'"
+  screen sc "Screener chart: Low to High, one line per screener"
+  screen fw "Framework name and six rows\n'ASAM Criteria' or 'LOCUS · adult mental health'\nnumber, short name, dot and rating"
+  click row "Click a dimension row"
+  overlay pop "Pop-up: the dimension, its rating on the framework's scale\nwhat the chart shows, and the source page quoted"
+  click sid "Click 'Show in draft'"
+  click cl "Click 'Close', X, the dimmed area or Esc"
+  click me "Open 'Medications'\nname and dose, source chip"
+  click so "Open 'What stands out'\nfour short lines"
+  click en "Open 'Engagement'\npercent, bar and three ticked checks"
+endgroup
+
+process lt "The draft sections that cite the same chart page turn green for a few seconds\nand the first scrolls into view"
+decision dCt "Does any section cite that page?"
+process fb "The section the item speaks to lights instead\ne.g. the diagnosis lights 'Clinical picture'"
+click ch "Click the source chip"
+
+goto g1 "Continues in: Authorizations › Case page › Source chip"
+goto g2 "Continues in: Authorizations › Case page › Screener chart"
+goto g3 "Continues in: Authorizations › Case page › Framework: ASAM or LOCUS"
+goto g4 "Continues in: Authorizations › Case page › Draft › Read and edit"
+
+s1 --> dW
+dW -->|Yes| rl
+dW -->|No| rf --> of --> rl
+rl --> dx & sc & fw
+dx --> ind --> dCt
+dx --> ch --> g1
+sc --> g2
+fw --> row --> pop
+pop --> sid --> dCt
+pop --> cl
+fw --> g3
+rl --> me & so & en
+dCt -->|Yes| lt
+dCt -->|No| fb
+lt --> g4
+fb --> g4

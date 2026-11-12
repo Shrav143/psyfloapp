@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo phone app — Say what happened</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared phone look: C_CSS in js/screens/MobileApp.js; the mic ring is local */
+.c-mic{width:88px;height:88px;border-radius:50%;border:1px solid var(--line-strong);background:var(--white);color:var(--navy);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;margin:0 auto;flex-shrink:0}
+.c-mic svg{width:34px;height:34px}
+.c-mic.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+.c-mic.live{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 0 0 6px var(--teal-tint)}
+.c-hl{background:var(--teal-tint);color:var(--teal-dark);border-radius:4px;padding:0 2px}
+</style>
+</helmet>
+
+<div class="c-ph">
+  {{hd}}
+  <main class="c-bd">
+    <h1 class="c-q">Say what happened</h1>
+    <div class="c-chips"><sc-for list="{{chips}}" as="c"><button type="button" class="c-stu{{c.on}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.ini}}</button></sc-for></div>
+
+    <button type="button" class="c-mic{{micCls}}" aria-label="{{micLabel}}" onClick="{{mic}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg></button>
+
+    <sc-if value="{{listening}}"><div class="c-card" data-doc><div id="heard" style="font-size:17px;line-height:26px">{{heard}}</div></div></sc-if>
+    <sc-if value="{{!listening}}"><textarea class="c-in" id="spoken" data-doc placeholder="What happened?" onInput="{{typed}}">{{spoken}}</textarea></sc-if>
+
+    <sc-if value="{{e}}">
+    <section class="c-card" style="border-color:var(--lauris-yellow-bd);background:var(--lauris-yellow-bg)">
+      <h2 class="c-sec">Note <span class="u-chip {{stateCls}}">{{stateChip}}</span></h2>
+      <sc-if value="{{!fixing}}"><div data-doc style="margin-top:8px;line-height:24px">{{phoneHtml}}</div></sc-if>
+      <sc-if value="{{fixing}}"><textarea class="c-in" id="fixtext" data-doc style="margin-top:8px;min-height:130px;font-size:15px;line-height:22px" onInput="{{fixInput}}">{{phone}}</textarea></sc-if>
+      <div data-doc style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"><sc-for list="{{chipsSrc}}" as="x"><span class="u-chip ok" title="{{x.from}}">{{x.text}}</span></sc-for></div>
+    </section>
+    <sc-if value="{{!saved}}"><div style="display:flex;gap:8px;align-items:center"><a class="c-btn pri" href="#use" style="flex:1">Looks right</a><a class="c-btn txt" href="#fix">{{fixLabel}}</a></div></sc-if>
+    <sc-if value="{{saved}}"><a class="c-btn pri" href="MobileApp.dc.html">Done</a></sc-if>
+    </sc-if>
+  </main>
+  {{nav}}
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

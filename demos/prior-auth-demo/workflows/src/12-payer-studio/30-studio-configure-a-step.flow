@@ -1,0 +1,40 @@
+title: Payers › Workflow Builder › Configure a step
+route: /payers/summit?tab=builder
+intro: Selecting a step opens its settings on the right, with only the controls that step needs. The top is the same for every step; the middle depends on the kind of step (the family diagrams below); the bottom is where it goes next and what keeps it safe. Advanced settings stay folded.
+dir: TD
+---
+start s1 "Click a step on the canvas\nor focus it and press Enter"
+screen hd "Settings header\nStep icon, its name, a dot and a word: Live, Demo simulation or Not configured\nA line saying what is real and what is simulated\n'Close the step settings'"
+decision d1 "Does the step have a problem?"
+screen iss "Red or ochre lines at the top\n'Needs fixing: ...' or 'Check: ...' for this step"
+screen com "Common controls\n'Title'\n'How it runs': Automatic, Manual or Agent-assisted\nFold 'Description and instructions' (short description, instructions for the people who run it)"
+screen typ "Controls for this kind of step\nEach one has its own diagram"
+screen nxt "'Next steps'\nOne list per exit, e.g. 'When: Yes' and 'When: No'\nThe steps that can be reached, or 'Not connected'"
+click c1 "Pick a step in a 'Next steps' list"
+process p1 "A line is drawn from that exit to the step, or removed for 'Not connected'\nAnnounced: 'Connected A to B'"
+screen saf "'Completion and safeguards'\n'Completion criteria', 'A person approves first', 'If the step fails',\n'Retries before manual review' when the choice is 'Retry, then manual review'"
+decision d2 "Does the step reach out to a payer, a fax line or another system?"
+process p2 "'A person approves first' is on and cannot be turned off\n'Steps that reach the payer always need a person's approval.'"
+process p3 "The switch is free to change"
+click c2 "Open 'Advanced'"
+screen adv "'Stage in New Case' (Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit)\nOther advanced fields for the step, and the step id"
+click c3 "Click 'Duplicate' or 'Delete' at the foot of the panel"
+process p4 "A copy is made 48 px away, or the step and its lines are removed\nStart has neither button: 'Every workflow has one Start.'"
+process p5 "Every edit is held in the builder and marked 'Unsaved changes'\nNothing reaches the store until 'Save draft'"
+decision d3 "Is the workflow archived?"
+process p6 "Every control is dimmed: archived workflows are read only"
+end e1 "The step is configured in the draft"
+goto g1 "Continues in: Payers › Workflow Builder › Save a draft and publish"
+
+s1 --> hd --> d1
+d1 -->|Yes| iss --> com
+d1 -->|No| com
+com --> typ --> nxt --> c1 --> p1 --> saf
+saf --> d2
+d2 -->|Yes| p2 --> c2
+d2 -->|No| p3 --> c2
+c2 --> adv --> c3 --> p4 --> p5
+hd --> d3
+d3 -->|Yes| p6
+d3 -->|No| com
+p5 --> e1 --> g1

@@ -1,0 +1,77 @@
+{
+ "_about": "Flags on authorizations and the notification read state (R3). A flag is workflow, not clinical: who marked it, when, a reason from a short list and an optional note (only clinicians and the author see the note). Two open flags below were raised by one person, so the other sees them in the bell. notify_read lists the notification ids a person has already read (ids are computed by web/js/shared/sel/notify.js). Each flag also has its audit event, so it shows in the authorization history.",
+ "flags": [
+  {
+   "id": "fl-seed-1",
+   "request": "R-0402",
+   "by": "cdiaz",
+   "at": "2026-10-28T14:20",
+   "note": "Partial offer: reply is due Oct 30. Who decides?",
+   "status": "open",
+   "reason": "decision"
+  },
+  {
+   "id": "fl-seed-2",
+   "request": "R-0391",
+   "by": "jperez",
+   "at": "2026-10-27T09:40",
+   "note": "Confirm the new initial date with the family.",
+   "status": "open",
+   "reason": "family"
+  },
+  {
+   "id": "fl-seed-3",
+   "request": "R-0384",
+   "by": "jperez",
+   "at": "2026-10-22T17:05",
+   "note": "Guardian letter drafted, waiting on the family.",
+   "status": "cleared",
+   "cleared_by": "jperez",
+   "cleared_at": "2026-10-24T10:15",
+   "reason": "family"
+  }
+ ],
+ "notify_read": {
+  "cdiaz": [
+   "flag:fl-seed-2"
+  ]
+ },
+ "events": [
+  {
+   "at": "2026-10-28T14:20",
+   "what": "Flagged for attention · Needs a decision",
+   "who": "cdiaz",
+   "record": "R-0402",
+   "actor_kind": "person",
+   "sim": false,
+   "kind": "flag"
+  },
+  {
+   "at": "2026-10-27T09:40",
+   "what": "Flagged for attention · Waiting on the family",
+   "who": "jperez",
+   "record": "R-0391",
+   "actor_kind": "person",
+   "sim": false,
+   "kind": "flag"
+  },
+  {
+   "at": "2026-10-22T17:05",
+   "what": "Flagged for attention · Waiting on the family",
+   "who": "jperez",
+   "record": "R-0384",
+   "actor_kind": "person",
+   "sim": false,
+   "kind": "flag"
+  },
+  {
+   "at": "2026-10-24T10:15",
+   "what": "Flag cleared",
+   "who": "jperez",
+   "record": "R-0384",
+   "actor_kind": "person",
+   "sim": false,
+   "kind": "flag"
+  }
+ ]
+}

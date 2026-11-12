@@ -1,0 +1,69 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open the Verify page" }
+  sc@{ shape: curv-trap, label: "<b>Card 'Patient and service' with the pill 'Privacy mode on'</b><br/>Import row, the six fields, 'Check now'<br/>A tinted strip 'Try a sample' at the foot of the card" }
+  b1@{ shape: trap-t, label: "Click '← Eligibility & Benefits' (back link)" }
+  b2@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040' or '← Back to case R-1042'</b><br/>Shown only when the address names a referral (see 'Ways in and pre-fill')" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
+  g0@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  subgraph gImport ["Bring the card in"]
+  f1@{ shape: trap-t, label: "Import row: 'Pull from EMR' (only when a record system is connected at the site in view), 'Import a file', 'Paste a screenshot'" }
+  p1@{ shape: rect, label: "<b>Payer and member ID filled on Apply</b><br/>A quiet line under the row: where it came from, the group and the coverage dates<br/>'From the sample screenshot · Group GRP-55120 · Effective 01/01/2026 to 12/31/2026'" }
+  end
+  subgraph gSample ["Try a sample"]
+  f5@{ shape: trap-t, label: "<b>Click a small chip in the strip 'Try a sample'</b><br/>'Cleared to bill', 'Authorization first', 'Coverage lapsed', 'Not found',<br/>'Not covered', 'Another plan pays first', 'Limit reached'" }
+  p7@{ shape: rect, label: "<b>Fills the whole form with a made-up member who ends that way</b><br/>The chip turns green. Initials and age are remembered for the result" }
+  end
+  subgraph gFields ["Type the details"]
+  i1@{ shape: lean-r, label: "<b>'Payer' menu: 'Choose a payer', six payers</b><br/>Under it, the plan type, for example 'Medicaid managed care (HMO)'" }
+  i2@{ shape: lean-r, label: "'State': the only choice is 'Ohio'" }
+  i3@{ shape: lean-r, label: "'Member ID'" }
+  i4@{ shape: lean-r, label: "'Date of birth' as MM/DD/YYYY" }
+  i5@{ shape: lean-r, label: "'Program': 'Residential 3.5', 'IOP', 'PHP', 'Detox'" }
+  i6@{ shape: lean-r, label: "'Date of service' as MM/DD/YYYY, starts as 10/21/2026" }
+  end
+  q1@{ shape: diam, label: "Payer chosen, member ID has 4 or more letters or digits, both dates shaped MM/DD/YYYY?" }
+  p4@{ shape: rect, label: "<b>'Check now' is off</b><br/>The required fields carry a red star; no hint line" }
+  p5@{ shape: rect, label: "Only the shape of a date is checked, not whether it is a real day" }
+  p6@{ shape: rect, label: "'Check now' is on" }
+  c1@{ shape: trap-t, label: "Click 'Check now'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Try a sample" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Import the card or the coverage screen" }
+  s1 --> sc
+  sc --> b1 --> g0
+  sc --> b2 --> g3
+  sc --> f1 --> p1 --> q1
+  f1 -.-> g4
+  sc --> f5 --> p7 --> q1
+  f5 -.-> g2
+  sc --> i1 --> i2 --> i3 --> i4 --> i5 --> i6 --> q1
+  q1 -->|"No"| p4 -.-> p5
+  p4 --> q1
+  q1 -->|"Yes"| p6 --> c1 --> g1
+  class s1 k_start
+  class sc k_screen
+  class b1,b2,f1,f5,c1 k_click
+  class g3,g0,g1,g2,g4 k_goto
+  class p1,p7,p4,p5,p6 k_process
+  class i1,i2,i3,i4,i5,i6 k_input
+  class q1 k_decision
+  style gImport fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSample fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gFields fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

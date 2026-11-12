@@ -1,0 +1,873 @@
+{
+ "v": 3,
+ "attachments": {},
+ "boards": {
+  "WhereThingsLive.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1160,
+   "title": "1 · Where things live · read first",
+   "expand": "fill"
+  },
+  "SchoolPortal.dc.html": {
+   "x": 0,
+   "y": 2460,
+   "w": 1440,
+   "h": 1140,
+   "title": "3 · School portal · Oct 13",
+   "expand": "fill"
+  },
+  "ReferralForm.dc.html": {
+   "expand": "fill",
+   "h": 2180,
+   "is_interactive": true,
+   "title": "4 · Referral form (school) · Oct 13",
+   "w": 1440,
+   "x": 1520,
+   "y": 2460
+  },
+  "Referral.dc.html": {
+   "expand": "fill",
+   "h": 1180,
+   "is_interactive": true,
+   "title": "7 · Referral review (Psyflo app) · Oct 14",
+   "w": 1440,
+   "x": 6080,
+   "y": 2460
+  },
+  "FamilyLink.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "8 · Family link (phone) · insurance step · Oct 14",
+   "w": 390,
+   "x": 0,
+   "y": 5940
+  },
+  "FamilyLinkSettings.dc.html": {
+   "x": 1990,
+   "y": 5940,
+   "w": 1440,
+   "h": 840,
+   "title": "10 · Settings · family link",
+   "is_interactive": true,
+   "expand": "fill"
+  },
+  "ParentPortal.dc.html": {
+   "x": 3980,
+   "y": 5940,
+   "w": 390,
+   "h": 844,
+   "title": "12 · Parent portal (phone) · Oct 29"
+  },
+  "ExtHome.dc.html": {
+   "h": 1080,
+   "is_interactive": true,
+   "title": "13 · Extension · three buttons · Oct 29",
+   "w": 1440,
+   "x": 0,
+   "y": 8084
+  },
+  "ExtScreening.dc.html": {
+   "h": 1080,
+   "is_interactive": true,
+   "title": "14 · Scribe · screening call · Oct 16",
+   "w": 1440,
+   "x": 1520,
+   "y": 8084
+  },
+  "ExtCNA.dc.html": {
+   "h": 1080,
+   "is_interactive": true,
+   "title": "15 · Scribe · intake / CNA · Oct 20",
+   "w": 1440,
+   "x": 3040,
+   "y": 8084
+  },
+  "ExtISP.dc.html": {
+   "x": 4560,
+   "y": 8084,
+   "w": 1440,
+   "h": 1080,
+   "title": "16 · Scan & enhance · treatment plan · Oct 21",
+   "is_interactive": true
+  },
+  "ExtSRA.dc.html": {
+   "h": 1080,
+   "is_interactive": true,
+   "title": "17 · Review a request · initial SRA · Oct 22",
+   "w": 1440,
+   "x": 6080,
+   "y": 8084
+  },
+  "Submission.dc.html": {
+   "expand": "fill",
+   "h": 780,
+   "is_interactive": true,
+   "title": "19 · Sent · a person presses Send · Oct 29",
+   "w": 1440,
+   "x": 9120,
+   "y": 8084
+  },
+  "MobileApp.dc.html": {
+   "x": 0,
+   "y": 10464,
+   "w": 390,
+   "h": 844,
+   "title": "20 · Mobile app (phone) · Oct 29"
+  },
+  "ExtDPN.dc.html": {
+   "h": 1080,
+   "is_interactive": true,
+   "title": "23 · Scan & enhance · daily note · Oct 29",
+   "w": 1440,
+   "x": 1410,
+   "y": 10464
+  },
+  "StaffDashboard.dc.html": {
+   "x": 1520,
+   "y": 12844,
+   "w": 1440,
+   "h": 1000,
+   "title": "28 · Staff dashboard · Oct 29",
+   "expand": "fill"
+  },
+  "Authorizations.dc.html": {
+   "expand": "fill",
+   "h": 1580,
+   "is_interactive": true,
+   "title": "29 · Authorizations · Oct 29",
+   "w": 1440,
+   "x": 3040,
+   "y": 12844
+  },
+  "ExtCase.dc.html": {
+   "x": 1520,
+   "y": 15724,
+   "w": 1440,
+   "h": 1080,
+   "title": "33 · Review a request · continued stay · Oct 29"
+  },
+  "InfoRequest.dc.html": {
+   "expand": "fill",
+   "h": 1220,
+   "is_interactive": true,
+   "title": "34 · Insurer asks for more information · Oct 29",
+   "w": 1440,
+   "x": 3040,
+   "y": 15724
+  },
+  "Partials.dc.html": {
+   "expand": "fill",
+   "h": 1400,
+   "is_interactive": true,
+   "title": "35 · Partials & denials · Oct 29",
+   "w": 1440,
+   "x": 4560,
+   "y": 15724
+  },
+  "PeerBrief.dc.html": {
+   "expand": "fill",
+   "h": 960,
+   "is_interactive": true,
+   "title": "38 · Peer-to-peer call notes · Oct 29",
+   "w": 1440,
+   "x": 9120,
+   "y": 15724
+  },
+  "Compliance.dc.html": {
+   "x": 0,
+   "y": 18424,
+   "w": 1440,
+   "h": 1480,
+   "title": "41 · Compliance · Oct 29",
+   "expand": "fill"
+  },
+  "Analytics.dc.html": {
+   "expand": "fill",
+   "h": 1340,
+   "is_interactive": true,
+   "title": "42 · Analytics · Oct 29",
+   "w": 1440,
+   "x": 1520,
+   "y": 18424
+  },
+  "ExtWeekly.dc.html": {
+   "x": 2930,
+   "y": 10464,
+   "w": 1440,
+   "h": 1080,
+   "title": "24 · Scribe · weekly guardian call · Oct 29"
+  },
+  "ExtMonthly.dc.html": {
+   "x": 4450,
+   "y": 10464,
+   "w": 1440,
+   "h": 1080,
+   "title": "25 · Scribe · monthly collateral · Oct 29"
+  },
+  "ExtQuarterly.dc.html": {
+   "x": 0,
+   "y": 15724,
+   "w": 1440,
+   "h": 1080,
+   "title": "32 · Review a request · quarterly report · Oct 29"
+  },
+  "ExtIncident.dc.html": {
+   "x": 5970,
+   "y": 10464,
+   "w": 1440,
+   "h": 1080,
+   "title": "26 · Incident report · Level 2 · Oct 28"
+  },
+  "Eligibility.dc.html": {
+   "x": 470,
+   "y": 5940,
+   "w": 1440,
+   "h": 760,
+   "title": "9 · Eligibility check (Psyflo app) · Oct 15",
+   "expand": "fill"
+  },
+  "ReviewQueue.dc.html": {
+   "x": 0,
+   "y": 12844,
+   "w": 1440,
+   "h": 760,
+   "title": "27 · Supervisor review queue · Oct 29",
+   "expand": "fill"
+  },
+  "ExtSignOff.dc.html": {
+   "x": 7600,
+   "y": 8084,
+   "w": 1440,
+   "h": 1080,
+   "title": "18 · Sign-off · Forms to Approve · Oct 22"
+  },
+  "EarlyDischarge.dc.html": {
+   "x": 6080,
+   "y": 15724,
+   "w": 1440,
+   "h": 900,
+   "title": "36 · Early discharge · plan the new initial · Oct 29",
+   "expand": "fill"
+  },
+  "AppealLetter.dc.html": {
+   "x": 10640,
+   "y": 15724,
+   "w": 390,
+   "h": 844,
+   "title": "39 · Appeal letter · guardian (phone) · Oct 29"
+  },
+  "MobileDictate.dc.html": {
+   "x": 470,
+   "y": 10464,
+   "w": 390,
+   "h": 844,
+   "title": "21 · Mobile · say what happened (phone) · Oct 29"
+  },
+  "ParentSurvey.dc.html": {
+   "x": 6080,
+   "y": 12844,
+   "w": 390,
+   "h": 844,
+   "title": "31 · Parent survey (phone) · Oct 29"
+  },
+  "ParentSign.dc.html": {
+   "x": 3510,
+   "y": 5940,
+   "w": 390,
+   "h": 844,
+   "title": "11 · Parent signs (phone) · Oct 19"
+  },
+  "SchoolTeacher.dc.html": {
+   "x": 4560,
+   "y": 12844,
+   "w": 1440,
+   "h": 900,
+   "title": "30 · School portal · teacher check-in · Oct 29",
+   "expand": "fill"
+  },
+  "ReferralSent.dc.html": {
+   "x": 3040,
+   "y": 2460,
+   "w": 1440,
+   "h": 700,
+   "title": "5 · Referral sent (school) · Oct 13",
+   "expand": "fill"
+  },
+  "Login.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 760,
+   "title": "0 · Sign in",
+   "expand": "fill"
+  },
+  "Users.dc.html": {
+   "x": 3040,
+   "y": 18424,
+   "w": 1440,
+   "h": 980,
+   "title": "43 · Users & roles",
+   "expand": "fill"
+  },
+  "PayerPlaybook.dc.html": {
+   "x": 11110,
+   "y": 15724,
+   "w": 1440,
+   "h": 780,
+   "title": "40 · Payer playbook",
+   "expand": "fill"
+  },
+  "Migration.dc.html": {
+   "x": 4560,
+   "y": 18424,
+   "w": 1440,
+   "h": 900,
+   "title": "44 · Migration · first week · Oct 29",
+   "expand": "fill"
+  },
+  "SettingsLibrary.dc.html": {
+   "x": 6080,
+   "y": 18424,
+   "w": 1440,
+   "h": 760,
+   "title": "45 · Settings · library",
+   "expand": "fill"
+  },
+  "DoNext.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 820,
+   "title": "2 · Do next · clinician home (Psyflo app) · Oct 29",
+   "expand": "fill"
+  },
+  "Referrals.dc.html": {
+   "x": 4560,
+   "y": 2460,
+   "w": 1440,
+   "h": 860,
+   "title": "6 · Referrals list (Psyflo app) · Oct 29",
+   "expand": "fill"
+  },
+  "ExtDischarge.dc.html": {
+   "x": 7600,
+   "y": 15724,
+   "w": 1440,
+   "h": 1080,
+   "title": "37 · Scan & enhance · discharge summary · Dec 5",
+   "expand": "fill"
+  },
+  "MobileAssess.dc.html": {
+   "x": 940,
+   "y": 10464,
+   "w": 390,
+   "h": 844,
+   "title": "22 · Mobile · assessments (phone) · Oct 29",
+   "expand": "fill"
+  }
+ },
+ "createdOnFiles": {
+  "at": "2026-10-29T22:57:00Z",
+  "v": 1
+ },
+ "designSystems": [],
+ "launch": {
+  "view": "canvas"
+ },
+ "noteOrder": [
+  "row1",
+  "n_Login",
+  "n_WhereThingsLive",
+  "n_DoNext",
+  "row2",
+  "n_SchoolPortal",
+  "n_ReferralForm",
+  "n_ReferralSent",
+  "n_Referrals",
+  "n_Referral",
+  "row3",
+  "n_FamilyLink",
+  "n_Eligibility",
+  "n_FamilyLinkSettings",
+  "n_ParentSign",
+  "n_ParentPortal",
+  "row4",
+  "n_ExtHome",
+  "n_ExtScreening",
+  "n_ExtCNA",
+  "n_ExtISP",
+  "n_ExtSRA",
+  "n_ExtSignOff",
+  "n_Submission",
+  "row5",
+  "n_MobileApp",
+  "n_MobileDictate",
+  "n_MobileAssess",
+  "n_ExtDPN",
+  "n_ExtWeekly",
+  "n_ExtMonthly",
+  "n_ExtIncident",
+  "row6",
+  "n_ReviewQueue",
+  "n_StaffDashboard",
+  "n_Authorizations",
+  "n_SchoolTeacher",
+  "n_ParentSurvey",
+  "row7",
+  "n_ExtQuarterly",
+  "n_ExtCase",
+  "n_InfoRequest",
+  "n_Partials",
+  "n_EarlyDischarge",
+  "n_ExtDischarge",
+  "n_PeerBrief",
+  "n_AppealLetter",
+  "n_PayerPlaybook",
+  "row8",
+  "n_Compliance",
+  "n_Analytics",
+  "n_Users",
+  "n_Migration",
+  "n_SettingsLibrary"
+ ],
+ "notes": {
+  "n_Analytics": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Analytics\n\nCaptured: nothing new. Authorization outcomes from the tracker (10) and a one-time import of the master-tracker history; assessments (PHQ, GAD, DSM cross-cutting, SUDS) migrated from Lauris surveys; daily ratings from notes; attendance and referrals from the school portal (18); incidents from Compliance (20).\n\nFlows: the authorization baseline by payer stays the pilot's scorecard. Client progress shows one child over time with parent and child measures side by side and flags where they diverge. Reports (division, grant, quarterly, binder) are assembled from the same rows.\n\nPopulates: the pilot measures; the year-end division report that used to take April to August; grant pulls on demand.\n\nEngineering: Psyflo's own data plus cadence exports from Lauris; \"ask a question\" is a later phase once phases 3–4 hold real data.",
+   "w": "1440",
+   "x": "1520",
+   "y": "19864"
+  },
+  "n_Authorizations": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Authorizations\n\nCaptured: stage changes from the extension (processed, signed), from Send (9), and from screens 12–15; units from the Lauris consumer list and the daily notes; decisions from Sfax or the portal read-back.\n\nFlows: every event updates the row; the clocks (7-day decision, 24-hour information request, 14-business-day renewal lead) are computed from dates. The filters are the ones staff asked for: needs my sign-off, info requested, partial, denied, active, renewal due. Renewal-due rows send a reminder email to the owning clinician two weeks ahead.\n\nPopulates: the Analytics page (16). Admins see the whole program; licensed clinical staff see their caseload; direct support staff do not see this page.\n\nEngineering: this replaces the Google Sheet master tracker; a one-time import of the sheet seeds the history; row visibility filtered by role server-side.",
+   "w": "1440",
+   "x": "3040",
+   "y": "14524"
+  },
+  "n_ExtCNA": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · CNA\n\nCaptured: the 2–3 h in-person intake is recorded (consent). Same pipeline as the screening.\n\nFlows: green boxes = copied from the referral and screening fields Psyflo already holds. Yellow = written from today's recording. Typed into the Lauris CNA form on screen; the LPC checks and presses Process Form. The trauma section is never drafted.\n\nPopulates: Lauris CNA (official). Psyflo keeps the fields for the treatment plan (7) and the initial request (8). Enrollment paperwork stays on paper.\n\nEngineering: long audio handled in chunks; PHQ-9 answers filled as values, Lauris scores them; no writing outside the open form.",
+   "w": "1440",
+   "x": "3040",
+   "y": "9264"
+  },
+  "n_ExtDPN": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · note\n\nCaptured: the staffer writes or dictates the note in the Lauris box, then presses Scan & enhance. Psyflo reads the box, rewrites it in note language using the intervention names from the treatment plan drop-downs, and shows the stronger version in the panel. Contact time: typed in the Lauris form by the staffer.\n\nFlows: the staffer edits the enhanced note in the panel → 'Use this' puts it back in the same Lauris box → Process Form. At Process Form the extension copies the finished note to Psyflo — one copy, the last thing entered in Lauris. Units = direct time under the band rule, confirmed by the staffer.\n\nPopulates: Psyflo's note store (feeds 12–15); units left on Authorizations (10); the contact-time evidence used on partials and peer-to-peers (14, 15).\n\nEngineering: the word check is a list of non-billable verbs plus an AI rewrite; copy-on-Process-Form reads the page; units checked against 'units available' each time the page is open; a direct-support login sees only its own students' notes.",
+   "w": "1440",
+   "x": "1410",
+   "y": "11644"
+  },
+  "n_ExtHome": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · buttons\n\nCaptured: the extension reads the Lauris page that is open (here the consumer list: names, group, 'units available'). The two buttons are Scribe (record a conversation into the form you pick) and Scan & enhance (read the note on the open page and improve it). Licensed clinical staff get a third, Review a service request. Admins get links to the Psyflo app instead.\n\nFlows: what is on the page → Psyflo (read only). Which buttons appear comes from the person's permission level (direct support / licensed clinical / admin), set by the admin in Psyflo.\n\nPopulates: units used and left are read from Lauris, never written to it. Scribe and Scan & enhance only ever write into a form box on the open Lauris page.\n\nEngineering: Chrome extension on laurisonline.com; reads the page on load; writes nothing on this page; role comes from the Psyflo login, enforced server-side so a support-staff login cannot fetch screening, intake or request content; the phone companion app dictates into the same notes.",
+   "w": "1440",
+   "x": "0",
+   "y": "9264"
+  },
+  "n_ExtSRA": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · service request\n\nCaptured: nothing new. Psyflo writes the narrative sections from what it already holds: referral + attachments, screening and intake fields (captured at Process Form), the treatment plan (read from the Lauris ISP), and the daily notes. Each sentence carries its source. Lauris fills the header, provider, codes and goals itself (green).\n\nFlows: the clinician reads and edits each paragraph in the panel → 'Fill' types them into the yellow boxes on the open Lauris form → clinician checks → Process Form → Forms to Approve → signs with credentials and NPI. The final text is whatever was in the Lauris box at Process Form; Psyflo keeps that version, not an earlier one.\n\nPopulates: Lauris holds the official signed form. Psyflo reads the signed preview page, keeps a PDF copy, and marks the request 'signed' on the Authorizations page (10) ready for Send (9).\n\nEngineering: the one place the extension WRITES into a Lauris page (form boxes only, never a submit). Fallback: a per-box copy button. Edit log between draft and processed version kept for audit.",
+   "w": "1440",
+   "x": "6080",
+   "y": "9264"
+  },
+  "n_ExtScreening": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · call\n\nHow the screener gets here: the same way as today — Add Session → Admission Screening in Lauris. Psyflo's to-do and the panel button open that form; either way it is the form they always use.\n\nCaptured: the LPC's call is recorded (consent read first). Psyflo transcribes it and pulls out each behaviour with frequency, duration and intensity, prior services, IEP, school coordination.\n\nFlows: before the call, the extension fills the guardian/Medicaid/IEP boxes (green) from the referral and family link. During the call: audio → transcript → fields → typed into the yellow boxes on the open form. The LPC checks and presses Process Form.\n\nPopulates: Lauris (official, after Process Form); Psyflo keeps the fields for the intake (6) and the initial request (8).\n\nEngineering: audio from a softphone or room mic; the extension writes only into boxes on the open form; audio deleted after processing.",
+   "w": "1440",
+   "x": "1520",
+   "y": "9264"
+  },
+  "n_FamilyLink": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · link\n\nCaptured: the guardian types phone, consent, Medicaid card number, DOB, best time, transport, language on their phone (text-message link). Which questions are asked is set on 3b.\n\nFlows: to Psyflo only. Step 2 collects the insurance details (plan, Medicaid ID, date of birth). The eligibility check runs only when the family submits that step; nothing is checked before, and the screening call does not ask for the ID.\n\nPopulates: the guardian boxes on the Lauris screening form (5) and the intake header (6) — typed in by the extension when the screener opens those forms (Phase 2), or shown in the panel for staff to type (Phase 1).\n\nEngineering: SMS through a HIPAA-eligible provider; link expires in 7 days; optional — the screener can ask the same questions on the call.",
+   "w": "520",
+   "x": "0",
+   "y": "6884"
+  },
+  "n_InfoRequest": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · asks for more\n\nCaptured: the request arrives on Availity (read by the extension when a staff member is logged in) or by fax (Sfax, OCR). The 24-hour clock starts when it is read; Harvest checks Availity daily for open requests.\n\nFlows: Psyflo pairs the insurer's questions with the request already sent and the last 30 days of notes → a reply letter.\n\nPopulates: pasted into the Availity case from the clinician's login, or faxed via Sfax, after a clinician approves. Logged on the request.\n\nEngineering: the reply is limited to facts already in the submitted packet plus dated notes; nothing new is introduced.",
+   "w": "1440",
+   "x": "3040",
+   "y": "17044"
+  },
+  "n_Partials": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · denials\n\nCaptured: the decision letter (Sfax or portal read-back) and the insurer's phone call, logged by staff.\n\nFlows: Psyflo shows the options with their clocks and this insurer's history. Choosing one creates the next task: monitoring plan, peer-to-peer request log, guardian letter.\n\nPopulates: the request's stage; the call notes (17); the guardian letter.\n\nEngineering: the denial-reason table is coded from insurer feedback text; history is kept per insurer per school.",
+   "w": "1440",
+   "x": "4560",
+   "y": "17224"
+  },
+  "n_PeerBrief": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · notes\n\nCaptured: nothing new.\n\nFlows: criteria text from the submitted request; dates from the notes; units left on the call date from the countdown; contact-time log from the Start/Stop taps; likely questions from the denial-reason table.\n\nPopulates: a printable page the clinician holds during the call; the outcome is logged back on the request.\n\nEngineering: assembled in advance; nothing generated during the call.",
+   "w": "1440",
+   "x": "9120",
+   "y": "16784"
+  },
+  "n_Referral": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · review\n\nCaptured: nothing new — the referral is read by Psyflo against the DMAS TDT criteria (2 of 3, 1 of 5).\n\nFlows: referral answers → fixed rules → 'shown / not shown / ask'. The Medicaid eligibility check does not run here: the school form has no insurance details. It runs only after the family submits the link with the insurance step, using a staff login to the insurer or DMAS portal; the dated result and screenshot are stored in Psyflo, not in Lauris, and the check repeats weekly while the student is in service.\n\nPopulates: 'ask now' prompts on the screening panel (5); family-link status (3); home to-do (13). 'Schedule screening call' creates the to-do and the panel item; 'Route to grant program' emails/texts the named people and moves the referral to the Grant program list.\n\nEngineering: rules are fixed logic from the form; the AI model only words the 'ask' prompts. Weekly re-checks after enrollment, proof kept in Psyflo.",
+   "w": "1440",
+   "x": "6080",
+   "y": "3740"
+  },
+  "n_ReferralForm": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · form\n\nCaptured: the school counselor fills this web form (same fields as Harvest's paper form) and attaches the behaviour report, attendance log, schedule and grades.\n\nFlows: straight to Psyflo, stored under Harvest's account. Nothing goes to Lauris yet.\n\nPopulates: the referral review (2), and later the screening form (5), the intake (6) and the initial request (8) — every field here is reused downstream.\n\nEngineering: Psyflo-hosted form with file upload; covered by the BAA; no EHR involvement.",
+   "w": "1440",
+   "x": "1520",
+   "y": "4740"
+  },
+  "n_Submission": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Sent\n\nCaptured: the signed PDF (from the Lauris preview), the packet Psyflo assembled (form, cover sheet, payer's number or portal), and the fax or portal result.\n\nFlows: fax insurers → the clinician presses Send in Psyflo → Psyflo faxes via the Sfax API from Harvest's account; reference and delivery receipt stored. Portal insurers → Send opens Availity/UHC in the clinician's own login with the packet ready; the clinician uploads; the extension reads the confirmation. Receipt check: Psyflo reminds a person to call, with the script and the fax reference; the outcome is typed in.\n\nPopulates: the request's stage and clocks (10). Replies from insurers arrive by fax into Sfax, are read by OCR, matched by member ID and reference, and move the stage.\n\nEngineering: Sfax API in and out; OCR + matching rules;  no unattended portal sessions and no stored clinician credentials — the press-Send step is deliberate.",
+   "w": "1440",
+   "x": "9120",
+   "y": "8964"
+  },
+  "row1": {
+   "kind": "title1",
+   "maxW": "8000",
+   "text": "Start here — sign in, then the one rule: a Lauris form is written by the extension; everything else lives in the Psyflo app; portals are for people without a Lauris login",
+   "w": "240",
+   "x": "0",
+   "y": "-300"
+  },
+  "row2": {
+   "kind": "title1",
+   "maxW": "8000",
+   "text": "Getting in · the school refers, Harvest reviews",
+   "w": "240",
+   "x": "0",
+   "y": "2160"
+  },
+  "row3": {
+   "kind": "title1",
+   "maxW": "8000",
+   "text": "Getting in · the family signs before intake; eligibility is checked only after the insurance step",
+   "w": "240",
+   "x": "0",
+   "y": "5640"
+  },
+  "n_FamilyLinkSettings": {
+   "x": "1990",
+   "y": "6880",
+   "w": "1440",
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · settings\n\nCaptured: Harvest's choices about which questions the link asks and which are required.\n\nFlows: settings → the link each guardian receives.\n\nPopulates: the family link (3). Answers reach Lauris only by the extension typing them into the screening/intake form when a staff member opens it (Phase 2), or by staff typing from the panel (Phase 1).\n\nEngineering: no clinical fields allowed. Alternative to explore: Lauris's own 'Consumer Access' family login, so families enter details in Lauris directly and Psyflo reads them there."
+  },
+  "n_ExtISP": {
+   "x": "4560",
+   "y": "9264",
+   "w": "1440",
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · (ISP)\n\nHow the clinician gets here: Add Session → Individual Service Plan 2.0 in Lauris, within 24 h of the intake, with the guardian and client present — as today.\n\nCaptured: nothing new. Psyflo drafts three goals with measurable objectives from the intake, the referral attachments and Harvest's own goal scaffold; interventions are chosen from the drop-down lists on this form.\n\nFlows: draft → typed into the yellow boxes on the open Lauris ISP → talked through with the family → clinician edits → signatures on the Lauris pad → Process Form.\n\nPopulates: Lauris ISP (official). Psyflo reads the processed plan back and uses its objectives to check every daily note (12) and to fill the goals on the initial and continued-stay requests (8, 15).\n\nEngineering: objectives are always counts, never percentages; drop-down values are read from the form's own options; same form-fill mechanism as screening and intake."
+  },
+  "n_MobileApp": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · app\n\nCaptured: on the work iPhone (every staffer has one): pick a student or say their name, say what happened. Typing is always an option when someone is within earshot.\n\nFlows: taps and dictation go to Psyflo with timestamps. The dictation is turned into note language using the ISP drop-down names and waits in Psyflo; it drops into the note the moment the staffer opens that student in Lauris.\n\nPopulates: the daily note in Lauris (staff read it and press save/process); contact time and units (11, 10); the staff dashboard (19).\n\nEngineering: iOS app plus a web fallback; interim path is an email/Notes capture that routes into Psyflo; on-device recording with upload when there is signal (schools often have none); nothing is written to Lauris except into an open form.",
+   "x": "0",
+   "y": "11408",
+   "w": "520"
+  },
+  "n_ParentPortal": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · portal\n\nCaptured: guardian signs the enrollment packet before the intake (so the visit is the conversation), answers a short check-in every two weeks (DSM cross-cutting items; the child gets their own version at 11+), asks for a ride, signs the quarterly on the phone. Clinical questions stay on the call.\n\nFlows: signatures and answers go to Psyflo; signed PDFs are handed to Lauris's Documents tab by the site supervisor until Lauris's own Consumer Access login is turned on; survey answers feed the client-progress view (21) and the quarterly.\n\nPopulates: a plain-language progress view for the guardian built from goals and daily ratings (no scores, no diagnoses); the intake checklist (2); the discrepancy flag when parent and child answers diverge.\n\nEngineering: SMS link, phone-first, two languages; in-person signature rules still apply to whatever Lauris and DMAS require in person; consent for AI use folded into the informed-consent packet after attorney review.",
+   "x": "3980",
+   "y": "6884",
+   "w": "520"
+  },
+  "n_SchoolPortal": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · portal\n\nCaptured: the referral (guardian consent attested first), a sentence or two from a teacher or admin about a student's day, a four-question teacher check-in every two weeks, attendance and office-referral counts.\n\nFlows: everything goes to Psyflo tagged with the school and the staffer; the counselor sees \"what happened today\" before writing the daily note; check-ins sit beside the parent's and child's answers.\n\nPopulates: the daily note's context (11), the continued-stay packet's school section (12), the student progress view the school sees (goals and functioning only), the school-division report (21). Schools never see clinical notes, diagnoses or anything from home.\n\nEngineering: one login per school role (counselor, teacher, administrator) with the same role model as the app; attachments stored in Psyflo and copied to Lauris Documents at intake; year-end division report assembled from this data.",
+   "x": "0",
+   "y": "3700",
+   "w": "1440"
+  },
+  "n_StaffDashboard": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · dashboard\n\nCaptured: nothing new — everything is read from what the extension, the phone app and Lauris's rejected-forms list already carry: notes done and open, time in by 24 h, rejected forms and why, contacts made, assessments due, goals named in notes, progress ratings, safety-care holds.\n\nFlows: the same page in two views. The staffer sees their own day and their deliberate-practice goals; the site supervisor sees every staffer at the site, review mode per person (trainee notes route for approval), and patterns the month they happen.\n\nPopulates: the metrics Michelle Hamilton described (note completion, care continuity, progress tracking, measurement-based care, high-acuity ratio) and the supervision conversation.\n\nEngineering: role-scoped views; approval routing is a permission flag; pattern alerts are simple thresholds against site averages; nothing here is typed in.",
+   "x": "1520",
+   "y": "13944",
+   "w": "1440"
+  },
+  "n_Compliance": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Compliance\n\nCaptured: incident reports at Process Form in Lauris (the extension copies them) or from the monthly Lauris export of incidents and CPS reports, tagged automatically (client/staff, TDT/outpatient, school, level); credential certificates on file; supervision notes dictated with the same Scribe.\n\nFlows: Level 2 incidents start the 24-hour state-portal clock; three incidents in three months put a student on the highest-need list for the monthly critical meeting; three hospitalizations at a site trigger the risk-analysis meeting; monthly QI checks are logged against the plan's objectives.\n\nPopulates: the licensure binder, print-ready in the order the reviewer wants (plan → check → evidence); the employee-file packet for audits; the high-acuity ratio on the staff dashboard (19); incident counts for grants and the division report (21).\n\nEngineering: phase 5; replaces the program-director spreadsheets, the master sheet, the credential list and the Word supervision notes; same capture-and-cite engine as the authorization work.",
+   "x": "0",
+   "y": "20004",
+   "w": "1440"
+  },
+  "row4": {
+   "kind": "title1",
+   "maxW": "8000",
+   "text": "Inside Lauris — the extension: screening, intake, plan, the request, sign-off, send",
+   "w": "240",
+   "x": "0",
+   "y": "7784"
+  },
+  "row5": {
+   "kind": "title1",
+   "maxW": "8000",
+   "text": "Every day · the phone and every note type",
+   "w": "240",
+   "x": "0",
+   "y": "10164"
+  },
+  "n_ExtCase": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · stay\n\nCaptured: nothing new. The clinician opens the CMHRS Continued Stay form in Lauris; the panel assembles the draft from the daily notes, weekly guardian calls, monthly collaterals and the internal quarterly already copied to Psyflo at Process Form, in the date range the clinician picks (last 30 days by default; insurers want recent dates). Lauris fills the header, current authorization, units used and goals (green).\n\nFlows: keyword counts and every drafted sentence cite the note they came from; the clinician edits in the panel, decides whether a family disclosure goes to the payer (excluded text stays in the chart), then Fill types the paragraphs into the yellow boxes. Process Form → Forms to Approve → signature with NPI → Psyflo takes the signed copy and prepares the packet → the clinician presses Send in the app.\n\nPopulates: the Lauris form (the record); the Authorizations row and clocks; the next peer-to-peer brief or information-request reply if the payer pushes back.\n\nEngineering: same write path as the initial SRA (form boxes only, never a submit); this used to be a separate app screen and was moved into the extension because the continued-stay SRA is a Lauris form.",
+   "w": "1440",
+   "x": "1520",
+   "y": "16904"
+  },
+  "n_WhereThingsLive": {
+   "fill": "blue",
+   "text": "HOW TO READ THE DEMO · Where things live\n\nThe rule on this screen is the one the demo follows: a Lauris form is written by the extension beside it (screening, intake, plan, notes, both SRAs); everything that is not a Lauris form lives in the Psyflo app (referral review, send and track, payer replies, partial decisions, the peer-to-peer brief, staff, compliance, analytics); parents and schools use portals. The screens that follow are in workflow order, and each carries a blue note like this one saying how its data is captured, where it flows, and what it populates.",
+   "x": "1520",
+   "y": "1260",
+   "w": "1440"
+  },
+  "row6": {
+   "kind": "title1",
+   "maxW": "8000",
+   "text": "Every day · supervise, track, hear from the school and the family",
+   "w": "240",
+   "x": "0",
+   "y": "12544"
+  },
+  "n_Login": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Sign in\n\nCaptured: email and password, or the Harvest Google sign-in. The same login works in the app, the extension and the phone app.\n\nFlows: the role set on the Users page decides what each person sees.",
+   "w": "1440",
+   "x": "0",
+   "y": "860"
+  },
+  "n_ReferralSent": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Referral sent\n\nCaptured: nothing new. The confirmation shows what the school sent and what happens next.\n\nFlows: the referral appears in Referral review; the school sees its status in the School portal without a Harvest login.",
+   "w": "1440",
+   "x": "3040",
+   "y": "3260"
+  },
+  "n_Eligibility": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Eligibility check\n\nCaptured: the insurance details the guardian typed into the family link (Medicaid ID, MCO, date of birth).\n\nFlows: checked against the Virginia Medicaid eligibility response only after the guardian submits the link — never before. Result shows the MCO, effective dates and any gap.\n\nPopulates: the referral's eligibility status; the payer on the request.",
+   "w": "1440",
+   "x": "470",
+   "y": "6800"
+  },
+  "n_ParentSign": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Parent signs\n\nCaptured: the guardian's typed name and signature on the consent and release, before intake.\n\nFlows: the signed PDF is stored with the referral and attached to the Lauris Documents tab by the intake clinician.\n\nPopulates: the consent date on the intake and the SRA.",
+   "w": "520",
+   "x": "3510",
+   "y": "6884"
+  },
+  "n_ExtSignOff": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Sign-off\n\nCaptured: nothing new. The form is already filled in Lauris.\n\nFlows: the supervisor reads it in Lauris Forms to Approve and presses Get Signature there. Psyflo only notes the time the form was approved so the request clock starts.",
+   "w": "1440",
+   "x": "7600",
+   "y": "9264"
+  },
+  "n_MobileDictate": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Say what happened\n\nCaptured: the staffer's voice, recorded on the phone and uploaded when there is signal.\n\nFlows: turned into note language using the ISP objective names; the staffer taps Looks right or Fix it.\n\nPopulates: the daily note in Lauris, where staff read it and press save.",
+   "w": "520",
+   "x": "470",
+   "y": "11408"
+  },
+  "n_ExtWeekly": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Weekly guardian call\n\nCaptured: the call audio (Scribe), with the guardian's spoken consent at the start.\n\nFlows: drafted into the Lauris weekly contact note in the open form; the clinician reads and presses Process Form.\n\nPopulates: guardian contact on the continued-stay request.",
+   "w": "1440",
+   "x": "2930",
+   "y": "11644"
+  },
+  "n_ExtMonthly": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Monthly collateral\n\nCaptured: the teacher, guardian or provider contact (Scribe or typed).\n\nFlows: drafted into the Lauris monthly collateral note; the clinician reads and presses Process Form.\n\nPopulates: collateral evidence on the quarterly report and the continued-stay request.",
+   "w": "1440",
+   "x": "4450",
+   "y": "11644"
+  },
+  "n_ExtIncident": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Incident report\n\nCaptured: the staffer's account of what happened (Scribe or typed), the level, and who was told.\n\nFlows: drafted into the Lauris incident form; for Level 2 the state portal entry is prepared and the 24-hour clock shown; a person submits it.\n\nPopulates: Compliance; three incidents in three months flags highest need.",
+   "w": "1440",
+   "x": "5970",
+   "y": "11644"
+  },
+  "n_ReviewQueue": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Supervisor review queue\n\nCaptured: the supervisor's decision — Approve, Return, or Something here didn't happen.\n\nFlows: shows what the staffer wrote next to what Psyflo added; nothing is written to Lauris until the staffer presses save.\n\nPopulates: the staff dashboard; the note's audit trail.",
+   "w": "1440",
+   "x": "0",
+   "y": "13704"
+  },
+  "n_SchoolTeacher": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Teacher check-in\n\nCaptured: the teacher's short weekly rating and attendance, from the School portal, no Harvest login.\n\nFlows: stored with the student; shown to the clinician in the extension panel and in the quarterly report.\n\nPopulates: school collateral on the continued-stay request; Analytics.",
+   "w": "1440",
+   "x": "4560",
+   "y": "13844"
+  },
+  "n_ParentSurvey": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Parent survey\n\nCaptured: the guardian's monthly answers, from the phone link, no login.\n\nFlows: stored with the client; shown in the extension panel and the quarterly report.\n\nPopulates: guardian collateral; Analytics client progress.",
+   "w": "520",
+   "x": "6080",
+   "y": "13788"
+  },
+  "row7": {
+   "kind": "title1",
+   "maxW": "8000",
+   "text": "Renewal and after — quarterly, continued stay, replies, partials, discharge, appeals",
+   "w": "240",
+   "x": "0",
+   "y": "15424"
+  },
+  "n_ExtQuarterly": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Quarterly report\n\nCaptured: nothing new. Daily notes, weekly calls, collateral, school and parent check-ins for the quarter.\n\nFlows: Psyflo totals the objective evidence and drafts the Lauris quarterly form; the clinician reads and presses Process Form.\n\nPopulates: the continued-stay request.",
+   "w": "1440",
+   "x": "0",
+   "y": "16904"
+  },
+  "n_EarlyDischarge": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Early discharge\n\nCaptured: the decision to discharge and the planned dates.\n\nFlows: Psyflo lays out the 30-day gap and the day the new initial can be sent; reminders go to the clinician.\n\nPopulates: Authorizations; the new initial request.",
+   "w": "1440",
+   "x": "6080",
+   "y": "16724"
+  },
+  "n_AppealLetter": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Appeal letter\n\nCaptured: the guardian's choice to appeal and their signature, on the phone.\n\nFlows: Psyflo drafts the letter from the denial and the record; the guardian reads, signs and sends it — the appeal is theirs.\n\nPopulates: the request's appeal stage and clocks.",
+   "w": "520",
+   "x": "10640",
+   "y": "16668"
+  },
+  "n_PayerPlaybook": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Payer playbook\n\nCaptured: what each MCO asks for, learned from past decisions and typed in by Harvest.\n\nFlows: used when drafting a request for that payer.\n\nPopulates: the request checklist.",
+   "w": "1440",
+   "x": "11110",
+   "y": "16604"
+  },
+  "row8": {
+   "kind": "title1",
+   "maxW": "8000",
+   "text": "Prove and set up — compliance, analytics, users, migration, settings",
+   "w": "240",
+   "x": "0",
+   "y": "18124"
+  },
+  "n_Users": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Users & roles\n\nCaptured: who works at Harvest and their role, typed in by the admin or imported from the staff list.\n\nFlows: the role decides which buttons the extension shows and which pages the app shows.",
+   "w": "1440",
+   "x": "3040",
+   "y": "19504"
+  },
+  "n_Migration": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Migration\n\nCaptured: the master tracker and the active client list, imported once in the first week.\n\nFlows: each active client gets a request with its real dates; gaps (missing signatures, unknown payer) are listed for staff to fix.\n\nPopulates: Authorizations, Analytics baseline.",
+   "w": "1440",
+   "x": "4560",
+   "y": "19424"
+  },
+  "n_SettingsLibrary": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Settings · library\n\nCaptured: the ISP objective names, note templates and payer numbers Harvest uses, typed in once.\n\nFlows: used by Scribe, Scan & enhance and Review a request so drafts use Harvest's words.",
+   "w": "1440",
+   "x": "6080",
+   "y": "19284"
+  },
+  "n_DoNext": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Do next\n\nCaptured: nothing new. One list of what is due, built from the referrals, requests, clocks and reminders already in Psyflo.\n\nFlows: each line opens the screen where the work happens; anything that is a Lauris form opens in Lauris.",
+   "w": "1440",
+   "x": "3040",
+   "y": "920"
+  },
+  "n_Referrals": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Referrals list\n\nCaptured: nothing new. Every referral the school portal sent, with its stage.\n\nFlows: the stage moves as the family link, the eligibility check and the screening call happen. The per-school table is counted from the list.",
+   "w": "1440",
+   "x": "4560",
+   "y": "3420"
+  },
+  "n_MobileAssess": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Assessments\n\nCaptured: the student's answers, typed on the phone by the staffer.\n\nFlows: held in Psyflo until the staffer opens that student in Lauris, then dropped into the Lauris survey; Lauris scores it.\n\nPopulates: Analytics client progress; the quarterly.",
+   "w": "520",
+   "x": "940",
+   "y": "11408"
+  },
+  "n_ExtDischarge": {
+   "fill": "blue",
+   "text": "HOW THE DATA GETS IN · Discharge summary\n\nCaptured: nothing new. Counted from the daily notes, weekly calls and the continued-stay request.\n\nFlows: drafted into the open Lauris discharge form; the clinician reads and presses Process Form.\n\nPopulates: the early-discharge plan and the new initial request.",
+   "w": "1440",
+   "x": "7600",
+   "y": "16904"
+  }
+ },
+ "order": [
+  "Login.dc.html",
+  "WhereThingsLive.dc.html",
+  "DoNext.dc.html",
+  "SchoolPortal.dc.html",
+  "ReferralForm.dc.html",
+  "ReferralSent.dc.html",
+  "Referrals.dc.html",
+  "Referral.dc.html",
+  "FamilyLink.dc.html",
+  "Eligibility.dc.html",
+  "FamilyLinkSettings.dc.html",
+  "ParentSign.dc.html",
+  "ParentPortal.dc.html",
+  "ExtHome.dc.html",
+  "ExtScreening.dc.html",
+  "ExtCNA.dc.html",
+  "ExtISP.dc.html",
+  "ExtSRA.dc.html",
+  "ExtSignOff.dc.html",
+  "Submission.dc.html",
+  "MobileApp.dc.html",
+  "MobileDictate.dc.html",
+  "MobileAssess.dc.html",
+  "ExtDPN.dc.html",
+  "ExtWeekly.dc.html",
+  "ExtMonthly.dc.html",
+  "ExtIncident.dc.html",
+  "ReviewQueue.dc.html",
+  "StaffDashboard.dc.html",
+  "Authorizations.dc.html",
+  "SchoolTeacher.dc.html",
+  "ParentSurvey.dc.html",
+  "ExtQuarterly.dc.html",
+  "ExtCase.dc.html",
+  "InfoRequest.dc.html",
+  "Partials.dc.html",
+  "EarlyDischarge.dc.html",
+  "ExtDischarge.dc.html",
+  "PeerBrief.dc.html",
+  "AppealLetter.dc.html",
+  "PayerPlaybook.dc.html",
+  "Compliance.dc.html",
+  "Analytics.dc.html",
+  "Users.dc.html",
+  "Migration.dc.html",
+  "SettingsLibrary.dc.html"
+ ],
+ "pages": [],
+ "title": "Psyflo × Harvest — TDT authorization demo"
+}

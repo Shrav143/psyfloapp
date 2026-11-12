@@ -1,0 +1,41 @@
+title: Analytics › Detailed breakdowns
+route: /analytics
+intro: Under the heading 'Detailed breakdowns' five sections are folded. Each is a real button that shows its title and one summary line, and opens in place. Open by click, Enter or Space. Everything inside follows the period, payer, program, diagnosis group and site view.
+dir: TD
+also: The summary lines are worked out from the records, so they change with the menus. A section starts closed every time the page opens.
+---
+start s1 "Scroll below the cards to 'Detailed breakdowns'"
+screen sc "Heading and 'The tables and rankings behind the figures above. Each one opens in place.'\nFive closed sections with a chevron"
+group gA "'Length of stay and units' and 'Process health'"
+  goto a1 "Continues in: Analytics › Length of stay and units"
+  goto a2 "Continues in: Analytics › Process health"
+endgroup
+group gB "'Common denial reasons by payer'"
+  screen b1 "Table of reasons, 'Appeals overturned', 'Denials accepted'"
+  goto b2 "Continues in: Analytics › Common denial reasons: open Denial Intelligence"
+endgroup
+group gC "'How FLO's advice and drafts perform'"
+  screen c1 "Summary: 'Advice taken works 84% of the time. 75% of drafts were sent without edits.'"
+  screen c2 "Four facts: 'Approved as asked' 71%, 'Top denial cause' 23%, 'Advice taken works' 84%, 'Sent without edits' 75%\n'How people edit agent drafts': donut, 68% as written (approved 89% of the time), 27% light edits, 5% rewritten\n'Why recommendations were dismissed' once someone dismissed one"
+endgroup
+group gD "'What helps most'"
+  screen d1 "Summary: 'Most applied: Document depression severity with dated scores, 91% approved.'"
+  screen d2 "Up to four ranked steps: 'Applied 389 times', '91% approved'"
+endgroup
+click k1 "Click a section's title row\nOr Tab to it and press Enter or Space"
+process p1 "The button says whether it is open (aria-expanded)\nThe chevron turns"
+click k2 "Click it again, or press Enter or Space again"
+process p2 "It closes. The summary stays"
+decision q1 "20 or more decisions behind the content?"
+screen h1 "Content reads 'Not enough decisions yet'\nThe summary says the same"
+end e1 "Section read"
+
+s1 --> sc
+sc --> a1 & a2 & b1 & c1 & d1
+b1 --> b2
+c1 --> c2
+d1 --> d2
+a1 & a2 & b1 & c1 & d1 --> k1 --> p1 --> q1
+q1 -->|No| h1 --> e1
+q1 -->|Yes| e1
+p1 --> k2 --> p2

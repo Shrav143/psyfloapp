@@ -1,0 +1,37 @@
+title: Analytics › Filters and the site view
+route: /analytics
+intro: Four menus (Period, Payer, Program, Diagnosis group) and the site view narrow every figure, chart, table and panel at once. The site view is not a menu here: it is the Both sites, Site A, Site B switch in the top bar, shown on the page as a label.
+dir: TD
+also: The choices are not kept in the address, so a refresh or Back resets them. The menus and the site switch never change the starting numbers: with the defaults, the page is the fixed set of 1,070 decisions.
+---
+start s1 "Click a menu: 'This quarter' (Period), 'All payers', 'All programs' or 'All diagnosis groups'"
+overlay o1 "Menu opens\nPeriod: This quarter, Last quarter, Last 12 months\nPayer: all payers and the six payers\nProgram: Residential 3.5, IOP, PHP, Detox\nDiagnosis group: the six groups"
+input k1 "Arrow keys move, Enter picks, Escape closes\nClick outside also closes"
+click c1 "Pick an option"
+process p1 "The page recomputes from the case records\nHeadline figures, month trend, scorecard, grid, reasons, length of stay, process health, site comparison and the detailed sections all follow\nA panel that is open uses the same choices"
+screen sc "The menu pill turns green and bold when a payer, program or diagnosis group is picked\n'Clear filters' appears"
+click c2 "Click 'Clear filters'"
+process p2 "Payer, program and diagnosis group return to 'All'\nThe period stays"
+
+group gSite "Site view"
+  click c3 "Top bar: 'Both sites', 'Site A' or 'Site B'"
+  process p3 "The label 'Site view: Both sites' changes\nEvery number counts only the sites in view\n'Site A and Site B' card shows only for Both sites"
+  screen r1 "A one-site viewer (Dr. Rivera: Site A only)\nThe top bar shows a lock instead of a switch\nThe label says 'Site view: Site A'"
+endgroup
+
+decision q1 "Any decisions in view?"
+screen e1 "'No decisions match these filters in Site A. Clear filters or pick another period.'"
+decision q2 "20 or more decisions behind a figure?"
+screen h1 "The figure shows a dash\nIts line says how many decisions or rulings it rests on"
+end e2 "Page shows the narrowed view"
+
+s1 --> o1
+o1 --> k1
+o1 --> c1 --> p1 --> sc --> q1
+sc --> c2 --> p2 --> p1
+c3 --> p3 --> p1
+p3 -.-> r1
+q1 -->|No| e1
+q1 -->|Yes| q2
+q2 -->|No| h1 --> e2
+q2 -->|Yes| e2

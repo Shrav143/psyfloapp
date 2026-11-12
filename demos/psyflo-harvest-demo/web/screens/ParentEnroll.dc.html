@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Enrollment packet — Harvest Outreach Center</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared phone look: C_CSS in js/screens/MobileApp.js */
+.c-acc{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 16px;background:none;border:0;text-align:left;font:600 16px/20px 'DM Sans',system-ui,sans-serif;color:var(--navy);cursor:pointer}
+.c-acc .t{flex:1;min-width:0}
+.c-num{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ink-4);display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--ink-3);flex:0 0 26px}
+.c-num.g{background:var(--teal);border-color:var(--teal);color:#fff}
+.c-num.y{border-color:var(--teal);color:var(--teal-dark)}
+.c-accb{border-top:1px solid var(--line);padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px}
+</style>
+</helmet>
+
+<div class="c-ph">
+  {{hd}}
+  <main class="c-bd">
+    <div style="display:flex;align-items:center;gap:12px"><div class="c-bar" style="flex:1"><i style="width:{{pct}}%"></i></div><b>{{t.count}}</b></div>
+    <sc-if value="{{allDone}}"><div class="c-card" style="border-color:var(--teal);background:var(--teal-tint)"><b>{{t.allDone}}</b></div></sc-if>
+    <sc-for list="{{items}}" as="it">
+      <section class="c-card" style="padding:0;{{it.style}}">
+        <button type="button" class="c-acc" onClick="{{it.toggle}}" aria-expanded="{{it.expanded}}"><span class="c-num {{it.numCls}}">{{it.mark}}</span><span class="t">{{it.title}}</span><sc-if value="{{it.chip}}"><span class="u-chip {{it.chipCls}}">{{it.chip}}</span></sc-if></button>
+        <sc-if value="{{it.open}}">
+          <div class="c-accb">
+            <sc-for list="{{it.points}}" as="p"><div data-doc style="display:flex;gap:8px;line-height:22px"><span style="color:var(--teal);font-weight:700">·</span><span>{{p}}</span></div></sc-for>
+            <sc-for list="{{it.fields}}" as="f"><div><label class="c-lbl" style="font-size:14px;margin-bottom:4px" for="{{f.id}}">{{f.label}}</label><input class="c-in" id="{{f.id}}" data-k="{{f.k}}" value="{{f.v}}" placeholder="{{f.ph}}" onInput="{{setField}}" autocomplete="off" style="{{f.bad}}"></div></sc-for>
+            <sc-if value="{{it.err}}"><div class="c-err" role="alert">{{it.err}}</div></sc-if>
+            <sc-if value="{{it.doneText}}"><div class="c-mut c-sm">{{it.doneText}}<sc-if value="{{it.file}}"> · <a class="c-lnk" style="font-size:13px" href="{{it.file}}" target="_blank" rel="noopener">{{t.copy}}</a></sc-if></div></sc-if>
+            <sc-if value="{{it.btn}}"><button type="button" class="c-btn {{it.btnCls}}" onClick="{{it.act}}">{{it.btn}}</button></sc-if>
+          </div>
+        </sc-if>
+      </section>
+    </sc-for>
+  </main>
+  {{ft}}
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

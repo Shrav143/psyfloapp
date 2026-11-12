@@ -1,0 +1,59 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Any page is open" }
+  sb@{ shape: curv-trap, label: "Sidebar rows with a number bubble" }
+  p1@{ shape: rect, label: "Every number is recounted from the demo data each time the data changes or the site view changes (no reload)" }
+  vw@{ shape: rect, label: "<b>The sites in view are read first</b><br/>Both sites for Jordan Perez and Alex Morgan, until they choose Site A or Site B; Site A for Dr. Rivera; Site B for Sam Okafor" }
+  subgraph gDraw ["How a bubble is drawn"]
+  d1@{ shape: diam, label: "Is the count above zero?" }
+  z@{ shape: rect, label: "No bubble on that row" }
+  nz@{ shape: rect, label: "A round bubble shows the number" }
+  d2@{ shape: diam, label: "Is that row the green (current) one?" }
+  on@{ shape: rect, label: "Bubble is translucent white on green" }
+  off@{ shape: rect, label: "Bubble is tan with dark text" }
+  end
+  subgraph gB ["What each badge counts, and what moves it (Both sites)"]
+  b1@{ shape: rect, label: "<b>'Dashboard'  3</b><br/>Requests at stage 'Info requested'<br/>Falls when an answer is sent" }
+  b2@{ shape: rect, label: "<b>'Authorizations'  19</b><br/>Open requests due today: 5 to act on now and 14 more due within 24 hours<br/>Requests due later, saved New Case drafts, approved authorizations and reviews are not counted, so the worklist's own counts are larger<br/>The bubble stays on the parent row whether the group is open or closed" }
+  b3@{ shape: rect, label: "<b>'New Case'  4  (listed under Authorizations)</b><br/>Referrals that are New or In review and not yet opened<br/>Falls when a referral is opened" }
+  b4@{ shape: rect, label: "<b>'Eligibility & Benefits'  9  (listed under Authorizations)</b><br/>Patients not cleared: 4 'Authorization first', 5 'Fix before billing'" }
+  b5@{ shape: rect, label: "<b>'Denial Intelligence'  8</b><br/>Requests at stage 'Appeal' (open denials)<br/>Falls when a denial is settled" }
+  b7@{ shape: rect, label: "<b>'Payers'  3</b><br/>Payers with a rule change waiting for a person: Cardinal, Evergreen and Harborview<br/>Falls when the change is acknowledged<br/>Clinic-wide: a payer's rules are not site data, so this number is the same for every viewer and every site view" }
+  end
+  b6@{ shape: rect, label: "Not a badge: what Case Manager used to count is in the worklist's 'Needs attention' view (30 at Both sites)" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Pick a view" }
+  e1@{ shape: stadium, label: "Badges always match the pages they point to, for the site in view" }
+  s1 --> sb --> p1 --> vw
+  vw --> d1
+  d1 -->|"No"| z
+  d1 -->|"Yes"| nz --> d2
+  d2 -->|"Yes"| on
+  d2 -->|"No"| off
+  z & on & off --> e1
+  vw --> b1
+  b1 ~~~ b2 ~~~ b3 ~~~ b4 ~~~ b5 ~~~ b7
+  b2 -.-> b6 --> g1
+  class s1 k_start
+  class sb k_screen
+  class p1,vw,z,nz,on,off,b1,b2,b3,b4,b5,b7,b6 k_process
+  class d1,d2 k_decision
+  class g1 k_goto
+  class e1 k_end
+  style gDraw fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

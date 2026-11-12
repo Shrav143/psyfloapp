@@ -1,0 +1,49 @@
+title: Global shell › Sidebar › Which row is green
+route: Any address (the sidebar reads the address after every change)
+intro: One row of the sidebar is green: the page that is open. Inside the Authorizations group it depends on whether the group is open. Old Case Manager addresses redirect first, so they light the Authorizations rows like any worklist address.
+dir: LR
+also: A green row's number bubble turns translucent white (see Badges). The 'Authorizations' row is never green while its group is open: one of its sub rows is.
+---
+start s1 "The address changes\n(a click, a link, a redirect or the browser Back button)"
+decision d1 "Which address is it?"
+
+group gAuth "Authorizations pages"
+  process a1 "/authorizations (every view, every filter) or a case page /authorizations/case/...\nThis includes an approved authorization with no open request"
+  process a2 "/authorizations/new, a draft /authorizations/new/draft-..., or a referral"
+  process a3 "/authorizations/eligibility, /verify or a result"
+  process a4 "/manager or /active\nRedirected to /authorizations?view=..."
+  decision d2 "Is the group open?"
+  process g1 "'All Authorizations' turns green"
+  process g2 "'New Case' turns green"
+  process g3 "'Eligibility & Benefits' turns green"
+  process g0 "'Authorizations' turns green\nThe sub rows are hidden, so the parent row stands in for them"
+endgroup
+
+group gOther "Every other page"
+  process h4 "'Dashboard' turns green\n/dashboard (also with ?request=)"
+  process h5 "'Denial Intelligence' turns green\n/denials, a denial, a brief or a report"
+  process h7 "'Analytics', 'EMR Connect' or 'Payers' turns green\n/analytics, /emr, /payers and a payer under it"
+  process h8 "'Settings' in the footer turns green\n/settings"
+  process h9 "No row is green\n'Page not found' for an address that is not part of the demo"
+endgroup
+
+goto gG "Continues in: Global shell › Sidebar › Authorizations group › Open and close the group"
+end e1 "Exactly one row is green, or none on 'Page not found'"
+
+s1 --> d1
+d1 -->|Worklist or case| a1
+d1 -->|New Case pages| a2
+d1 -->|Eligibility pages| a3
+d1 -->|Old Case Manager link| a4 --> a1
+a1 & a2 & a3 --> d2
+d2 -->|Open, worklist or case| g1
+d2 -->|Open, New Case| g2
+d2 -->|Open, Eligibility| g3
+d2 -->|Closed| g0
+d1 -->|/dashboard| h4
+d1 -->|/denials| h5
+d1 -->|Analytics, EMR, Payers| h7
+d1 -->|/settings| h8
+d1 -->|Anything else| h9
+g1 & g2 & g3 & g0 & h4 & h5 & h7 & h8 & h9 --> e1
+g0 -.-> gG

@@ -1,0 +1,36 @@
+title: Settings › Agents › Change an agent's freedom
+route: /settings
+intro: Each of the sixteen rows has a Freedom dropdown with three levels. Picking one saves it for that agent and shows a toast. EMR Connect reads it: 'Ask before acting' makes Sync now, Fix and Reconnect ask first, and 'Act on its own' logs without a toast.
+dir: TD
+also: The level is kept in the app, so it is still there after leaving Settings. Only 'Reset demo data' puts the starting levels back. The 'What each level changes' card on the page says where a level applies.
+---
+screen s1 "Settings\nOne Freedom dropdown on each agent row"
+click c1 "Click the Freedom dropdown on a row\nFor example 'Freedom for Reader'"
+overlay o1 "Menu opens under the button\nAsk before acting\nAct, then report\nAct on its own\nA tick marks the current level"
+input k1 "Use the keyboard instead\nArrow Down opens and moves, Arrow Up moves, Enter picks"
+decision q1 "How does the person leave the menu?"
+click p1 "Click one of the three levels\nOr press Enter on one"
+click p2 "Press Escape, or click outside the menu"
+endx x1 "Menu closes\nNothing changes, no toast"
+decision q2 "Is it the level already set?"
+process a1 "The dropdown shows the new level"
+store a2 "That agent's freedom is saved in the app\nOther agents are not touched"
+process a3 "Same level picked again: nothing changes and no toast"
+toast t1 "'{Agent}: {level}'\nFor example 'Reader: Ask before acting'. A plain toast"
+process n1 "Starting levels\nVerify and Reader 'Act on its own', Navigator and Cadence 'Act, then report', Caller and the other nine 'Ask before acting'\nLeaving Settings keeps the choice. Reset demo data restores these"
+process n2 "EMR Connect reads the levels of Reader and Navigator\nThe other agents' levels are saved but no screen acts on them yet"
+end e1 "Row shows the chosen level"
+goto g1 "Continues in: Settings › Agents › What each freedom level allows and the gates it never skips"
+goto g2 "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
+
+s1 --> c1 --> o1 --> q1
+c1 -.-> k1
+k1 --> q1
+q1 -->|Picks a level| p1 --> q2
+q1 -->|Leaves| p2 --> x1
+q2 -->|No| a1 --> a2 --> t1
+q2 -->|Yes| a3 --> e1
+t1 --> e1
+e1 --> n1 & n2
+e1 --> g1
+n2 --> g2

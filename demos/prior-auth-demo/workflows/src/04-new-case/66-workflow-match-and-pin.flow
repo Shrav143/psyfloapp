@@ -1,0 +1,44 @@
+title: Authorizations › New Case › Workflow › Match and pin the payer workflow
+route: /authorizations/new/:draftId (the Workflow line under the stepper)
+intro: The Payer Workflow Studio is configuration; New Case is execution. Once Intake knows the payer, the level of care and the Authorization type, New Case finds the published payer workflow that fits, shows its name and version in one calm line under the stepper, and stores it on the draft. Until the workflow has run past Intake the case follows the best match, so a changed payer or level of care matches again. After that the version is pinned. Workflows are clinic-wide; the case and its history stay at the case's site.
+dir: TD
+also: Matching reads the published workflows only. A draft or archived workflow is never matched. The five stages (Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit) do not change.
+---
+start s1 "On Intake, the payer and the level of care are filled in\n(the Authorization type is chosen under the page heading)"
+process p1 "The facts are built from the case\nPayer, its plan product and state (from Payers), level of care, Authorization type, today's demo date, requested start date"
+process p2 "The published workflows are matched\nBy payer, product, state, service, request type and effective date\nThe most specific applicable one is preferred"
+decision d1 "Is there one best match?"
+store st1 "The workflow is stored on the draft\nName, version, why it matched, when it was applied\nNot yet pinned"
+store st2 "History line, kept on the draft until the request exists\n'Workflow applied: Initial Authorization, Residential SUD v3 (Summit)'"
+screen sc1 "Line under the stepper\n'Workflow: Initial Authorization, Residential SUD · v3 · Summit'\nInfo icon, 'View workflow', 'At Intake'"
+click cInfo "Hover over the info icon, or focus it with Tab"
+overlay oInfo "'Why this workflow'\nThe match explanation\n'Rules read: ...' with each rule's verification state\n'The workflow can still change until it runs past Intake.'"
+decision d2 "Has the workflow run past Intake?\nA later step opened, or the agents started"
+input iChg "Change the payer, the level of care or the Authorization type in Intake"
+process pChg "Matched again\nIf a different workflow fits, it replaces the old one on the draft"
+store stChg "History: 'Workflow applied: ...' for the new match"
+click cStep "Click 'Continue to Eligibility & Benefits', or any later step in the stepper"
+process pRun "The workflow runs against the case at that step\nThe engine that Test Workflow uses, with this case's facts"
+store stPin "The version is pinned to the case\nThe line now says 'This version is pinned to the case since ...'"
+wait wNew "Later, a person publishes a newer version, or the case details change"
+decision d3 "Did something change after the pin?"
+process pQuiet "Nothing changes on its own\nThe case keeps the version it started with"
+goto g1 "Continues in: Authorizations › New Case › Workflow › A newer version exists"
+goto g2 "Continues in: Authorizations › New Case › Workflow › The case changed after the workflow started"
+goto g3 "Continues in: Authorizations › New Case › Workflow › Default process and equal matches"
+goto g4 "Continues in: Authorizations › New Case › Workflow › Show the workflow and its path"
+endx eNone "No payer or level of care yet\nThe Workflow line is not shown"
+end eDone "The case follows one workflow version"
+
+s1 --> p1 --> p2 --> d1
+d1 -->|Yes| st1 --> st2 --> sc1
+d1 -->|No match, or two equal matches| g3
+sc1 --> cInfo --> oInfo
+sc1 --> d2
+d2 -->|No| iChg --> pChg --> stChg --> sc1
+d2 -->|Not yet| cStep --> pRun --> stPin --> wNew --> d3
+d3 -->|Newer version published| g1
+d3 -->|Payer, level of care or type changed| g2
+d3 -->|Nothing| pQuiet --> eDone
+sc1 -.-> g4
+s1 -.-> eNone

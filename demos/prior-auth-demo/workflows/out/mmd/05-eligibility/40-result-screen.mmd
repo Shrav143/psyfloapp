@@ -1,0 +1,69 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click a row on the list, or a live check finishes" }
+  qs@{ shape: diam, label: "Is this check at a site the viewer can see?" }
+  os@{ shape: curv-trap, label: "<b>'This coverage check is not available at Site A'</b><br/>It names no patient. Staff who may see both sites get 'Show Site B'" }
+  sc@{ shape: curv-trap, label: "<b>Title row (no card, no headline)</b><br/>'R-1042' (24 px) · 'J.M., 34' · 'Residential 3.5 · Summit Medicaid HMO (Ohio Medicaid)'<br/>A Site A or Site B tag when the view is narrowed" }
+  b1@{ shape: trap-t, label: "Click '← Eligibility & Benefits' (back link, top left)" }
+  g0@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  b2@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040' beside it</b><br/>With ?case= in the address it reads '← Back to case R-1042'<br/>Shown only when ?referral= names a referral that exists" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
+  subgraph gSum ["The result card"]
+  vb@{ shape: curv-trap, label: "<b>Verdict band, green, amber, red or grey</b><br/>'Authorization first' (18 px) | 'Authorization' 'In progress'<br/>The verdict and the one fact behind it, as a value, no sentence" }
+  bt@{ shape: curv-trap, label: "<b>Actions on a second line of the band, small buttons</b><br/>'Start authorization', 'Create authorization from verification', 'Request retro-eligibility',<br/>'Ask Caller to ...', 'Ask Navigator to check enrollment', 'Open Settings', 'Open case', 'Re-check'" }
+  rows@{ shape: curv-trap, label: "<b>Label and value rows</b><br/>'Eligibility' pill and dates · 'Plan type and routing'<br/>'Benefits' pill, program, codes and limit · 'Patient pays' only with a cost share<br/>'What this service needs' pill and line, then the payer's saved rules" }
+  warn@{ shape: curv-trap, label: "<b>A warning only when no row says it already</b><br/>Today that is one: a refresh that could not run while Verify is paused<br/>'Verification service unavailable. ... This is the last result.'" }
+  facts@{ shape: curv-trap, label: "<b>One quiet facts line</b><br/>Member (masked), dates of service, time checked, source 'Simulated check against the payer portal'" }
+  end
+  t1@{ shape: odd, label: "<b>Banner 'Not re-checked: Verify is paused in Settings'</b><br/>'Due Tue 11:32 am' with 'Open Settings'<br/>Only when a booked re-check passed while Verify is paused" }
+  subgraph gRow ["One row under the card"]
+  pc@{ shape: curv-trap, label: "<b>'Verification details'</b><br/>'Payment checks: 6 of 7 pass, 1 needs a look'<br/>Button 'View full verification details'" }
+  pk@{ shape: trap-t, label: "Click 'View full verification details'" }
+  ov@{ shape: win-pane, label: "<b>Side panel 'Verification details' opens from the right</b><br/>Payment checks, How this was checked, History<br/>The page behind stays where it was" }
+  end
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The details panel" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Result first: eligibility, benefits, what the service needs" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Plan type and routing" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The exceptions" }
+  g8@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Sites" }
+  s1 --> qs
+  qs -->|"No"| os --> g8
+  qs -->|"Yes"| sc
+  sc --> b1 --> g0
+  sc --> b2 --> g4
+  sc --> vb --> bt
+  vb -.-> g1
+  bt --> g3
+  vb --> rows --> warn --> facts
+  rows -.-> g5
+  rows -.-> g6
+  warn -.-> g7
+  sc -.-> t1
+  sc --> pc --> pk --> ov --> g2
+  class s1 k_start
+  class qs k_decision
+  class os,sc,vb,bt,rows,warn,facts,pc k_screen
+  class b1,b2,pk k_click
+  class g0,g4,g1,g2,g3,g5,g6,g7,g8 k_goto
+  class t1 k_toast
+  class ov k_overlay
+  style gSum fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

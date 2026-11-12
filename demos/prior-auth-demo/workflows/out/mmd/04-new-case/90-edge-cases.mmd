@@ -1,0 +1,95 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Pick the edge case to try" }
+  d1@{ shape: diam, label: "Which one?" }
+  subgraph gLapse ["Coverage lapsed"]
+  e1@{ shape: rect, label: "<b>K.W., 26 (R-1101), Summit, member ID ending 1012: coverage lapsed 10/12</b><br/>B.N., 53 (R-0975): coverage ended 09/30<br/>Start a Retroactive authorization or a renewal for them" }
+  e1b@{ shape: rect, label: "<b>Step 2 shows 'Coverage is not active'</b><br/>'Ask the payer, or request retro-eligibility; a retro-authorization can cover the gap.'<br/>The person can go on with a documented exception" }
+  end
+  subgraph gExpiry ["An authorization that is ending"]
+  e2@{ shape: rect, label: "<b>T.R., 29 (I-2207) and L.M., 42 (I-2193), both Site B</b><br/>Click 'Start renewal' in the Dashboard's what-to-do list, or pick the type 'Reauthorization / renewal'<br/>'Expiring soon' with the days or units left" }
+  end
+  subgraph gNone ["Nothing left"]
+  e3@{ shape: rect, label: "<b>G.W., 50 (R-0902) or J.D., 45 (R-0921, member ID ending 9090), Site A</b><br/>Pick the type 'Concurrent review' or 'Reauthorization / renewal'<br/>'None left'<br/>'No days are left, so the next stretch needs a request now.'" }
+  end
+  subgraph gPayer ["The plan changed"]
+  e4@{ shape: rect, label: "<b>B.N., 53 (R-0975): Evergreen to Cardinal since 10/01</b><br/>Or any member ID ending 7070<br/>'The payer changed' with 'Switch this case to Cardinal'" }
+  end
+  subgraph gUnavail ["Verification unavailable"]
+  e5@{ shape: rect, label: "<b>Pause Verify, or Pause all agents, in Settings</b><br/>Open step 2<br/>'Verification service unavailable' with 'Open Settings to resume Verify' and 'Continue without a verification'" }
+  end
+  subgraph gNoAuth ["No authorization required"]
+  e6@{ shape: rect, label: "<b>Beacon PPO with IOP or PHP: its rule on Payers says no authorization is needed</b><br/>Step 2 says so; steps 3 to 5 read Not applicable<br/>Three actions" }
+  end
+  subgraph gDup ["Possible duplicate"]
+  e7@{ shape: rect, label: "<b>Click 'Use sample chart' (J.M., 34, Summit, Residential 3.5) while R-1042 is open</b><br/>Or start a case for any patient who has an open request or an active authorization at the same payer and level of care" }
+  end
+  subgraph gRetro ["Retroactive with no payer rule"]
+  e8@{ shape: rect, label: "<b>Add a payer on Payers (for example Riverbend Health)</b><br/>Pick it on a Retroactive authorization<br/>'No rule on file for Riverbend Health. Check with the payer.'" }
+  end
+  subgraph gIds ["Scripted member IDs"]
+  e9@{ shape: rect, label: "Ending 9999 not found · 8080 known under another ID · 3030 service not covered · 5050 benefit not confirmed · 4040 clinic enrollment not confirmed · 2020 no authorization rule on file · 6060 another plan pays first" }
+  end
+  subgraph gPortal ["Verify cannot reach the portal"]
+  e10@{ shape: rect, label: "<b>A Cardinal case, the first time its agents run</b><br/>'Could not finish' on Verify, then Retry or 'Skip and note'" }
+  end
+  subgraph gSite ["Another site"]
+  e11@{ shape: rect, label: "<b>Open a link to a referral, a case or a patient at the site you cannot see</b><br/>'This referral is not available at Site A'" }
+  end
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Retroactive authorization" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Reauthorization / renewal" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Reauthorization / renewal" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Possible duplicate" }
+  g8@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Retroactive authorization" }
+  g10@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent could not finish" }
+  g11@{ shape: subproc, label: "Continues in: Authorizations › New Case › Sites and scope" }
+  gSet@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }
+  gPay@{ shape: subproc, label: "Continues in: Payers › Add a payer" }
+  s1 --> d1
+  d1 -->|"Lapsed"| e1 --> e1b --> g1
+  d1 -->|"Ending"| e2 --> g2
+  d1 -->|"None left"| e3 --> g3
+  d1 -->|"Plan changed"| e4 --> g4
+  d1 -->|"Unavailable"| e5 --> g5
+  e5 -.-> gSet
+  d1 -->|"No authorization"| e6 --> g6
+  d1 -->|"Duplicate"| e7 --> g7
+  d1 -->|"Retro, no rule"| e8 --> g8
+  e8 -.-> gPay
+  d1 -->|"Scripted IDs"| e9 --> g5
+  d1 -->|"Portal"| e10 --> g10
+  d1 -->|"Other site"| e11 --> g11
+  class s1 k_start
+  class d1 k_decision
+  class e1,e1b,e2,e3,e4,e5,e6,e7,e8,e9,e10,e11 k_process
+  class g1,g2,g3,g4,g5,g6,g7,g8,g10,g11,gSet,gPay k_goto
+  style gLapse fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gExpiry fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gNone fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gPayer fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gUnavail fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gNoAuth fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gDup fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRetro fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gIds fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gPortal fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSite fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,84 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Sync now'</b><br/>In the Connection health header, or on a Connected row" }
+  q0@{ shape: diam, label: "<b>Is any system Connected?</b><br/>(header button only)" }
+  x0@{ shape: odd, label: "<b>'Nothing to sync'</b><br/>'No system is connected. Fix or reconnect one first.'<br/>Amber. No spinner" }
+  gg@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
+  q2@{ shape: diam, label: "Which button?" }
+  p1@{ shape: rect, label: "<b>Header button spins</b><br/>Every Connected row shows 'Syncing'<br/>All Sync now buttons are dimmed" }
+  p2@{ shape: rect, label: "<b>That row's button spins</b><br/>Its row shows 'Syncing'<br/>All Sync now buttons are dimmed" }
+  e1@{ shape: st-rect, label: "<b>The EMR answers</b><br/>Demo: simulated, two seconds" }
+  q4@{ shape: diam, label: "Did the person leave EMR Connect meanwhile?" }
+  x3@{ shape: stadium, label: "<b>Sync is dropped</b><br/>Nothing is recorded" }
+  q3@{ shape: diam, label: "<b>Is the system still Connected?</b><br/>(it could have been disconnected in Manage meanwhile)" }
+  x2@{ shape: stadium, label: "<b>Spinner stops</b><br/>No toast, no log line, figures unchanged" }
+  n1@{ shape: rect, label: "<b>Take the next result from a list of four</b><br/>The next sync takes the one after, then round again" }
+  subgraph gRes ["The four results, in order"]
+  r1@{ shape: hex, label: "<b>Reader</b><br/>'Pulled 6 new files for 3 open cases and matched the insurance cards'" }
+  r2@{ shape: hex, label: "<b>Reader</b><br/>'Read 2 new admissions and proposed cases in Case Manager'" }
+  r3@{ shape: hex, label: "<b>Verify</b><br/>'Re-checked coverage for 4 members after the sync'" }
+  r4@{ shape: hex, label: "<b>Reader</b><br/>'Pulled the latest progress notes for 9 active stays'" }
+  end
+  ap@{ shape: rect, label: "Apply the result" }
+  subgraph gSaved ["What changes"]
+  d1@{ shape: cyl, label: "<b>Each synced system: last sync is now</b><br/>Rows read 'just now'" }
+  d2@{ shape: cyl, label: "<b>Charts matched today and Files pulled this week go up</b><br/>About half when only some of the Connected systems are synced" }
+  d3@{ shape: cyl, label: "<b>Recent activity (in Advanced) gets the result as its newest line</b><br/>For one system: '... from {system name}'" }
+  end
+  q5@{ shape: diam, label: "Is Reader set to 'Act on its own'?" }
+  t1@{ shape: odd, label: "<b>'Sync finished'</b><br/>The result text. Green" }
+  n2@{ shape: rect, label: "<b>No toast</b><br/>The figures and the new log line (in Advanced) show it" }
+  z1@{ shape: stadium, label: "Last sync figure reads 'Just now'" }
+  g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What a sync pulls and when it runs" }
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Recent activity › Read the activity log" }
+  s1 --> q0
+  q0 -->|"No"| x0
+  q0 -->|"Yes, or a row button"| gg
+  gg --> q2
+  q2 -->|"Header"| p1
+  q2 -->|"A row"| p2
+  p1 --> e1
+  p2 --> e1
+  e1 --> q4
+  q4 -->|"Yes"| x3
+  q4 -->|"No"| q3
+  q3 -->|"No"| x2
+  q3 -->|"Yes"| n1
+  n1 --> r1 & r2 & r3 & r4
+  r1 & r2 & r3 & r4 --> ap
+  ap --> d1 & d2 & d3
+  d1 & d2 & d3 --> q5
+  q5 -->|"No"| t1
+  q5 -->|"Yes"| n2
+  t1 --> z1
+  n2 --> z1
+  z1 --> g1
+  d3 -.-> g2
+  class s1 k_start
+  class q0,q2,q4,q3,q5 k_decision
+  class x0,t1 k_toast
+  class gg,g1,g2 k_goto
+  class p1,p2,n1,ap,n2 k_process
+  class e1 k_ext
+  class x3,x2 k_endx
+  class r1,r2,r3,r4 k_agent
+  class d1,d2,d3 k_store
+  class z1 k_end
+  style gRes fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSaved fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

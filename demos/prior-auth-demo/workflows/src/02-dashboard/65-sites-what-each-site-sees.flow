@@ -1,0 +1,39 @@
+title: Dashboard › Sites › What each site sees and out-of-site links
+route: /dashboard
+intro: Every request belongs to one site, the same site on every screen. The title, the Lifecycle counts, Do next, the table, Check all now, and the notifications and Ask FLO answers about these cases follow the site view. A viewer limited to one site never sees, counts, lists or is told about the other site's cases. A direct link to one shows an out-of-site card.
+dir: TD
+---
+start s1 "Switch the site in the top bar: Both sites, Site A or Site B\nOr Demo menu, 'Viewing as': Jordan Perez or Alex Morgan (both sites), Dr. Rivera (Site A only), Sam Okafor (Site B only)"
+process p1 "A request's site = the site of its case\nA denial follows its case"
+screen sc1 "The Dashboard follows the view\nTitle, five chips, Active and Renewal due, Do next, the table and its menus, 'Check all now', the sidebar badge"
+process p2 "Both sites: 40 authorizations, 18 waiting on payers, 3 waiting on you\nSite A: 25, 12, 2\nSite B: 15, 6, 1\nA + B = Both, for the table, every chip and the title"
+decision d1 "Is the viewer limited to one site?"
+process p3 "Only that site's cases exist for the viewer\nNot listed, not counted, not on Do next, not named by FLO, not in the notifications"
+process p4 "A viewer of both sites narrows to one site and widens again\nEverything changes at once"
+screen s2 "Ask FLO and the bell\nFLO answers from the cases in view and says 'at Site A' in its counts\nThe notifications about the other site's cases are not listed, counted or marked read\nAn old conversation is cleared when the viewer or the site changes"
+
+start s3 "Open a link to a request\n/dashboard?request=ID (a notification, Ask FLO, a bookmark)"
+decision d2 "Is the request at a site in view?"
+screen ok "The request drawer opens over the Dashboard"
+screen o1 "Out-of-site card instead of the page\n'This case is not available at Site A'\nNo patient, payer or detail"
+click c1 "Click 'Back to the Dashboard'"
+process p5 "The Dashboard opens without ?request"
+process d3 "Do next is built only from cases in view"
+screen ok2 "Each Do next button leads to a case, denial or draft that is in view\nThe list is built only from cases in view"
+goto g1 "Continues in: Dashboard › Arrive › What the page shows"
+goto g2 "Continues in: Global shell › Top bar › Ask FLO › What FLO answers"
+goto g3 "Continues in: Global shell › Top bar › Notifications › Open, read, click through"
+goto g4 "Continues in: Dashboard › Do next › How the list is chosen and ordered"
+
+s1 --> p1 --> sc1 --> p2
+sc1 --> d1
+d1 -->|Yes| p3
+d1 -->|No| p4
+sc1 -.-> s2
+s2 --> g2
+s2 --> g3
+s3 --> d2
+d2 -->|Yes| ok
+d2 -->|No| o1 --> c1 --> p5 --> g1
+sc1 --> d3
+d3 --> ok2 --> g4

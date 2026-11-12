@@ -1,0 +1,53 @@
+// Flow C after Flow A: ISP → initial SRA drafted and filled → Process Form → Get Signature → signed PDF → Send (Sfax stub).
+import { createRequire } from 'node:module';
+const { chromium } = createRequire(import.meta.url)(process.env.PW || '/opt/node-tools/node_modules/playwright');
+const APP = process.env.BASE || 'http://localhost:4000'; const LAURIS = APP.replace(/:(\d+)$/, (m, p) => ':' + (+p + 1));
+const shot = process.env.SHOTS || '/tmp/claude-0/-home-user/18129bb2-2284-5dc6-923b-ddd08b39fc66/scratchpad';
+const doA = async (action, args) => { const r = await fetch(APP + '/api/do', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, args }) }).then(r => r.json()); if (!r.ok) throw new Error(action + ': ' + r.error); return r.result; };
+const state = () => fetch(APP + '/api/state').then(r => r.json());
+const log = (...a) => console.log('·', ...a);
+const s0 = await state(); const no = s0.clients.find(c => c.id === 'TW').lauris_no;
+if (!no) throw new Error('Run test/flowA.mjs first (T.W. must be in Lauris)');
+const b = await chromium.launch(); const p = await (await b.newContext({ viewport: { width: 1440, height: 1000 } })).newPage();
+const errs = []; p.on('pageerror', e => errs.push(e.message));
+const panel = () => p.frameLocator('#psyflo-frame');
+await p.goto(`${LAURIS}/login?as=jperez&next=${encodeURIComponent(`/consumers/${no}/session/isp`)}`);
+await panel().getByRole('button', { name: 'Fill the 3 goals' }).click();
+await p.waitForTimeout(9000);
+await p.getByRole('button', { name: 'Process Form' }).click(); await p.waitForURL(/processed=/); await p.waitForTimeout(1200);
+let s = await state(); log('after ISP: R-0416', s.requests.find(r => r.id === 'R-0416')?.stage, '· goals', s.clients.find(c => c.id === 'TW').goals.length);
+await panel().getByRole('button', { name: 'Open request' }).click(); await p.waitForURL(/sra-initial/);
+await panel().getByRole('button', { name: /Fill \d+ boxes/ }).click();
+await panel().getByText(/\d+ boxes? typed/).waitFor({ timeout: 30000 });
+await p.screenshot({ path: shot + '/flowC-1-sra.png' });
+const v = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll('#lauris-form label[for]')].map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
+log('C1:', v['Section I · criterion 1 — interpersonal relationships'].slice(0, 100) + '…'); log('C3 blank:', !v['Section I · criterion 3 — recognise danger to self or others'], '· TIC blank:', !v['Section III · trauma-informed care'], '· Goal 1 (green from ISP):', v['Goal 1'].slice(0, 40));
+await p.getByRole('button', { name: 'Process Form' }).click(); await p.waitForURL(/processed=/); await p.waitForTimeout(1000);
+s = await state(); log('after Process Form:', s.requests.find(r => r.id === 'R-0416').stage);
+if (s.requests.find(r => r.id === 'R-0416').stage !== 'needs_approval') throw new Error('Process Form should leave R-0416 pending clinical approval');
+// the status line walks: Processed · pending clinical approval → (Approve) → Pending signature → Signed · ready to submit
+await panel().getByText(/pending clinical approval/).first().waitFor();
+await p.screenshot({ path: shot + '/flowC-1b-approval.png' });
+await panel().getByRole('button', { name: 'Approve', exact: true }).click();
+await panel().getByText('Pending signature').first().waitFor({ timeout: 10000 });
+s = await state(); log('after Approve:', s.requests.find(r => r.id === 'R-0416').stage, '· approved by', s.requests.find(r => r.id === 'R-0416').approved_by);
+await panel().getByRole('button', { name: 'Open Forms to Approve' }).click(); await p.waitForURL(/approvals$/);
+await p.locator('#approval-list tr', { hasText: 'Initial Service' }).filter({ hasText: 'T.W.' }).getByText('Preview').click();
+await panel().getByText('Pre-submission checks').waitFor();
+await p.screenshot({ path: shot + '/flowC-2-signoff.png' });
+await p.getByRole('button', { name: 'Get Signature' }).click(); await p.waitForURL(/signed=/);
+await panel().getByText(/Signed.*ready to submit/).first().waitFor({ timeout: 10000 });
+s = await state(); const r = s.requests.find(r => r.id === 'R-0416'); log('after Get Signature:', r.stage, r.signed_pdf);
+const pdf = await fetch(APP + r.signed_pdf); log('signed PDF:', pdf.status, pdf.headers.get('content-type'), (await pdf.arrayBuffer()).byteLength, 'bytes');
+await p.screenshot({ path: shot + '/flowC-3-signed.png' });
+// "Open Send" opens Authorizations with the request's drawer
+const [pop] = await Promise.all([p.context().waitForEvent('page'), panel().getByRole('button', { name: 'Open Send' }).click()]);
+log('Open Send opens:', pop.url().replace(/^https?:\/\/[^/]+/, ''));
+// the drawer: a person presses Send by fax (the Sfax stub returns a reference and a receipt in about 3 s)
+await pop.evaluate(() => localStorage.setItem('psyflo_user', 'jperez')); await pop.reload();
+await pop.locator('.u-drawer').waitFor({ timeout: 10000 });
+await pop.locator('.u-drawer').getByRole('button', { name: 'Send by fax' }).click();
+await new Promise(r => setTimeout(r, 4200)); await pop.close();
+s = await state(); const q = s.requests.find(r => r.id === 'R-0416'); log('after Send:', q.stage, q.fax_ref, 'due', q.decision_due, '· events:', s.events.filter(e => e.record === 'R-0416').map(e => e.what.slice(0, 40)).join(' | '));
+log('errors:', errs.length ? errs : 'none');
+await b.close();

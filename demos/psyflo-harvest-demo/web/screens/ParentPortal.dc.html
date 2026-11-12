@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Parent portal — Harvest Outreach Center</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared phone look: C_CSS in js/screens/MobileApp.js */
+.c-item{display:flex;align-items:center;gap:12px;min-height:68px;padding:10px 16px;border-top:1px solid var(--line)}
+.c-item:first-child{border-top:0}
+.c-item .m{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.c-item .m b{font-weight:600;font-size:16px;line-height:20px}
+</style>
+</helmet>
+
+<div class="c-ph">
+  {{hd}}
+  <main class="c-bd">
+    <h1 class="c-q">{{t.hi}}</h1>
+    <div class="c-rows">
+      <sc-for list="{{rows}}" as="r"><div class="c-item"><div class="m"><b>{{r.title}}</b><span class="u-chip {{r.cls}}">{{r.chip}}</span></div><a class="c-btn sm {{r.pri}}" href="#{{r.go}}">{{r.btn}}</a></div></sc-for>
+    </div>
+  </main>
+  {{ft}}
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

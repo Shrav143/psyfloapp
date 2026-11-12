@@ -1,0 +1,58 @@
+title: Authorizations › Case page › Recommended actions › Dismiss and bring back
+route: /authorizations/case/R-1042?tab=actions
+intro: Dismissing one card or every included card, why the dialog asks for a reason, what it warns about when a card gates 'Send to payer', and how to bring a card back.
+dir: TD
+also: The reason is written to the shared list of dismissals that Analytics reads, one line for each time 'Dismiss and log' is confirmed (not one per card). It also shows once in the case page's History, flagged 'Logged decision', on the dismissed card and in the Dashboard request's history.
+---
+click d1 "Click 'Dismiss' on one card"
+click d2 "Click 'Dismiss recommendations' in the side panel\n(all included cards at once)"
+overlay m "Dialog 'Dismiss this recommendation?' or 'Dismiss 3 recommendations?'"
+process li "Bullet list of the card titles"
+decision dg "Does a title clear a check that gates 'Send to payer'?"
+toast wb "Warning: 'Leaves a Send to payer check open: ...'"
+
+group gR "Reason (pick one)"
+  click r1 "Pick 'Already handled outside Psyflo'"
+  click r2 "Pick 'Not relevant to this request'"
+  click r3 "Pick 'The chart does not support it'"
+  click r4 "Pick 'Other'"
+endgroup
+input ot "Type in 'Tell us in a few words'"
+decision dok "Is a reason picked, and text typed if it is 'Other'?"
+process dis "'Dismiss and log' stays off"
+click cf "Click 'Dismiss and log'"
+click cx "Click 'Cancel', the X or the dimmed area, or press Esc"
+endx ce "Dialog closes\nNothing changes"
+
+store st "Each card saved as dismissed with the reason and the time\nLog: You dismissed '(title)'. Reason: ..."
+store dsh "If the request is on the Dashboard: an event on its history\n'You dismissed ... Reason: ...'"
+store an "Dismissal recorded for Analytics\nThe request and the reason"
+goto gA "Continues in: Analytics › Arrive and read the page"
+toast tt "'Recommendation dismissed' or '3 recommendations dismissed'\n'The reason is logged and feeds Analytics.'"
+process mv "Cards leave the open list\nHeader line 'up to N%' drops their points\n'Dismissed (1)' appears: struck-through title, the reason, 'Bring back'"
+process gt "If the card gated a check, that check stays open\n'Send to payer' stays off"
+
+click bb "Click 'Bring back' on a dismissed card"
+store rs "Card returns to the open list\nLog: 'You brought back a dismissed recommendation'"
+process nt "No toast; the points count again"
+
+d1 --> m
+d2 --> m
+m --> li --> dg
+dg -->|Yes| wb
+dg -->|No| r1
+wb --> r1
+m --> r1 & r2 & r3 & r4
+r4 --> ot
+r1 --> dok
+r2 --> dok
+r3 --> dok
+ot --> dok
+dok -->|No| dis
+dok -->|Yes| cf
+m --> cx --> ce
+cf --> st --> dsh
+st --> an --> gA
+st --> tt
+st --> mv --> gt
+mv --> bb --> rs --> nt

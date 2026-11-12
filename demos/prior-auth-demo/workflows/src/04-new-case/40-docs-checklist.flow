@@ -1,0 +1,61 @@
+title: Authorizations › New Case › Clinical documentation › The checklist and Continue
+route: /authorizations/new/:draftId (step 3 of 4, 'Clinical documentation')
+intro: Step 3 is one page: a drop bar and the import row, one checklist card with a clinical summary and a document list, and, as the last section, Authorization preparation (the agents' run). The required documents come from the payer's saved list for the level of care. What a request of this type usually carries is labelled 'Typical for ...', never as a payer's rule. Nothing here blocks: the checklist shows what is missing, and Review & submit lists it again with a fix.
+dir: TD
+---
+start s1 "Click 'Continue to Clinical documentation' on Eligibility & Benefits\nOr click step 3 in the stepper"
+start s2 "Click 'Continue' on a draft row in Authorizations (In progress)\nwhose agents have not started"
+screen sc "Clinical documentation\nNo sentence under the title\nHeader button 'Use sample chart'"
+
+group gPage "The page"
+  screen dz "Drop bar 'Drop the chart, the insurance card and any documents, or click to choose'\nUnder it: 'Pull from EMR', 'Import a file', 'Paste a screenshot'"
+  screen pr "Progress line\n'3 of 4 ready' with a bar and '1 to go', or 'Nothing is missing'\nPill 'Required documents are in' while an optional one is still open\n'Privacy mode' with an info tip"
+  screen gc "CLINICAL SUMMARY\n'Diagnoses (ICD-10)' (Recommended), 'Reason for the request' (Recommended)"
+  screen gd "DOCUMENTS · SUMMIT, with '7 of 9'\nRequired first, then recommended, then typical for the type, then any file not on the list\nAn empty row has no sentence under it"
+  screen prep "Last section: 'Authorization preparation'\nwith 'Start the agents'"
+  process pPay "A case Payers redrafted after a payer change shows one line\n'Updated for a payer change on 10/20'"
+  screen ft "Bar at the bottom, always in view\n'Back', 'Save as draft'\n'Continue to Review & submit' once all ten agents are done"
+endgroup
+
+goto g41 "Continues in: Authorizations › New Case › Clinical documentation › Drop files and let Reader sort them"
+goto g45 "Continues in: Authorizations › New Case › Clinical documentation › Bring notes in from the EMR, a file or a screenshot"
+goto g42 "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type"
+goto g43 "Continues in: Authorizations › New Case › Clinical documentation › Clinical summary and document rows"
+goto g44 "Continues in: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available"
+
+process pCount "'N of M ready' counts the required documents and the typical ones for the type\nA document marked not available counts as ready: the person dealt with it\nRecommended documents are not counted"
+process pStep "The step reads Needs attention · 'N required documents to add'\nor Pending · 'Agents not started' with everything in"
+
+group gBtn "Buttons"
+  click cBack "Click 'Back'"
+  process pBack "Back to Eligibility & Benefits\nThe draft is kept"
+  click cSave "Click 'Save as draft'"
+  click cStart "Click 'Start the agents' in Authorization preparation"
+  overlay oConf "Start the agents?\nJ.M., Residential 3.5 · Summit Medicaid HMO\n'8 of 9 documents ready'\n'Missing: Therapy note from the last 14 days' when one is"
+  click cCancel "Click 'Cancel', press Escape, or click outside"
+  click cGo "Click 'Start the agents'"
+  click cRev "Click 'Continue to Review & submit'"
+endgroup
+goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
+goto gAgents "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization"
+goto gRev "Continues in: Authorizations › New Case › Review & submit › The draft and the summary"
+endx eNo "Nothing starts"
+
+s1 --> sc
+s2 --> sc
+sc --> dz --> pr --> gc --> gd --> prep --> ft
+sc --> pPay
+dz --> g41
+dz --> g45
+gc --> g43
+gd --> g43
+gd --> g44
+gd --> g42
+pr --> pCount --> pStep
+ft --> cBack --> pBack --> gElig
+ft --> cSave --> gSave
+prep --> cStart --> oConf
+oConf --> cCancel --> eNo
+oConf --> cGo --> gAgents
+ft --> cRev --> gRev

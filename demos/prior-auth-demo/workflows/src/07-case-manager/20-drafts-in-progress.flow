@@ -1,0 +1,61 @@
+title: Authorizations › In progress › Drafts being prepared
+route: /authorizations?view=progress
+intro: A case saved in New Case and not sent yet is a row of In progress. When the draft belongs to a request already in the list, it stays on that request's row and the row offers 'Open the draft in New Case'. Otherwise the draft is a row of its own, with its status, the agent line, its due pill and one button: Continue, Answer, Watch or Review and sign. Both lead back into New Case.
+dir: TD
+also: Demo only: the five drafts at the start (R-1042, R-0988, I-2207, R-1101, I-2262) all belong to queue requests, so none is a row of its own until a person saves a new case. Case Manager's 'Being prepared' card, its chips and its eight-step bar are gone: the status chip, the next-action line and the owner carry the same facts.
+---
+start s1 "New Case: click 'Save as draft' (any step)"
+toast t1 "'Draft saved'\n'R-1710 is in Authorizations.'"
+start s2 "Open Authorizations, In progress (or All)"
+decision d1 "Does the draft belong to a request already listed?\n(same case ID or draft ID)"
+
+group gQ "A draft of a listed request"
+  process q1 "The request's row keeps its own status, next action and button"
+  click q2 "Click 'Open the draft in New Case' under the next action\n(only while the request is in progress)"
+endgroup
+
+group gD "A draft of its own"
+  screen r1 "Patient / request: the case ID (or 'New Case'), ' · No patient yet' or 'J.M., 34'\n'Level not set · No payer yet · Retrospective' until intake names them"
+  screen r2 "Status chip: 'Intake not finished', 'Needs your input', 'Agents working' or 'Ready to sign'\nNext action: the agent line, e.g. 'Intake is not finished.'\nDeadline: the due pill, Owner: the agent who has it, Chance: 'None' until intake is done"
+  process r3 "No quick view: a click on the row does nothing"
+  decision d2 "What state is the draft in?"
+  process b1 "'Continue' (green)"
+  process b2 "'Answer' (green)"
+  process b3 "'Watch' (outlined)"
+  process b4 "'Review and sign' (green)"
+  click c1 "Click the button or the case ID"
+endgroup
+
+process p1 "Go to /authorizations/new/ and the draft's code\nNew Case opens on the step the draft is at"
+decision d3 "Which step?"
+goto g1 "Continues in: Authorizations › New Case › Reopen and resume a case"
+goto g2 "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question"
+goto g3 "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
+goto g4 "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+goto gR "Continues in: Authorizations › In progress › How a draft row's status and deadline are decided"
+process na "'Needs attention' counts it unless agents are simply working\n(intake unfinished, a question, an agent that could not finish, a signature)"
+process sn "Once signed and sent, the draft leaves In progress\nThe request is With the payer, marked 'New today'"
+goto gN "Continues in: Authorizations › With the payer › A request sent today joins the list"
+goto gU "Continues in: Authorizations › Worklist › Updated for a payer change"
+end e1 "The draft is back in front of a person"
+
+s1 --> t1 --> d1
+s2 --> d1
+d1 -->|Yes| q1 --> q2 --> p1
+d1 -->|No| r1 --> r2 --> d2
+r2 -.-> r3
+r2 -.-> gR
+r2 -.-> na
+d2 -->|Intake not finished| b1
+d2 -->|An agent asked| b2
+d2 -->|Agents running| b3
+d2 -->|All checks passed| b4
+b1 & b2 & b3 & b4 --> c1 --> p1
+p1 --> d3
+d3 -->|Intake| g1
+d3 -->|Question open| g2
+d3 -->|Agents working| g3
+d3 -->|Ready to sign| g4
+g4 -.-> sn --> gN
+r1 -.-> gU
+p1 --> e1

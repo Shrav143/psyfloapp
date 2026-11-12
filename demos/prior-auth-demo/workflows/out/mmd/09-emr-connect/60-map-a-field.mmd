@@ -1,0 +1,83 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open EMR Connect</b><br/>'Action required' names the waiting fields, and 'Advanced' shows the pill '2 to map'" }
+  c1@{ shape: curv-trap, label: "<b>Advanced › Field mappings</b><br/>Waiting fields first, then every mapping" }
+  r1@{ shape: rect, label: "<b>Row 1: 'Level of care' · Not mapped</b><br/>'Clinical record · Site B · Match to IOP or PHP'" }
+  r2@{ shape: rect, label: "<b>Row 2: 'Referral source' · Not mapped</b><br/>'Match to a payer field'" }
+  em@{ shape: odd, label: "<b>'10 mapped ... Every field the agents have met is mapped.'</b><br/>Shown at 0 fields. The pill and the 'Action required' mention go away" }
+  b0@{ shape: trap-t, label: "Click 'Advanced', or Tab to it and press Enter or Space" }
+  b1@{ shape: trap-t, label: "Click 'Map' on a waiting row" }
+  b2@{ shape: trap-t, label: "<b>Click 'Map field' in the 'Action required' line</b><br/>Only when the waiting fields are the first thing that needs a person" }
+  o1@{ shape: win-pane, label: "<b>Map 'Level of care'</b><br/>In the Site B record" }
+  q1@{ shape: rect, label: "<b>Question from the agents</b><br/>'The Site B record writes Level of care as free text, such as Day program. Which level should the agents read it as?'" }
+  i1@{ shape: lean-r, label: "<b>Pick a value in the dropdown (click, or arrow keys and Enter)</b><br/>Level of care: IOP (first) or PHP<br/>Referral source: Payer name (first), Plan type or Referring provider" }
+  n1@{ shape: rect, label: "'Until it is mapped, New Case leaves the matching field blank when it pulls a chart from this system. Once it is mapped, every future pull fills it. Files already pulled are not rewritten.'" }
+  d1@{ shape: diam, label: "Which button?" }
+  k1@{ shape: trap-t, label: "Click 'Save the mapping'" }
+  k2@{ shape: trap-t, label: "Click 'Cancel' or the X, press Escape, or click the dimmed area" }
+  x1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>The field stays waiting" }
+  subgraph gSave ["What saving does"]
+  s2@{ shape: cyl, label: "The field leaves the waiting rows" }
+  s3@{ shape: cyl, label: "<b>A mapping row is added to the list</b><br/>'Level of care → PHP', 'Clinical record · Site B', mapped by 'You, 10/20'" }
+  a1@{ shape: hex, label: "<b>Reader logs 'Mapped 'Level of care' to IOP. It applies to every future pull'</b><br/>In the activity log, in Advanced" }
+  t1@{ shape: odd, label: "<b>'Field mapped'</b><br/>'Level of care' now fills IOP." }
+  p1@{ shape: rect, label: "<b>The pill and the 'Action required' mention count down: 2, 1, then none</b><br/>At none the section summary reads '12 field mappings' with no 'waiting'" }
+  p2@{ shape: rect, label: "<b>New Case now fills that field when it pulls a chart from this system</b><br/>Before, it left it blank" }
+  end
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What other screens use from EMR Connect" }
+  e1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>A mapped field cannot be unmapped or edited in the demo" }
+  x2@{ shape: st-rect, label: "<b>Production: an unknown column holds a file back and shows what differs</b><br/>A confirmed mapping is remembered" }
+  g1@{ shape: subproc, label: "Continues in: EMR Connect › Field mappings › Every mapping by system" }
+  g3@{ shape: subproc, label: "Continues in: EMR Connect › Advanced › Field mappings and the activity log" }
+  s1 --> b2 & b0
+  b0 --> c1
+  c1 --> r1 & r2
+  c1 -.-> em
+  r1 --> b1
+  r2 --> b1
+  b1 --> o1
+  b2 --> o1
+  o1 --> q1 --> i1 --> n1 --> d1
+  d1 -->|"Save"| k1
+  d1 -->|"Leave"| k2
+  k2 --> x1
+  k1 --> s2 & s3 & a1 & t1
+  s2 --> p1
+  s2 --> p2
+  s3 --> p1
+  p1 --> e1
+  p2 -.-> g2
+  e1 --> g1
+  c1 -.-> g3
+  c1 -.-> x2
+  class s1 k_start
+  class c1 k_screen
+  class r1,r2,q1,n1,p1,p2 k_process
+  class em,t1 k_toast
+  class b0,b1,b2,k1,k2 k_click
+  class o1 k_overlay
+  class i1 k_input
+  class d1 k_decision
+  class x1 k_endx
+  class s2,s3 k_store
+  class a1 k_agent
+  class g2,g1,g3 k_goto
+  class e1 k_end
+  class x2 k_ext
+  style gSave fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

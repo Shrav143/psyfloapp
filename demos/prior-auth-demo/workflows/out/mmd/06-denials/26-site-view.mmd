@@ -1,0 +1,60 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Switch the site in the top bar: Both sites, Site A or Site B</b><br/>Or Demo menu, 'Viewing as': Jordan Perez or Alex Morgan (both sites), Dr. Rivera (Site A only), Sam Okafor (Site B only)" }
+  p1@{ shape: rect, label: "<b>A denial's site = the site of its case</b><br/>A letter-added denial = the site recorded on it when it was added" }
+  sc1@{ shape: curv-trap, label: "<b>Denial Intelligence follows the view</b><br/>The six figures, the payer chips and their counts, the table rows, Closed, the sidebar badge, the 'Site A' tag after the title" }
+  p2@{ shape: rect, label: "<b>Both sites: Open 8, Deadlines this week 4, To decide 2, Peer-to-peer booked 2, Appeals in progress 4</b><br/>Site A: 4 (D-3318, D-3301, D-3284, D-3279); Site B: 4 (D-3297, D-3290, D-3272, D-3306)<br/>Every figure: A + B = Both" }
+  d1@{ shape: diam, label: "Is the viewer limited to one site?" }
+  p3@{ shape: rect, label: "<b>Only that site's denials exist for the viewer</b><br/>Not listed, not counted, not found by a filter, not offered in a link" }
+  p4@{ shape: rect, label: "<b>A viewer of both sites narrows to one site and widens again</b><br/>The figures, table and badge change at once" }
+  p5@{ shape: rect, label: "<b>Step-down plans from accepted denials (Authorizations, Denied view) follow the same site rule</b><br/>Accepting a denial still reaches Authorizations and Analytics, at the denial's site" }
+  p6@{ shape: rect, label: "<b>A letter added in 'Add a denial letter' belongs to the site in view, Site A when both are in view</b><br/>It is recorded on the denial<br/>Its D- number is chosen so every other screen places it at the same site" }
+  s2@{ shape: stadium, label: "<b>Open a link to a denial</b><br/>/denials/D-xxxx (or an older /denials?id=D-xxxx), /denials/D-xxxx/brief or /denials/D-xxxx/report<br/>(a notification, Ask FLO, the Dashboard, a bookmark)" }
+  d2@{ shape: diam, label: "Is the denial at a site in view?" }
+  ok@{ shape: curv-trap, label: "The denial, brief or report opens as usual" }
+  o1@{ shape: curv-trap, label: "<b>Out-of-site card instead of the page</b><br/>'This denial is not available at Site A' ('brief' or 'report' on those pages)<br/>Names the site that has it and the sites the viewer can see<br/>No patient, payer or detail" }
+  d3@{ shape: diam, label: "Can the viewer see both sites?" }
+  c1@{ shape: trap-t, label: "<b>Click 'Show Site B'</b><br/>(only for a viewer of both sites who narrowed the view)" }
+  p7@{ shape: rect, label: "The view widens to that site and the denial opens" }
+  c2@{ shape: trap-t, label: "Click 'Back to the Dashboard'" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
+  e1@{ shape: stadium, label: "A viewer limited to one site has no way to the other site's denial" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Denied › Step-down plans from accepted denials" }
+  s1 --> p1 --> sc1 --> p2
+  sc1 --> d1
+  d1 -->|"Yes"| p3
+  d1 -->|"No"| p4
+  sc1 -.-> p5 --> g4
+  sc1 -.-> p6 --> g3
+  sc1 --> g2
+  s2 --> d2
+  d2 -->|"Yes"| ok
+  d2 -->|"No"| o1 --> d3
+  d3 -->|"Yes"| c1 --> p7 --> ok
+  d3 -->|"No"| e1
+  o1 --> c2 --> g1
+  class s1,s2 k_start
+  class p1,p2,p3,p4,p5,p6,p7 k_process
+  class sc1,ok,o1 k_screen
+  class d1,d2,d3 k_decision
+  class c1,c2 k_click
+  class g1,g2,g3,g4 k_goto
+  class e1 k_endx

@@ -1,0 +1,59 @@
+title: Authorizations › New Case › Referral › Referral checklist
+route: /authorizations/new/:draftId?ref=RF-2053
+intro: One referral as a checklist of 11 items in four sections. Reader found each item or did not. This diagram covers the rows and their buttons; the buttons around the card are in 'Checklist buttons'.
+dir: TD
+also: Demo only: Reader's findings are invented. Real world (PRD 03): a referral comes from a primary care home or hospital and intake collects the releases, signatures and records.
+---
+start s1 "Click 'Review' on an arrived referral\nor Reader finishes reading dropped files"
+start s2 "Click the crumb 'Referral'\non the full referral page"
+
+screen sc1 "Intake · the referral's checklist\nCrumbs 'New Case › Referral'\nReader chip, 'read', then the documents\n'Referral form · 2 pages', 'Face sheet · 1 page'"
+process p0 "Referral is marked opened\nSidebar badge drops"
+screen sc2 "Patient card\nInitials, age, RF number, source, channel, 'received 4 h ago'\nUrgency pill, '{Program} requested', status pill once decided"
+process pr "'8 of 11 ready' with a bar, and '3 to go'\nAll done: 'Nothing is missing'\nOnce Verify has run the total is 12"
+
+group gSec "Four sections, each with 'x of y'"
+  screen sA "PATIENT\nPatient initials and age\nPatient contact information is present\nPatient age is within the program's range"
+  screen sB "REFERRER\nClinician credentials are accepted\nClinician signature is present\nThe order has not expired"
+  screen sC "CLINICAL\nA valid diagnosis code is present\nRequired clinical components are present\nRequested service matches what the program offers\nUrgent criteria are documented"
+  screen sD "COVERAGE\nInsurance and member ID are found\nVerify checked coverage (Optional until it has run)"
+endgroup
+
+decision dRow "State of a row?"
+process rDone "Done\n'Found: F10.20 · Referral form, page 1'\nNo buttons"
+process rMiss "Missing: nothing was found\nNo signature, components, urgent criteria, contact, diagnosis or insurance"
+process rWarn "Check this: found, but wrong\nCredentials, expired order, level of care, short ICD-10 code, lapsed coverage"
+process rAge "Check this: age under 18 (failed)\nOnly 'Mark OK' on the row\nNo 'Ask the referrer': a reply cannot change a patient's age"
+process rWait "Waiting on the referrer\n'Asked by fax, 1 d ago.'\nNo 'Ask' button, 'Mark OK' stays\nCounts as handled for 'Accept referral and continue'"
+
+click cAsk "Click 'Ask the referrer' on a row\n(not on a failed age row; the insurance row has no 'Mark OK')"
+click cOk "Click 'Mark OK' on a row"
+click cCov "Click 'Run coverage check'\nor 'Check again' on the coverage row"
+process pReq "Six rows are required before the referral can be accepted\nPatient age, clinician credentials, clinician signature, diagnosis code, level of care, insurance and member ID\nThe other rows are advisory: the Accept dialog lists them"
+goto gAsk "Continues in: Authorizations › New Case › Referral › Ask the referrer"
+goto gOk "Continues in: Authorizations › New Case › Referral › Mark OK or decline"
+goto gCov "Continues in: Authorizations › New Case › Referral › Check coverage"
+goto gBtn "Continues in: Authorizations › New Case › Referral › Checklist buttons"
+
+s1 --> sc1
+s2 --> sc1
+sc1 --> p0 --> sc2 --> pr --> sA --> sB --> sC --> sD
+sc2 -.-> gBtn
+
+sD --> dRow
+dRow -->|Found| rDone
+dRow -->|Nothing found| rMiss
+dRow -->|Found, wrong| rWarn
+dRow -->|Age failed| rAge
+dRow -->|Question sent| rWait
+rMiss --> cAsk
+rWarn --> cAsk
+rMiss --> cOk
+rWarn --> cOk
+rAge --> cOk
+rWait --> cOk
+sD -.-> cCov
+sD -.-> pReq -.-> gBtn
+cAsk --> gAsk
+cOk --> gOk
+cCov --> gCov

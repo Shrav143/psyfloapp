@@ -1,0 +1,69 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Four figures at the top of the Connection health card" }
+  subgraph gSync ["Figure 1: Last sync"]
+  q1@{ shape: diam, label: "<b>Is any system in the site view not disconnected?</b><br/>(only the systems that serve a site in view are counted)" }
+  a1@{ shape: rect, label: "<b>'None'</b><br/>Small line: 'no system connected' (empty list) or 'N systems are disconnected'" }
+  a2@{ shape: rect, label: "<b>Value is the time since the newest sync</b><br/>'Just now', '6 min', '1 h 6 min'" }
+  q2@{ shape: diam, label: "Is any system disconnected?" }
+  a3@{ shape: rect, label: "Small line 'all systems answering'" }
+  a4@{ shape: rect, label: "Small line '1 system is disconnected' or 'N systems are disconnected'" }
+  end
+  subgraph gCharts ["Figure 2: Charts matched today"]
+  b1@{ shape: rect, label: "<b>23 for Both sites, from 13 at Site A and 10 at Site B</b><br/>Starts there on reset. One site shows its own count" }
+  b2@{ shape: cyl, label: "<b>Each finished sync adds its charts to the sites of the systems it pulled from</b><br/>1 to 3, at least 1 per sync. Site A plus Site B is always Both sites" }
+  end
+  subgraph gFiles ["Figure 3: Files pulled this week"]
+  c1@{ shape: rect, label: "<b>142 for Both sites, from 80 at Site A and 62 at Site B</b><br/>Starts there on reset. One site shows its own count" }
+  c2@{ shape: cyl, label: "<b>Each finished sync adds its files to the sites it pulled from</b><br/>A new system adds 5 and a finished Fix adds 12 remittances, split across the sites the system serves" }
+  end
+  subgraph gFail ["Figure 4: Sync failures"]
+  d1@{ shape: rect, label: "<b>The missed syncs of every system in the site view, added up. The Billing system serves both sites, so it counts once in Both sites and in each site's view</b><br/>A Connected system has 0<br/>A system that Needs attention misses one each hour since its last good sync: 2 at the start<br/>A Disconnected system is not asked, so it shows 'Sync paused' and adds nothing" }
+  d2@{ shape: rect, label: "<b>Fix and Reconnect bring it back to 0</b><br/>Fast-forward adds one per hour while the problem stays" }
+  end
+  n1@{ shape: rect, label: "<b>A system that Needs attention still counts as answering</b><br/>Only Disconnected systems change the Last sync figure" }
+  n3@{ shape: rect, label: "<b>The fields waiting for a mapping are not a figure any more</b><br/>They show in 'Action required' and in 'Advanced'" }
+  g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Run the connection test and save" }
+  g3@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
+  g4@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Disconnect and reconnect" }
+  g5@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Fix a system that needs attention" }
+  p1 --> q1 & b1 & c1 & d1
+  q1 -->|"No"| a1
+  q1 -->|"Yes"| a2 --> q2
+  q2 -->|"No"| a3
+  q2 -->|"Yes"| a4
+  a2 -.-> n1
+  a1 --> g4
+  a4 --> g4
+  b1 --> b2 --> g1
+  c1 --> c2
+  c2 --> g1
+  c2 --> g2
+  d1 --> d2 --> g5
+  p1 -.-> n3 --> g3
+  class p1 k_screen
+  class q1,q2 k_decision
+  class a1,a2,a3,a4,b1,c1,d1,d2,n1,n3 k_process
+  class b2,c2 k_store
+  class g1,g2,g3,g4,g5 k_goto
+  style gSync fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gCharts fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gFiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gFail fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

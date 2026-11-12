@@ -1,0 +1,46 @@
+title: Authorizations › New Case › Intake › Possible duplicate
+route: /authorizations/new/:draftId (Intake, the one alert)
+intro: Intake warns when the case looks like a request that already exists: the same patient, payer and level of care with an open request, a saved draft that has not been sent, or an active authorization whose dates overlap. It never refuses. The person opens the other one, or continues with a short reason, which stays on the case and in the request's History. Only records at the sites in view are compared.
+dir: TD
+---
+start s1 "Patient, payer and level of care are in\nThe check runs as soon as they are"
+decision d1 "Does another record match?\nSame patient (initials and age, or the patient's id), same payer, same level of care"
+process pWhat "What counts as a match\nAn open request: Preparing, Received, Under review or Info requested\nA saved draft not yet sent whose dates overlap\nAn active or expiring authorization whose approved dates overlap the dates asked for"
+process pLeft "Left out\nThe case itself\nThe authorization a review, renewal or modification follows\nAnything at a site the viewer cannot see"
+endx eNone "No alert\nIntake is Complete when nothing else is open"
+screen sBan "Amber alert, the only one on Intake\n'This looks like a request that already exists'\n'R-1042, admission request, being prepared. Summit Medicaid HMO, Residential 3.5.'\n'Same patient, payer and level of care, with dates that overlap. Sending both would ask the payer for the same days twice.'"
+process pState "Intake shows Blocked\n'A matching request exists'\nThe footer hint says 'A matching request exists. Open it, or continue with a reason.'"
+click cOpen "Click 'Open R-1042'"
+process pOpen "A request opens on its case page\nA draft opens in New Case"
+goto gCase "Continues in: Authorizations › Case page › Ways in"
+click cWhy "Click 'Continue with a reason'"
+input iWhy "Type in 'Why is this a different request?'\n'For example: the first request was for the earlier stay'"
+decision dText "Is there a reason?"
+process pOff "'Continue with this reason' stays switched off"
+click cDo "Click 'Continue with this reason'"
+click cCancel "Click 'Cancel'"
+process pBack "The box closes; the alert stays"
+store st "The reason is saved on the case with what it is about\nThe alert becomes one quiet line"
+screen sSaid "'Continuing with a reason. R-1042, ... Your reason: ...'\nButton 'Undo'"
+click cUndo "Click 'Undo'"
+process pUndo "The alert is back and Intake is Blocked again"
+process pRev "Review & submit lists 'Possible duplicate' as a note\n'You went on and said why: ...'\nSending is no longer stopped by it"
+store stHist "After sending, the request's History says\n'You sent this request knowing a matching one exists'\n'Your reason: ...'"
+process pType "Changing the Authorization type clears the reason\nThe check runs again for the new type"
+goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
+
+s1 --> d1
+d1 -.-> pWhat
+d1 -.-> pLeft
+d1 -->|No| eNone
+d1 -->|Yes| sBan --> pState
+sBan --> cOpen --> pOpen --> gCase
+sBan --> cWhy --> iWhy --> dText
+dText -->|No| pOff --> iWhy
+dText -->|Yes| cDo --> st --> sSaid
+iWhy --> cCancel --> pBack --> sBan
+sSaid --> cUndo --> pUndo --> sBan
+st --> pRev --> gMis
+st --> stHist --> gSign
+sSaid -.-> pType

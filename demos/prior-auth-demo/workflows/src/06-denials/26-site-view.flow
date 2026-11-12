@@ -1,0 +1,42 @@
+title: Denial Intelligence › Sites › What each site sees and out-of-site links
+route: /denials
+intro: Every denial belongs to one site. The dashboard (figures, payer chips, table, Closed), the sidebar badge, the step-down plans and the links follow the site view. A viewer limited to one site never sees, counts, lists or links to the other site's denials, and a direct link to one shows an out-of-site card. Totals for Both sites equal Site A plus Site B.
+dir: TD
+---
+start s1 "Switch the site in the top bar: Both sites, Site A or Site B\nOr Demo menu, 'Viewing as': Jordan Perez or Alex Morgan (both sites), Dr. Rivera (Site A only), Sam Okafor (Site B only)"
+process p1 "A denial's site = the site of its case\nA letter-added denial = the site recorded on it when it was added"
+screen sc1 "Denial Intelligence follows the view\nThe six figures, the payer chips and their counts, the table rows, Closed, the sidebar badge, the 'Site A' tag after the title"
+process p2 "Both sites: Open 8, Deadlines this week 4, To decide 2, Peer-to-peer booked 2, Appeals in progress 4\nSite A: 4 (D-3318, D-3301, D-3284, D-3279); Site B: 4 (D-3297, D-3290, D-3272, D-3306)\nEvery figure: A + B = Both"
+decision d1 "Is the viewer limited to one site?"
+process p3 "Only that site's denials exist for the viewer\nNot listed, not counted, not found by a filter, not offered in a link"
+process p4 "A viewer of both sites narrows to one site and widens again\nThe figures, table and badge change at once"
+process p5 "Step-down plans from accepted denials (Authorizations, Denied view) follow the same site rule\nAccepting a denial still reaches Authorizations and Analytics, at the denial's site"
+process p6 "A letter added in 'Add a denial letter' belongs to the site in view, Site A when both are in view\nIt is recorded on the denial\nIts D- number is chosen so every other screen places it at the same site"
+
+start s2 "Open a link to a denial\n/denials/D-xxxx (or an older /denials?id=D-xxxx), /denials/D-xxxx/brief or /denials/D-xxxx/report\n(a notification, Ask FLO, the Dashboard, a bookmark)"
+decision d2 "Is the denial at a site in view?"
+screen ok "The denial, brief or report opens as usual"
+screen o1 "Out-of-site card instead of the page\n'This denial is not available at Site A' ('brief' or 'report' on those pages)\nNames the site that has it and the sites the viewer can see\nNo patient, payer or detail"
+decision d3 "Can the viewer see both sites?"
+click c1 "Click 'Show Site B'\n(only for a viewer of both sites who narrowed the view)"
+process p7 "The view widens to that site and the denial opens"
+click c2 "Click 'Back to the Dashboard'"
+goto g1 "Continues in: Dashboard › Arrive › What the page shows"
+endx e1 "A viewer limited to one site has no way to the other site's denial"
+goto g2 "Continues in: Denial Intelligence › Open denials list"
+goto g3 "Continues in: Denial Intelligence › Add a denial letter"
+goto g4 "Continues in: Authorizations › Denied › Step-down plans from accepted denials"
+
+s1 --> p1 --> sc1 --> p2
+sc1 --> d1
+d1 -->|Yes| p3
+d1 -->|No| p4
+sc1 -.-> p5 --> g4
+sc1 -.-> p6 --> g3
+sc1 --> g2
+s2 --> d2
+d2 -->|Yes| ok
+d2 -->|No| o1 --> d3
+d3 -->|Yes| c1 --> p7 --> ok
+d3 -->|No| e1
+o1 --> c2 --> g1

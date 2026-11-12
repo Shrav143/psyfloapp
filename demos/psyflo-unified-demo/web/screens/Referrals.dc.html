@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo — Referrals</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+/* Referrals queue (E2). a- prefix; the UI kit and tokens do the rest. */
+.a-page{max-width:1320px;margin:0 auto;padding:var(--sp-5) var(--gutter) 64px;display:flex;flex-direction:column;gap:var(--sp-4)}
+.a-head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-3)}
+.a-head h1{margin:0;font-size:var(--fs-28);line-height:var(--lh-28);font-weight:600;letter-spacing:-.01em}
+.a-id{font-weight:500;color:var(--muted-700);font-size:var(--fs-13);white-space:nowrap}
+.a-page .ui-qt__table td{padding-top:10px;padding-bottom:10px}
+.a-page .ui-qt__sort{min-height:24px}
+.a-page .ui-qt__table td:last-child{white-space:nowrap}
+.a-card{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3)}
+.a-sec>summary{list-style:none;display:flex;align-items:center;gap:var(--sp-3);padding:14px var(--sp-5);cursor:pointer;min-height:var(--h-touch)}
+.a-sec>summary::-webkit-details-marker{display:none}
+.a-sec>summary .ui-icon{margin-left:auto}
+.a-sec__t{font-size:var(--fs-16);font-weight:600}
+.a-sec__s{color:var(--muted-700);font-size:var(--fs-13)}
+.a-sec[open]>summary{border-bottom:1px solid var(--line-200)}
+.a-sec__b{padding:var(--sp-4) var(--sp-5) var(--sp-5);overflow-x:auto}
+.a-mini{width:100%;border-collapse:collapse;font-size:var(--fs-13)}
+.a-mini th,.a-mini td{padding:8px 10px;border-top:1px solid var(--line-200);text-align:left}
+.a-mini thead th{border-top:0;font-size:var(--fs-12);color:var(--muted-700)}
+.a-mini .is-r{text-align:right}
+</style>
+</helmet>
+<main class="a-page">
+  <header class="a-head"><h1>Referrals</h1>{{maturity}}</header>
+  {{bar}}
+  {{table}}
+  {{schools}}
+</main>
+</x-dc>
+</body>
+</html>

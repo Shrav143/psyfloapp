@@ -1,0 +1,50 @@
+title: EMR Connect › Manage › Reconnect a system
+route: /emr
+intro: A Disconnected system comes back only after a passed test. If it was on 'Needs attention' when it was disconnected, the Fix steps come first. The test is the same three checks as Connect.
+dir: TD
+also: Demo: the test always passes. The system stays Disconnected, and New Case cannot pull from it, until the last check passes and the person clicks the final button.
+---
+start s1 "Click 'Reconnect'\nOn a Disconnected row, in the Action required line, or at the end of the Manage drawer"
+goto g0 "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
+decision q1 "Did it need attention when it was disconnected?"
+
+group gFix "Fix first, if needed"
+  overlay f1 "Fix {name}\nSteps: What happened, Renew access, Test\nThe original problem is shown in an amber box"
+  input f2 "Name who approves, tick the read-only box, click 'Renew and test'\nThree checks run"
+  click f3 "Click 'Next: test the connection'\nOn the last step, after the checks pass"
+  store f4 "The sign-in is renewed, the problem is cleared\nStill Disconnected"
+  agent f5 "Navigator logs 'Renewed the read-only sign-in for {name}'"
+  toast f6 "'Sign-in renewed'\n'One more test, then {name} is connected.'\nNo toast when Navigator is set to 'Act on its own'"
+endgroup
+
+group gTest "The connection test"
+  overlay t1 "Reconnect {name}\n'Read-only. Nothing is written back until a person approves it.'\n'It is connected again only when the test passes. Until then New Case cannot pull a chart from it.'"
+  process t2 "Reaching the system\nSigning in with read-only access\nReading one test record\nAbout 0.8 seconds a check"
+  toast t3 "'The test passed. Access is read-only, and nothing is written back.'"
+  click t4 "'Reconnect {name}' is dimmed until the last check passes\nThen click it"
+endgroup
+
+group gSave "What reconnecting does"
+  store v1 "Status becomes Connected\nLast sync now, issue text cleared"
+  agent v2 "Navigator logs 'Reconnected {name} and read-only access passed its test'"
+  toast v3 "'{name} is connected'\nNo toast when Navigator is set to 'Act on its own'"
+endgroup
+
+click cx "Click 'Cancel', the X, press Escape, or click the dimmed area\nOn either pop-up"
+endx x1 "Pop-up closes\nThe system stays Disconnected\nA renewed sign-in stays renewed, so the next Reconnect goes straight to the test"
+end e1 "Row shows 'just now', a green pill and 'Sync now'\nNew case can pull a chart from it again"
+goto g1 "Continues in: EMR Connect › Sync › What other screens use from EMR Connect"
+
+s1 --> g0 --> q1
+q1 -->|Yes| f1 --> f2 --> f3 --> f4
+f4 --> f5 & f6
+f4 --> t1
+q1 -->|No| t1
+t1 --> t2 --> t3 --> t4
+t4 --> v1 & v2 & v3
+v1 --> e1
+v3 --> e1
+f1 -.-> cx
+t1 -.-> cx
+cx --> x1
+e1 -.-> g1

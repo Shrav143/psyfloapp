@@ -1,0 +1,100 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart LR
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s0@{ shape: stadium, label: "<b>Open Psyflo</b><br/>The address / goes to the Dashboard" }
+  shell@{ shape: curv-trap, label: "<b>App frame</b><br/>Sidebar on the left, top bar on top, page in the middle" }
+  subgraph gTop ["Top bar (on every page)"]
+  ask@{ shape: win-pane, label: "<b>Ask FLO</b><br/>Drawer: ask a question, answers from your data" }
+  notif@{ shape: win-pane, label: "<b>Notifications</b><br/>List of what needs you" }
+  site@{ shape: win-pane, label: "<b>Site switcher</b><br/>Both sites, Site A, Site B (a locked 'Site A only' or 'Site B only' for one-site staff)" }
+  demo@{ shape: win-pane, label: "<b>Demo menu</b><br/>Reset data, move the clock, Viewing as (four people), suggested path" }
+  end
+  subgraph gMain ["Sidebar › Main"]
+  dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Lifecycle chips, Do next, authorizations table" }
+  auth@{ shape: curv-trap, label: "<b>Authorizations › All Authorizations</b><br/>One worklist with view chips: All, Needs attention, In progress, With the payer, Approved, Denied, Reviews this week" }
+  newc@{ shape: curv-trap, label: "<b>Authorizations › New Case</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit" }
+  elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>List, verify a patient, result" }
+  den@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Open denials, options, brief" }
+  ana@{ shape: curv-trap, label: "<b>Analytics</b><br/>Performance and the monthly report" }
+  end
+  subgraph gConn ["Sidebar › Connections"]
+  emr@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Systems per site, sync, mappings" }
+  pay@{ shape: curv-trap, label: "<b>Payers</b><br/>Landing list, then one payer with four views" }
+  end
+  subgraph gBot ["Sidebar › Bottom"]
+  set@{ shape: curv-trap, label: "<b>Settings</b><br/>The sixteen agents, Pause all and Sites and access" }
+  help@{ shape: odd, label: "<b>Help</b><br/>A toast points to Ask FLO and the Demo menu" }
+  out@{ shape: odd, label: "<b>Sign out</b><br/>A toast: there is nothing to sign out of" }
+  end
+  subgraph gSub ["Pages reached from inside a tab"]
+  case@{ shape: curv-trap, label: "<b>Authorizations › Case page</b><br/>Three tabs: Recommended actions, Clinical picture & draft, Criteria & risk" }
+  ledg@{ shape: curv-trap, label: "<b>Authorizations › Approved authorization with no open request</b><br/>Case summary, window, units, reviews due, history" }
+  rev@{ shape: win-pane, label: "<b>Authorizations › Reviews this week › Review drawer</b><br/>Opens from a row in Reviews this week" }
+  ref@{ shape: curv-trap, label: "<b>New Case › Full referral page</b><br/>Extracted, Validation, Coverage, Fit, Activity" }
+  ver@{ shape: curv-trap, label: "Eligibility › Verify a patient and Result" }
+  brief@{ shape: curv-trap, label: "Denial Intelligence › Peer-to-peer brief" }
+  rep@{ shape: curv-trap, label: "<b>Denial Intelligence › Appeal analysis report</b><br/>For every denial, copy or download as PDF" }
+  payer@{ shape: curv-trap, label: "<b>Payers › One payer</b><br/>Workflow Builder, Rules & Instructions, Test Workflow, History & Changes tabs" }
+  end
+  g0@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
+  g1@{ shape: subproc, label: "Continues in: Global shell" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
+  g3b@{ shape: subproc, label: "Continues in: Authorizations › Ledger case page › Open and read" }
+  g3c@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › The review drawer" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits" }
+  g6@{ shape: subproc, label: "Continues in: Denial Intelligence" }
+  g8@{ shape: subproc, label: "Continues in: Analytics" }
+  g9@{ shape: subproc, label: "Continues in: EMR Connect" }
+  g10@{ shape: subproc, label: "Continues in: Payers › Workspace" }
+  g11@{ shape: subproc, label: "Continues in: Settings" }
+  s0 --> shell
+  shell --> ask & notif & demo & site
+  site --> g0
+  demo --> g0
+  shell --> dash & auth & newc & elig & den & ana
+  shell --> emr & pay
+  shell --> set & help & out
+  auth --> case & ledg & rev
+  ledg --> g3b
+  rev --> g3c
+  newc --> ref
+  elig --> ver
+  den --> brief & rep
+  pay --> payer
+  ask --> g1
+  dash --> g2
+  auth --> g3
+  newc --> g4
+  elig --> g5
+  den --> g6
+  ana --> g8
+  emr --> g9
+  pay --> g10
+  set --> g11
+  class s0 k_start
+  class shell,dash,auth,newc,elig,den,ana,emr,pay,set,case,ledg,ref,ver,brief,rep,payer k_screen
+  class ask,notif,site,demo,rev k_overlay
+  class help,out k_toast
+  class g0,g1,g2,g3,g3b,g3c,g4,g5,g6,g8,g9,g10,g11 k_goto
+  style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gMain fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gConn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gBot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSub fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

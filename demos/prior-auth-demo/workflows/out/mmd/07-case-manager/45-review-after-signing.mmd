@@ -1,0 +1,75 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>A clinician signature is saved</b><br/>(one review, or 'Sign all clean drafts')" }
+  st1@{ shape: cyl, label: "The review keeps: status 'Signed', who signed, the demo-clock time, and the draft text as signed" }
+  subgraph gScreen ["What changes on screen"]
+  a1@{ shape: rect, label: "<b>Row: 'Review' reads 'Signed'; 'Check to look at' goes</b><br/>The button is the row's own again: 'Open', 'Send to payer', 'Open on Dashboard'" }
+  a2@{ shape: rect, label: "Drawer, if open: footer reads 'Signed by Heather K., LISW-S', the draft is read-only, and a green banner shows 'Next review: Tue 10/27, 9:00 am'" }
+  a3@{ shape: rect, label: "Reviews this week still counts the row: 47 stays 47" }
+  a5@{ shape: rect, label: "'Sign all clean drafts' is greyed out once no clean draft is left this week at the sites in view" }
+  a7@{ shape: rect, label: "<b>The sidebar badge does not change</b><br/>A tracked case with nothing else open leaves 'Needs attention'" }
+  end
+  subgraph gNext ["The next review"]
+  g1@{ shape: hex, label: "<b>Cadence books the next continued-stay review</b><br/>Date: the review's own date and time plus the interval (from now, if it was signed late)" }
+  i1@{ shape: rect, label: "<b>Interval: the payer's own rule when Payers has one ('A continued-stay review every 7 days'), else the level of care</b><br/>Residential and PHP 7 days, IOP 14 days, Detox 3 days. The sooner of the two wins" }
+  n1@{ shape: cyl, label: "<b>A new review is saved: next review number (e.g. review 3), same time of day, status 'Not drafted yet'</b><br/>The signed review remembers the date" }
+  t1@{ shape: odd, label: "<b>Toast: 'R-0856 was signed by Heather K., LISW-S. Cadence booked the next review for Tue 10/27, 9:00 am.'</b><br/>('Sign all clean drafts': 'Cadence booked the next review for each.')" }
+  d1@{ shape: diam, label: "Does the next review fall before the end of Sunday?" }
+  n2@{ shape: rect, label: "<b>It takes the row's place on this week's list, as 'Not drafted yet' with 'Open the review'</b><br/>'Draft all due reviews' drafts it (Detox reviews do: every 3 days)" }
+  n3@{ shape: rect, label: "<b>The row stays 'Signed'</b><br/>The drawer says 'It falls after this week, so it is not on the list yet.'" }
+  n4@{ shape: rect, label: "<b>A ledger row's Deadline reads 'Next review Tue 10/27', then 'Review due' when the day comes</b><br/>The ledger status goes to 'On track', so 'Needs action' and 'Review due' leave the row<br/>'Runs out before review' may now show (R-0856, I-2193)" }
+  n5@{ shape: rect, label: "Ledger case page: a 'Next review' line and, in the history, 'Cadence booked review 3'" }
+  x1@{ shape: st-rect, label: "Payer receives the signed review through its portal or by fax (real product, not drawn in the demo)" }
+  end
+  subgraph gCase ["Case record"]
+  c1@{ shape: trap-t, label: "Click 'Open case' in the drawer" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Ledger case page › Open and read" }
+  end
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Approved › Units used and the run-out flag" }
+  st2@{ shape: cyl, label: "'Reset demo data' puts every review back to its starting state, clears signatures and removes the booked reviews" }
+  e1@{ shape: stadium, label: "Review is signed and counted" }
+  s1 --> st1
+  st1 --> a1 & a2 & a3 & a5 & a7
+  st1 --> g1 --> i1 --> n1 --> t1 --> d1
+  d1 -->|"Yes"| n2
+  d1 -->|"No"| n3
+  n2 --> n4
+  n3 --> n4
+  n4 --> n5
+  n4 -.-> g4
+  n1 -.-> x1
+  a2 --> c1 --> g2
+  c1 -.-> g3
+  a1 & a3 & a5 & a7 --> e1
+  n5 --> e1
+  e1 -.-> st2
+  class s1 k_start
+  class st1,n1,st2 k_store
+  class a1,a2,a3,a5,a7,i1,n2,n3,n4,n5 k_process
+  class g1 k_agent
+  class t1 k_toast
+  class d1 k_decision
+  class x1 k_ext
+  class c1 k_click
+  class g2,g3,g4 k_goto
+  class e1 k_end
+  style gScreen fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gNext fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gCase fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

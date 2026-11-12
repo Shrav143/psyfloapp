@@ -1,0 +1,32 @@
+title: Payers › Workflow Builder › Version history and restore
+route: /payers/summit?tab=builder
+intro: Every saved draft, publish and archive is kept as a version with who made it, when, and why. A version can be read on a read-only canvas and restored as a new draft. Restoring never overwrites anything: the published version stays in force until a person publishes the draft.
+dir: TD
+---
+start s1 "Click 'More', then 'Version history'"
+overlay o1 "Right-hand panel 'Version history'\n'Retroactive Authorization. Every save and publish is kept, with who and why.'\nNewest first"
+screen v1 "One row per version\nv2 in a circle, a pill Draft, Published or Archived, 'Latest saved' on the newest,\nthe reason, 'Jordan Perez · Tue 10:42 am · 22 steps'"
+decision d0 "Any version saved yet?"
+screen e0 "'No version has been saved yet.'"
+click c1 "Click 'Preview' on a row"
+screen pv "Read-only canvas of that version under the row\nRequest type and dates, 'Read only.'\nPan and zoom work, nothing can be changed"
+click c2 "Click 'Hide preview'"
+click c3 "Click 'Restore as a draft' on a row"
+screen rs "Under the row\n'Restoring makes version N's steps the new draft. The published version stays in force until a person publishes the draft.'\n'Cancel' and 'Restore as a new draft'"
+click c4 "Click 'Restore as a new draft'"
+store st1 "A new draft is made from that version's steps and settings\nOne version number higher than anything saved before\nEdit log entry and a version line 'Restored version N'"
+toast t1 "'Restored as a draft'\n'... version N is now draft version M. The published version has not changed.'"
+process p1 "The panel closes and the new draft opens on the canvas"
+click c5 "Click 'Cancel', X, or press Escape"
+process p2 "Panel closes, nothing changes"
+end e1 "The earlier version is a draft again, ready to edit and publish"
+goto g1 "Continues in: Payers › History & Changes › Read what changed"
+
+s1 --> o1 --> d0
+d0 -->|No| e0
+d0 -->|Yes| v1
+v1 --> c1 --> pv --> c2 --> v1
+v1 --> c3 --> rs --> c4 --> st1 --> t1 --> p1 --> e1
+rs --> c5 --> p2
+o1 --> c5
+e1 --> g1

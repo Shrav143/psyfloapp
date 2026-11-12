@@ -1,0 +1,24 @@
+body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45}
+a{color:#217A78}a:hover{color:#15605E}
+*{box-sizing:border-box}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}
+.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}
+.nav.on .n{background:rgba(255,255,255,.22)}
+.card{background:#fff;border:1px solid #E6E1D9;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:8px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;border:1px solid transparent;white-space:nowrap}
+.btn.p{background:#217A78;color:#fff}.btn.p:hover{background:#15605E;color:#fff}
+.btn.o{background:#fff;color:#151B24;border-color:#D9D4CC}.btn.o:hover{background:#F3F0EA;color:#151B24}
+.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+.chip.r{background:#FBE9E4;color:#8A2E1C}.chip.y{background:#FCEFD0;color:#6F4A05}.chip.g{background:#DDF1EF;color:#15605E}.chip.n{background:#EEEBE5;color:#3E4652}.chip.b{background:#151B24;color:#fff}
+.f{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600;margin-bottom:4px}
+.fld{border:1px solid #E6E1D9;border-radius:8px;padding:10px 12px;background:#fff;font-size:13px}
+.cr{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #EFEBE4;font-size:13px}
+.cr svg{flex:0 0 18px;margin-top:1px}
+.cr b{display:block}
+.cr .ask{margin-top:3px;color:#6F4A05;font-weight:600;font-size:12px}
+.bx{display:inline-flex;align-items:center;gap:6px;font-size:13px;margin:3px 14px 3px 0}
+.bx i{width:14px;height:14px;border:1.5px solid #525B66;border-radius:3px;display:inline-block}
+.bx i.on{background:#151B24;border-color:#151B24}
+.row{display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid #EFEBE4;font-size:13px}

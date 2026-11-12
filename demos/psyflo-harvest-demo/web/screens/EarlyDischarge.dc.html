@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Psyflo — Early discharge</title></head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}.nav.on .n{background:rgba(255,255,255,.22)}
+</style>
+</helmet>
+<div class="u-app">
+<aside style="flex:0 0 240px"></aside>
+<main class="u-main">
+  <header class="u-head">
+    <h1 class="u-title">{{title}}</h1>
+    <sc-if value="{{chip}}"><span class="{{chipCls}}">{{chip}}</span></sc-if>
+    <span class="u-sp"></span>
+    <span class="u-date">{{today}}</span>
+  </header>
+
+  <sc-if value="{{none}}">
+    <div class="b2-one"><a class="u-btn" href="Authorizations.dc.html">Authorizations</a></div>
+  </sc-if>
+
+  <sc-if value="{{has}}">
+    <div class="b2-grid">
+      <section class="b2-col" aria-label="Facts">
+        <sc-for list="{{facts}}" as="f"><div class="b2-lbl">{{f.k}}</div><div class="b2-big">{{f.v}}</div></sc-for>
+      </section>
+      <section class="b2-col" aria-label="Dates">
+        <div class="b2-tiles">
+          <sc-for list="{{tiles}}" as="t"><div class="b2-tile"><div class="b2-lbl">{{t.label}}</div><div class="b2-date">{{t.date}}</div><div class="u-sub">{{t.sub}}</div></div></sc-for>
+        </div>
+      </section>
+    </div>
+    <div class="b2-foot">
+      <a class="u-link b2-l" href="{{backHref}}">← Partial approval</a>
+      <button type="button" class="u-btn pri" onClick="{{setPlan}}">{{planBtn}}</button>
+    </div>
+  </sc-if>
+</main>
+</div>
+</x-dc>
+</body>
+</html>

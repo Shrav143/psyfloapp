@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo phone app — Today</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared phone look: C_CSS in js/screens/MobileApp.js */
+</style>
+</helmet>
+
+<div class="c-ph">
+  {{hd}}
+
+  <sc-if value="{{isToday}}">
+  <main class="c-bd">
+    <div class="c-timer{{timerCls}}">
+      <span class="dot"></span>
+      <div class="who">{{ini}}<sc-if value="{{running}}"><span id="elapsed">{{elapsed}}</span></sc-if></div>
+      <button type="button" class="c-ic{{voiceOn}}" aria-label="Say a student's name" onClick="{{voice}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg></button>
+      <button type="button" class="c-btn sm" onClick="{{timerAct}}">{{timerBtn}}</button>
+    </div>
+
+    <div class="c-chips"><sc-for list="{{chips}}" as="c"><button type="button" class="c-stu{{c.on}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.ini}}</button></sc-for></div>
+
+    <div style="display:flex;gap:8px">
+      <a class="c-btn pri lg" href="{{micHref}}" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg>{{micLabel}}</a>
+      <a class="c-btn lg sq" href="{{typeHref}}" aria-label="Type it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"></rect><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"></path></svg></a>
+    </div>
+
+    <h2 class="c-sec">Today <span class="u-chip {{notesCls}}">{{notesChip}}</span></h2>
+    <div class="c-rows" style="margin-top:-8px">
+      <sc-for list="{{rows}}" as="r"><div class="c-row" style="--cols:44px minmax(0,1fr) auto"><span class="t">{{r.time}}</span><span>{{r.what}}<sc-if value="{{r.flag}}"><small>{{r.flag}}</small></sc-if></span><span class="d">{{r.dur}}</span></div></sc-for>
+    </div>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{isStudents}}">
+  <main class="c-bd">
+    <h2 class="c-sec">Students</h2>
+    <div class="c-rows" style="margin-top:-8px">
+      <sc-for list="{{students}}" as="x"><div class="c-row" style="--cols:64px minmax(0,1fr) auto"><b>{{x.who}}</b><span><span class="u-chip {{x.cls}}">{{x.chip}}</span></span><button type="button" class="c-btn sm" onClick="{{x.act}}">{{x.btn}}</button></div></sc-for>
+    </div>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{isMe}}">
+  <main class="c-bd">
+    <div class="c-card"><div style="font-size:20px;line-height:28px;font-weight:700">{{me.name}}</div><div class="c-mut">{{me.role}}</div></div>
+    <div class="c-rows"><div class="c-row" style="--cols:1fr auto"><span>Notes today</span><b>{{me.notes}}</b></div></div>
+    <button type="button" class="c-btn" onClick="{{me.out}}">Sign out</button>
+  </main>
+  </sc-if>
+
+  {{nav}}
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

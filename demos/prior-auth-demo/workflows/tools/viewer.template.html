@@ -1,0 +1,371 @@
+<title>Psyflo Workflow Diagrams</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* The full-screen overlay is shown and hidden with the hidden attribute; its own display rule must not override it, whichever page the fragment sits in. */
+[hidden] { display: none !important; }
+/* Layout: a menu tree on the left mirrors the app's sidebar; each diagram is a card with its own zoom, so a wide flow is read in place or full screen. */
+:root {
+  --bg: #FAF6EE;
+  --side: #F3ECE0;
+  --card: #FFFFFF;
+  --ink: #1C2B25;
+  --ink2: #3E4B45;
+  --muted: #66716B;
+  --line: #E7DFD1;
+  --forest: #1F5C4B;
+  --forest-soft: #E6F0EA;
+  --forest-ink: #FFFFFF;
+  --hit: #D1242F;
+  --focus: #2F6DB5;
+  --paper: #FFFFFF;
+  --f-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-sans: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --hh: 64px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1613; --side: #141D19; --card: #18221E; --ink: #E8EFEA; --ink2: #C3D0C8; --muted: #93A39A; --line: #29372F;
+    --forest: #7CC7A6; --forest-soft: #1D3028; --forest-ink: #0F1613; --hit: #FF6B73; --focus: #7DB0F0; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1613; --side: #141D19; --card: #18221E; --ink: #E8EFEA; --ink2: #C3D0C8; --muted: #93A39A; --line: #29372F;
+  --forest: #7CC7A6; --forest-soft: #1D3028; --forest-ink: #0F1613; --hit: #FF6B73; --focus: #7DB0F0; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--hh) + 16px); }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--f-sans);
+  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 30; }
+a { color: inherit; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; height: var(--hh); background: var(--bg);
+  display: flex; align-items: center; gap: 20px; border-bottom: 1px solid var(--line); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+}
+.brand { font: 600 26px/1 var(--f-serif); letter-spacing: -0.4px; color: var(--forest); white-space: nowrap; }
+.brand i { font-style: normal; opacity: .6; }
+.top h1 { margin: 0; font: 500 17px/1.2 var(--f-sans); color: var(--ink2); white-space: nowrap; }
+.stats { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.find { margin-left: auto; position: relative; width: min(340px, 40vw); }
+.find input { width: 100%; height: 38px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 0 12px; }
+.find input::placeholder { color: var(--muted); }
+.find .cnt { position: absolute; right: 12px; top: 9px; font-size: 12px; color: var(--muted); pointer-events: none; }
+
+.layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 32px; max-width: 1480px; margin: 0 auto; padding-block: 24px 80px; }
+nav#nav { position: sticky; top: calc(var(--hh) + env(safe-area-inset-top, 0px) + 20px); align-self: start; max-height: calc(100vh - var(--hh) - 48px); overflow-y: auto; padding-right: 6px; font-size: 13.5px; }
+.ng { margin-bottom: 14px; }
+.nh { display: flex; align-items: center; justify-content: space-between; gap: 8px; text-decoration: none; font-weight: 600; padding: 7px 10px; border-radius: 10px; }
+.nh span { font-weight: 400; color: var(--muted); font-size: 12px; }
+.ng a:not(.nh) { display: block; text-decoration: none; color: var(--ink2); padding: 5px 10px 5px 18px; border-radius: 8px; line-height: 1.35; }
+nav a:hover { background: var(--side); }
+nav a.on { background: var(--forest-soft); color: var(--forest); font-weight: 500; }
+nav a[hidden] { display: none; }
+.navbtn { display: none; }
+
+main { min-width: 0; }
+.how { margin: 0 0 28px; padding: 18px 22px; border: 1px solid var(--line); border-radius: 20px; background: var(--side); color: var(--ink2); max-width: 78ch; }
+.how b { color: var(--ink); }
+.how p { margin: 0 0 8px; }
+.how p:last-child { margin: 0; }
+.mod { margin-bottom: 56px; }
+.mod h2 { font: 600 30px/1.15 var(--f-serif); letter-spacing: -0.3px; margin: 0 0 6px; text-wrap: balance; }
+.lede { margin: 0 0 20px; color: var(--muted); max-width: 70ch; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 20px 22px 18px; margin-bottom: 22px; scroll-margin-top: calc(var(--hh) + 16px); }
+.card.flash { animation: flash 1.4s ease-out; }
+@keyframes flash { from { box-shadow: 0 0 0 4px var(--forest); } to { box-shadow: 0 0 0 4px transparent; } }
+.card > header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+.card h3 { margin: 0 0 4px; font: 600 20px/1.25 var(--f-serif); text-wrap: balance; }
+.intro { margin: 0; color: var(--ink2); max-width: 74ch; }
+.also { margin: 6px 0 0; color: var(--muted); font-size: 13px; max-width: 74ch; }
+.meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 0; max-width: 100%; }
+.route { font: 12px/1.4 var(--f-mono); background: var(--side); border-radius: 8px; padding: 3px 8px; color: var(--ink2); overflow-wrap: anywhere; }
+.n { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { display: flex; align-items: center; gap: 6px; margin: 14px 0 10px; flex-wrap: wrap; }
+.bar button { height: 30px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); cursor: pointer; font-size: 13px; }
+.bar button:hover { background: var(--side); }
+.bar button[aria-expanded="true"] { background: var(--forest-soft); border-color: var(--forest); color: var(--forest); }
+.pct { min-width: 46px; text-align: center; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.paper { background: var(--paper); color: #1C2B25; }
+.vp { border: 1px solid var(--line); border-radius: 14px; overflow: auto; max-height: min(74vh, 920px); padding: 16px; cursor: grab; touch-action: pan-x pan-y pinch-zoom; }
+.vp.drag { cursor: grabbing; user-select: none; }
+.vp svg { display: block; margin: 0 auto; max-width: none !important; }
+.src { margin: 10px 0 0; max-height: 320px; overflow: auto; background: var(--side); border-radius: 12px; padding: 12px 14px; font: 12px/1.5 var(--f-mono); color: var(--ink2); white-space: pre; }
+.jump { cursor: pointer; }
+.jump:hover :is(rect, polygon, path) { stroke-width: 3px !important; }
+.hit :is(rect, polygon, path, circle, ellipse) { stroke: #D1242F !important; stroke-width: 3.5px !important; }
+.ph { margin: 0 auto; display: grid; place-items: center; color: #66716B; font-size: 14px; background: repeating-linear-gradient(135deg, #FBF8F3, #FBF8F3 12px, #F6F1E7 12px, #F6F1E7 24px); border-radius: 10px; }
+.empty { display: none; padding: 40px 0; color: var(--muted); }
+
+.kinds { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px 16px; margin-top: 16px; }
+.kind { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; align-items: center; border: 1px solid var(--line); border-radius: 14px; padding: 8px; }
+.kind .sw { border-radius: 10px; padding: 8px; min-height: 62px; display: grid; place-items: center; }
+.kind .sw svg { display: block; max-width: 100%; height: auto; }
+.kind .txt p { margin: 2px 0 0; color: var(--ink2); font-size: 13.5px; line-height: 1.4; }
+.by { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; color: var(--ink2); font-size: 13px; }
+.by span { display: inline-flex; align-items: center; gap: 7px; }
+.by i { width: 18px; height: 12px; border-radius: 4px; border: 1px solid rgba(0, 0, 0, .25); display: inline-block; }
+
+#full { position: fixed; inset: 0; z-index: 50; background: var(--bg); display: flex; flex-direction: column; padding-top: env(safe-area-inset-top, 0px); }
+#full .fb { display: flex; align-items: center; gap: 8px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+#full .fb h3 { margin: 0 auto 0 0; font: 600 17px/1.2 var(--f-serif); min-width: 0; overflow-wrap: anywhere; }
+#full .fb button { height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); cursor: pointer; }
+#full .fb button:hover { background: var(--side); }
+#full .vp { flex: 1; max-height: none; border-radius: 0; border-width: 0; padding: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+#full .vp svg { margin: 0; }
+
+footer { color: var(--muted); font-size: 13px; padding-bottom: 24px; }
+
+@media (max-width: 960px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  nav#nav { position: static; max-height: none; }
+  nav#nav:not(.open) .ng { display: none; }
+  .navbtn { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); cursor: pointer; margin-bottom: 8px; }
+  .top { gap: 12px; }
+  .stats, .top h1 { display: none; }
+  .find { width: auto; flex: 1; }
+  .card { padding: 16px; }
+  .meta { align-items: flex-start; }
+  .kind { grid-template-columns: 120px minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .card.flash { animation: none; } }
+</style>
+
+<div class="top">
+  <div class="brand">psyflo<i>.</i></div>
+  <h1>Workflow diagrams</h1>
+  <div class="stats">__DIAGRAMS__ diagrams · __STEPS__ steps · __MODULES__ areas</div>
+  <div class="find">
+    <input id="q" type="text" inputmode="search" placeholder="Find a button, screen or step" aria-label="Find a button, screen or step" autocomplete="off">
+    <span class="cnt" id="cnt" aria-live="polite"></span>
+  </div>
+</div>
+
+<div class="layout">
+  <nav id="nav" aria-label="Diagrams by menu tab">
+    <button type="button" class="navbtn" id="navbtn" aria-expanded="false" aria-controls="nav">Menu tabs</button>
+    <!--NAV-->
+  </nav>
+  <main>
+    <div class="how">
+      <p><b>How to read this.</b> Each section is a menu tab of the app, in sidebar order. Inside it, one diagram per screen or task, from the first click to where the flow ends or hands off.</p>
+      <p>The shape tells you the kind of step and the colour tells you who does it (see the sixteen shapes below). Dashed boxes that say <b>Continues in</b> are links: click one to jump to that diagram. Type any button label or screen name in the search box to find every diagram that uses it. Drag a diagram to move it; use Full screen for the big ones.</p>
+    </div>
+    <div class="empty" id="empty">No diagram mentions that. Try a button label, a screen name or an agent name.</div>
+    <!--SECTIONS-->
+    <footer>Built from the demo's source. The demo uses invented data and sends nothing to a payer. Psyflo's assistant is FLO.</footer>
+  </main>
+</div>
+
+<div id="full" hidden role="dialog" aria-modal="true" aria-label="Diagram full screen">
+  <div class="fb">
+    <h3 id="ftitle"></h3>
+    <button type="button" data-f="fit">Fit</button>
+    <button type="button" data-f="out" aria-label="Zoom out">−</button>
+    <span class="pct" id="fpct">100%</span>
+    <button type="button" data-f="in" aria-label="Zoom in">+</button>
+    <button type="button" data-f="one">100%</button>
+    <button type="button" data-f="close">Close</button>
+  </div>
+  <div class="vp paper" id="fvp" tabindex="0"></div>
+</div>
+
+<!--DATA-->
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var DATA = JSON.parse($("#d").textContent);
+  var cards = $$(".card[data-q]");
+  var Z = new WeakMap();
+  var query = "";
+  var canUnpack = typeof DecompressionStream === "function" && typeof Blob === "function";
+
+  /* Diagrams travel as compressed text. A card unpacks its drawing when it is about to scroll into view. */
+  function bytes(b64) { var bin = atob(b64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
+  function unpack(b64) { return new Response(new Blob([bytes(b64)]).stream().pipeThrough(new DecompressionStream("gzip"))).text(); }
+
+  function dimsOf(card) { var vp = $(".vp", card); return { w: +vp.getAttribute("data-w") || 800, h: +vp.getAttribute("data-h") || 600 }; }
+  function svgOf(card) { return $("svg", $(".vp", card)); }
+  function paint(card) {
+    var st = Z.get(card), d = dimsOf(card), w = d.w * st.s, h = d.h * st.s, svg = svgOf(card);
+    if (svg) { svg.style.width = w + "px"; svg.style.height = h + "px"; }
+    else { var ph = $(".ph", card); if (ph) { ph.style.width = w + "px"; ph.style.height = h + "px"; } }
+    $(".pct", card).textContent = Math.round(st.s * 100) + "%";
+  }
+  function setScale(card, s, manual) {
+    var st = Z.get(card);
+    st.s = Math.min(2.5, Math.max(0.25, s));
+    if (manual) st.manual = true;
+    paint(card);
+  }
+  function fit(card) {
+    var cw = $(".vp", card).clientWidth - 34;
+    if (cw <= 0) return;
+    setScale(card, Math.min(1, Math.max(0.5, cw / dimsOf(card).w)), false);
+    Z.get(card).manual = false;
+  }
+
+  function markHits(card) {
+    $$(".hit", card).forEach(function (n) { n.classList.remove("hit"); });
+    if (!query) return;
+    $$(".node", card).forEach(function (n) { if (n.textContent.toLowerCase().indexOf(query) > -1) n.classList.add("hit"); });
+  }
+  /* Dashed "Continues in" boxes jump to their diagram. */
+  function wireLinks(card, list) {
+    (list || []).forEach(function (pair) {
+      var el = $('[id^="flowchart-' + pair[0] + '-"]', card); if (!el) return;
+      var go = function () {
+        var t = document.getElementById(pair[1].slice(1)); if (!t) return;
+        closeFull();
+        t.scrollIntoView(); t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
+      };
+      el.classList.add("jump"); el.setAttribute("role", "link"); el.setAttribute("tabindex", "0");
+      el.addEventListener("click", go);
+      el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    });
+  }
+  function load(card) {
+    var st = Z.get(card);
+    if (st.loaded) return Promise.resolve();
+    if (st.loading) return st.loading;
+    if (!canUnpack) { $(".ph", card).textContent = "This browser cannot open the compressed diagrams. Use the PDF instead."; return Promise.resolve(); }
+    st.loading = unpack(DATA[card.id].z).then(function (svg) {
+      $(".vp", card).innerHTML = svg;
+      st.loaded = true;
+      paint(card); wireLinks(card, DATA[card.id].l); markHits(card);
+    }).catch(function () { var ph = $(".ph", card); if (ph) ph.textContent = "This diagram could not be loaded. Use the PDF instead."; });
+    return st.loading;
+  }
+  var lazy = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { lazy.unobserve(e.target); load(e.target); } });
+  }, { rootMargin: "1600px 0px" }) : null;
+
+  cards.forEach(function (card) {
+    Z.set(card, { s: 1, manual: false, loaded: false, loading: null });
+    fit(card);
+    var vp = $(".vp", card);
+    $(".bar", card).addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      var a = b.getAttribute("data-act"), st = Z.get(card);
+      if (a === "fit") fit(card);
+      else if (a === "in") setScale(card, st.s * 1.25, true);
+      else if (a === "out") setScale(card, st.s / 1.25, true);
+      else if (a === "full") openFull(card);
+      else if (a === "src") {
+        var pre = $(".src", card), open = pre.hidden;
+        if (open && !pre.textContent) { pre.textContent = "Unpacking..."; unpack(DATA[card.id].m).then(function (t) { pre.textContent = t; }).catch(function () { pre.textContent = "The source could not be unpacked in this browser."; }); }
+        pre.hidden = !open; b.setAttribute("aria-expanded", String(open));
+        $('[data-act="copy"]', card).hidden = !open;
+      } else if (a === "copy") {
+        var txt = $(".src", card).textContent;
+        var done = function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy source"; }, 1400); };
+        var sel = function () { var r = document.createRange(); r.selectNodeContents($(".src", card)); var g = getSelection(); g.removeAllRanges(); g.addRange(r); b.textContent = "Selected: press copy"; };
+        try { navigator.clipboard.writeText(txt).then(done, sel); } catch (_) { sel(); }
+      }
+    });
+    drag(vp);
+    if (lazy) lazy.observe(card); else load(card);
+  });
+
+  /* Drag to pan. A drag never counts as a click on a jump box. */
+  function drag(vp) {
+    var x, y, sl, st, moved = false, down = false;
+    vp.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0 || e.pointerType === "touch") return;
+      down = true; moved = false; x = e.clientX; y = e.clientY; sl = vp.scrollLeft; st = vp.scrollTop;
+    });
+    window.addEventListener("pointermove", function (e) {
+      if (!down) return;
+      var dx = e.clientX - x, dy = e.clientY - y;
+      if (!moved && Math.abs(dx) + Math.abs(dy) > 4) { moved = true; vp.classList.add("drag"); }
+      if (moved) { vp.scrollLeft = sl - dx; vp.scrollTop = st - dy; }
+    });
+    window.addEventListener("pointerup", function () { if (down) { down = false; setTimeout(function () { vp.classList.remove("drag"); vp._moved = false; }, 0); vp._moved = moved; } });
+    vp.addEventListener("click", function (e) { if (vp._moved) { e.stopPropagation(); e.preventDefault(); vp._moved = false; } }, true);
+  }
+
+  /* Full screen: the same SVG moves into the overlay and comes back on close. */
+  var full = $("#full"), fvp = $("#fvp"), fcard = null, fscale = 1, home = null;
+  function fsvg() { return $("svg", fvp); }
+  function fset(s) { fscale = Math.min(3, Math.max(0.2, s)); var svg = fsvg(), d = dimsOf(fcard); if (svg) { svg.style.width = d.w * fscale + "px"; svg.style.height = d.h * fscale + "px"; } $("#fpct").textContent = Math.round(fscale * 100) + "%"; }
+  function ffit() { fset(Math.min(1.2, Math.max(0.4, (fvp.clientWidth - 50) / dimsOf(fcard).w))); fvp.scrollTo(0, 0); }
+  function openFull(card) {
+    load(card).then(function () {
+      var svg = svgOf(card); if (!svg) return;
+      fcard = card; home = $(".vp", card); fvp.innerHTML = ""; fvp.appendChild(svg);
+      $("#ftitle").textContent = $("h3", card).textContent;
+      full.hidden = false; document.body.style.overflow = "hidden";
+      ffit(); fvp.focus();
+    });
+  }
+  function closeFull() {
+    if (full.hidden) return;
+    var svg = fsvg(); if (svg && home) { home.appendChild(svg); paint(fcard); }
+    full.hidden = true; document.body.style.overflow = "";
+  }
+  full.addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    var f = b.getAttribute("data-f");
+    if (f === "close") closeFull(); else if (f === "fit") ffit(); else if (f === "one") fset(1);
+    else if (f === "in") fset(fscale * 1.25); else if (f === "out") fset(fscale / 1.25);
+  });
+  fvp.addEventListener("wheel", function (e) { if (e.ctrlKey || e.metaKey) { e.preventDefault(); fset(fscale * (e.deltaY < 0 ? 1.1 : 0.9)); } }, { passive: false });
+  drag(fvp);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeFull();
+    if (e.key === "/" && document.activeElement.tagName !== "INPUT") { e.preventDefault(); $("#q").focus(); }
+  });
+
+  /* Search: filters the menu and the cards, and rings every matching step. */
+  var q = $("#q"), cnt = $("#cnt"), timer;
+  function filter() {
+    var v = q.value.trim().toLowerCase(), shown = 0;
+    query = v;
+    cards.forEach(function (c) {
+      var ok = !v || c.getAttribute("data-q").indexOf(v) > -1;
+      c.hidden = !ok;
+      if (ok) { shown++; if (Z.get(c).loaded) markHits(c); }
+    });
+    $$("#legend").forEach(function (l) { l.hidden = !!v; });
+    $$(".mod").forEach(function (m) { m.hidden = !!v && !$$(".card[data-q]:not([hidden])", m).length; });
+    $$("nav a[data-d]").forEach(function (a) { var c = document.getElementById(a.getAttribute("data-d")); a.hidden = !!c && c.hidden; });
+    $$(".ng").forEach(function (g) { g.hidden = !!v && !$$("a[data-d]:not([hidden])", g).length; });
+    cnt.textContent = v ? shown + " of " + cards.length : "";
+    $("#empty").style.display = v && !shown ? "block" : "none";
+    if (!v) cards.forEach(function (c) { if (!Z.get(c).manual) fit(c); });
+  }
+  q.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(filter, 120); });
+
+  /* Menu: current section follows the scroll. */
+  var links = {};
+  $$("nav a[data-d]").forEach(function (a) { links[a.getAttribute("data-d")] = a; });
+  if ("IntersectionObserver" in window) {
+    var cur = null;
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var a = links[e.target.id]; if (!a) return;
+        if (cur) cur.classList.remove("on");
+        cur = a; a.classList.add("on");
+      });
+    }, { rootMargin: "-90px 0px -65% 0px" });
+    cards.forEach(function (c) { io.observe(c); });
+  }
+  $("#navbtn").addEventListener("click", function () { var n = $("#nav"), o = n.classList.toggle("open"); this.setAttribute("aria-expanded", String(o)); });
+  $("#nav").addEventListener("click", function (e) { if (e.target.closest("a") && innerWidth <= 960) { $("#nav").classList.remove("open"); $("#navbtn").setAttribute("aria-expanded", "false"); } });
+
+  var rs; addEventListener("resize", function () { clearTimeout(rs); rs = setTimeout(function () { cards.forEach(function (c) { if (!Z.get(c).manual) fit(c); }); if (!full.hidden) ffit(); }, 150); });
+  addEventListener("load", function () { cards.forEach(function (c) { if (!Z.get(c).manual) fit(c); }); });
+})();
+</script>

@@ -1,0 +1,184 @@
+{
+ "_about": "v2 workflow config: clocks and weekly eligibility re-verification rows (synthetic). Constants live here, not in code.",
+ "clocks": {
+  "call_day": 10,
+  "decision_days": 14,
+  "public_standard_days": 7,
+  "isp_due_hours": 24,
+  "paperwork_due_days": 7,
+  "initial_sra_days": 30,
+  "restart_days": 30,
+  "unit_bands": {
+   "u1": 120,
+   "u2": 180,
+   "u3": 300
+  }
+ },
+ "eligibility": [
+  {
+   "kind": "reverify",
+   "client": "MR",
+   "plan": "anthem",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T09:10",
+   "checked_by": "cdiaz",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_MR_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "DW",
+   "plan": "sentara",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T09:25",
+   "checked_by": "cdiaz",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_DW_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "TN",
+   "plan": "sentara",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T09:41",
+   "checked_by": "cdiaz",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_TN_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "KT",
+   "plan": "anthem",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T10:02",
+   "checked_by": "jperez",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_KT_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "EC",
+   "plan": "anthem",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T10:15",
+   "checked_by": "jperez",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_EC_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "JT",
+   "plan": "humana",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T10:30",
+   "checked_by": "cdiaz",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_JT_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "DP",
+   "plan": "aetna",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T10:44",
+   "checked_by": "cdiaz",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_DP_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "AG",
+   "plan": "sentara",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T11:02",
+   "checked_by": "cdiaz",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_AG_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "CB",
+   "plan": "anthem",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T11:15",
+   "checked_by": "jperez",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_CB_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "LV",
+   "plan": "humana",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T11:31",
+   "checked_by": "jperez",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_LV_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "SB",
+   "plan": "uhc",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T13:05",
+   "checked_by": "cdiaz",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_SB_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "PG",
+   "plan": "aetna",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-22T13:20",
+   "checked_by": "cdiaz",
+   "next_check": "2026-10-29",
+   "screenshot": "DMAS_PG_2026-10-22.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "JO",
+   "plan": "aetna",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-26T09:00",
+   "checked_by": "jperez",
+   "next_check": "2026-11-02",
+   "screenshot": "DMAS_JO_2026-10-26.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "AM",
+   "plan": "anthem",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-27T09:10",
+   "checked_by": "cdiaz",
+   "next_check": "2026-11-03",
+   "screenshot": "DMAS_AM_2026-10-27.png"
+  },
+  {
+   "kind": "reverify",
+   "client": "LB",
+   "plan": "sentara",
+   "status": "recorded",
+   "result": "active",
+   "checked_at": "2026-10-27T09:25",
+   "checked_by": "cdiaz",
+   "next_check": "2026-11-03",
+   "screenshot": "DMAS_LB_2026-10-27.png"
+  }
+ ]
+}

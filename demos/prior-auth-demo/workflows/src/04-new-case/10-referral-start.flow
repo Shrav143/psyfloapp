@@ -1,0 +1,61 @@
+title: Authorizations › New Case › Intake › Start with a referral or patient
+route: /authorizations/new/:draftId (Intake, Initial authorization or Retroactive authorization)
+intro: The row of ways in at the top of Intake. Three bring a record in (Pull from EMR, Import a file, Paste a screenshot) and end in the same review with Apply. Referrals opens the incoming referrals in a side panel, with a drop zone for new referral documents. Known patient opens the patient search in a side panel. Typing straight into the form is the by-hand way. Everything shows only the sites in view.
+dir: TD
+also: Demo only: Reader's reading of a dropped referral is invented. The same file name always gives the same one of three sample referrals. A referral read from dropped files is placed at the site the person is working at.
+---
+start s1 "Open Intake on a new case"
+start s2 "Click 'Use a different referral' or 'Use a different patient'\nor 'Add a referral' on Clinical documentation (opens ?ref= empty)"
+screen sc1 "The row\n'Pull from EMR' (only when a clinical record system is connected at a site in view)\n'Import a file', 'Paste a screenshot' | 'Referrals 8', 'Known patient'\nA retroactive request has no 'Referrals'"
+
+group gImport "Bring a record in"
+  click cEmr "Click 'Pull from EMR'"
+  click cFile "Click 'Import a file'"
+  click cShot "Click 'Paste a screenshot', or press Ctrl+V or Cmd+V in the row"
+endgroup
+goto gEmr "Continues in: Authorizations › New Case › Import › Pull from EMR"
+goto gFile "Continues in: Authorizations › New Case › Import › Import a file with field mapping"
+goto gShot "Continues in: Authorizations › New Case › Import › Paste a screenshot"
+
+group gRefs "Referrals, a side panel"
+  click cRefs "Click 'Referrals'"
+  overlay oRefs "Side panel 'Incoming referrals'\nDrop zone 'Drop referral documents, or click to choose'\n'Use sample referral'\nOne row per open referral at the sites in view"
+  process pRows "Each row: initials and age, RF number, urgency (if not routine), source, channel, time\nStatus: 'Documents complete', 'N items missing', 'N items to review' or 'Waiting on the referrer'\nButton 'Review'"
+  input iDrop "Drop files, or click and choose"
+  click cSample "Click 'Use sample referral'"
+  agent aRead "Reader reads, about one second a line, in the panel\nThe same reading as the full referral page"
+  store stRef "New referral added with the next RF number at the site in view"
+  click cReview "Click 'Review' on a row"
+  process pRev "Panel closes\nAddress gets ?ref=RF-2045\nThe referral's checklist replaces the form"
+  click cEsc "Press Escape, or click outside"
+endgroup
+goto gCheck "Continues in: Authorizations › New Case › Referral › Referral checklist"
+
+group gKnown "Known patient, a side panel"
+  click cKnown "Click 'Known patient'"
+  overlay oKnown "Side panel 'Known patient'\nSearch 'Find a patient' by initials or case ID"
+  goto gFind "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization"
+  process pPick "Picking a patient fills the form with their details\nNo second patient is made\nPanel closes"
+  toast tPick "'J.M., 34 is in this case'"
+endgroup
+
+input iType "Type into the form: Initials, Date of birth, Payer, Level of care"
+process pStart "The case counts as started\nThe stepper's Intake state follows"
+goto gForm "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
+endx eNone "Panel closed, nothing changes"
+
+s1 --> sc1
+s2 --> sc1
+sc1 --> cEmr --> gEmr
+sc1 --> cFile --> gFile
+sc1 --> cShot --> gShot
+sc1 --> cRefs --> oRefs --> pRows
+oRefs --> iDrop --> aRead
+oRefs --> cSample --> aRead
+aRead --> stRef --> pRev
+pRows --> cReview --> pRev --> gCheck
+oRefs --> cEsc --> eNone
+sc1 --> cKnown --> oKnown --> gFind
+oKnown --> pPick --> tPick
+oKnown -.-> eNone
+sc1 --> iType --> pStart --> gForm

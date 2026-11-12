@@ -1,0 +1,63 @@
+title: Authorizations › New Case › Reopen and resume a case
+route: /authorizations/new/:draftId
+intro: What happens when the address names a case: it reopens where it was left, a case that was already sent says so, a case at another site is not available to a viewer who cannot see that site, and an unknown id says so. A case whose agents already ran never reopens on Intake; one saved while the agents worked (the old step 4) opens Clinical documentation scrolled to Authorization preparation.
+dir: TD
+---
+start s1 "A case id is in the address"
+start s2 "Click a button on a draft row in Authorizations (In progress)\n'Continue', 'Watch', 'Answer' or 'Review and sign'"
+start s3 "Click 'Open in review and sign' or 'Send to payer' on a case page\nA draft is made from the request, or the one it has is brought up to date"
+process pReq "Draft opens on Review & submit when the request is ready\non Clinical documentation at Authorization preparation when agents still have work\nNever a blank draft"
+decision d3 "Is there a case with that id?"
+screen sc1 "New Case\n'We could not find that draft'\n'It may have been cleared when the demo data was reset.'"
+click c1 "Click 'Start a new case'"
+goto gNew "Continues in: Authorizations › New Case › How a case starts and resumes"
+decision dSite "Is the case at a site in view?"
+screen scOut "'This case is not available at Site B'\n'R-0975 belongs to Site B. Dr. Rivera can see Site A only.'\nNo patient, payer or dates are shown"
+click cShow "Click 'Show Site B'\nOnly for a viewer who may see both sites"
+process pShow "The site view switches to Site B\nThe case opens"
+decision d4 "Was it signed and sent?"
+screen sc2 "'R-1234 was sent'\n'Signed and sent (demo)', or 'Already with the payer'"
+click c2 "Click 'Open the case', or 'Open it on the Dashboard'"
+click c3 "Click 'Back to Authorizations'"
+decision d5 "Did the agents already run, with the case still on an earlier step?"
+process p9 "Opens on Clinical documentation, scrolled to Authorization preparation, when fewer than ten agents are done\nelse on Review & submit\nA later click in the stepper is not undone"
+screen sc3 "New Case\nLink 'Authorizations', the header card 'New Case' with the case id and the 'Authorization type' dropdown\nThe stepper with each step's state, the workflow line, then the step"
+click c4 "Click the link 'Authorizations'"
+decision d6 "Which step is the case on?"
+process pNarrow "Narrowing the site view while a blank case is open\nA case with no patient and no ID moves to the site in view; one with an ID or a patient stays at its own site"
+goto gCm "Continues in: Authorizations › Worklist › Arrive and read the views"
+goto gDash "Continues in: Dashboard\nOpens the request"
+goto gCase "Continues in: Authorizations › Case page › Send to payer and review and sign"
+goto gSites "Continues in: Authorizations › New Case › Sites and scope"
+goto g1 "Continues in: Authorizations › New Case › Intake › Initial authorization"
+goto g1b "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization"
+goto g2 "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization"
+goto g3 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
+goto g4 "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
+goto g5 "Continues in: Authorizations › New Case › Review & submit › The draft and the summary"
+
+s3 --> pReq --> d3
+s1 --> d3
+s2 --> d3
+d3 -->|No| sc1 --> c1 --> gNew
+d3 -->|Yes| dSite
+dSite -->|No| scOut
+scOut --> cShow --> pShow --> d4
+scOut -.-> gSites
+dSite -->|Yes| d4
+d4 -->|Yes| sc2
+sc2 --> c2 --> gDash
+sc2 --> c3 --> gCm
+d4 -->|No| d5
+d5 -->|Yes| p9 --> sc3
+d5 -->|No| sc3
+sc3 --> c4 --> gCm
+sc3 --> d6
+sc3 -.-> pNarrow
+s3 -.-> gCase
+d6 -->|Intake, initial or retroactive| g1
+d6 -->|Intake, review, renewal or modification| g1b
+d6 -->|Eligibility & Benefits| g2
+d6 -->|Clinical documentation| g3
+d6 -->|Clinical documentation, agents started| g4
+d6 -->|Review & submit| g5

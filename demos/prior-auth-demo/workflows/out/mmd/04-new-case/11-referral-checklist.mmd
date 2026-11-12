@@ -1,0 +1,72 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Review' on an arrived referral</b><br/>or Reader finishes reading dropped files" }
+  s2@{ shape: stadium, label: "<b>Click the crumb 'Referral'</b><br/>on the full referral page" }
+  sc1@{ shape: curv-trap, label: "<b>Intake · the referral's checklist</b><br/>Crumbs 'New Case › Referral'<br/>Reader chip, 'read', then the documents<br/>'Referral form · 2 pages', 'Face sheet · 1 page'" }
+  p0@{ shape: rect, label: "<b>Referral is marked opened</b><br/>Sidebar badge drops" }
+  sc2@{ shape: curv-trap, label: "<b>Patient card</b><br/>Initials, age, RF number, source, channel, 'received 4 h ago'<br/>Urgency pill, '{Program} requested', status pill once decided" }
+  pr@{ shape: rect, label: "<b>'8 of 11 ready' with a bar, and '3 to go'</b><br/>All done: 'Nothing is missing'<br/>Once Verify has run the total is 12" }
+  subgraph gSec ["Four sections, each with 'x of y'"]
+  sA@{ shape: curv-trap, label: "<b>PATIENT</b><br/>Patient initials and age<br/>Patient contact information is present<br/>Patient age is within the program's range" }
+  sB@{ shape: curv-trap, label: "<b>REFERRER</b><br/>Clinician credentials are accepted<br/>Clinician signature is present<br/>The order has not expired" }
+  sC@{ shape: curv-trap, label: "<b>CLINICAL</b><br/>A valid diagnosis code is present<br/>Required clinical components are present<br/>Requested service matches what the program offers<br/>Urgent criteria are documented" }
+  sD@{ shape: curv-trap, label: "<b>COVERAGE</b><br/>Insurance and member ID are found<br/>Verify checked coverage (Optional until it has run)" }
+  end
+  dRow@{ shape: diam, label: "State of a row?" }
+  rDone@{ shape: rect, label: "<b>Done</b><br/>'Found: F10.20 · Referral form, page 1'<br/>No buttons" }
+  rMiss@{ shape: rect, label: "<b>Missing: nothing was found</b><br/>No signature, components, urgent criteria, contact, diagnosis or insurance" }
+  rWarn@{ shape: rect, label: "<b>Check this: found, but wrong</b><br/>Credentials, expired order, level of care, short ICD-10 code, lapsed coverage" }
+  rAge@{ shape: rect, label: "<b>Check this: age under 18 (failed)</b><br/>Only 'Mark OK' on the row<br/>No 'Ask the referrer': a reply cannot change a patient's age" }
+  rWait@{ shape: rect, label: "<b>Waiting on the referrer</b><br/>'Asked by fax, 1 d ago.'<br/>No 'Ask' button, 'Mark OK' stays<br/>Counts as handled for 'Accept referral and continue'" }
+  cAsk@{ shape: trap-t, label: "<b>Click 'Ask the referrer' on a row</b><br/>(not on a failed age row; the insurance row has no 'Mark OK')" }
+  cOk@{ shape: trap-t, label: "Click 'Mark OK' on a row" }
+  cCov@{ shape: trap-t, label: "<b>Click 'Run coverage check'</b><br/>or 'Check again' on the coverage row" }
+  pReq@{ shape: rect, label: "<b>Six rows are required before the referral can be accepted</b><br/>Patient age, clinician credentials, clinician signature, diagnosis code, level of care, insurance and member ID<br/>The other rows are advisory: the Accept dialog lists them" }
+  gAsk@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Ask the referrer" }
+  gOk@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Mark OK or decline" }
+  gCov@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Check coverage" }
+  gBtn@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Checklist buttons" }
+  s1 --> sc1
+  s2 --> sc1
+  sc1 --> p0 --> sc2 --> pr --> sA --> sB --> sC --> sD
+  sc2 -.-> gBtn
+  sD --> dRow
+  dRow -->|"Found"| rDone
+  dRow -->|"Nothing found"| rMiss
+  dRow -->|"Found, wrong"| rWarn
+  dRow -->|"Age failed"| rAge
+  dRow -->|"Question sent"| rWait
+  rMiss --> cAsk
+  rWarn --> cAsk
+  rMiss --> cOk
+  rWarn --> cOk
+  rAge --> cOk
+  rWait --> cOk
+  sD -.-> cCov
+  sD -.-> pReq -.-> gBtn
+  cAsk --> gAsk
+  cOk --> gOk
+  cCov --> gCov
+  class s1,s2 k_start
+  class sc1,sc2,sA,sB,sC,sD k_screen
+  class p0,pr,rDone,rMiss,rWarn,rAge,rWait,pReq k_process
+  class dRow k_decision
+  class cAsk,cOk,cCov k_click
+  class gAsk,gOk,gCov,gBtn k_goto
+  style gSec fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>School portal — Harvest Outreach Center</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared school look: SCHOOL_CSS in js/screens/SchoolPortal.js */
+</style>
+</helmet>
+
+<div class="s-pg">
+  <header class="s-hd">
+    <b>Harvest Outreach Center</b><span class="m">School portal · {{schoolShort}}</span>
+    <span class="r">{{signedIn}} · <a href="#out">Sign out</a></span>
+  </header>
+  <main class="s-main">
+    <div class="s-top">
+      <h1 class="u-title">Referrals</h1>
+      <span class="u-sp"></span>
+      <a class="u-btn" href="#share">Share today</a>
+      <a class="u-btn pri" href="ReferralForm.dc.html">Refer a student</a>
+    </div>
+
+    <sc-if value="{{sharing}}">
+    <section class="s-card" id="share">
+      <sc-if value="{{students.length}}">
+      <div class="s-g2">
+        <div><label for="st">Student</label><select class="u-sel" id="st" style="width:100%"><sc-for list="{{students}}" as="o"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
+        <div><label for="wh">Where and when</label><input class="u-in" id="wh" style="width:100%" placeholder="Cafeteria, 11:50 am"></div>
+      </div>
+      <div style="margin-top:12px"><label for="what">What happened</label><textarea class="u-in" id="what" style="width:100%;min-height:80px;padding:10px" placeholder="A sentence or two"></textarea></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><a class="u-btn txt" href="#shareClose">Cancel</a><a class="u-btn pri" href="#sendShare">Send</a></div>
+      </sc-if>
+      <sc-if value="{{!students.length}}"><div class="u-mut">No TDT students yet</div><div style="margin-top:8px"><a class="u-btn txt" href="#shareClose">Close</a></div></sc-if>
+    </section>
+    </sc-if>
+
+    <div class="u-rows" style="margin-top:8px" id="referrals">
+      <sc-for list="{{rows}}" as="r"><div class="u-row" style="--cols:140px minmax(0,1fr) auto"><span><span class="u-chip {{r.cls}}">{{r.chip}}</span></span><span><span class="who">{{r.who}}</span> <span class="u-mut">{{r.when}}</span></span><a class="u-btn" href="{{r.href}}">{{r.btn}}</a></div></sc-for>
+      <sc-if value="{{!rows.length}}"><div class="u-row" style="--cols:1fr"><span class="u-mut">No referrals yet</span></div></sc-if>
+    </div>
+    <sc-if value="{{more}}"><div style="margin-top:8px"><a class="u-link" href="#all">{{moreLabel}}</a></div></sc-if>
+    <sc-if value="{{shared.length}}">
+    <div class="u-sec">Sent today</div>
+    <div class="u-rows"><sc-for list="{{shared}}" as="h"><div class="u-row" style="--cols:64px minmax(0,1fr) auto"><span class="who">{{h.ini}}</span><span class="what" data-doc>{{h.text}}</span><span class="u-chip {{h.cls}}">{{h.chip}}</span></div></sc-for></div>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

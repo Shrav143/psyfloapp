@@ -1,0 +1,51 @@
+title: Authorizations › Approved › Quick view of a tracked authorization
+route: /authorizations?view=approved&quick=R-0856
+intro: A row the ledger tracks opens this right-hand quick view when it is approved or with the payer: the summary first (what is due next, units used and left, the approved window, level of care, payer, site, approval chance, the next review, documents and the three newest lines of history), then 'Open case' and, where it applies, 'Draft review' or 'Open review'. Requests still in progress and denials open the other quick views.
+dir: TD
+also: Demo only, at the start: 50 rows open it (the 32 approved authorizations and 18 requests with the payer). The status pill at the top is the ledger's own (Needs action, Review due, Awaiting payer, On track), which the row shows as chips.
+---
+start s1 "A tracked row is on screen (Approved, or With the payer with a ledger record)"
+click c1 "Click the row (any part that is not a link or button)"
+click c2 "Click the small icon 'Quick view R-0856' beside the patient\n(Tab to it, then Enter or Space)"
+store ad "?quick=R-0856 in the address (replaces the entry)\nThe row is highlighted"
+overlay ov "Right-hand panel 'R-0856 · Summit'\nSubtitle 'J.S., 51 · Residential 3.5 · Continued stay 2', ledger status pill 'Review due' at the right\nBig line 'Next due': 'Review today', red when urgent, and the next step: 'Review 2 is drafted. Read it, then sign it. ...'"
+process pf "Focus goes to 'Open case'\nTab stays inside the panel"
+screen kv "Facts, one line each\nUnits or days: '12 of 14 days used, 2 left' with a bar, and 'Runs out before review' when it applies\nApproved window: 'Thu 10/8 to Thu 10/22'\nLevel of care, Payer, Workflow (when the case follows one), Site ('Site B · Second campus')\nApproval chance with its band, range and how many similar decisions"
+screen kr "Next review: 'Review 2, Tue 10/20, 9:00 am' with its pill (Not drafted yet, Drafted, Needs your update)\nNot approved yet: 'None until the request is approved'; approved with no review open: 'None booked'"
+decision dd "Does the case have a case page of its own (a request)?"
+screen dc "Documents: 'Complete, all 10 in the packet' or '8 of 9. Missing: ...'\nCounted the way the case page counts them"
+process dn "No Documents line"
+screen hh "Latest history: the three newest lines, each with who did it and the time\ne.g. 'Review 2 is due', 'Scribe drafted review 2', 'Summit approved 14 days'\nA case that is also a request shows the request's own events"
+
+decision dr "What state is the next review in?"
+click cd "Click 'Draft review'"
+agent ag "Cadence drafts the review (demo: simulated, about 1.3 seconds)\nA paused Cadence says so at once: toast 'Cadence is paused in Settings'"
+toast tg "'Cadence drafted 1 review'"
+process pu "The panel updates in place: the pill reads 'Drafted' and 'Draft review' becomes 'Open review'"
+click co "Click 'Open review'"
+process po "The quick view closes and the review drawer opens\nThe address swaps ?quick= for ?review="
+goto g3 "Continues in: Authorizations › Reviews this week › The review drawer"
+goto g5 "Continues in: Authorizations › Ledger case page › Workflow line and history"
+process pn2 "No review button: the next review is not this week, or the case is not approved"
+
+click cc "Click 'Open case'"
+goto g1 "Continues in: Authorizations › Approved › Open an approved authorization"
+click cx "Press Escape, click X or the dimmed area"
+process px "The panel closes and ?quick= leaves the address\nFocus returns to the row's quick view icon"
+process ps "The panel shows only rows at the sites in view\nIf the view changes so the case is out of site, it closes"
+end e1 "Back on the list"
+
+s1 --> c1 --> ad
+s1 --> c2 --> ad
+ad --> ov --> pf --> kv --> kr --> dd
+kv -.-> g5
+dd -->|Yes| dc --> hh
+dd -->|No| dn --> hh
+hh --> dr
+dr -->|Not drafted yet, due this week| cd --> ag --> tg --> pu --> co
+dr -->|Drafted or needs your update| co
+dr -->|None, or later than this week| pn2
+co --> po --> g3
+ov --> cc --> g1
+ov --> cx --> px --> e1
+ov -.-> ps

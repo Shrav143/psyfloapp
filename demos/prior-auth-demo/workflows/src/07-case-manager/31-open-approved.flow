@@ -1,0 +1,55 @@
+title: Authorizations › Approved › Open an approved authorization
+route: /authorizations?view=approved → /authorizations/case/ID
+intro: The ways out of a ledger row (an approved authorization, or a request sent today that the ledger now tracks): the ID opens the full case, the row or its icon opens the tracked quick view, and the button does the one thing due. A case that is a request gets the Authorizations case page; one that only the ledger has gets the ledger case page; a case at a site the viewer is not looking at gets the out-of-site card.
+dir: TD
+also: Demo only: 26 of the 32 approved authorizations at the start have no request of their own and open the ledger case page; the other 6 are also requests, so they open the Authorizations case page. 'Start reauthorization' shows only for an approval ending within 7 days with no review open or booked. Every approved row at the start has a review this week, and signing books the next one, so it appears for a request sent today and approved, once Fast-forward brings its end within 7 days.
+---
+start s1 "A ledger row on screen (Approved, or With the payer marked 'New today')"
+click c1 "Click the case ID (underlined)"
+click c2 "Click the row away from a link or button, or its quick view icon"
+goto gq "Continues in: Authorizations › Approved › Quick view of a tracked authorization"
+click c3 "Click the row's button"
+
+decision db "Which button does the row have?"
+process b1 "A review not signed yet: the review's own button\n'Update the review', 'Review and sign', 'Check the review' or 'Open the review'"
+store b1s "?review= and the review ID in the address"
+goto gr "Continues in: Authorizations › Reviews this week › The review drawer"
+process b2 "A denial waiting on a peer-to-peer call: 'Open the denial'"
+goto gd "Continues in: Denial Intelligence › A denial opened"
+process b3 "Approval ending within 7 days, no review open: 'Start reauthorization'"
+process b3p "Go to New Case with type=reauth and the patient's case"
+goto gn "Continues in: Authorizations › New Case › Intake › Reauthorization / renewal"
+process b4 "Anything else: an outlined 'Open'"
+
+process p1 "Go to /authorizations/case/ and the case ID"
+decision ds "Is the case at a site the viewer is looking at?"
+screen sos "Out-of-site card\n'This case is not available at Site A'\nNo patient or detail"
+goto gs "Continues in: Authorizations › Sites › Reviews, step-down plans and ledger cases at each site"
+decision d2 "Is the case a request: a queue record or a Dashboard request?"
+screen s2 "Authorizations case page"
+goto g1 "Continues in: Authorizations › Case page › Ways in"
+decision d3 "Is the case in the ledger?"
+screen s3 "Ledger case page\nCase summary, next step, history\n'Open the review' (when one is due) and 'Back to Authorizations'"
+goto g3 "Continues in: Authorizations › Ledger case page › Open and read"
+screen s5 "'Request not found'\n(only for an address typed by hand)"
+click c5 "Press the browser Back button"
+process p5 "Authorizations again, on the same view and filters (they are in the address)\nSort and page start again"
+end e1 "Back on the list"
+
+s1 --> c1 --> p1
+s1 --> c2 --> gq
+s1 --> c3 --> db
+db -->|Review open| b1 --> b1s --> gr
+db -->|Peer-to-peer| b2 --> gd
+db -->|Ending soon| b3 --> b3p --> gn
+db -->|Other| b4 --> p1
+p1 --> ds
+ds -->|No| sos --> gs
+ds -->|Yes| d2
+d2 -->|Yes| s2 --> g1
+d2 -->|No| d3
+d3 -->|Yes| s3 --> g3
+d3 -.->|No| s5
+s2 --> c5
+s3 --> c5
+c5 --> p5 --> e1

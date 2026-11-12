@@ -1,0 +1,75 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  ap@{ shape: trap-t, label: "Click 'Apply selected (6)'" }
+  d0@{ shape: diam, label: "Is at least one card included?" }
+  e0@{ shape: stadium, label: "<b>Button is off</b><br/>Nothing to apply" }
+  d1@{ shape: diam, label: "Does an included card ask a question that has no answer?" }
+  t1@{ shape: odd, label: "<b>'Add your answer first'</b><br/>'2 selected actions need your input before it can be applied.'" }
+  sc@{ shape: rect, label: "<b>Red text on those cards</b><br/>Page scrolls to the first one" }
+  e1@{ shape: stadium, label: "<b>Nothing is applied</b><br/>Answer, or uncheck the card, then try again" }
+  st@{ shape: rect, label: "<b>New chance worked out</b><br/>Current chance plus the points on the included cards" }
+  run@{ shape: cyl, label: "<b>A run starts on this case</b><br/>The four side buttons and every card control lock" }
+  top@{ shape: rect, label: "Page scrolls to the top so the strip and the ring are in view" }
+  strip@{ shape: curv-trap, label: "<b>Work strip</b><br/>'The agents are updating the draft'" }
+  subgraph gA ["Agents in turn"]
+  a1@{ shape: hex, label: "<b>Scribe</b><br/>'Reading your answers' › 'Writing the new sentences into the draft' › 'Rewriting 2 sections' › 'Draft updated'" }
+  a2@{ shape: hex, label: "<b>Integrity</b><br/>'Reading every sentence against the chart' › 'Checking dates and identifiers' › 'Every sentence matches the chart'" }
+  a3@{ shape: hex, label: "<b>Forecaster</b><br/>'Matching 1,248 similar decisions' › 'Re-scoring the approval chance' › 'New chance ready'" }
+  end
+  w@{ shape: delay, label: "<b>About 8 seconds in all</b><br/>(demo: simulated)<br/>Each agent: Waiting, spinner, green tick" }
+  dn@{ shape: cyl, label: "<b>Run ends</b><br/>Cards move to 'Applied'<br/>Chance and 'points left' saved on the case<br/>New draft version: 'Scribe', 'Added 6 recommendations'<br/>History: Scribe applied '...' for each card, flagged 'Agent'" }
+  rg@{ shape: rect, label: "<b>Header ring counts up to the new chance</b><br/>Pill, likely range and 'Days likely granted' follow" }
+  dQ@{ shape: diam, label: "Is this a queue request with a Dashboard entry?" }
+  db@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Its own line 'Scribe added 6 items to the draft ...'<br/>not repeated in the case page's History" }
+  qu@{ shape: rect, label: "<b>Its row in Authorizations shows the new chance</b><br/>The 'Approval chance, open requests' average moves too" }
+  nf@{ shape: odd, label: "<b>Notification from Forecaster: 'Approval chance updated'</b><br/>'R-1042 is now 88% after 6 actions.'<br/>Click it to return to this case" }
+  ts@{ shape: odd, label: "<b>Toast: 'Draft updated'</b><br/>'6 actions applied. Approval chance is now 88%.'" }
+  dR@{ shape: diam, label: "Do all four checks pass now?" }
+  ok@{ shape: rect, label: "<b>'Send to payer' turns on, chip 'Integrity 4/4'</b><br/>Badge on 'Clinical picture & draft' clears<br/>'Every recommendation is applied' if none are left" }
+  no@{ shape: rect, label: "<b>'Send to payer' stays off</b><br/>Its reason names the checks still open" }
+  pt@{ shape: rect, label: "<b>Cards you left out stay open</b><br/>Header line then reads 'up to N% with the rest'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
+  ap --> d0
+  d0 -->|"No"| e0
+  d0 -->|"Yes"| d1
+  d1 -->|"Yes"| t1 --> sc --> e1
+  d1 -->|"No"| st --> run --> top --> strip
+  strip --> a1 --> a2 --> a3
+  a3 --> w --> dn
+  dn --> rg --> dQ
+  dQ -->|"Yes"| db --> qu
+  dQ -->|"No"| qu
+  dn --> nf
+  dn --> ts
+  dn --> dR
+  dR -->|"Yes"| ok
+  dR -->|"No"| no
+  dn -.-> pt
+  ok --> g1
+  class ap k_click
+  class d0,d1,dQ,dR k_decision
+  class e0,e1 k_endx
+  class t1,nf,ts k_toast
+  class sc,st,top,rg,qu,ok,no,pt k_process
+  class run,dn,db k_store
+  class strip k_screen
+  class a1,a2,a3 k_agent
+  class w k_wait
+  class g1 k_goto
+  style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

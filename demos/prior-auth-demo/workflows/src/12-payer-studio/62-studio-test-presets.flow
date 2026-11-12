@@ -1,0 +1,44 @@
+title: Payers › Test Workflow › Made-up cases
+route: /payers/summit?tab=test
+intro: Eight starting points fill the whole case form at once. They are fictional and change nothing real. Pick one, change anything, and run it. The words in the outcome come from the engine, so the same preset gives different results on a different workflow.
+dir: TD
+---
+start s1 "Look at 'Start from a made-up case'"
+screen pr "Eight pills, one chosen at a time\nThe line under them says what the chosen case shows"
+click c1 "Click 'Clean initial request'"
+screen k1 "Everything in order, every approval given\nThe run goes through to submission and waits for the payer's answer"
+click c2 "Click 'Treatment plan missing'"
+screen k2 "Every document except the treatment plan\nEligibility passes, authorization is required, the submission window passes,\nthen: 'Paused for documentation: treatment plan is missing.'"
+click c3 "Click 'Coverage inactive'"
+screen k3 "Coverage inactive\nThe run stops at once: 'Needs a person: Coverage is not active for today.'"
+click c4 "Click 'No authorization required'"
+screen k4 "Authorization requirement not required\nThe run ends: 'No authorization needed ...'"
+click c5 "Click 'Retro outside the window'"
+screen k5 "Retroactive request, service started 45 days ago\nThe retroactive workflow is chosen and stops at the backdating rule"
+click c6 "Click 'Portal down'"
+screen k6 "Ready to send, payer portal down\nThe submission method falls back as the workflow says"
+click c7 "Click 'Payer asks for more information'"
+screen k7 "Payer answer: asked for more information\nThe path follows the 'More information' exit, back to documents"
+click c8 "Click 'Partial approval'"
+screen k8 "Payer answer: approved in part\nThe path follows the exit that hands it to the denial workflow"
+process p1 "Choosing a case fills the form again and clears any earlier result"
+click c9 "Click 'Reset the case'"
+process p2 "The chosen case is restored after your edits"
+decision d1 "Is the request type or service changed by hand?"
+process p3 "The workflow that matches the new case is chosen,\nunless you picked one yourself"
+end e1 "A case is ready to run"
+goto g1 "Continues in: Payers › Test Workflow › Run a test case"
+
+s1 --> pr
+pr --> c1 --> k1 --> p1
+pr --> c2 --> k2 --> p1
+pr --> c3 --> k3 --> p1
+pr --> c4 --> k4 --> p1
+pr --> c5 --> k5 --> p1
+pr --> c6 --> k6 --> p1
+pr --> c7 --> k7 --> p1
+pr --> c8 --> k8 --> p1
+p1 --> c9 --> p2 --> d1
+d1 -->|Yes| p3 --> e1
+d1 -->|No| e1
+e1 --> g1

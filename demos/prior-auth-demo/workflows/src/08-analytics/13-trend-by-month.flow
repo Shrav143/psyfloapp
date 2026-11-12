@@ -1,0 +1,36 @@
+title: Analytics › Trend by month
+route: /analytics
+intro: 'Approvals and denials by month' draws the last twelve months. A month runs from the 21st to the 20th, so the last one ends on 20 Oct 2026. Hover for exact values, Tab into the chart and use the arrow keys, click a month to list its cases.
+dir: TD
+also: The chart has a fixed height, so the tooltip never moves the page. The months of the chosen period are shaded.
+---
+start s1 "Scroll to 'Approvals and denials by month'"
+screen sc "Card with 'Rate' and 'Count' tabs\nLegend: 'Approved as requested', 'Denied or cut back'\nGridlines and a percent axis\nThe months of the period are shaded"
+
+group gMode "Rate or Count"
+  click m1 "Click 'Rate'"
+  screen r1 "Two lines: approval rate with a soft area, denial rate\nWith a payer picked, a dashed line adds 'Clinic approval rate, all payers'"
+  click m2 "Click 'Count'"
+  screen r2 "Stacked areas of decisions by month\n'Approved as requested', 'Approved in part', 'Denied'"
+endgroup
+
+group gHover "Hover and keyboard"
+  input h1 "Move the pointer over the chart"
+  overlay h2 "Tooltip: '21 Sep to 20 Oct 2026'\nEach series and its exact value\nHow many decisions in the month"
+  input k1 "Tab to the chart, then Left, Right, Home or End"
+  process k2 "The point moves, the tooltip follows\nA screen reader hears the month and its values"
+endgroup
+
+click c1 "Click a month (or press Enter on the focused chart)"
+process p1 "Opens the case list panel for that month\nThe payer, program and diagnosis filters apply, the period does not"
+goto g1 "Continues in: Analytics › Case list panel"
+click d1 "Click 'View data table' (a button, so Tab and Enter work)"
+screen d2 "A table of the twelve months: decisions, approved as requested, approved in part, denied, rates\nThe button now reads 'Hide data table'"
+
+s1 --> sc --> m1 & m2
+m1 --> r1
+m2 --> r2
+sc --> h1 --> h2
+sc --> k1 --> k2
+h2 & k2 --> c1 --> p1 --> g1
+sc --> d1 --> d2

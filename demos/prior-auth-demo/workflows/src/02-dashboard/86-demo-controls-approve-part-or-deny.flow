@@ -1,0 +1,44 @@
+title: Dashboard › Request drawer › Demo controls: approve, approve part or deny
+route: /dashboard?request=R-1021
+intro: The three final payer answers and what the Dashboard shows afterwards. They are offered on a Received, Under review or Info requested request, and after one of them no more replies are offered. An approval stays on the Dashboard with a write-back waiting. A partial approval or a denial turns the request into a new D- number and hands it to Denial Intelligence.
+dir: TD
+also: Demo only: the payer's decision is simulated. Real rules: a decision is due in 7 days (72 hours when expedited), and a partial approval or denial goes to the denial route, starting with a peer-to-peer call.
+---
+start s1 "Payer decides (demo: the presenter clicks a Demo control)"
+ext x1 "Payer decides through its portal, fax or phone\n(demo: simulated)"
+click c1 "Click 'Approves'"
+click c2 "Click 'Approves part'"
+click c3 "Click 'Denies'"
+
+group gA "Approved"
+  store a1 "Stage Decided today, status 'Approved'\nCadence holds it; next step 'Next review booked. Write-back waits for you'\nHistory 'The payer approved the request' and 'Cadence updated the ledger and booked the next review'"
+  toast an "Notification 'Approved': 'R-1021 was approved. Write-back waits for you.'\nToast 'Demo: Cardinal approved it'\n'The stage counts, the table and the notifications updated.'"
+  screen as "Dashboard after an approval\n'Decided today' in the Status menu goes up by one, the 'Decision pending' chip goes down\nIts Window and Units read from the ledger once Cadence has booked it; Next action 'Approve write-back'"
+  overlay ab "Drawer shows the green box 'Approved. Write-back waits for you'\nWith write-back off in EMR Connect, a calm line instead"
+  process qk "No reply is offered any more\nDemo controls say 'The payer has already decided this request.'\nSo the request cannot be pushed back and stay counted in Decided today"
+endgroup
+goto g1 "Continues in: Dashboard › Request drawer › Approve the write-back"
+
+group gD "Denied or partly approved"
+  process d1 "Request gets a new number: D-3319, then D-3320 and so on\nThe old number R-1021 is gone; the case stays the same"
+  store d2 "Stage Appeal or call, type 'Peer-to-peer', chip 'Call booked'\nAdvocate holds it; chance 61%; 3 days to the call window\nNext step 'Denied today. Advocate booked a peer-to-peer call'"
+  store d3 "History 'The payer denied the request' or 'The payer approved only part of the request'\nthen 'Advocate opened the denial and booked a peer-to-peer call'"
+  toast dn "Notification 'Denied' or 'Partly approved'\n'R-1021 became D-3319. Advocate booked a call.'"
+  toast dt "Toast 'The payer denied it' or 'The payer approved part of it'\n'It is now D-3319 in Denial Intelligence.'"
+  process d4 "Drawer switches to D-3319 in place (the address is replaced)\nOpening R-1021 again closes quietly: that number no longer exists"
+  screen ds "Dashboard after a denial\n'Denied / appeal' chip and 'Decided today' each go up by one; 'Decision pending' goes down\nSidebar badge on Denial Intelligence goes up\nIts row shows 'Call booked', next action 'Prepare the P2P call', owner You\nA row hidden by the old stage filter leaves the table; the drawer stays open"
+  screen dd "Drawer for D-3319\nChip 'Call booked', 'Chance of winning 61%'\nDemo controls disabled: 'A denial follows its own route in Denial Intelligence.'\nFooter gains 'Open in Denial Intelligence'"
+endgroup
+goto g2 "Continues in: Denial Intelligence › A denial opened\n/denials/D-3319"
+goto g3 "Continues in: Authorizations › Case page › Ways in\nThe case number is unchanged"
+
+s1 --> x1 --> c1 & c2 & c3
+c1 --> a1 --> an --> as --> ab --> g1
+ab --> qk
+c2 --> d1
+c3 --> d1
+d1 --> d2 --> d3 --> dn --> dt --> d4
+d4 --> ds
+d4 --> dd
+dd --> g2
+dd --> g3

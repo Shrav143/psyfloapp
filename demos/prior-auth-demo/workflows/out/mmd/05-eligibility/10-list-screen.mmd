@@ -1,0 +1,73 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Eligibility & Benefits' under 'Authorizations' in the sidebar" }
+  sc@{ shape: curv-trap, label: "<b>Title row 'Eligibility & Benefits' (24 px)</b><br/>with a Site A or Site B tag when the view is narrowed<br/>Primary button 'Verify a patient' on the right" }
+  p1@{ shape: rect, label: "<b>Sidebar badge counts patients not 'Cleared to bill' in the sites in view</b><br/>Demo start, both sites: 9 = 4 'Authorization first' + 5 'Fix before billing'" }
+  sv@{ shape: rect, label: "<b>Rows, the tiles, the count and the badge follow the site view (top bar)</b><br/>Both sites is Site A plus Site B<br/>A viewer limited to one site never sees, counts or finds the other site's patients" }
+  subgraph gTop ["Under the title"]
+  tl@{ shape: curv-trap, label: "<b>Four small tiles on one line each: icon, number, label</b><br/>'28 Cleared to bill' · '4 Authorization first'<br/>'5 Fix before billing' · '5 Re-check due'<br/>The longer meaning is the tile's tooltip" }
+  cnt@{ shape: rect, label: "<b>Counts follow each row's verdict</b><br/>'Re-check due' counts rows with a re-check still to come this week<br/>Verify runs each one on its own when the Demo clock passes its time<br/>A fifth tile 'Not checked' appears only while a check that could not run is listed" }
+  end
+  subgraph gBar ["Filter bar"]
+  fl@{ shape: curv-trap, label: "<b>'Search by case ID or initials'</b><br/>Menus 'All payers', 'All programs'<br/>'Showing 12 of 37' on the right" }
+  end
+  subgraph gCard ["Table card, no title"]
+  so@{ shape: rect, label: "<b>Fixed sort order</b><br/>'Fix before billing' first, then 'Authorization first', then oldest check" }
+  sd@{ shape: rect, label: "<b>The five 'Fix before billing' rows show five reasons</b><br/>Coverage lapsed, coverage ended, service not covered, another plan pays first, every authorized day used" }
+  pg@{ shape: rect, label: "<b>No filter: the first 12 rows</b><br/>A filter shows every match" }
+  cols@{ shape: curv-trap, label: "<b>Columns</b><br/>Patient, Verdict, Eligibility, Benefits, Authorization, Re-check<br/>The verdict comes right after the patient, so it stays in view when a narrow window scrolls the table<br/>Headers do not sort" }
+  end
+  subgraph gRow ["One patient, two lines"]
+  r1@{ shape: curv-trap, label: "<b>Line 1: patient</b><br/>'R-1042 · J.M., 34'<br/>No initials: 'Member …4821'" }
+  r5@{ shape: curv-trap, label: "<b>Line 1: Verdict chip</b><br/>'Cleared to bill', 'Authorization first', 'Fix before billing', 'Not checked'" }
+  r3@{ shape: curv-trap, label: "<b>Line 1: Eligibility and Benefits chips</b><br/>'Active', 'Lapsed 10/12', 'Ended 09/30', 'Not found', 'ID differs', 'Not checked'<br/>'Covered', 'Limited', 'Not confirmed', 'Not covered'" }
+  r4@{ shape: curv-trap, label: "<b>Line 1: Authorization chip</b><br/>'On file', 'Not required', 'Required, not on file', 'In progress', 'Requirement unknown'" }
+  r6@{ shape: curv-trap, label: "Line 1: button 'Re-check'" }
+  r7@{ shape: curv-trap, label: "<b>Line 2, small and quiet, across the row</b><br/>Program · payer · day limit · when it was checked<br/>'Residential 3.5 · Cardinal Health Plan · 14 of 14 days · Checked 5 h ago'<br/>'No day limit' when the program has none<br/>A row due for a re-check adds 'Re-check due Tue 11:32 am'<br/>After Verify's own re-check 'Re-checked automatically at 11:32 am'<br/>If Verify is paused 'Not re-checked: Verify is paused in Settings' (amber)<br/>When the plan changed 'Now with Cardinal since 10/01'; 'Enrollment not confirmed'; 'The plan has the ID ending 5521'<br/>A check that could not run 'Could not be checked: Verify is paused in Settings' (amber)" }
+  end
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › Search, filter and page" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › Open a patient or start a check" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What each chip means" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-check on its own" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The shared verification record" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Sites" }
+  s1 --> sc
+  sc --> tl --> fl --> so
+  sc -.-> p1
+  tl --> cnt
+  tl --> g1
+  so --> sd
+  so --> pg --> cols
+  cols --> r1 & r5 & r3 & r4 & r6 & r7
+  fl --> g1
+  sc --> g2
+  r6 --> g2
+  r3 & r4 & r5 --> g3
+  cnt -.-> g4
+  r7 -.-> g4
+  sc --> sv --> g7
+  cols -.-> g6
+  class s1 k_start
+  class sc,tl,fl,cols,r1,r5,r3,r4,r6,r7 k_screen
+  class p1,sv,cnt,so,sd,pg k_process
+  class g1,g2,g3,g4,g6,g7 k_goto
+  style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gBar fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

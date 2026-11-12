@@ -1,0 +1,72 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Continue to Eligibility & Benefits' on Intake" }
+  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Retroactive authorization</b><br/>No sentence under the title; the check covers the dates of service" }
+  dIn@{ shape: diam, label: "Are the payer, level of care, member ID and the first date of service in?" }
+  sNeed@{ shape: curv-trap, label: "<b>Card 'Verify needs a little more'</b><br/>Button 'Open Intake'" }
+  gIntake@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Retroactive authorization" }
+  dHave@{ shape: diam, label: "<b>Is there a check for this payer and level of care</b><br/>that covers the dates of service and is under 24 hours old?" }
+  pReuse@{ shape: rect, label: "The check is reused" }
+  stId@{ shape: cyl, label: "The case gets its id first, so the check is filed under it" }
+  aV@{ shape: hex, label: "Verify checks coverage for the dates of service with Summit, about 1.2 seconds" }
+  stRec@{ shape: cyl, label: "<b>Check saved</b><br/>The same record is on Eligibility & Benefits" }
+  sSum@{ shape: curv-trap, label: "<b>Verification summary for the dates of service</b><br/>'Dates of service' in the details panel" }
+  dLapse@{ shape: diam, label: "<b>Was coverage active on the dates of service?</b><br/>Example: K.W., member ID ending 1012, lapsed 10/12" }
+  sLapse@{ shape: curv-trap, label: "<b>Warning 'Coverage is not active'</b><br/>'Coverage lapsed 10/12. Ask the payer, or request retro-eligibility; a retro-authorization can cover the gap.'" }
+  cDoc@{ shape: trap-t, label: "Click 'Continue with a documented exception'" }
+  iWhy@{ shape: lean-r, label: "<b>'Why go on without confirmed coverage?'</b><br/>'For example: the member renewed on 10/22 and the plan has not updated yet'" }
+  cOk@{ shape: trap-t, label: "Click 'Document and continue'" }
+  stDoc@{ shape: cyl, label: "<b>The reason is kept on the case</b><br/>It goes to the request's History when sent" }
+  pBlock@{ shape: rect, label: "<b>Without a documented exception the warning stays</b><br/>Review & submit marks 'Coverage' as a blocking item" }
+  pRule@{ shape: rect, label: "<b>Retro approval depends on the payer</b><br/>Its Backdating rule, or 'No rule on file for ...', is on Intake and a note on Review & submit" }
+  gIntake2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Retroactive authorization" }
+  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions" }
+  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required" }
+  subgraph gFoot ["Footer bar"]
+  cBack@{ shape: trap-t, label: "Click 'Back'" }
+  cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
+  cCont@{ shape: trap-t, label: "Click 'Continue to Clinical documentation'" }
+  end
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
+  s1 --> sc --> dIn
+  dIn -->|"No"| sNeed --> gIntake
+  dIn -->|"Yes"| dHave
+  dHave -->|"Yes"| pReuse --> sSum
+  dHave -->|"No"| stId --> aV --> stRec --> sSum
+  sSum --> dLapse
+  dLapse -->|"Yes, active"| cCont
+  dLapse -->|"No, lapsed"| sLapse
+  sSum -.-> pRule --> gIntake2
+  sLapse --> cDoc --> iWhy --> cOk --> stDoc --> cCont
+  sLapse --> pBlock
+  sLapse -.-> gWarn
+  sSum -.-> gNoAuth
+  sSum --> cBack
+  sSum --> cSave
+  cCont --> gDocs
+  class s1 k_start
+  class sc,sNeed,sSum,sLapse k_screen
+  class dIn,dHave,dLapse k_decision
+  class gIntake,gIntake2,gWarn,gNoAuth,gDocs k_goto
+  class pReuse,pBlock,pRule k_process
+  class stId,stRec,stDoc k_store
+  class aV k_agent
+  class cDoc,cOk,cBack,cSave,cCont k_click
+  class iWhy k_input
+  style gFoot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

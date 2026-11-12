@@ -1,0 +1,47 @@
+title: Authorizations › Case page › Header and buttons
+route: /authorizations/case/R-1042
+intro: The header card above the figures: the title line with its chips, the line that names the patient, the 'Next' block, the authorization facts and the diagnosis line. It says the level of care, payer, days and site once; nothing below repeats them. It is the same on all three tabs and follows the request once it is sent or decided.
+dir: TD
+also: Demo only: the header reads the request's current stage from the Dashboard, so signing and sending in New Case, or a payer reply made with the Dashboard demo controls, shows here at once.
+---
+screen pg "Case page\nCrumbs, header card, figures strip, three tabs, History"
+click cr "Click the 'Authorizations' crumb"
+goto gQ "Continues in: Authorizations › Worklist › Arrive and read the views"
+
+screen hd "Title line\nID, level chip, request type chip, a status pill, the due pill"
+decision dCh "Is the request on the Dashboard past Preparing, or does it already have a result?"
+toast pc "Status pill: the request's own status, e.g. 'Received', 'Under review', 'Approved'"
+process ps "Status pill: 'Preparing', 'Ready to sign', 'With the payer' or 'Denial route'"
+process pd "Due pill, e.g. 'Notice due in 5 h'\nred under 6 h, amber under 24 h, grey later\nnot shown once decided"
+click hi "Hover or focus the info icon 'What the statuses mean'"
+process sub "Sub line: 'J.M., 34 · Summit Medicaid HMO · 14 days requested · Site A'\nIOP counts units\nthe site only for a viewer who can see both sites"
+screen nb "'Next:' block, the first thing under the title"
+goto gN "Continues in: Authorizations › Case page › Next action"
+screen fr "Authorization facts row\nonly the facts this request has, none the title line already says"
+goto gF "Continues in: Authorizations › Case page › Authorization facts"
+process ag0 "Diagnosis line and scores with a trend arrow\n'Alcohol use disorder, severe, with recurrent depression · admission  AUDIT-C 11 · PHQ-9 17 ↑ · CIWA 14 → 4'"
+decision dDb "Is the request on the Dashboard past Preparing, and is the next action not already the Dashboard?"
+click od "Click 'Open on the Dashboard' (at the end of the diagnosis line)"
+goto gDb "Continues in: Dashboard › Request drawer › Open and read a request"
+
+group gBt "Header buttons"
+  click b1 "Click 'Open in review and sign'\n(always on)"
+  click b3 "Click 'Back to Authorizations'"
+endgroup
+goto gS "Continues in: Authorizations › Case page › Send to payer and review and sign"
+goto gT "Continues in: Authorizations › Case page › Numbers and notes"
+
+pg --> cr --> gQ
+pg --> hd --> dCh
+dCh -->|Yes| pc
+dCh -->|No| ps
+pc --> pd
+ps --> pd
+pd --> hi
+pd --> sub --> nb --> gN
+nb --> fr --> gF
+fr --> ag0 --> dDb
+dDb -->|Yes| od --> gDb
+pg --> b1 --> gS
+pg --> b3 --> gQ
+pg --> gT

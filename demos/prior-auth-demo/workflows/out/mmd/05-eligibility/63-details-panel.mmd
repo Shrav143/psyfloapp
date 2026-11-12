@@ -1,0 +1,57 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On a result, click 'View full verification details'" }
+  s2@{ shape: stadium, label: "In New Case step 2, click 'View full verification details'" }
+  o1@{ shape: win-pane, label: "<b>Side panel 'Verification details' slides in from the right</b><br/>Sub line: initials, age, payer, level of care" }
+  q1@{ shape: diam, label: "Opened from the result page itself?" }
+  a1@{ shape: curv-trap, label: "<b>From New Case: label and value rows first</b><br/>'Eligibility', 'Benefits', 'Patient pays' (only with a cost share), 'What this service needs',<br/>'Existing authorization', plan type and routing, member, dates of service, last verified, source<br/>then any warnings" }
+  b1@{ shape: curv-trap, label: "<b>'Payment checks' · '6 of 7 pass, 1 needs a look'</b><br/>Seven rows, one chip each, a line only when it adds a fact" }
+  b2@{ shape: curv-trap, label: "<b>'How this was checked' · 'Verify, Criteria, Navigator · 0:12'</b><br/>One row per agent, with the time it took" }
+  k1@{ shape: trap-t, label: "Click an agent row" }
+  q2@{ shape: diam, label: "Was that row already open?" }
+  p1@{ shape: rect, label: "Row closes" }
+  p2@{ shape: rect, label: "<b>Its answer opens under it</b><br/>Any other open row closes" }
+  b3@{ shape: curv-trap, label: "<b>'History', newest first, one flag on the right</b><br/>'Coverage check, then monthly' (Scheduled, the 1st of next month)<br/>'Re-check' (Scheduled, when one is booked) or 'Re-check, waiting for Verify to be resumed'<br/>'Refresh could not run: Verify is paused in Settings' (Psyflo)<br/>'Checked coverage and benefits: Cleared to bill' or 'Re-checked automatically: ...' (Agent)" }
+  f1@{ shape: trap-t, label: "Click 'Open the full result' (footer, only from New Case)" }
+  p3@{ shape: rect, label: "Opens /authorizations/eligibility/R-0988" }
+  e1@{ shape: trap-t, label: "Press Escape, click the dimmed area or click the close button" }
+  p4@{ shape: rect, label: "<b>The panel closes, one layer at a time</b><br/>The page and its place on the page are as they were" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
+  s1 --> o1
+  s2 --> o1
+  o1 --> q1
+  q1 -->|"Yes"| b1
+  q1 -->|"No"| a1 --> b1
+  b1 --> b2 --> k1 --> q2
+  q2 -->|"Yes"| p1
+  q2 -->|"No"| p2
+  b2 --> b3
+  b3 -.-> f1
+  a1 -.-> f1
+  f1 --> p3 --> g1
+  b3 --> e1 --> p4
+  p4 -.-> g2
+  class s1,s2 k_start
+  class o1 k_overlay
+  class q1,q2 k_decision
+  class a1,b1,b2,b3 k_screen
+  class k1,f1,e1 k_click
+  class p1,p2,p3,p4 k_process
+  class g1,g2 k_goto

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo phone app — Assessments</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared phone look: C_CSS in js/screens/MobileApp.js */
+</style>
+</helmet>
+
+<div class="c-ph">
+  {{hd}}
+  <main class="c-bd">
+    <sc-if value="{{!form}}">
+    <h1 class="c-q">Assessments</h1>
+    <div class="c-rows">
+      <sc-for list="{{due}}" as="d"><div class="c-row" style="--cols:48px minmax(0,1fr) auto"><span><span class="u-chip y">{{d.dueText}}</span></span><b>{{d.title}}</b><a class="c-btn sm {{d.btnCls}}" href="#{{d.kind}}" data-c="{{d.client}}">{{d.btn}}</a></div></sc-for>
+      <sc-if value="{{!due.length}}"><div class="c-row" style="--cols:1fr"><span class="c-mut">Nothing due</span></div></sc-if>
+    </div>
+    <sc-if value="{{held.length}}"><h2 class="c-sec">Waiting for Lauris</h2>
+    <div class="c-rows" style="margin-top:-8px"><sc-for list="{{held}}" as="h"><div class="c-row" style="--cols:minmax(0,1fr) auto"><b>{{h.title}}</b><span class="d">{{h.when}}</span></div></sc-for></div></sc-if>
+    <h2 class="c-sec">Done</h2>
+    <div class="c-rows" style="margin-top:-8px"><sc-for list="{{doneList}}" as="h"><div class="c-row" style="--cols:minmax(0,1fr) auto auto"><b>{{h.title}}</b><span class="d">{{h.when}}</span><span class="u-chip n">{{h.score}}</span></div></sc-for></div>
+    </sc-if>
+
+    <sc-if value="{{form}}">
+    <h1 class="c-q">{{form.title}} <sc-if value="{{form.progress}}"><span class="u-chip n" style="vertical-align:middle">{{form.progress}}</span></sc-if></h1>
+    <sc-for list="{{form.qs}}" as="q"><div>
+      <div data-doc><label class="c-lbl">{{q.label}}</label><sc-if value="{{q.hint}}"><div class="c-sm c-mut" style="margin:-4px 0 8px">{{q.hint}}</div></sc-if></div>
+      <div class="c-num"><sc-for list="{{q.opts}}" as="o"><button type="button" class="c-stu{{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+    </div></sc-for>
+    <div style="display:flex;gap:8px"><sc-if value="{{form.canBack}}"><a class="c-btn" href="#prev" style="flex:1">Back</a></sc-if><a class="c-btn pri" href="#save" style="flex:2">{{form.next}}</a></div>
+    <a class="c-lnk" href="#cancel" style="text-align:center">Cancel</a>
+    </sc-if>
+  </main>
+  {{nav}}
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

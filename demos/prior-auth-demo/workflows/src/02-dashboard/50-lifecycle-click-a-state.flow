@@ -1,0 +1,39 @@
+title: Dashboard › Lifecycle › Click a state to filter the table
+route: /dashboard
+intro: The Lifecycle card holds five state chips. Each shows a count and one quiet line, and each is a button that filters the table below it. The counts follow the sites in view and the Payer, Program and Request type menus, never the Status menu. The two chips with an arrow open Authorizations and are in the next diagram.
+dir: TD
+---
+start s1 "Dashboard is open\nThe 'Lifecycle' card under the title"
+screen sc "Five chips in a row\nAwaiting sign-off 5, Submitted 4, Decision pending 14, Info requested 3, Denied / appeal 8\nWhite, thin border, no icon, no tinted fill"
+screen ip "Info icon beside 'Lifecycle'\nHover, focus or click: what the states count"
+
+group gCount "What each chip counts, and its quiet line"
+  process c1 "Awaiting sign-off = Preparing: requests not yet signed and sent, plus cases saved in New Case\nQuiet line '1 ready to sign'"
+  process c2 "Submitted = Received: the payer has it\nQuiet line 'all on time' or '1 running late' (ochre)"
+  process c3 "Decision pending = Under review\nQuiet line 'none running late', '2 running late', or '1 past 7 days' (ochre)"
+  process c4 "Info requested\nQuiet line '1 waiting on you' or 'none waiting on you'"
+  process c5 "Denied / appeal = Appeal or call\nQuiet line '4 deadlines this week', terracotta when one is inside a day"
+endgroup
+process n1 "Decided today (6 approved, 2 denied) is not a chip\nIt is in the Status menu and in ?stage=decided"
+
+click k1 "Click a chip\nKeyboard: Tab, then Enter or Space"
+decision d1 "Is it already the pressed chip?"
+process p1 "The filter Status is set to that state\nThe chip gets a green outline and is pressed"
+process p2 "The filter Status goes back to 'All statuses'\nThe chip is not pressed"
+store w1 "Filters\nStatus (the stage)"
+process p3 "Address gets ?stage=under_review (or preparing, received, info_requested, appeal)\nA link with ?stage= presses the same chip"
+process p4 "Status menu shows the same state\nTable title and 'Showing 8 of 14' follow; first 8 rows"
+screen sc2 "Table\nOnly the authorizations in that state\nTitle '14 authorizations'"
+goto g1 "Continues in: Dashboard › Lifecycle › Active and Renewal due open Authorizations"
+goto g2 "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type"
+goto g3 "Continues in: Dashboard › Requests table › Order, rows and paging"
+
+s1 --> sc --> k1 --> d1
+sc --> ip
+sc --> c1 & c2 & c3 & c4 & c5
+c5 -.-> n1
+d1 -->|No| p1 --> w1
+d1 -->|Yes| p2 --> w1
+w1 --> p3 --> p4 --> sc2 --> g3
+sc -.-> g1
+p4 -.-> g2

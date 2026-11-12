@@ -1,0 +1,62 @@
+title: Authorizations › New Case › How a case starts and resumes
+route: /authorizations/new
+intro: New Case is a page that makes or reopens a case (a 'draft'). This diagram covers every way in and how a new case is made from the address: a referral, a verification, a patient, an authorization type or nothing. Reopening a case that exists, and what a viewer at one site can open, are in the next diagram.
+dir: TD
+also: Demo only: the hosted preview keeps the address in memory, so ?referral= cannot be typed there. The button 'Start a case from this referral' still works in it.
+---
+start s1 "Open New Case\nSidebar 'New Case', a 'New Case' button, the Demo menu, FLO's link or the old /referrals address"
+start s2 "Click 'Create authorization from verification' or 'Start authorization'\non a result in Eligibility & Benefits"
+start s3 "Click 'Start a case from this referral'\non the full referral page, or type ?referral=RF-2051"
+start s4 "Click 'Start renewal' in the Dashboard's what-to-do list\n(opens ?type=reauth&patient=CASE-ID)"
+start s5 "Type a link with ?type=\ninitial, concurrent, reauth, modify or retro"
+
+group gMake "No case id in the address: make one"
+  decision d1 "What is in the address?"
+  decision dRefSite "?referral=ID: is the referral at a site in view?"
+  screen scRefOut "'This referral is not available at Site A'\nNames the id and its site, nothing about the patient\nNo case is made"
+  decision d2 "Is RF-2051 in the demo?"
+  process p2 "Case is filled from the referral\nPatient, payer, member ID, level of care, diagnoses, reason, referrer\nRequest type: Initial request if routine, else Admission\nThe case is at the referral's site"
+  store st1 "Case created on Intake, referral attached\nThe referral is the first document"
+  toast t1 "'Referral RF-2051 is in this case'\n'K.R., 29. Check the details below, then go on to Eligibility & Benefits.'"
+  toast t2 "Amber toast 'Referral not found'\n'We could not find RF-9999. Start from a blank case instead.'"
+  decision dVer "?verification=ID: is that check at a site in view?"
+  process p3 "Case is filled from the check\nPatient, payer, plan, member ID, level of care and the dates the check covers\nThe case uses that same verification record"
+  decision dPat "?patient=ID: is that patient at a site in view?"
+  process p4 "The patient's details, treatment episode and authorization are filled in\nNo second patient is made"
+  process p5 "?type= picks the Authorization type\nIts request type is recorded: Initial request, Continued stay, Recertification, Modification or Retro-authorization"
+  process p6 "Filled from ?payer=, ?program=, ?member=, ?initials=, ?age=\nRequest type: Admission\nAn unknown payer or program is ignored"
+  store st3 "Blank case created at Intake\nIt belongs to the site you are working at\nNot in Authorizations until 'Save as draft'"
+endgroup
+process p7 "?step= opens that step: intake, eligibility, documentation or review\npreparation and the older agents open Clinical documentation scrolled to 'Authorization preparation'\nThe older referral and records land on Intake and Clinical documentation"
+process p8 "Case opens at /authorizations/new/draft-ID\nIt replaces the address, so Back does not loop"
+goto gOpen "Continues in: Authorizations › New Case › Reopen and resume a case"
+goto gStep "Continues in: Authorizations › New Case › The stepper and the four steps"
+goto gType "Continues in: Authorizations › New Case › Authorization type"
+goto gSites "Continues in: Authorizations › New Case › Sites and scope"
+goto g1 "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
+
+s1 --> d1
+s2 --> d1
+s3 --> d1
+s4 --> d1
+s5 --> d1
+d1 -->|?referral=ID| dRefSite
+dRefSite -->|No| scRefOut
+dRefSite -->|Yes| d2
+d2 -->|Yes| p2 --> st1 --> t1 --> p7
+d2 -->|No| t2 --> st3
+d1 -->|?verification=ID| dVer
+dVer -->|Yes| p3 --> p7
+dVer -->|No| st3
+d1 -->|?patient=ID| dPat
+dPat -->|Yes| p4 --> p7
+dPat -->|No| st3
+d1 -->|?type=| p5 --> p7
+d1 -->|payer or program valid| p6 --> p7
+d1 -->|Nothing usable| st3 --> p7
+p7 --> p8
+p8 --> gOpen
+p8 -.-> gStep
+p8 -.-> gType
+scRefOut -.-> gSites
+st1 -.-> g1

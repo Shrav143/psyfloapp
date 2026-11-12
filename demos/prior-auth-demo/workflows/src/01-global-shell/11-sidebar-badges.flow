@@ -1,0 +1,43 @@
+title: Global shell › Sidebar › Badges and what they count
+route: Every page (sidebar on the left)
+intro: Six sidebar rows carry a number bubble. Each number is counted live from the demo data, so it changes the moment something happens on any page, and every one except Payers follows the site view. Analytics, EMR Connect and 'All Authorizations' never have a bubble, and there is no Case Manager row any more.
+dir: TD
+also: Numbers shown are the values when the demo starts or after 'Reset demo data', for Jordan Perez on Both sites. For one site they are that site's share, and Site A plus Site B always equals Both sites. Payers is the one badge that stays the same for every viewer.
+---
+start s1 "Any page is open"
+screen sb "Sidebar rows with a number bubble"
+process p1 "Every number is recounted from the demo data each time the data changes or the site view changes (no reload)"
+process vw "The sites in view are read first\nBoth sites for Jordan Perez and Alex Morgan, until they choose Site A or Site B; Site A for Dr. Rivera; Site B for Sam Okafor"
+
+group gDraw "How a bubble is drawn"
+  decision d1 "Is the count above zero?"
+  process z "No bubble on that row"
+  process nz "A round bubble shows the number"
+  decision d2 "Is that row the green (current) one?"
+  process on "Bubble is translucent white on green"
+  process off "Bubble is tan with dark text"
+endgroup
+
+group gB "What each badge counts, and what moves it (Both sites)"
+  process b1 "'Dashboard'  3\nRequests at stage 'Info requested'\nFalls when an answer is sent"
+  process b2 "'Authorizations'  19\nOpen requests due today: 5 to act on now and 14 more due within 24 hours\nRequests due later, saved New Case drafts, approved authorizations and reviews are not counted, so the worklist's own counts are larger\nThe bubble stays on the parent row whether the group is open or closed"
+  process b3 "'New Case'  4  (listed under Authorizations)\nReferrals that are New or In review and not yet opened\nFalls when a referral is opened"
+  process b4 "'Eligibility & Benefits'  9  (listed under Authorizations)\nPatients not cleared: 4 'Authorization first', 5 'Fix before billing'"
+  process b5 "'Denial Intelligence'  8\nRequests at stage 'Appeal' (open denials)\nFalls when a denial is settled"
+  process b7 "'Payers'  3\nPayers with a rule change waiting for a person: Cardinal, Evergreen and Harborview\nFalls when the change is acknowledged\nClinic-wide: a payer's rules are not site data, so this number is the same for every viewer and every site view"
+endgroup
+
+process b6 "Not a badge: what Case Manager used to count is in the worklist's 'Needs attention' view (30 at Both sites)"
+goto g1 "Continues in: Authorizations › Worklist › Pick a view"
+end e1 "Badges always match the pages they point to, for the site in view"
+
+s1 --> sb --> p1 --> vw
+vw --> d1
+d1 -->|No| z
+d1 -->|Yes| nz --> d2
+d2 -->|Yes| on
+d2 -->|No| off
+z & on & off --> e1
+vw --> b1
+b1 ~~~ b2 ~~~ b3 ~~~ b4 ~~~ b5 ~~~ b7
+b2 -.-> b6 --> g1

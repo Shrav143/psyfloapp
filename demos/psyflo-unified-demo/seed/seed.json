@@ -1,0 +1,133 @@
+{
+  "_about": "Synthetic seed data for the Psyflo x Harvest full-vision demo. Nothing is real. 'today' is Thu 2026-10-29. Every screen reads from this file; the four live flows write to the same store.",
+  "today": "2026-10-29",
+  "org": {
+    "name": "Harvest Outreach Center",
+    "localities": ["Lynchburg City", "Campbell County"],
+    "sfax_account": "harvest-demo",
+    "group_npi": "on file",
+    "tax_id": "on file"
+  },
+  "schools": [
+    {"id": "LC-MS2", "name": "Lynchburg City · MS-2", "locality": "Lynchburg City", "level": "middle"},
+    {"id": "LC-ES3", "name": "Lynchburg City · ES-3", "locality": "Lynchburg City", "level": "elementary"},
+    {"id": "CC-ES1", "name": "Campbell County · ES-1", "locality": "Campbell County", "level": "elementary"},
+    {"id": "CC-ES2", "name": "Campbell County · ES-2", "locality": "Campbell County", "level": "elementary"},
+    {"id": "CC-MS1", "name": "Campbell County · MS-1", "locality": "Campbell County", "level": "middle"},
+    {"id": "CC-HS1", "name": "Campbell County · HS-1", "locality": "Campbell County", "level": "high"}
+  ],
+  "roles": ["direct_support", "supervisor", "clinician", "admin"],
+  "staff": [
+    {"id": "jperez", "name": "Jordan Perez", "initials": "JP", "credential": "LPC", "title": "Asst. Clinical Support Supervisor", "role": "clinician", "sites": "all", "signs_requests": true, "designations": ["approve.sra"]},
+    {"id": "dowens", "name": "Dana Owens", "initials": "DO", "credential": "", "title": "Program office", "role": "admin", "sites": "all"},
+    {"id": "cdiaz", "name": "Carla Diaz", "initials": "CD", "credential": "QMHP-C", "title": "Site supervisor", "role": "supervisor", "sites": ["CC-ES1", "CC-ES2"], "designations": ["send.packet", "payer.decision", "eligibility.run"]},
+    {"id": "khale", "name": "Kayla Hale", "initials": "KH", "credential": "QMHP-C", "title": "Direct support", "role": "direct_support", "sites": ["CC-ES1"], "review_mode": "spot_check"},
+    {"id": "rowens", "name": "R. Owens", "initials": "RO", "credential": "QMHP-T", "title": "Direct support · new hire", "role": "direct_support", "sites": ["CC-ES1"], "review_mode": "every_note", "reviewer": "cdiaz"},
+    {"id": "slane", "name": "S. Lane", "initials": "SL", "credential": "QMHP-C", "title": "Direct support", "role": "direct_support", "sites": ["CC-HS1"], "review_mode": "every_note", "reviewer": "cdiaz"},
+    {"id": "jreyes", "name": "J. Reyes", "initials": "JR", "credential": "QMHP-C", "title": "Direct support", "role": "direct_support", "sites": ["CC-ES1"], "review_mode": "spot_check"}
+  ],
+  "school_users": [
+    {"id": "rbell", "name": "R. Bell", "role": "school counselor", "school": "LC-MS2", "token": "sch-rbell-demo"},
+    {"id": "okafor", "name": "Mr. Okafor", "role": "teacher · 7th grade math", "school": "LC-MS2", "token": "sch-okafor-demo"}
+  ],
+  "payers": [
+    {"id": "sentara", "name": "Sentara Health Plans", "channel": "fax", "decides_in_days": 7, "partial_rate": 0.74, "requests_this_year": 31, "tends_to_ask": "Calls to offer fewer units; counters with less after more info", "what_works": "Answer with dated counts, not context; accept and plan the early discharge"},
+    {"id": "anthem", "name": "Anthem HealthKeepers Plus", "channel": "availity", "decides_in_days": 5, "partial_rate": 0.58, "requests_this_year": 44, "tends_to_ask": "Information requests inside 24 h; 'already connected to other services'", "what_works": "Name the prior service and its outcome in criterion 2; reply from the chart within the day"},
+    {"id": "humana", "name": "Humana Healthy Horizons", "channel": "fax", "decides_in_days": 6, "partial_rate": 0.50, "requests_this_year": 22, "tends_to_ask": "Receipt goes missing; decision on day 14", "what_works": "Receipt check call; cite the fax reference"},
+    {"id": "aetna", "name": "Aetna Better Health", "channel": "fax", "decides_in_days": 7, "partial_rate": 0.54, "requests_this_year": 26, "tends_to_ask": "'School counseling is not a real service'", "what_works": "List school interventions with dates and outcomes anyway; add the outpatient attempt"},
+    {"id": "uhc", "name": "UnitedHealthcare Community Plan", "channel": "portal", "decides_in_days": 4, "partial_rate": 0.37, "requests_this_year": 19, "tends_to_ask": "Wants the CNA and ISP attached", "what_works": "Different process; 2 active students; circle back later"},
+    {"id": "ffs", "name": "Medicaid FFS · Acentra Health", "channel": "fax", "decides_in_days": 6, "partial_rate": 0.25, "requests_this_year": 4, "tends_to_ask": "", "what_works": "Too few to say"}
+  ],
+  "interventions": [
+    {"code": "QMHP 1.3", "name": "Psychoeducation"}, {"code": "QMHP 1.4", "name": "Movement intervention", "rationale": "Large-motor activity used to bring arousal down before a conversation; pairs with co-regulation and reflective listening."},
+    {"code": "QMHP 1.5", "name": "Make or maintain friendships"}, {"code": "QMHP 1.6", "name": "Recognize danger / healthy boundaries"},
+    {"code": "QMHP 1.9", "name": "Solving peer conflict"}, {"code": "QMHP 1.4b", "name": "Structured problem solving"},
+    {"code": "Clinical 2.1", "name": "Movement"}
+  ],
+  "clients": [
+    {"id": "TW", "initials": "T.W.", "first_name": "Tyler", "age": 12, "grade": 7, "school": "LC-MS2", "harvest_no": 4492, "guardian": {"name": "Denise Rivers", "relationship": "grandmother", "phone": "(434) 555-0147", "language": "en"},
+     "medicaid": {"status": "active", "plan": "humana", "effective": "2026-07-01", "checked_on": "2026-10-15T08:10", "checked_by": "jperez", "next_check": "2026-10-19"},
+     "iep": true, "clinician": "jperez", "stage": "in_service", "service_start": "2026-10-27", "referral": "REF-118",
+     "diagnosis": "F91.3 (prelim.)", "goals": [
+       {"n": 1, "name": "emotional regulation", "objective": "T.W. will use a taught coping strategy before leaving the room in 4 of 5 escalations.", "interventions": ["Clinical 2.1", "QMHP 1.3"]},
+       {"n": 2, "name": "peer conflict", "objective": "T.W. will respond to peer conflict without physical contact in 4 of 5 incidents.", "interventions": ["QMHP 1.9", "QMHP 1.5"]},
+       {"n": 3, "name": "staying in class", "objective": "T.W. will stay in class for the full period on 4 of 5 school days.", "interventions": ["QMHP 1.6", "QMHP 1.4b"]}],
+     "strengths": "Engaged grandmother; enjoys basketball and drawing; responds well to one-to-one adult attention.",
+     "timeline": {"referral": "2026-10-13", "family_link_opened": "2026-10-13", "family_link_submitted": "2026-10-14T19:52", "eligibility_checked": "2026-10-15T08:10", "screening": "2026-10-16T14:00", "consent_signed": "2026-10-19", "intake": "2026-10-20T11:52", "isp": "2026-10-21", "sra_processed": "2026-10-22", "sra_signed": "2026-10-22T14:04", "sent": "2026-10-22T14:06", "decision_due": "2026-10-29"}},
+    {"id": "MR", "initials": "M.R.", "age": 7, "grade": 2, "school": "CC-ES1", "harvest_no": 3310, "guardian": {"name": "grandmother", "relationship": "grandmother", "phone": "(434) 555-0162", "language": "en"},
+     "medicaid": {"status": "active", "plan": "anthem"}, "staff": "khale", "clinician": "jperez", "stage": "in_service", "service_start": "2026-02-09",
+     "authorization": {"payer": "anthem", "units": 110, "used": 83, "start": "2026-08-18", "end": "2026-11-13"},
+     "goals": [
+       {"n": 1, "name": "use a strategy before leaving the room", "objective": "Use a taught strategy before leaving the room in 4 of 5 escalations.", "interventions": ["Clinical 2.1", "QMHP 1.6", "QMHP 1.9"]},
+       {"n": 2, "name": "peer conflict without contact", "objective": "Respond to peer conflict without physical contact in 4 of 5 incidents.", "interventions": ["QMHP 1.9"]},
+       {"n": 3, "name": "follow directions first time", "objective": "Follow directions the first time on 4 of 5 school days.", "interventions": ["QMHP 1.4b"]}],
+     "quarter": {"days": 61, "goal_progress_days": [41, 38, 9], "guardian_calls": "11 of 12", "phq_a": [14, 11, 8], "dsm_parent": [21, 19, 18], "dsm_child": [17, 12, 9], "daily_rating": [1.9, 2.6, 3.4], "office_referrals_per_month": [6, 4, 2]}},
+    {"id": "DW", "initials": "D.W.", "age": 15, "grade": 10, "school": "CC-HS1", "harvest_no": 4102, "guardian": {"name": "guardian", "phone": "(434) 555-0171"}, "medicaid": {"status": "active", "plan": "sentara"}, "staff": "slane", "clinician": "jperez", "stage": "in_service",
+     "authorization": {"payer": "sentara", "units": 110, "used": 0, "start": "2026-10-29", "end": "2027-01-30", "assumed": true, "note": "Assumption for the demo: these 110 units are what a person has already entered in Lauris for the current window. They are not the payer's Oct 27 offer, and no units are added because of an offer: only an accepted decision changes them (request R-0402)."},
+     "incidents_3mo": 3, "safety_plan_date": "2026-10-03"},
+    {"id": "KT", "initials": "K.T.", "age": 9, "grade": 4, "school": "LC-MS2", "harvest_no": 4480, "medicaid": {"status": "active", "plan": "anthem"}, "clinician": "jperez", "stage": "request_pending"},
+    {"id": "TN", "initials": "T.N.", "age": 8, "sex": "F", "school": "CC-ES1", "harvest_no": 3402, "medicaid": {"status": "active", "plan": "sentara"}, "clinician": "jperez", "stage": "in_service_unpaid", "authorization": {"payer": "sentara", "units": 65, "used": 65, "exhausted": "2026-10-28", "assumed": true, "exhausted_basis": "65 of 65 units are recorded as used, so the date cannot be in the future: Oct 28 is an assumption (the last school day before the demo date) until the units log shows the day of the last note."}},
+    {"id": "EC", "initials": "E.C.", "first_name": "Ethan", "age": 5, "school": "LC-ES3", "harvest_no": 4471, "medicaid": {"status": "active", "plan": "anthem"}, "clinician": "jperez", "stage": "denied_appeal"},
+    {"id": "JT", "initials": "J.T.", "age": 8, "school": "CC-ES1", "harvest_no": 3315, "staff": "khale", "stage": "in_service", "authorization": {"units": 41}},
+    {"id": "DP", "initials": "D.P.", "age": 9, "school": "CC-ES1", "harvest_no": 3320, "staff": "khale", "stage": "in_service", "authorization": {"units": 88}},
+    {"id": "AG", "initials": "A.G.", "school": "CC-ES1", "harvest_no": 3322, "staff": "khale", "stage": "in_service", "authorization": {"units": 102}},
+    {"id": "ES", "initials": "E.S.", "age": 9, "school": "CC-ES1", "harvest_no": 3330, "staff": "khale", "stage": "no_authorization"},
+    {"id": "CB", "initials": "C.B.", "school": "CC-ES1", "harvest_no": 3333, "staff": "khale", "stage": "in_service", "authorization": {"units": 64}},
+    {"id": "LB", "initials": "L.B.", "age": 9, "school": "CC-ES1", "harvest_no": 3340, "staff": "rowens", "stage": "in_service"},
+    {"id": "JO", "initials": "J.O.", "age": 14, "grade": 8, "school": "LC-MS2", "harvest_no": 4400, "stage": "early_discharge_new_initial"},
+    {"id": "AM", "initials": "A.M.", "age": 10, "school": "CC-ES2", "harvest_no": 3360, "stage": "in_service", "incidents_3mo": 3},
+    {"id": "LV", "initials": "L.V.", "age": 16, "school": "CC-HS1", "harvest_no": 4110, "stage": "in_service", "authorization": {"payer": "humana", "service": "after_school", "units": 60, "used": 22}},
+    {"id": "SB", "initials": "S.B.", "age": 11, "school": "CC-MS1", "harvest_no": 4210, "stage": "in_service", "authorization": {"payer": "uhc", "units": 80, "used": 66}},
+    {"id": "PG", "initials": "P.G.", "age": 10, "service_line": "outpatient", "school": "LC-MS2", "harvest_no": 4300, "stage": "in_service", "authorization": {"payer": "aetna", "service": "outpatient", "units": 24, "used": 5}}
+  ],
+  "referrals": [
+    {"id": "REF-121", "client": "A.R., 9", "school": "LC-ES3", "received": "2026-10-28", "stage": "needs_screening", "next": "Family link opened · insurance step not done"},
+    {"id": "REF-120", "client": "B.K., 13", "school": "CC-MS1", "received": "2026-10-27", "stage": "needs_screening", "next": "No Medicaid per the school · ask on the family link"},
+    {"id": "REF-119", "client": "S.L., 7", "school": "CC-ES2", "received": "2026-10-26", "stage": "waiting_on_school", "next": "Behaviour report missing · counselor asked Oct 27"},
+    {"id": "REF-118", "client": "TW", "school": "LC-MS2", "received": "2026-10-13T14:18", "referred_by": "rbell", "stage": "in_service",
+     "form": {"medicaid_per_school": "yes_no_id", "iep": true, "guardian_informed": true,
+       "concerns": ["Physical aggression", "Verbal aggression", "Eloping", "Inattention", "Withdrawal / avoidance"],
+       "interventions_tried": "Behaviour interventionist twice a week since September, check-in/check-out, IEP accommodations. Two office referrals in October. Family was given information about outpatient counseling last year.",
+       "attachments": {"behaviour_report": true, "attendance_log": true, "schedule_and_grades": false}, "referral_for": ["TDT"]}},
+    {"id": "REF-117", "client": "N.P., 10", "school": "LC-MS2", "received": "2026-10-09", "stage": "screening_booked", "next": "Fri Oct 31, 10:00 am · J. Perez"},
+    {"id": "REF-116", "client": "R.F., 6", "school": "CC-ES1", "received": "2026-10-06", "stage": "grant_program", "next": "Routed Oct 8 · no Medicaid"}
+  ],
+  "requests": [
+    {"id": "R-0416", "client": "TW", "payer": "humana", "channel": "fax", "service": "TDT school day · H2016", "type": "initial", "units_requested": 150, "dates": "2026-10-27 to 2027-01-23", "stage": "submitted", "sent": "2026-10-22T14:06", "fax_ref": "F-2291", "receipt_confirmed": "2026-10-27T10:12", "receipt_by": "cdiaz", "decision_due": "2026-11-05", "signed_pdf": "R-0416_T.W._initial_signed.pdf", "pages": 11},
+    {"id": "R-0411", "client": "MR", "payer": "anthem", "channel": "availity", "service": "TDT school day · H2016", "type": "continued_stay", "units_requested": 150, "stage": "draft_ready", "renew_by": "2026-11-13"},
+    {"id": "R-0408", "client": "KT", "payer": "anthem", "channel": "availity", "service": "TDT school day · H2016", "type": "initial", "units_requested": 150, "stage": "info_requested", "sent": "2026-10-21", "info_requested_at": "2026-10-28T17:40", "reply_due": "2026-10-29T17:40"},
+    {"id": "R-0402", "client": "DW", "payer": "sentara", "channel": "fax", "service": "TDT school day · H2016", "type": "continued_stay", "units_requested": 150, "units_offered": 110, "stage": "partial_decide", "sent": "2026-10-13", "offer_call": "2026-10-27", "reply_by": "2026-10-30"},
+    {"id": "R-0399", "client": "A.L., 6", "payer": "humana", "channel": "fax", "service": "TDT school day · H2016", "type": "initial", "units_requested": 150, "stage": "overdue", "sent": "2026-10-12", "fax_ref": "F-2280", "decision_due": "2026-10-26"},
+    {"id": "R-0391", "client": "JO", "payer": "aetna", "channel": "fax", "service": "TDT school day · H2016", "type": "early_discharge_new_initial", "units_requested": 150, "stage": "submitted", "sent": "2026-10-23T11:20", "fax_ref": "F-2287", "decision_due": "2026-11-06", "pages": 14, "signed_pdf": "R-0391_J.O._early_discharge_new_initial_signed.pdf"},
+    {"id": "R-0388", "client": "TN", "payer": "sentara", "channel": "fax", "service": "TDT school day · H2016", "type": "peer_to_peer", "units_requested": 150, "units_awarded": 65, "stage": "peer_to_peer_booked", "p2p_at": "2026-12-09T14:00"},
+    {"id": "R-0384", "client": "EC", "payer": "anthem", "channel": "availity", "service": "TDT school day · H2016", "type": "initial", "units_requested": 90, "stage": "denied", "denied_on": "2026-10-22", "notice_date": "2026-10-22", "denial_reason": "already connected to other services", "appeal_deadline": "2026-12-21"},
+    {"id": "R-0395", "client": "SB", "payer": "uhc", "channel": "portal", "service": "TDT school day · H2016", "type": "continued_stay", "units_requested": 150, "units_awarded": 80, "stage": "active"},
+    {"id": "R-0380", "client": "LV", "payer": "humana", "channel": "fax", "service": "TDT after-school · H2016-UG", "type": "continued_stay", "units_requested": 60, "units_awarded": 60, "stage": "active"},
+    {"id": "R-0377", "client": "PG", "payer": "aetna", "channel": "fax", "service": "Outpatient", "service_line": "outpatient", "type": "continued_stay", "units_requested": 24, "units_awarded": 24, "stage": "active"}
+  ],
+  "notes_sample": [
+    {"client": "MR", "staff": "khale", "date": "2026-10-29", "type": "daily", "illustrative": true, "direct_time_min": 220, "units": 2, "objective": 1, "interventions": ["Clinical 2.1", "QMHP 1.6", "QMHP 1.9"], "mood": "Frustrated → calm", "progress": "Partial – strategy used after prompt",
+     "contact_time": [["08:05", "08:35", "Morning check-in, classroom"], ["09:50", "11:05", "In-class support, math & reading"], ["11:40", "12:25", "Lunch support"], ["12:25", "13:05", "Recess and transition"], ["13:10", "13:40", "Movement intervention + co-regulation walk"]],
+     "dictation": "played basketball with M.R. after he got upset in math, he cooled down after and went back to class",
+     "enhanced": "Worked with M.R. on emotional regulation and frustration tolerance through a structured Movement intervention (basketball, 1:10–1:40 pm). When he lost the game he became frustrated and walked off the court; staff used a co-regulation walk and he re-engaged after 6 minutes, practicing Solving peer conflict language with a prompt. Addresses ISP Objective 1 (emotional regulation) and Objective 2 (impulse control)."},
+    {"client": "MR", "staff": "khale", "date": "2026-10-29", "type": "weekly_guardian", "contact": "Grandmother (guardian) · phone", "duration_min": 14, "discussed": "Progress on Goal 1 this week (used the calm-down corner twice at school). Grandmother tried the same corner at home on Tuesday evening; it worked once. Bedtime still inconsistent. Asked about the Nov 13 renewal; told the request goes out next week.", "follow_up": "Bring a printed calm-down card to Friday pickup. Next call Nov 5."},
+    {"client": "MR", "staff": "khale", "date": "2026-10-29", "type": "monthly_collateral", "collateral": "School counselor · R. Bell", "method": "In person · 11 min", "shared": "Counselor reports 2 office referrals this month, down from 6 in September. One lunch incident Oct 21. Teacher check-in (Oct 27): stays in class 'often', finishes work 'rarely'. IEP review set for Nov 4.", "coordination": "Harvest to attend the IEP review. Treatment plan shared with the counselor Oct 22."}
+  ],
+  "incidents": [
+    {"date": "2026-10-28T14:40", "client": "DW", "school": "CC-HS1", "level": 2, "what": "Psychiatric hospitalization after school; parent called site supervisor 2:40 pm Oct 28", "state_portal_due": "2026-10-29T14:40", "status": "file_now"},
+    {"date": "2026-10-27", "client": "JO", "school": "LC-MS2", "level": 3, "what": "Safety-care hold, 4 min, hallway; no injury; debrief done Oct 27", "status": "complete"},
+    {"date": "2026-10-24", "client": "ES", "school": "CC-ES1", "level": 3, "what": "Playground injury (not with Harvest staff); still reportable", "status": "complete"},
+    {"date": "2026-10-21", "client": "MR", "school": "CC-ES1", "level": 3, "what": "CPS report filed by clinician after guardian disclosure", "status": "complete"},
+    {"date": "2026-10-15", "client": "AM", "school": "CC-ES2", "level": 2, "what": "Crisis at home, reported by guardian; safety plan updated Oct 16", "state_portal_filed": "2026-10-15T16:10", "status": "complete"}
+  ],
+  "school_checkins": [
+    {"client": "TW", "week_of": "2026-10-27", "by": "okafor", "answers": {"stayed_in_class": "Often", "got_along": "Often", "finished_work": "Rarely", "used_coping_skill": "Often"}},
+    {"client": "TW", "week_of": "2026-10-20", "by": "okafor", "answers": {"stayed_in_class": "Often", "got_along": "Rarely", "finished_work": "Rarely", "used_coping_skill": "Often"}}
+  ],
+  "counselor_counts": [{"client": "TW", "month": "2026-09", "office_referrals": 6}, {"client": "TW", "month": "2026-10", "office_referrals": 2}],
+  "analytics_baseline": {"source": "Sample data, illustrative", "provenance": "harvest_export", "period": "12 months to Oct 2026", "decided": 146, "partial": 0.57, "median_award_on_150": 92, "full_denials": 9, "appeals_attempted": 1, "appeals_overturned": 0, "median_decision_days": 6, "early_discharge_restarts": 11, "unpaid_hours": 312,
+    "monthly": [["Nov", 480, 330], ["Dec", 450, 300], ["Jan", 600, 420], ["Feb", 540, 390], ["Mar", 570, 400], ["Apr", 510, 360], ["May", 300, 210], ["Jun", 150, 120], ["Jul", 90, 90], ["Aug", 660, 450], ["Sep", 720, 480], ["Oct", 690, 470]]},
+  "compliance": {"month": "2026-10", "incident_reports": 14, "cps_reports": 3, "qi_checked": "11 of 12", "credentials_expiring_30d": 3,
+    "credentials": [["khale", "2026-11-12", "2027-03", "2027-08", "QMHP-C"], ["rowens", "2027-06", "2027-06", "2026-11-20", "QMHP-T"], ["slane", "2026-11-28", "2027-02", "2027-05", "QMHP-C"], ["jperez", "2027-09", "2027-09", "2027-01", "LPC · Jun 2027"]]},
+  "migration": {"last_export": "2026-10-29", "run_by": "dowens", "active_students": 52, "daily_notes": 9418, "assessments": 455, "missing_signatures": 17, "discharged_scheduled": "2026-11-15"}
+}

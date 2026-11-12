@@ -1,0 +1,51 @@
+title: EMR Connect › Sync › What other screens use from EMR Connect
+route: /emr
+intro: Other screens lean on EMR Connect. The import row of New Case and Eligibility & Benefits offers 'Pull from EMR' only while a clinical record system at a site in view is Connected, and leaves out a field while its mapping waits. The Dashboard offers the approval write-back box only while a Connected system at a site in view has its write-back switch on.
+dir: TD
+also: Found by reading the code and testing the built demo. Disconnect every clinical record system and 'Pull from EMR' is not offered. Switch write-back off on every row and the Dashboard shows 'Write-back is off for your records system.'
+---
+screen p1 "EMR Connect\nConnection health, sync, mappings (in Advanced) and the Write back switch on each row"
+
+group gPull "New Case and Eligibility & Benefits: Pull from EMR"
+  click a1 "Click 'Pull from EMR' in the import row\nIntake, Clinical documentation, and Eligibility & Benefits' verify"
+  decision a0 "Is a clinical record system at a site in view Connected?"
+  process a8 "No 'Pull from EMR' button\n'Import a file' and 'Paste a screenshot' remain"
+  overlay a2 "Chart picker\nThe charts that live in a Connected system\nA hint under each names the system"
+  process a2b "Clinical record · Site A: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5\nClinical record · Site B: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP\nA viewer who sees one site is offered only that site's two charts"
+  input a3 "Pick a chart"
+  click a4 "Click 'Pull'"
+  process a5 "Button reads 'Pulling' for one second"
+  decision a9 "Does that system still have a field waiting for a mapping?\n'Level of care' or 'Referral source'"
+  process a10 "That field is left out of the review\n'Level of care: “Level of care” in the Site B record needs a mapping' with 'Map it'"
+  screen a6 "Review: '8 fields found' and the earlier notes as documents\nNothing applied until 'Apply'"
+endgroup
+process n1 "Sync now does not add charts to the picker\nThe four charts are fixed. Connect, Disconnect, Fix and Reconnect decide which systems offer them, and Map decides which fields a pull leaves out"
+goto g1 "Continues in: Authorizations › New Case › Import › Pull from EMR"
+
+group gWrite "Dashboard: write back"
+  screen b1 "Dashboard request: 'Approved. Write-back waits for you'"
+  decision b0 "Does at least one Connected system at a site in view have its write-back switch on?"
+  toast b8 "'Write-back is off for your records system.' with 'Turn it on in EMR Connect.'\nInstead of the box. The link opens this page"
+  click b2 "Click 'Approve write-back'"
+  overlay b3 "Approve the write-back\n'EMR Connect will write only these three things to the chart. No notes, diagnoses or identifiers are written.'"
+  process b4 "Approval number, approved amount and dates are listed"
+  click b5 "Click 'Write to the EMR'\nOr 'Cancel'"
+  ext b6 "The record system receives the three values\nDemo: simulated, about one second"
+  store b7 "Request gets 'You confirmed the write-back' and a Cadence event\nToast: 'Written to the EMR'"
+endgroup
+process n2 "The switch on a Disconnected or Needs attention system does not count\nReconnect it, and the box comes back if its switch is on"
+goto g2 "Continues in: Dashboard › Request drawer › Approve the write-back"
+
+p1 -.-> a1
+a1 --> a0
+a0 -->|No| a8
+a0 -->|Yes| a2 --> a2b --> a3 --> a4 --> a5 --> a9
+a9 -->|Yes| a10 --> a6
+a9 -->|No| a6
+a6 --> g1
+a2 -.-> n1
+p1 -.-> b1
+b1 --> b0
+b0 -->|No| b8
+b0 -->|Yes| b2 --> b3 --> b4 --> b5 --> b6 --> b7 --> g2
+b8 -.-> n2

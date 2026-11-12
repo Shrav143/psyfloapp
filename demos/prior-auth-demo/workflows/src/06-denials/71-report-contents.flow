@@ -1,0 +1,47 @@
+title: Denial Intelligence › Appeal analysis report › What the report says
+route: /denials/D-3297/report
+intro: One page, about 860 pixels wide, top to bottom. The same words go to Copy report and to the PDF. It is built from the analysis, the long text and what the person has done on the denial.
+dir: TD
+also: Late notice and Retro-authorization denied have no framework dimensions, so that section is left out for them. Everything else appears for every denial.
+---
+start s1 "The report is on screen"
+screen t1 "Title block\n'Appeal analysis report', D-id, initials and age, payer\nTag 'Worked example' on D-3297 only\n'Our read' tile: Worth challenging, Borderline or Probably accept\nUnder the title line: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
+screen t2 "Facts\nDenial, Patient, Payer, Program, Denial type, Report date (the demo clock), Deadline, Similar decisions\nChance of overturning on a call and on a written appeal, with the likely range"
+decision d0 "Fewer than 60 similar decisions?"
+toast n1 "Note under the chances\n'Benchmark estimate: only N similar decisions, so the range is wider than usual.'"
+screen r1 "'The payer's reasoning'\nTheir words in a red-edged box, then 'Where it parts from the chart'"
+screen r2 "'What the chart shows as a whole'\nTwo short paragraphs"
+screen r3 "'Where the denial is weak'\nNumbered findings: severity pill, title, long paragraph, 'Source:' with the chart excerpt, 'Suggested fix:'"
+decision d1 "Did the person click 'Add to the evidence' on this finding?"
+screen r3a "Pill 'Added to the evidence'"
+screen r3b "Pill 'Not added yet'"
+decision d2 "Does the denial have framework dimensions?"
+screen r4 "'ASAM Criteria dimensions' ('LOCUS dimensions' for a mental health denial)\nDot, 'D1 Acute intoxication and withdrawal potential', a word and the long paragraph for D1 to D6"
+process p4 "Section left out (Late notice, Retro-authorization denied)"
+screen r5 "'What we would do'\nNumbered recommendations with a bold title and a long paragraph"
+screen r6 "'Your options compared'\nTable: Peer-to-peer call, Written appeal, Accept the decision\nChance, Time, Gets back, Needs; 'Recommended' on one"
+screen r7 "'Criteria to cite'\n'Documents to attach': a list, then 'Fixes from the findings' with a tick for each fix added"
+screen r8 "'Likely pushback and replies'\n'The ask'\n'Outlook'"
+screen r9 "'Timeline and deadlines'\nDenial received, Peer-to-peer window, Peer-to-peer call (booked or not), Written appeal due\nLater: appeal drafted, filed, call outcome, payer's decision, accepted\n'Where it stands'"
+screen r10 "'How this report was made'\nReader, Advocate, Historian, the count of similar decisions\nA clinician reviews and signs before anything is sent\nInitials and age only, no other identifiers"
+screen f1 "Footer line\n'Draft by FLO's agents. A clinician reviews and signs before anything is sent. Generated 10/20/2026.'"
+click c1 "Click 'Add to the evidence' on the denial page, then reopen the report"
+process p1 "The finding's fix shows as added, and so does its tick under 'Documents to attach'"
+click c2 "Book a call or file an appeal on the denial page, then reopen the report"
+process p2 "The timeline lists the booked call or the filing, and 'Where it stands' follows the status"
+goto g1 "Continues in: Denial Intelligence › A denial opened › Where the denial is weak"
+goto g2 "Continues in: Denial Intelligence › Appeal analysis report › Copy, PDF and print"
+end e1 "The person has read the whole report"
+
+s1 --> t1 --> t2 --> d0
+d0 -->|Yes| n1 --> r1
+d0 -->|No| r1
+r1 --> r2 --> r3 --> d1
+d1 -->|Yes| r3a --> d2
+d1 -->|No| r3b --> d2
+d2 -->|Yes| r4 --> r5
+d2 -->|No| p4 --> r5
+r5 --> r6 --> r7 --> r8 --> r9 --> r10 --> f1 --> e1
+r3 -.-> c1 --> p1 --> g1
+r9 -.-> c2 --> p2
+f1 --> g2

@@ -1,0 +1,30 @@
+title: Analytics › Case list panel
+route: /analytics
+intro: The cases behind one number. The same rows were counted to make the number, so the count in the panel always equals the number you clicked. Opened from a headline figure, a month on the trend, a grid cell, a reason, a scorecard count, a length of stay row, a process month or a site cell.
+dir: TD
+---
+start s1 "Click any number on the page"
+overlay o1 "Panel: the title says what was clicked, for example 'Cardinal: Opioid use disorder'\nSubtitle: '131 cases · This quarter · Both sites', plus the filters in force\nButton 'Copy summary'"
+screen a1 "Three counts: 'Approved as requested', 'Approved in part', 'Denied'\n'Most common reasons' when there are denials\nThe cases table with outcome tabs, sorting and paging"
+click c1 "Click a case row"
+goto g1 "Continues in: Analytics › Case summary panel"
+decision q1 "Is it one payer's reason?"
+click c2 "Click 'Open in Denial Intelligence' (footer)"
+goto g2 "Continues in: Denial Intelligence › Open denials list"
+click b1 "Click 'Copy summary'"
+process b2 "Copies the title, count, outcome counts and top reasons\nToast 'List summary copied'"
+input k1 "Press Escape"
+process k2 "Closes the top panel only\nFocus goes back to what was clicked"
+decision q2 "Opened on top of a payer panel?"
+screen e1 "The payer panel shows again"
+end e2 "Back on the page"
+
+s1 --> o1 --> a1
+a1 --> c1 --> g1
+o1 --> q1
+q1 -->|Yes| c2 --> g2
+q1 -->|No| a1
+o1 --> b1 --> b2
+o1 --> k1 --> k2 --> q2
+q2 -->|Yes| e1
+q2 -->|No| e2

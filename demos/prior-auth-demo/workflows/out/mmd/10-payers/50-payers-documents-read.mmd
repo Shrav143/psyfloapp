@@ -1,0 +1,62 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open 'Clinical documentation' in Rules & Instructions</b><br/>or follow a link with ?tab=documents" }
+  tab@{ shape: curv-trap, label: "<b>Clinical documentation group (opened and in view)</b><br/>Banner above the groups if edits wait<br/>Then 'Level of care' and 'Edit list', the closed list,<br/>'Try it on a case', and clinical-criteria rules" }
+  card@{ shape: curv-trap, label: "<b>Closed section 'What Summit wants for Residential 3.5'</b><br/>'Nine documents: ASAM multidimensional assessment,<br/>Psychiatric evaluation or H&P, and 7 more.'" }
+  op@{ shape: trap-t, label: "<b>Click the section (or Enter, Space)</b><br/>It opens and closes, and stays open when 'Level of care' changes" }
+  dflt@{ shape: rect, label: "<b>Opens on Residential 3.5 every time</b><br/>the view or the payer changes<br/>The list is closed again" }
+  lc@{ shape: lean-r, label: "<b>Pick 'Level of care'</b><br/>Residential 3.5, IOP, PHP, Detox" }
+  sw@{ shape: rect, label: "<b>Title, count and list switch to that level</b><br/>For Summit: Residential 9, IOP 6, PHP 7, Detox 8" }
+  ol@{ shape: curv-trap, label: "<b>Open: numbered list</b><br/>Number, document name in bold,<br/>what it must show in grey<br/>Then 'The agents ask for each one before they write a word.'" }
+  ex@{ shape: rect, label: "<b>Example row</b><br/>ASAM multidimensional assessment<br/>Every dimension, dated within 7 days" }
+  any@{ shape: diam, label: "Is the list empty?" }
+  em@{ shape: odd, label: "'This list is empty. Add the documents Summit asks for.'" }
+  pdiff@{ shape: rect, label: "<b>Payers differ a little</b><br/>Lakeshore adds 'Fax cover sheet' to every list<br/>Harborview adds a Part D medication list and a Medicare eligibility check<br/>Evergreen adds a call log with the reviewer" }
+  one@{ shape: rect, label: "<b>One document reads 'One document.'</b><br/>Numbers up to fifteen are spelled out" }
+  dU@{ shape: diam, label: "Edits saved but not yet applied?" }
+  bU@{ shape: odd, label: "<b>'1 edit applies to new drafts only'</b><br/>New drafts use this at once. Sent requests keep<br/>what they were sent with." }
+  ce@{ shape: trap-t, label: "Click 'Edit list'" }
+  gE@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit the document list" }
+  gC@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Try it on a case" }
+  gU@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
+  aft@{ shape: rect, label: "<b>A payer change can add rows</b><br/>Cardinal's 2026.3 change adds 'Remaining treatment goals'<br/>(Named in the latest progress note) to Residential 3.5,<br/>IOP and PHP when the change is updated.<br/>Evergreen's change adds 'Notice call reference number'" }
+  gA@{ shape: subproc, label: "Continues in: Payers › History & Changes › Review and apply a change" }
+  s1 --> tab --> dU
+  dU -->|"Yes"| bU --> gU
+  dU -->|"No"| card
+  bU --> card
+  card --> dflt --> lc --> sw
+  card --> op --> ol
+  sw -.-> op
+  ol --> ex --> any
+  any -->|"Yes"| em
+  any -->|"No"| pdiff
+  em -.-> ce
+  pdiff -.-> one
+  pdiff --> aft --> gA
+  tab --> ce --> gE
+  tab --> gC
+  class s1 k_start
+  class tab,card,ol k_screen
+  class op,ce k_click
+  class dflt,sw,ex,pdiff,one,aft k_process
+  class lc k_input
+  class any,dU k_decision
+  class em,bU k_toast
+  class gE,gC,gU,gA k_goto

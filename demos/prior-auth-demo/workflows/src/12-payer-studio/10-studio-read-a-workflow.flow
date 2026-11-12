@@ -1,0 +1,53 @@
+title: Payers › Workflow Builder › Read a workflow
+route: /payers/summit?tab=builder
+intro: The Workflow Builder tab opens on the payer's first published workflow (or the one you last had open). A bar says which workflow it is and what can be done with it; the canvas shows its steps with the list of steps on the left and the settings on the right. Nothing here changes the workflow until you edit, and published workflows are never edited in place.
+dir: TD
+---
+start s1 "Click 'Workflow Builder' in a payer's workspace\n(or open /payers/id?tab=builder)"
+decision d1 "Does the address name a workflow\nor did you leave one open?"
+process p1 "That workflow opens"
+process p2 "The first published workflow opens\nelse the first that is not archived"
+screen bar "The bar above the canvas\nWorkflow name, request type and version, status pill,\n'New', 'Save draft', 'Test', 'Publish', 'More'"
+screen sum "Under the buttons\nOne line of facts: service, request type, state, plan, start date\n'Saved in this browser' and who saved last, 'Details'"
+decision d2 "Is the workflow published,\na draft of a newer version, or archived?"
+toast n1 "Published: 'Published version N is in force. Your changes are saved as a draft of version N+1, and publishing it replaces version N.'"
+toast n2 "Draft on top of a published one: 'Published version N is still in force. This draft is version M and replaces it when published.'"
+toast n3 "Archived: 'This workflow is archived, so it is read only. Duplicate it to start a new draft.'"
+process n4 "A plain draft shows no notice"
+click c1 "Open the workflow list in the bar"
+overlay o1 "List of the payer's workflows\nName, request type, version, status pill\nPublished first, then drafts, then archived"
+click c2 "Pick a workflow"
+decision d3 "Unsaved changes on the one you leave?"
+overlay o2 "'Leave without saving?'\n'Stay', 'Leave without saving', 'Save draft and leave'"
+process p3 "The address records ?workflow=\nThe canvas, steps and settings follow the choice"
+click c3 "Click 'Details'"
+screen det "Details card\nName, Payer (fixed), Plan or product, State, Request type, Provider type,\nServices, Effective from and to, Owner, Version, Status"
+screen cols "Three columns\n'Steps' list, canvas with its tools, settings panel\nOpens on the beginning of the workflow at a size that can be read"
+process p4 "With no step selected the panel is 'This workflow'\nChecks, Payer rules it uses, Safeguards"
+process p5 "Narrow window: the list becomes a 'Steps' tab that opens over the canvas\nBelow 900 px: 'Add a step', canvas, then settings, stacked"
+click c4 "Click the panel-hide link or the 'Hide the list of steps' button"
+process p6 "That panel folds to a thin tab for more canvas room"
+end e1 "The workflow is on screen, read only until you change it"
+goto g1 "Continues in: Payers › Workflow Builder › Add, move and connect steps"
+goto g2 "Continues in: Payers › Workflow Builder › Configure a step"
+goto g3 "Continues in: Payers › Workflow Builder › Published workflows and conflicts"
+
+s1 --> d1
+d1 -->|Yes| p1 --> bar
+d1 -->|No| p2 --> bar
+bar --> sum --> d2
+d2 -->|Published| n1 --> cols
+d2 -->|Draft over published| n2 --> cols
+d2 -->|Archived| n3 --> cols
+d2 -->|Plain draft| n4 --> cols
+bar --> c1 --> o1 --> c2 --> d3
+d3 -->|Yes| o2 --> p3
+d3 -->|No| p3
+p3 --> bar
+sum --> c3 --> det
+cols --> p4 --> e1
+cols --> p5
+cols --> c4 --> p6
+e1 --> g1
+e1 --> g2
+n1 --> g3

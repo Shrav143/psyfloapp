@@ -1,0 +1,42 @@
+title: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type
+route: /dashboard
+intro: The controls on the right of the table card's header. 'Needs me today' is a toggle; Payer, Program, Status and Request type are menus. The four menus apply at once, write to the address and keep to the Dashboard's one set of filters. Payer, Program and Request type also narrow the Lifecycle counts; Status and the toggle only narrow the table.
+dir: TD
+---
+start s1 "Dashboard is open\nHeader of the table card"
+screen sc "Five controls\n'Needs me today', 'All payers', 'All programs', 'All statuses', 'All request types'\nA 'Clear filters' button joins them when any is set"
+
+group gToggle "Needs me today"
+  click t1 "Click 'Needs me today'\nKeyboard: Tab, then Enter or Space"
+  process t2 "The table shows only rows owned by You today\nWaiting on a person now, ready to sign, a write-back to approve, a late payer to chase, or a denial deadline inside 2 days"
+  screen t3 "Button is outlined green and pressed\nThe sentence under the title starts 'Needs you today.'"
+  click t4 "Click it again"
+  process t5 "The table shows every row again"
+endgroup
+
+group gMenus "The four menus"
+  click m1 "Click a menu\nPayer, Program, Status or Request type"
+  overlay m2 "Menu opens under the button, to the left for the right-hand ones\nPayer: every payer, including one added on Payers\nStatus: Awaiting sign-off 5, Submitted 4, Decision pending 14, Info requested 3, Decided today 8, Denied / appeal 8"
+  click m3 "Pick an option"
+  process m4 "Menu closes\nThe table, its title and the sentence under it follow"
+  process m5 "Menu keys: ArrowDown, ArrowUp, Enter to pick, Escape to close\nA click outside or on the button again also closes it"
+  screen m6 "A menu that is not 'All' turns green and bold"
+endgroup
+store w1 "Filters saved\nPayer, Program, Request type, Status"
+store w2 "Address gets ?payer=, ?program=, ?type= or ?stage=\nOnly values that are not 'All'"
+process p1 "Lifecycle counts follow Payer, Program and Request type\nA Status pick shows as the pressed chip"
+process p2 "Table goes back to its first 8 rows"
+decision d1 "Any rows left?"
+goto g1 "Continues in: Dashboard › Table controls › Clear filters and empty states"
+goto g2 "Continues in: Dashboard › Lifecycle › Click a state to filter the table"
+goto g3 "Continues in: Dashboard › Requests table › Order, rows and paging"
+
+s1 --> sc
+sc --> t1 --> t2 --> t3 --> t4 --> t5
+sc --> m1 --> m2 --> m3 --> m4 --> m6
+m2 -.-> m5
+m4 --> w1 --> w2 --> p1 --> p2 --> d1
+t2 --> p2
+d1 -->|Yes| g3
+d1 -->|No| g1
+p1 -.-> g2
