@@ -125,10 +125,10 @@ register('Authorizations', class extends Screen {
     const rows = ui.pager.slice(q.rows, { size: st.size, page: st.page });
     const cols = [
       { key: 'case', label: 'Consumer', sort: true, primary: true, width: '9%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.initials)}</b></span>${r.lauris ? `<span class="a-sub a-nw">Lauris #${esc(r.lauris)}</span>` : ''}` },
-      { key: 'service', label: 'Service', sort: true, hideBelow: 1024, width: '8%', render: r => `${esc(r.serviceLabel)}${r.serviceCode ? `<span class="a-sub">${esc(r.serviceCode)}</span>` : ''}` },
-      { key: 'payer', label: 'Payer', sort: true, hideBelow: 768, width: '9%', render: r => esc(r.payer) },
+      { key: 'service', label: 'Service', sort: true, hideBelow: 1024, width: '7%', render: r => `${esc(r.serviceLabel)}${r.serviceCode ? `<span class="a-sub">${esc(r.serviceCode)}</span>` : ''}` },
+      { key: 'payer', label: 'Payer', sort: true, hideBelow: 768, width: '11%', render: r => `<span title="${esc(r.payerFull)}">${esc(r.payerId === 'uhc' ? 'UHC' : r.payer)}</span>` },
       { key: 'owner', label: 'Assigned clinician', sort: true, hideBelow: 1280, width: '7%', render: r => `<span title="${esc(r.owner.backup ? 'Backup: ' + r.owner.backup.name : 'No backup set')}">${esc(r.owner.short)}</span>` },
-      { key: 'period', label: 'Authorization period', sort: true, hideBelow: 1024, width: '10.5%', render: r => `${r.periodText ? `<span class="a-nw">${esc(r.periodText)}</span>` : '<span class="ui-muted">—</span>'}<span class="a-sub">${esc(KIND[r.type] || r.typeLabel)}</span>` },
+      { key: 'period', label: 'Authorization period', sort: true, hideBelow: 1024, width: '10%', render: r => `${r.periodText ? `<span class="a-nw">${esc(r.periodText)}</span>` : '<span class="ui-muted">—</span>'}<span class="a-sub">${esc(KIND[r.type] || r.typeLabel)}</span>` },
       { key: 'requested', label: 'Requested', sort: true, align: 'right', hideBelow: 768, width: '7.5%', render: r => this.num(r.units.requested) },
       { key: 'approved', label: 'Approved', sort: true, align: 'right', hideBelow: 768, width: '7.5%', render: r => r.units.awarded != null ? this.num(r.units.awarded) : r.units.offered != null ? `${this.num(r.units.offered)}<span class="a-sub">offered</span>` : this.num(null) },
       { key: 'units', label: 'Remaining', sort: true, width: '12%', className: 'a-c-units', render: r => this.unitsCell(r) },

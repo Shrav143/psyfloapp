@@ -1,6 +1,6 @@
-# audit · PASS
+# audit · FAIL
 
-Run 2026-11-11T21-13-30Z · 1162511 ms · instance 3 · exit 0
+Run 2026-11-12T00-38-33Z · 1372500 ms · instance 1 · exit 1
 
 | Result | Test | Note |
 |---|---|---|
@@ -9,19 +9,19 @@ Run 2026-11-11T21-13-30Z · 1162511 ms · instance 3 · exit 0
 | PASS | P19.3 audit · direct_support · ExtWeekly |  |
 | PASS | P19.3 audit · direct_support · ExtMonthly |  |
 | PASS | P19.3 audit · direct_support · ExtIncident |  |
-| PASS | P19.3 audit · direct_support · Dashboard |  |
-| PASS | P19.3 audit · direct_support · Patient?id=MR |  |
+| FAIL | P19.3 audit · direct_support · Dashboard | 47 controls, 2 findings: DISABLED-UNEXPLAINED "Previous page"; DISABLED-UNEXPLAINED "Next page" |
+| FAIL | P19.3 audit · direct_support · Patient?id=MR | 19 controls, 2 findings: DISABLED-UNEXPLAINED "Previous page"; DISABLED-UNEXPLAINED "Next page" |
 | PASS | P19.3 audit · supervisor · ExtHome |  |
-| PASS | P19.3 audit · supervisor · Authorizations |  |
+| FAIL | P19.3 audit · supervisor · Authorizations | 70 controls, 2 findings: DISABLED-UNEXPLAINED "Previous page"; DISABLED-UNEXPLAINED "Next page" |
 | PASS | P19.3 audit · supervisor · Analytics?section=outcomes |  |
 | PASS | P19.3 audit · supervisor · Authorization?id=R-0411 |  |
 | PASS | P19.3 audit · supervisor · Authorization?id=R-0399 |  |
-| PASS | P19.3 audit · supervisor · Dashboard |  |
-| PASS | P19.3 audit · supervisor · Documentation |  |
-| PASS | P19.3 audit · supervisor · Documentation?status=pending_review |  |
+| FAIL | P19.3 audit · supervisor · Dashboard | 73 controls, 2 findings: DISABLED-UNEXPLAINED "Previous page"; DISABLED-UNEXPLAINED "Next page" |
+| FAIL | P19.3 audit · supervisor · Documentation | 107 controls, 1 findings: DISABLED-UNEXPLAINED "Previous page" |
+| FAIL | P19.3 audit · supervisor · Documentation?status=pending_review | 77 controls, 2 findings: DISABLED-UNEXPLAINED "Previous page"; DISABLED-UNEXPLAINED "Next page" |
 | PASS | P19.3 audit · supervisor · Documentation?view=staff |  |
-| PASS | P19.3 audit · supervisor · Patient?id=MR |  |
-| PASS | P19.3 audit · supervisor · Patient?id=DW |  |
+| FAIL | P19.3 audit · supervisor · Patient?id=MR | 16 controls, 2 findings: DISABLED-UNEXPLAINED "Previous page"; DISABLED-UNEXPLAINED "Next page" |
+| FAIL | P19.3 audit · supervisor · Patient?id=DW | 22 controls, 2 findings: DISABLED-UNEXPLAINED "Previous page"; DISABLED-UNEXPLAINED "Next page" |
 | PASS | P19.3 audit · clinician · Referrals |  |
 | PASS | P19.3 audit · clinician · Referral?id=REF-118 |  |
 | PASS | P19.3 audit · clinician · Referral?id=REF-121 |  |
@@ -132,25 +132,69 @@ Run 2026-11-11T21-13-30Z · 1162511 ms · instance 3 · exit 0
 | PASS | P19.3 audit · signed out · WhereThingsLive |  |
 | PASS | P19.3 audit · panel jperez · home (400) |  |
 | PASS | P19.3 audit · panel khale · home (direct support) (400) |  |
-| PASS | P19.3 audit · panel cdiaz · home (supervisor) (400) |  |
-| PASS | P19.3 audit · panel dowens · home (admin) (400) |  |
-| PASS | P19.3 audit · panel jperez · record (400) |  |
-| PASS | P19.3 audit · panel khale · daily note (400) |  |
-| PASS | P19.3 audit · panel jperez · daily note (clinician) (400) |  |
-| PASS | P19.3 audit · panel jperez · weekly (400) |  |
-| PASS | P19.3 audit · panel jperez · monthly (400) |  |
-| PASS | P19.3 audit · panel jperez · incident (400) |  |
-| PASS | P19.3 audit · panel jperez · quarterly (400) |  |
-| PASS | P19.3 audit · panel jperez · continued stay (400) |  |
-| PASS | P19.3 audit · panel jperez · discharge (400) |  |
-| PASS | P19.3 audit · panel jperez · forms to approve (400) |  |
-| PASS | P19.3 audit · panel khale · time tracker (400) |  |
-| PASS | P19.3 audit · panel jperez · authorizations (400) |  |
-| PASS | P19.3 audit · panel khale · screening (direct support: not offered) (400) |  |
-| PASS | P19.3 audit · panel jperez · T.W. screening (400) |  |
-| PASS | P19.3 audit · panel jperez · T.W. CNA (400) |  |
-| PASS | P19.3 audit · panel jperez · T.W. ISP (400) |  |
-| PASS | P19.3 audit · panel jperez · T.W. initial SRA (400) |  |
-| PASS | P19.3 audit · panel jperez · forms to approve (signed) (400) |  |
+| FAIL | P19.3 audit · panel cdiaz · home (supervisor) (400) | Cannot read properties of undefined (reading 'evaluate') [me/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:228:51)] |
+| FAIL | P19.3 audit · panel dowens · home (admin) (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=dowens&next=%2Fconsumers [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · record (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310 [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel khale · daily note (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=khale&next=%2Fconsumers%2F3310%2Fsession%2Fdpn [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · daily note (clinician) (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310%2Fsession%2Fdpn [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · weekly (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310%2Fsession%2Fweekly [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · monthly (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310%2Fsession%2Fcollateral [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · incident (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4102%2Fsession%2Fincident [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · quarterly (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310%2Fsession%2Fquarterly [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · continued stay (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310%2Fsession%2Fsra-continued [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · discharge (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4102%2Fsession%2Fdischarge [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · forms to approve (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fapprovals [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel khale · time tracker (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=khale&next=%2Ftime [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · authorizations (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fauthorizations [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel khale · screening (direct support: not offered) (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=khale&next=%2Fconsumers%2F3310%2Fsession%2Fscreening [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · T.W. screening (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4492%2Fsession%2Fscreening [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · T.W. CNA (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4492%2Fsession%2Fcna [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · T.W. ISP (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4492%2Fsession%2Fisp [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · T.W. initial SRA (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4492%2Fsession%2Fsra-initial [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
+| FAIL | P19.3 audit · panel jperez · forms to approve (signed) (400) | page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fapprovals [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)] |
 | PASS | P19.3 audit · panel offers no Process Form, Get Signature or Send (person-only actions) |  |
 | PASS | P19.3 audit · the sweep covered what it claims (counts per role, no unreachable targets) |  |
+
+## Output (tail)
+
+```
+PASS P19.3 audit · school · SchoolPortal (390)
+  53 controls (+40 in sections), 0 findings
+PASS P19.3 audit · school · ReferralForm (390)
+  4 controls, 0 findings
+PASS P19.3 audit · school · ReferralSent (390)
+  5 controls, 0 findings
+PASS P19.3 audit · signed out · Login
+  0 controls, 0 findings
+PASS P19.3 audit · signed out · WhereThingsLive
+  33 controls (+26 in sections), 0 findings
+PASS P19.3 audit · panel jperez · home (400)
+  10 controls (+6 in sections), 0 findings
+PASS P19.3 audit · panel khale · home (direct support) (400)
+FAIL P19.3 audit · panel cdiaz · home (supervisor) (400) — Cannot read properties of undefined (reading 'evaluate') [me/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:228:51)]
+FAIL P19.3 audit · panel dowens · home (admin) (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=dowens&next=%2Fconsumers [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · record (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310 [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel khale · daily note (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=khale&next=%2Fconsumers%2F3310%2Fsession%2Fdpn [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · daily note (clinician) (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310%2Fsession%2Fdpn [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · weekly (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310%2Fsession%2Fweekly [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · monthly (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310%2Fsession%2Fcollateral [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · incident (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4102%2Fsession%2Fincident [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · quarterly (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310%2Fsession%2Fquarterly [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · continued stay (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F3310%2Fsession%2Fsra-continued [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · discharge (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4102%2Fsession%2Fdischarge [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · forms to approve (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fapprovals [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel khale · time tracker (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=khale&next=%2Ftime [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · authorizations (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fauthorizations [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel khale · screening (direct support: not offered) (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=khale&next=%2Fconsumers%2F3310%2Fsession%2Fscreening [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+  (fixture tw-isp-ready failed: fetch failed)
+FAIL P19.3 audit · panel jperez · T.W. screening (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4492%2Fsession%2Fscreening [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · T.W. CNA (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4492%2Fsession%2Fcna [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · T.W. ISP (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4492%2Fsession%2Fisp [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+FAIL P19.3 audit · panel jperez · T.W. initial SRA (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fconsumers%2F4492%2Fsession%2Fsra-initial [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+  (fixture tw-signed failed: fetch failed)
+FAIL P19.3 audit · panel jperez · forms to approve (signed) (400) — page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:5411/login?as=jperez&next=%2Fapprovals [ome/user/psyfloapp/demos/psyflo-unified-demo/test/lib/audit.mjs:211:5)]
+PASS P19.3 audit · panel offers no Process Form, Get Signature or Send (person-only actions)
+  controls swept: 1423 on 138 targets · NAVIGATED 531 · VANISHED 382 · DOM 196 · DETAIL 102 · CLOSE 84 · POPUP 65 · NO-EFFECT-ALLOWED 21 · DISABLED-UNEXPLAINED 15 · STATE 7 · DISABLED-EXPLAINED 6 · FILE-CHOOSER 5 · SCROLL 3 · SKIPPED 3 · TYPED 2 · FOCUS-ONLY 1
+PASS P19.3 audit · the sweep covered what it claims (counts per role, no unreachable targets)
+RESULT audit pass=122 fail=28 skip=0
+```

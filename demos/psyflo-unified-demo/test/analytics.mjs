@@ -276,6 +276,42 @@ try {
     await page.reload(); await page.waitForSelector('.an-body .an-card, .an-body .an-kpis'); assert.eq(await page.locator('[data-ui-fchip][data-key="period"][data-value="all"]').getAttribute('aria-pressed'), 'true', 'reload keeps the period');
     await ctx.close();
   });
+  await T.test('the artifact layout: headline cards, lines with metric chips, tiles, feedback blocks, bars; every chart keeps its table; nothing computed on screen', async () => {
+    const { ctx, page, errs } = await open('dowens', '/Analytics?section=outcomes&dataset=illustrative');
+    await page.waitForSelector('.an-kpis .an-kpi');
+    assert.eq(await page.locator('.an-kpis .an-kpi').count(), 7, 'seven headline cards on Patient Outcomes');
+    assert.ok(await page.locator('svg.an-lines').count() === 1, 'outcomes over time is a line chart');
+    assert.eq(await page.locator('.an-chip[aria-pressed="true"]').first().innerText(), 'Assessment scores');
+    await page.click('.an-chip[data-v="behavior"]'); await page.waitForTimeout(200); assert.eq(await page.locator('.an-chip[data-v="behavior"]').getAttribute('aria-pressed'), 'true', 'the metric chip switches the lines');
+    const t = await page.locator('main').innerText();
+    for (const w of ['Treatment Feedback & Engagement', 'Patient-reported', 'Data completeness', 'Patient progress timeline', 'Patients requiring review', 'Restricted · clinical access']) assert.match(t, new RegExp(w));
+    assert.ok(await page.locator('details.an-td summary', { hasText: 'Table' }).count() >= 2, 'a chart or tile card keeps its table one click away');
+    assert.ok(!/\b\d+ of \d+ (patients|requests)\b/.test(await page.locator('.ui-fbar').first().innerText()), 'no "N of M" count in the filter bar');
+    await page.goto(BASE + '/#/Analytics?section=payer&dataset=illustrative'); await page.waitForSelector('.an-kpis .an-kpi');
+    assert.eq(await page.locator('.an-kpis .an-kpi').count(), 7, 'seven headline cards on Payer Performance');
+    for (const w of ['Payer comparison', 'Authorization trends', 'Top denial reasons', 'Documentation deficiencies', 'Denial frequency by payer', 'Appeal outcomes', 'Payer insights']) assert.match(await page.locator('main').innerText(), new RegExp(w));
+    assert.ok(await page.locator('a', { hasText: 'Investigate in Denial Intelligence' }).count() >= 1, 'an administrator can open Denial Intelligence from an insight');
+    await page.click('.an-chip[data-v="units"]'); await page.waitForTimeout(200); assert.ok(await page.locator('.an-vcols').count() === 1);
+    await page.goto(BASE + '/#/Analytics?section=population&dataset=illustrative'); await page.waitForSelector('.an-tiles');
+    for (const w of ['Population summary', 'Patient Demographics', 'Age distribution', 'Geographic distribution', 'Insurance coverage', 'Referral sources', 'Diagnosis & Clinical Needs', 'Service Utilization', 'Intervention Utilization', 'Treatment Goals & Needs']) assert.match(await page.locator('main').innerText(), new RegExp(w));
+    assert.ok(await page.locator('.an-hbs .an-hb').count() >= 20, 'distributions are bars');
+    assert.deepEq(errs, [], errs.join(' | ')); await ctx.close();
+    const sup = await open('cdiaz', '/Analytics?section=payer'); await sup.page.waitForSelector('.an-kpis .an-kpi');
+    assert.eq(await sup.page.locator('a', { hasText: 'Investigate in Denial Intelligence' }).count(), 0, 'a site supervisor holds no Denial Intelligence, so no link to it'); await sup.ctx.close();
+    const cl = await open('jperez', '/Analytics?section=outcomes'); await cl.page.waitForSelector('.an-kpis .an-kpi');
+    await cl.page.click('[data-x="child"]'); await cl.page.waitForSelector('[role="dialog"]'); assert.match(await cl.page.locator('[role="dialog"]').innerText(), /One child over time/); await cl.ctx.close();
+  });
+  await T.test('a table over 10 rows pages at the bottom with 10, 25, 50 and 100 rows per page; the choice is in the URL and survives a reload', async () => {
+    const { ctx, page } = await open('dowens', '/Analytics?section=population&dataset=illustrative');
+    await page.waitForSelector('[data-ui-pager]');
+    const pg = page.locator('[data-ui-pager]').first(); assert.match(await pg.innerText(), /Showing\s+1–10\s+of\s+11/);
+    assert.deepEq(await pg.locator('select option').allInnerTexts(), ['10', '25', '50', '100']);
+    const card = page.locator('.an-card', { has: pg }); assert.eq(await card.locator('tbody tr').count(), 10, 'ten rows on the first page');
+    await pg.locator('[data-ui-pgnext]').click(); await page.waitForTimeout(200); assert.eq(await card.locator('tbody tr').count(), 1, 'the eleventh row is on page 2');
+    await pg.locator('select').selectOption('25'); await page.waitForTimeout(250); assert.eq(await card.locator('tbody tr').count(), 11, 'all rows at 25 per page'); assert.match(page.url(), /size=25/);
+    await page.reload(); await page.waitForSelector('[data-ui-pager]'); assert.eq(await page.locator('[data-ui-pager] select').first().inputValue(), '25', 'reload keeps the page size');
+    await ctx.close();
+  });
   await T.test('the CSV file the Export button writes matches the panels on screen, cell for cell', async () => {
     for (const [who, hash] of [['dowens', '/Analytics?section=payer&period=90d'], ['jperez', '/Analytics?section=population&period=90d'], ['dowens', '/Analytics?section=outcomes&dataset=illustrative&period=90d']]) {
       const { ctx, page, errs } = await open(who, hash);

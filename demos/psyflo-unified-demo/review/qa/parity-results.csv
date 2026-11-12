@@ -59,7 +59,7 @@ M-057,Incident report,Extension › Additional actions,MOVED,"route /ExtIncident
 M-058,Initial SRA (Flow C),Extension › Authorization preparation,MOVED,"panel on Lauris #4492/sra-initial as jperez · suite flowC PASS, enhance PASS, s4 PASS",
 M-059,Quarterly report,Extension › Clinical documents,MOVED,"panel on Lauris #3310/quarterly as jperez · suite flowC PASS, enhance PASS, s4 PASS",
 M-060,Continued stay,Authorizations › evidence,MOVED,"panel on Lauris #3310/sra-continued as jperez · suite flowC PASS, enhance PASS, s4 PASS",
-M-061,Sign-off (Forms to Approve),Extension › Authorization preparation,MOVED,"panel on Lauris #4492/sra-initial as jperez · suite authorizations PASS, flowC PASS",
+M-061,Sign-off (Forms to Approve),Extension › Authorization preparation,NOT-VERIFIED,"panel on Lauris #4492/sra-initial as jperez · suite authorizations PASS, flowC PASS",
 M-062,Discharge summary,Extension › Clinical documents,MOVED,"panel on Lauris #3402/discharge as jperez · suite flowC PASS, enhance PASS, s4 PASS",
 M-063,Portal confirmation view,Extension (keep),MOVED,"portal GET /availity/upload · suite panels PASS, smoke PASS",200
 M-064,Saved / rejected lists view,Extension home,MOVED,"panel on Lauris #3310/dpn as khale · Lauris GET /saved · Lauris GET /rejected · suite panels PASS, smoke PASS",200; 200
@@ -89,7 +89,7 @@ M-087,Mock DMAS lookup,Keep (visibly simulated),PRESERVED,"portal GET /dmas/look
 M-088,Portal bridge,Keep,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite bridge-contract PASS, lauris PASS",
 M-089,Single global store + persistence,Keep + hooks,PRESERVED,state key rev · code: persistence file · code: store hooks,server/psyflo/store.js; server/index.js server/psyflo/actions/core.js
 M-090,SSE sync,Keep,PRESERVED,GET /api/stream answers,200
-M-091,Presets live / canvas,Presenter,MOVED,"action demo.reset registered with a capability entry · presets live and canvas · suite ui-kit PASS, fixtures PASS",canvas
+M-091,Presets live / canvas,Presenter,MOVED,"action demo.reset registered with a capability entry · presets live and canvas · suite ui-kit PASS, fixtures PASS",live
 M-092,Seed merge,Keep,PRESERVED,code: seed merge from seed/extra,web/js/screens/DenialCase.js web/js/shared/rules.js
 M-093,Audit events,Extend (actor kind),MOVED,every audit event has actor_kind,
 M-094,PDF writer,Extend raw-bytes path,MOVED,file server/pdf.js,
@@ -195,9 +195,9 @@ V-002,Family link (public),Drop (master M-009),DROPPED-WITH-REASON,,duplicate of
 V-003,Family-link settings,PORT → Settings › Family link (fills M-107 orphan),MOVED,"route /Settings as dowens · suite family PASS, flowD PASS",lands on #/Settings?tab=family
 V-004,Referral review and home,**Do not port** (removes Referrals),DROPPED-WITH-REASON,"suite referrals PASS, flowD PASS",v3 referral review would remove Referrals; Referrals is never redirected [00 decision #3 and §4.1]
 V-005,All Authorizations list,PORT → Authorizations queue,MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
-V-006,Authorization detail,PORT → Authorization case shell,MOVED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416
-V-007,Draft mirrors,PORT → case › Documentation,MOVED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416&section=documents
-V-008,Delivery trail,REPLACE with master Submission,REPLACED-BY,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416&section=submission
+V-006,Authorization detail,PORT → Authorization case shell,NOT-VERIFIED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",hash #/Authorization?id=R-0416;  text missing: /Next step/
+V-007,Draft mirrors,PORT → case › Documentation,NOT-VERIFIED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",hash #/Authorization?id=R-0416&section=documents;  text missing: /Clinical documentation/
+V-008,Delivery trail,REPLACE with master Submission,NOT-VERIFIED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",hash #/Authorization?id=R-0416&section=submission;  text missing: /Delivery/
 V-009,Denial Intelligence queue,PORT → Denial Intelligence queue,MOVED,"route /DenialIntelligence as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialIntelligence
 V-010,Denial case workspace,PORT → DenialCase,MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialCase?id=R-0402
 V-011,Options per issue,"PORT (spec 8.2 ""show only valid options"")",MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialCase?id=R-0402&section=options
@@ -215,7 +215,7 @@ V-022,Patient Population,PORT,MOVED,route /Analytics as dowens · suite analytic
 V-023,Ask FLO (suggested questions),"PORT as ""Ask"" (rename; unsupported → limitation message)",MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
 V-024,Export Report,PORT,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
 V-025,Simulated cohort,PORT as `illustrative` dataset,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?section=population&dataset=illustrative
-V-026,Case-derived metrics,PORT → `case_backed` dataset,NOT-VERIFIED,route /Analytics as dowens · suite analytics PASS,hash #/Analytics?dataset=case;  text missing: /Counted from stored records/
+V-026,Case-derived metrics,PORT → `case_backed` dataset,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?dataset=case
 V-027,Settings,PORT → Settings,MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings
 V-028,Help,Drop or Settings › Help,DROPPED-WITH-REASON,"code: Help in the shell · suite roles PASS, settings PASS",Help is a rail foot link in the unified shell [docs/UI-KIT.md §4]; not itemised in 00-unified-recommendations decisions
 V-029,Roles permission editor,PORT (permission matrix),MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=roles
@@ -276,7 +276,7 @@ V-083,Build script,Drop,DROPPED-WITH-REASON,suite ui-kit PASS,v3 build or in-bro
 V-084,S1 DSS creates a progress note,Spec Scenario 1 (master flow B),MOVED,"route /MobileApp as khale · code: scenario s1 · suite ui-kit PASS, fixtures PASS",lands on #/MobileApp; seed/extra/scenarios.json
 V-085,S2 DSS tracks interventions,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
 V-086,S3 Clinician enhances a progress note,Enhance Mode A,MOVED,"action enhance.scan registered with a capability entry · suite ui-kit PASS, fixtures PASS",
-V-087,S4 Clinician enhances an SRA,Spec Scenario 3,MOVED,"route /Authorization as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorization?id=R-0416
+V-087,S4 Clinician enhances an SRA,Spec Scenario 3,NOT-VERIFIED,"route /Authorization as jperez · suite ui-kit PASS, fixtures PASS",hash #/Authorization?id=R-0416;  text missing: /Next step/
 V-088,S5 Admin tracks authorizations,Authorizations demo,MOVED,"route /Authorizations as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorizations
 V-089,S6 Clinician manages a denial,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence
 V-090,S7 Clinician prepares peer-to-peer,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence

@@ -411,7 +411,7 @@ export function evidenceOf(s, r, me) {
 }
 
 // events for ui.timeline: the audit trail plus the dates the request itself implies (nothing invented)
-const ACTOR = { person: 'staff', bridge: 'lauris', system: 'psyflo', integration: 'system', portal: 'family', demo: 'system' };
+const ACTOR = { person: 'staff', bridge: 'lauris', system: 'psyflo', integration: 'system', portal: 'family', demo: 'system', voice: 'voice' };   // voice: the Simulated phone agent (Denial Intelligence logs its calls)
 export function timelineOf(s, r, me) {
   const ev = M.eventsFor(s, r.id);
   const hist = M.requestHistory(s, r);

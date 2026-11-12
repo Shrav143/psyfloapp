@@ -1,6 +1,6 @@
 # routes · PASS
 
-Run 2026-11-12T00-34-45Z · 127906 ms · instance 1 · exit 0
+Run 2026-11-12T00-38-33Z · 199861 ms · instance 2 · exit 0
 
 | Result | Test | Note |
 |---|---|---|

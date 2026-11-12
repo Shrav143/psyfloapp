@@ -54,7 +54,7 @@ async function run(mode) {
       const s0 = await state('dowens'); const u0 = units(s0); const unres0 = scoreRows(s0, 'dowens').unresolved.num;
       await api('request.partialDecide', { id: 'R-0402', door: 'accept' }, 'jperez');
       const s1 = await state('dowens'); const u1 = units(s1); assert.eq(u1['Offers awaiting a reply'], u0['Offers awaiting a reply'] - 1); assert.eq(u1['Units approved'] - u0['Units approved'], 110); assert.eq(scoreRows(s1, 'dowens').unresolved.num, unres0 - 1);
-      await ad.waitForFunction(() => /Units approved/.test(document.body.innerText), null, { timeout: 4000 });
+      await ad.waitForFunction(v => new RegExp('Units approved\\s*\\n?\\s*' + v, 'i').test(document.body.innerText), u1['Units approved'], { timeout: 6000 });
       const t = await mainText(ad); assert.match(t, new RegExp('Units approved\\s*\\n?\\s*' + u1['Units approved'], 'i')); assert.match(t, /Offers awaiting a reply\s*\n?\s*0/i); assert.ok(!/Harvest's Lauris export/.test(await ad.content()), 'the baseline is never called a Lauris export');
       await shot(ad, `s6-${mode}-3-payer`);
     });

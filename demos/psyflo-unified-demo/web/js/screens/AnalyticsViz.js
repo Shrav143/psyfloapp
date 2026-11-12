@@ -52,6 +52,7 @@ export function kpis(p, o) {
 }
 // tiles: a small summary (data completeness, units, population summary)
 export function tiles(p, o, k = {}) {
+  if (!(p.rows || []).length) return card(p, o, empty(p), k);
   const rows = (p.rows || []).map(r => {
     if (k.completeness) { const n = r.n, w = r.without; const ok = typeof n === 'number' && typeof w === 'number'; return `<div class="an-tile"><h4>${esc(r.label)}</h4><b class="ui-num">${ok ? esc(n + w ? Math.round((100 * n) / (n + w)) + '%' : '—') : val(isSup(n) ? n : isSup(w) ? w : '—')}</b><small>${ok ? `${n} of ${n + w}` : 'A group under 5 is not shown'}</small></div>`; }
     const v = r.value !== undefined ? r.value : r.v !== undefined ? r.v : r.n;

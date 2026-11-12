@@ -106,6 +106,10 @@ await T.test('history: every step has an actor kind from the artifact\'s six; Sf
   assert.eq(h399.total, h399.events.length); assert.eq(Object.values(h399.counts).reduce((a, b) => a + b, 0), h399.total);
   const c = authCase(s, 'R-0402', me); assert.eq(c.flag.reasonLabel, 'Needs a decision'); assert.eq(c.caps.flag, true); assert.eq(c.history.total, h402.total);
 });
+await T.test('history: a voice-agent event (Denial Intelligence logs these) is tagged Voice agent and Simulated, in any role\'s History', async () => {
+  const s = JSON.parse(JSON.stringify(await state('jperez'))); s.events.push({ at: '2026-10-28T10:00', what: 'Voice agent called Sentara · asked for the decision status', who: 'Psyflo voice agent', record: 'R-0402', actor_kind: 'voice', sim: true });
+  const h = historyOf(s, s.requests.find(r => r.id === 'R-0402'), await actor('jperez')); const v = h.events.find(e => /^Voice agent called/.test(e.action)); assert.ok(v, 'the row is there'); assert.eq(v.kind, 'voice'); assert.eq(v.sim, true); assert.eq(h.counts.voice, 1);
+});
 await T.test('history.add: a person\'s own entry (call, note, document, payer contact) is an audit event with who and when and sends nothing; short text and unknown kinds are refused', async () => {
   await assert.refused(tryApi('history.add', { id: 'R-0402', kind: 'note', text: 'x' }, 'cdiaz'), /Write what happened/, 422);
   await assert.refused(tryApi('history.add', { id: 'R-0402', kind: 'email', text: 'sent them a note' }, 'cdiaz'), /Pick call, note/, 422);

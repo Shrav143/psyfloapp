@@ -1,6 +1,6 @@
 # analytics · PASS
 
-Run 2026-11-12T00-26-22Z · 17519 ms · instance 0 · exit 0
+Run 2026-11-12T01-00-19Z · 33023 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -22,6 +22,8 @@ Run 2026-11-12T00-26-22Z · 17519 ms · instance 0 · exit 0
 | PASS | clinician: drill-down opens the patients behind a group; the cohort offers none |  |
 | PASS | supervisor: own sites only, scorecard and sections render |  |
 | PASS | a filter changes the figures and the URL; a tab is a real link; reload keeps the view |  |
+| PASS | the artifact layout: headline cards, lines with metric chips, tiles, feedback blocks, bars; every chart keeps its table; nothing computed on screen |  |
+| PASS | a table over 10 rows pages at the bottom with 10, 25, 50 and 100 rows per page; the choice is in the URL and survives a reload |  |
 | PASS | the CSV file the Export button writes matches the panels on screen, cell for cell |  |
 | PASS | the PDF export downloads and the question box answers on screen |  |
 | PASS | the old payer playbook link (?panel=guidance) opens the payer guidance drawer from Payer Performance |  |
