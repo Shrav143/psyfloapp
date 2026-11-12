@@ -1,33 +1,30 @@
-// Sign in (route Login). Four role cards (the person for a role comes from the public roster), plus the family portal and the school
-// counselor entries. Sessions are server-side (api.signIn); this is demo-grade identity: no password and no identity provider.
-// Nothing here pre-fills a person: the card for the signed-in role is marked, every other card starts on its first person.
+// Sign in (route Login). One small card with one dropdown of the people on the public roster, grouped by role, and a Sign in button; the family
+// portal and the school counselor entries are two quiet links underneath (round 4, Nov 12: "just a dropdown, not four big boxes").
+// Sessions are server-side (api.signIn); this is demo-grade identity: no password and no identity provider. The person who is signed in is
+// selected; otherwise the list starts on its first person (direct support), and nothing is signed in until the button is pressed.
 import { register, Screen, session, go, raw, ui, esc } from '../app.js';
 import { homeTarget } from '../registry.js';
 
-const ROLES = [
-  ['direct_support', 'Direct support', 'My day, notes and time. The extension and the phone.'],
-  ['supervisor', 'Supervisor', 'Notes to review, the team, units.'],
-  ['clinician', 'Clinician', 'Requests, payer replies, referrals.'],
-  ['admin', 'Admin', 'Operations and settings. No clinical text.']
-];
+const ROLES = [['direct_support', 'Direct support'], ['supervisor', 'Supervisor'], ['clinician', 'Clinician'], ['admin', 'Admin']];
 
 register('Login', class extends Screen {
-  init() { this.state = { err: '', busy: false, pick: {} }; }
+  init() { this.state = { err: '', busy: false, pick: '' }; }
   roster() { return ((this.s && this.s.staff) || []).filter(x => x && x.id && x.role); }
   renderVals() {
     const staff = this.roster(); const cur = session.user;
-    const cards = ROLES.map(([role, label, line]) => {
-      const people = staff.filter(x => x.role === role);
-      if (!people.length) return '';
-      const chosen = this.state.pick[role] || (cur && cur.role === role ? cur.id : people[0].id);
-      const sel = people.length > 1 ? `<div class="lg-sel"><label for="lg-${role}">Person</label><select class="ui-select" id="lg-${role}" data-role="${role}">${people.map(p => `<option value="${esc(p.id)}"${p.id === chosen ? ' selected' : ''}>${esc(p.name)}${p.credential ? ' · ' + esc(p.credential) : ''}</option>`).join('')}</select></div>` : `<p>${esc(people[0].name)}${people[0].credential ? ' · ' + esc(people[0].credential) : ''}</p>`;
-      return `<li class="lg-role"${cur && cur.role === role ? ' aria-current="true"' : ''}><h2>${esc(label)}</h2><p>${esc(line)}</p>${sel}<button type="button" class="ui-btn ui-btn--primary" data-signin="${role}"${this.state.busy ? ' disabled' : ''}>Sign in</button></li>`;
-    }).join('');
-    return { cards: raw(cards || `<li>${ui.emptyState({ tone: 'error', title: 'No staff to sign in', body: 'The roster did not load. Reload the page.' })}</li>`), err: this.state.err };
+    const groups = ROLES.map(([role, label]) => ({ label, people: staff.filter(x => x.role === role) })).filter(g => g.people.length);
+    const first = groups.length ? groups[0].people[0].id : '';
+    const chosen = this.state.pick || (cur && staff.some(x => x.id === cur.id) ? cur.id : first);
+    const opts = groups.map(g => `<optgroup label="${esc(g.label)}">${g.people.map(p => `<option value="${esc(p.id)}"${p.id === chosen ? ' selected' : ''}>${esc(p.name)}${p.credential ? ' · ' + esc(p.credential) : ''}</option>`).join('')}</optgroup>`).join('');
+    const form = groups.length
+      ? `<div class="lg-sel"><label for="lg-person">Who are you?</label><select class="ui-select" id="lg-person">${opts}</select></div><button type="button" class="ui-btn ui-btn--primary" data-signin="go"${this.state.busy ? ' disabled' : ''}>Sign in</button>`
+      : ui.emptyState({ tone: 'error', title: 'No staff to sign in', body: 'The roster did not load. Reload the page.' });
+    return { form: raw(form), err: this.state.err };
   }
   after(root) {
-    root.querySelectorAll('select[data-role]').forEach(el => { el.onchange = () => { this.state.pick[el.dataset.role] = el.value; }; });
-    root.querySelectorAll('[data-signin]').forEach(b => { b.onclick = () => { const role = b.dataset.signin; const sel = root.querySelector(`select[data-role="${role}"]`); const id = sel ? sel.value : (this.roster().find(x => x.role === role) || {}).id; this.signIn(id); }; });
+    const sel = root.querySelector('#lg-person');
+    if (sel) { sel.onchange = () => { this.state.pick = sel.value; }; sel.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); this.signIn(sel.value); } }; }
+    const b = root.querySelector('[data-signin]'); if (b) b.onclick = () => this.signIn(sel ? sel.value : '');
   }
   async signIn(id) {
     const u = this.roster().find(x => x.id === id);

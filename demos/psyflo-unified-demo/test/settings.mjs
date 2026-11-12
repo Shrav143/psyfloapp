@@ -204,15 +204,21 @@ try {
     assert.eq(await p.evaluate(() => document.documentElement.dataset.maturity), 'all', 'the maturity overlay is on'); await p.click('[data-x="maturity"]');
     await p.screenshot({ path: SHOTS + '/settings-presenter.png' }); assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
-  await T.test('Login: four role cards, the family and school entries, no password, no demo chrome; signing in lands on the role\'s home; works at 390', async () => {
+  await T.test('Login at 1440: a small card near the top of the window, not a page of boxes: under 440 px wide, no role cards, no scrolling', async () => {
+    const p = await open(null, '/#/Login', { w: 1440, h: 900 });
+    const r = await p.evaluate(() => { const c = document.querySelector('.lg-card').getBoundingClientRect(); return { w: Math.round(c.width), h: Math.round(c.height), top: Math.round(c.top), sw: document.documentElement.scrollHeight, ih: innerHeight, roles: document.querySelectorAll('.lg-role').length, selects: document.querySelectorAll('#root select').length }; });
+    assert.ok(r.w <= 440, 'card width ' + r.w); assert.ok(r.h <= 420, 'card height ' + r.h); assert.eq(r.roles, 0, 'no role cards'); assert.eq(r.selects, 1, 'one dropdown'); assert.ok(r.sw <= r.ih + 1, 'fits the window without scrolling');
+    await p.screenshot({ path: SHOTS + '/login-1440.png' }); await done();
+  });
+  await T.test('Login: one small card with one dropdown of people grouped by role, the family and school entries, no password, no demo chrome; signing in lands on the role\'s home; works at 390', async () => {
     const p = await open(null, '/#/Login', { w: 390, h: 844 });
-    const t = await rootText(p); assert.match(t, /Direct support/); assert.match(t, /Supervisor/); assert.match(t, /Clinician/); assert.match(t, /Admin/); assert.match(t, /Family portal/); assert.match(t, /School counselor/);
+    const t = await rootText(p); assert.deepEq(await p.locator('#lg-person optgroup').evaluateAll(els => els.map(e => e.label)), ['Direct support', 'Supervisor', 'Clinician', 'Admin'], 'one dropdown, grouped by role'); assert.eq(await p.locator('#root [data-signin]').count(), 1, 'one Sign in button, not four'); assert.match(t, /Family portal/); assert.match(t, /School counselor/);
     assert.noMatch(t, /Demo:|pick a role card|seed staff|password/i); assert.match(t, /Demo data · nothing is real/);
     assert.eq(await p.locator('#root input[type=password]').count(), 0); assert.eq(await p.locator('#root h1').count(), 1);
     const w = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth })); assert.ok(w.sw <= w.iw + 1, 'no sideways scroll');
     assert.eq(await p.evaluate(() => [...document.querySelectorAll('#root button, #root select, #root a.ui-btn')].filter(e => e.getBoundingClientRect().height < 44).length), 0, 'touch targets 44 px');
     await p.screenshot({ path: SHOTS + '/login-390.png' });
-    await p.click('[data-signin="supervisor"]'); await p.waitForFunction(() => /Dashboard/.test(location.hash), null, { timeout: 8000 }); await p.waitForTimeout(500);
+    await p.selectOption('#lg-person', 'cdiaz'); await p.click('[data-signin]'); await p.waitForFunction(() => /Dashboard/.test(location.hash), null, { timeout: 8000 }); await p.waitForTimeout(500);
     assert.match(await p.evaluate(() => location.hash), /Dashboard/); assert.eq((await p.evaluate(() => psyflo.session.user.id)), 'cdiaz');
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });

@@ -8,27 +8,23 @@
 <x-dc>
 <helmet>
 <style>
-/* Sign in (E1). Prefix lg-. */
-.lg{min-height:calc(100vh - var(--dock-h, 0px));display:flex;align-items:center;justify-content:center;padding:32px 16px;background:var(--paper-50);color:var(--ink-900)}
-.lg-card{width:min(760px,100%);background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-4);padding:32px 36px;display:flex;flex-direction:column;gap:20px;box-shadow:var(--shadow-pop)}
-.lg-top{display:flex;flex-direction:column;gap:6px}
+/* Sign in. Prefix lg-. One small card, near the top of the window, not a full page of boxes. */
+.lg{box-sizing:border-box;min-height:calc(100vh - var(--dock-h, 0px));display:flex;align-items:flex-start;justify-content:center;padding:14vh 16px 32px;background:var(--paper-50);color:var(--ink-900)}
+.lg-card{width:min(380px,100%);background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-4);padding:28px 28px 22px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow-pop)}
+.lg-top{display:flex;flex-direction:column;gap:4px}
 .lg-org{margin:0;font-size:var(--fs-12);letter-spacing:.12em;text-transform:uppercase;color:var(--muted-700)}
-.lg h1{margin:8px 0 0;font:600 var(--fs-28)/var(--lh-28) var(--font);letter-spacing:-.01em}
-.lg-roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0;padding:0;list-style:none}
-.lg-role{display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--line-200);border-radius:var(--r-3);background:var(--paper-50)}
-.lg-role[aria-current=true]{border-color:var(--teal-600);background:var(--teal-tint)}
-.lg-role h2{margin:0;font:600 var(--fs-16)/var(--lh-16) var(--font)}
-.lg-role p{margin:0;font-size:var(--fs-13);color:var(--neutral-fg)}
-.lg-role .ui-select{width:100%;min-height:44px}
-.lg-role .ui-btn{min-height:44px}
-.lg-sel{display:flex;flex-direction:column;gap:4px}
-.lg-sel label{font-size:var(--fs-12);font-weight:600;color:var(--muted-700)}
-.lg-portals{border-top:1px solid var(--line-200);padding-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
-.lg-portals h2{margin:0 8px 0 0;font:600 var(--fs-14)/var(--lh-14) var(--font)}
-.lg-portals .ui-btn{min-height:44px}
-.lg-err{color:var(--danger-fg);font-size:var(--fs-13);min-height:18px}
+.lg h1{margin:10px 0 0;font:600 var(--fs-22,22px)/var(--lh-22,28px) var(--font);letter-spacing:-.01em}
+.lg-sel{display:flex;flex-direction:column;gap:6px}
+.lg-sel label{font-size:var(--fs-13);font-weight:600;color:var(--muted-700)}
+.lg .ui-select{width:100%;min-height:44px}
+.lg .ui-btn{min-height:44px;width:100%}
+.lg-more{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 18px;margin-top:2px}
+.lg-more a{display:inline-flex;align-items:center;min-height:44px;font-size:var(--fs-13);font-weight:600;color:var(--teal-700);text-decoration:none}
+.lg-more a:hover{text-decoration:underline}
+.lg-err{color:var(--danger-fg);font-size:var(--fs-13);min-height:0}
+.lg-err:empty{display:none}
 .lg-foot{margin:0;font-size:var(--fs-12);color:var(--muted-700);text-align:center}
-@media (max-width:640px){.lg{align-items:flex-start;padding:16px}.lg-card{padding:24px 20px}.lg-roles{grid-template-columns:1fr}}
+@media (max-width:640px){.lg{padding:20px 16px}.lg-card{padding:24px 20px 18px}}
 </style>
 </helmet>
 <main class="lg">
@@ -38,9 +34,9 @@
       <p class="lg-org">Harvest Outreach Center</p>
       <h1>Sign in</h1>
     </div>
-    <ul class="lg-roles" aria-label="Roles">{{cards}}</ul>
+    {{form}}
     <div class="lg-err" id="lg-err" role="alert">{{err}}</div>
-    <div class="lg-portals"><h2>Not Harvest staff?</h2><a class="ui-btn ui-btn--secondary" href="#family">Family portal</a><a class="ui-btn ui-btn--secondary" href="#counselor">School counselor</a></div>
+    <div class="lg-more"><a href="#family">Family portal</a><a href="#counselor">School counselor</a></div>
     <p class="lg-foot">Demo data · nothing is real</p>
   </div>
 </main>

@@ -69,7 +69,8 @@ async function fresh(viewport = { width: 1440, height: 900 }) {
     go: h => ev(h => window.__vhash(h), h),
     hash: () => ev(() => location.hash),
     signIn: async card => {
-      await ui.locator('#root li.lg-role', { has: ui.getByRole('heading', { name: card, exact: true }) }).getByRole('button', { name: 'Sign in' }).click();
+      const who = await ui.locator(`#root #lg-person optgroup[label="${card}"] option`).first().getAttribute('value'); await ui.locator('#root #lg-person').selectOption(who);   // one dropdown, grouped by role
+      await ui.locator('#root').getByRole('button', { name: 'Sign in' }).click();
       ok(await until(() => ev(() => !!window.psyflo.session.user && !/Login/.test(location.hash)), 10000), `signed in as the ${card} card`);
     },
     signOut: async () => { await ui.locator('[data-signout]').first().click(); await ui.locator('#root [data-signin]').first().waitFor(); },

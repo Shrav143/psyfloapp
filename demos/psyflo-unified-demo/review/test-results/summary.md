@@ -1,12 +1,12 @@
-# Test results · 2026-11-12T14-27-03Z
+# Test results · 2026-11-12T14-31-59Z
 
-1 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 38 pass, 0 fail, 0 skip · 57 s
+1 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 18 pass, 0 fail, 0 skip · 65 s
 
-Commit 312dac0 · node v22.22.0 · demo time 15:30 · workers 1 · base port 6910
+Commit 527601a · node v22.22.0 · demo time 15:30 · workers 1 · base port 6940
 
 | Suite | Status | Pass | Fail | Skip | Seconds |
 |---|---|---|---|---|---|
-| [ui-kit](ui-kit.md) | PASS | 38 | 0 | 0 | 57.2 |
+| [settings](settings.md) | PASS | 18 | 0 | 0 | 64.8 |
 
 ## Manual checklist (not automatable)
 

@@ -1,6 +1,6 @@
 # settings · PASS
 
-Run 2026-11-12T02-59-17Z · 66196 ms · instance 0 · exit 0
+Run 2026-11-12T14-31-59Z · 64755 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -20,4 +20,5 @@ Run 2026-11-12T02-59-17Z · 66196 ms · instance 0 · exit 0
 | PASS | people tab: change a role with a reason (a lowering applies, a raise waits), the second person confirms in Settings or My Work |  |
 | PASS | family tab: In person changes the rule, asks why, shows Policy not validated; the family-link question switches work |  |
 | PASS | presenter tab: how it fits, architecture, maturity legend with all four levels, the unresolved decisions with where each is set |  |
-| PASS | Login: four role cards, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390 |  |
+| PASS | Login at 1440: a small card near the top of the window, not a page of boxes: under 440 px wide, no role cards, no scrolling |  |
+| PASS | Login: one small card with one dropdown of people grouped by role, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390 |  |

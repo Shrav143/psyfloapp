@@ -1,6 +1,6 @@
 {
- "runId": "2026-11-12T14-27-03Z",
- "commit": "312dac0",
+ "runId": "2026-11-12T14-31-59Z",
+ "commit": "527601a",
  "release": false,
  "releaseReady": false,
  "env": {
@@ -9,7 +9,7 @@
   "preset": "live",
   "workers": 1,
   "repeat": 1,
-  "basePort": 6910
+  "basePort": 6940
  },
  "summary": {
   "pass": 1,
@@ -18,222 +18,120 @@
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 57290,
+  "durationMs": 64858,
   "tests": {
-   "pass": 38,
+   "pass": 18,
    "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "ui-kit",
-   "tags": [
-    "ui"
-   ],
+   "name": "settings",
+   "tags": [],
    "instance": 0,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 57189,
+   "durationMs": 64755,
    "counts": {
-    "pass": 38,
+    "pass": 18,
     "fail": 0,
     "skip": 0
    },
    "tests": [
     {
      "status": "PASS",
-     "title": "token pairs: every text pair 4.5:1, every UI pair 3:1 (computed in the page from tokens.css)",
+     "title": "roles: a raise needs a second person (not the proposer, an administrator or a clinician); a lowering applies at once; never your own",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "type floor and brand: DM Sans, paper background, 12 px smallest kit size, teal primary",
+     "title": "people: new users start as direct support or supervisor; clinician and administrator go through a role change",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "status vocabulary: every stage and dispute status resolves; chips carry text and an icon (never colour alone)",
+     "title": "designated access: proposed by an administrator, confirmed by someone else, never for yourself, never a clinical-record grant for an administrator",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "maturity chips: Working is hidden until the presenter overlay is on; Simulated, Pilot and Future always show",
+     "title": "rules: a reason is required, only the administrator edits, the type is kept, and a change is audited with its values",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "modal: role=dialog, aria-labelledby, focus trap both ways, Escape, scrim click, focus return",
+     "title": "rules: the dependent screen changes (day-5 follow-up makes the Aetna request a follow-up call in My Work); reset restores it",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "drawer: same contract as the modal",
+     "title": "units: the alternate bands change the units a day earns; restore returns the official bands (audited)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "popover: Escape closes it and focus returns to the control",
+     "title": "signature mode per document type: default remote (not validated); In person changes the rule the family screens read",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "confirm resolves true on Confirm and false on Cancel; the toast has role=status (alert for errors)",
+     "title": "family link questions: ask and required switches (the guardian link reads them); the insurance question is locked",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the old modal(html, onMount) helper is now an accessible dialog (screens keep working)",
+     "title": "the administrator has no clinical-record access: Settings never carries note text, and the matrix says so",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "filter chips: aria-pressed, state in the URL query, survives a reload, Clear",
+     "title": "Settings: seven tabs, one h1, every tab renders without console errors; only the administrator opens it",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "search keeps focus while typing and filters rows",
+     "title": "rules tab: filter by source, search, edit in the drawer (reason required, value type kept), history and the audit tab show it",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "queue table: aria-sort, sort toggles, real links, ArrowDown moves between rows, Enter opens",
+     "title": "units tab: the try-it box follows the bands; switching to the alternate asks why and is audited",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "queue table: sticky header, empty, loading and error states",
+     "title": "roles tab: the matrix is drawn from permissions.js; designate in the UI, the clinician confirms from My Work, the grant takes effect",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "evidence chip opens a popover with the quote and closes on Escape",
+     "title": "people tab: change a role with a reason (a lowering applies, a raise waits), the second person confirms in Settings or My Work",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "timeline: an event opens a drawer with What, When, Who, Document, Source, Next action",
+     "title": "family tab: In person changes the rule, asks why, shows Policy not validated; the family-link question switches work",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "draft review: edit text survives repaints; no bulk accept; Restore previous appears after a save",
+     "title": "presenter tab: how it fits, architecture, maturity legend with all four levels, the unresolved decisions with where each is set",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "a store change (SSE) while someone is typing does not wipe the field; the repaint waits for blur",
+     "title": "Login at 1440: a small card near the top of the window, not a page of boxes: under 440 px wide, no role cards, no scrolling",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "skip link is the first tab stop and moves focus to the main landmark",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "landmarks: <html lang>, a labelled nav, exactly one main, real links in the rail",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "focus moves to main on a route change and the route is announced",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the old demo bar is gone from the product viewport",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail: dark navy (the Nov 8 look), 232 px wide, collapses to icons at 1024; counts only where meaningful",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail by role follows the permission table (supervisor, clinician, admin, direct support)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: hidden by default in Presentation, Ctrl+Shift+P toggles, label PRESENTER, mode always visible, above the viewport",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: ?present=1 opens it; ?mode=explore docks it open (no hide control) and is stored in psyflo_mode",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: role switcher changes the signed-in role without a page reload",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: scenario selector calls demo.scenario, signs in as the scenario role and opens its route",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: simulation controls (receive a reply, advance a day) live in the dock",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: notes drawer \"How the data gets in\" with maturity chips, focus returns to Notes",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: All screens picker is role-aware and searchable",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "UiKit is presenter-only: without the dock it says so; with ?present=1 it shows the gallery",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "prefers-reduced-motion: overlay animation is switched off",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no console errors on the gallery, the stubs and the shell routes",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail foot stays reachable at 1024 px: Sign out and Help as named controls, \"Demo data · nothing is real\" visible",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail foot stays reachable at 700 px: Sign out and Help as named controls, \"Demo data · nothing is real\" visible",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the wordmark on the navy rail is the reverse logo (white, teal, marigold), not the full-colour one",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "framed Lauris routes: a slim top bar with \"Back to Psyflo\", the route title as the h1 and no developer text",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "hint: an icon whose definition shows on hover and on keyboard focus, is named for assistive tech, is not clipped by a scroll region, and Escape hides it",
+     "title": "Login: one small card with one dropdown of people grouped by role, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390",
      "note": ""
     }
    ],
-   "runId": "2026-11-12T14-27-03Z"
+   "runId": "2026-11-12T14-31-59Z"
   }
  ],
  "manual": [
