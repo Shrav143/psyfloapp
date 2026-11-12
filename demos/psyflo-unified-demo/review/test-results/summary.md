@@ -1,12 +1,14 @@
-# Test results · 2026-11-12T02-08-59Z
+# Test results · 2026-11-12T02-58-27Z
 
-1 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 0 pass, 0 fail, 0 skip · 269 s
+3 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 53 pass, 0 fail, 0 skip · 37 s
 
-Commit 714733c · node v22.22.0 · demo time 15:30 · workers 1 · base port 5830
+Commit c00948e · node v22.22.0 · demo time 15:30 · workers 1 · base port 6800
 
 | Suite | Status | Pass | Fail | Skip | Seconds |
 |---|---|---|---|---|---|
-| [hosted](hosted.md) | PASS | 0 | 0 | 0 | 268.4 |
+| [analytics](analytics.md) | PASS | 24 | 0 | 0 | 22.0 |
+| [errors](errors.md) | PASS | 5 | 0 | 0 | 4.6 |
+| [roles](roles.md) | PASS | 24 | 0 | 0 | 9.9 |
 
 ## Manual checklist (not automatable)
 

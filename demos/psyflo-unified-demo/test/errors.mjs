@@ -42,9 +42,9 @@ await T.test('the server does not answer at all (the request is dropped): the sa
 await T.test('the session ended (401): "Your session ended" with Sign in again, not an empty screen; Sign in again opens the sign-in screen', async () => {
   const { ctx, page } = await open(null);
   try {
-    await page.goto(BASE + '/#/Login');
-    await page.evaluate(() => { localStorage.setItem('psyflo_session', JSON.stringify({ token: 'not-a-live-token', actor: { kind: 'staff', id: 'jperez', role: 'clinician', name: 'Jordan Perez' } })); localStorage.setItem('psyflo_user', 'jperez'); });
-    await page.goto(BASE + '/#/Dashboard'); await page.reload(); await page.waitForSelector('#root [data-signin-again]', { timeout: 10000 });
+    // every page load starts with a stale session: a first page that was still booting would read the token, get the 401 and clear it before a reload (a test race, not the product)
+    await ctx.addInitScript(() => { try { localStorage.setItem('psyflo_session', JSON.stringify({ token: 'not-a-live-token', actor: { kind: 'staff', id: 'jperez', role: 'clinician', name: 'Jordan Perez' } })); localStorage.setItem('psyflo_user', 'jperez'); } catch { } });
+    await page.goto(BASE + '/#/Dashboard'); await page.waitForSelector('#root [data-signin-again]', { timeout: 10000 }).catch(async e => { throw new Error(e.message.split('\n')[0] + ' | the screen said: ' + ((await page.locator('#root').innerText().catch(() => '')) || '').replace(/\s+/g, ' ').slice(0, 300) + ' | ' + page.url() + ' | page errors: ' + JSON.stringify(page.pageErrors)); });
     const t = await body(page); assert.ok(t.alert.some(a => /Your session ended/.test(a)), JSON.stringify(t.alert)); assert.ok(!calm.test(t.text), 'no calm empty state');
     await page.click('#root [data-signin-again]'); await page.waitForFunction(() => /#\/Login/.test(location.hash) && document.querySelector('#root h1'), null, { timeout: 8000 });
     assert.ok(/Sign in|Who are you|Choose/i.test((await body(page)).text), 'the sign-in screen');

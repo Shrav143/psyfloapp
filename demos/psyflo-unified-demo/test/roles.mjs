@@ -273,6 +273,7 @@ await T.test('with PRESENTER_PIN set: the server and the dock ask for the PIN, a
     await page.fill('#presenter-pin', '0000'); await page.click('[data-ui-action="1"]'); await page.waitForFunction(() => /did not match/.test((document.querySelector('[role=dialog]') || {}).innerText || ''), null, { timeout: 8000 });
     await page.fill('#presenter-pin', '4242'); await page.click('[data-ui-action="1"]');
     await page.waitForFunction(() => window.psyflo.session.actor && window.psyflo.session.actor.presenter === true, null, { timeout: 8000 });
+    await page.waitForFunction(() => !document.querySelector('#dock [data-dock="unlock"]'), null, { timeout: 8000 }).catch(() => { });   // the dock repaints after the session changes
     assert.eq(await page.locator('#dock [data-dock="unlock"]').count(), 0, 'the unlock button goes once unlocked'); await ctx.close();
   } finally { await stopInstance(inst); }
 });

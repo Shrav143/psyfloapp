@@ -1,6 +1,6 @@
 # Interaction audit (QA1)
 
-Controls swept: 1591 on 172 targets. NAVIGATED 586 · VANISHED 383 · DOM 276 · DETAIL 112 · CLOSE 84 · POPUP 76 · NO-EFFECT-ALLOWED 22 · DISABLED-EXPLAINED 21 · STATE 13 · FILE-CHOOSER 5 · SKIPPED 5 · TYPED 4 · SCROLL 3 · FOCUS-ONLY 1
+Controls swept: 1591 on 172 targets. NAVIGATED 586 · VANISHED 383 · DOM 276 · DETAIL 112 · CLOSE 84 · POPUP 76 · NO-EFFECT-ALLOWED 22 · DISABLED-EXPLAINED 21 · STATE 12 · FILE-CHOOSER 5 · SKIPPED 5 · TYPED 5 · SCROLL 3 · FOCUS-ONLY 1
 
 ## Per role
 
@@ -183,7 +183,7 @@ Controls swept: 1591 on 172 targets. NAVIGATED 586 · VANISHED 383 · DOM 276 ·
 | panel jperez · authorizations (400) | jperez | 6 |  |  |  | 3 |  |  | 2 |  | 1 |  |  |  |  |  |
 | panel jperez · authorizations (400) [sections open] | jperez | 6 |  |  |  |  |  |  | 4 |  | 2 |  |  |  |  |  |
 | panel khale · screening (direct support: not offered) (400) | khale | 1 |  |  |  | 1 |  |  |  |  |  |  |  |  |  |  |
-| panel jperez · T.W. screening (400) | jperez | 7 |  |  |  | 1 |  |  |  |  |  |  |  | 4 | 1 | 1 |
+| panel jperez · T.W. screening (400) | jperez | 7 |  |  |  | 1 |  |  |  |  |  |  |  | 3 | 2 | 1 |
 | panel jperez · T.W. screening (400) [sections open] | jperez | 5 |  | 4 |  |  |  |  | 1 |  |  |  |  |  |  |  |
 | panel jperez · T.W. CNA (400) | jperez | 8 |  |  |  | 7 |  |  |  |  |  |  |  |  | 1 |  |
 | panel jperez · T.W. CNA (400) [sections open] | jperez | 1 |  |  |  |  |  |  | 1 |  |  |  |  |  |  |  |
