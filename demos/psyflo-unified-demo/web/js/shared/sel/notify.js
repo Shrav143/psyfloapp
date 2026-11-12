@@ -10,6 +10,8 @@
 //   deadline  a deadline due soon or overdue that is not a payer item: reauth due, appeal window, send-by limit
 //   units     75% of the units are used (rules table, units.warn_used_pct) or none are left
 //   note      direct support only: a note sent back, a note behind
+//   workflow  the enabled workflows (Settings > Workflows, shared/workflows/engine.js workflowItems): the effects meant for the person's role
+//             (a notice, a suggested flag, a task for a person), after the guardrails. Group 'Workflows'; source = { workflow, name, node, action }
 // Ids are computed from the record and the state that raised the item ("payer:R-0408:info_requested"), so a new situation on the same
 // record is unread again. Read state is per person: state.notify_read[personId] (written by the notify.read action).
 import * as M from '../model.js';
@@ -17,6 +19,7 @@ import { fmtDate } from '../dates.js';
 import { can } from '../permissions.js';
 import { ruleValue } from '../rules.js';
 import { deadline, reqView, DI_STAGES, flagReasonLabel } from './auth.js';
+import { workflowItems } from '../workflows/engine.js';
 
 const SEV = { r: 0, y: 1, n: 2 };
 const sevOf = d => (d === 'overdue' ? 'r' : d === 'soon' ? 'y' : 'n');
@@ -70,6 +73,9 @@ export function notificationsFor(s, actor) {
       add({ id: `note:${n.id}:${n.review}`, at: (n.reviewed_at || n.date) + (String(n.reviewed_at || n.date).length === 10 ? 'T00:00' : ''), kind: 'note', sev: 'r', title: `${M.clientLabel(s, n.client, false)} · note sent back`, sub: n.review_comment ? `"${String(n.review_comment).slice(0, 90)}"` : fmtDate(n.date), record: n.client, to: `Patient?id=${n.client}&section=documentation`, group: 'Notes' });
     }
   }
+
+  // the enabled workflows' items for this role (an administrator's own workflows included); each is computed from the same state, never stored
+  for (const n of workflowItems(s, actor)) add(n);
 
   // newest first within urgency; unread before read
   return out.sort((a, b) => (a.read - b.read) || (SEV[a.sev] - SEV[b.sev]) || String(b.at).localeCompare(String(a.at)) || String(a.id).localeCompare(String(b.id)));

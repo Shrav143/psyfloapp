@@ -1,6 +1,6 @@
 {
- "runId": "2026-11-12T14-31-59Z",
- "commit": "527601a",
+ "runId": "2026-11-12T17-05-05Z",
+ "commit": "adeb3f9",
  "release": false,
  "releaseReady": false,
  "env": {
@@ -9,129 +9,199 @@
   "preset": "live",
   "workers": 1,
   "repeat": 1,
-  "basePort": 6940
+  "basePort": 7400
  },
  "summary": {
-  "pass": 1,
-  "fail": 0,
+  "pass": 0,
+  "fail": 1,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 64858,
+  "durationMs": 931,
   "tests": {
-   "pass": 18,
-   "fail": 0,
+   "pass": 26,
+   "fail": 6,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "settings",
+   "name": "workflows-engine",
    "tags": [],
    "instance": 0,
    "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 64755,
+   "status": "FAIL",
+   "exit": 1,
+   "durationMs": 829,
    "counts": {
-    "pass": 18,
-    "fail": 0,
+    "pass": 26,
+    "fail": 6,
     "skip": 0
    },
    "tests": [
     {
      "status": "PASS",
-     "title": "roles: a raise needs a second person (not the proposer, an administrator or a clinician); a lowering applies at once; never your own",
+     "title": "the catalog: every kind has blocks, every block has a definition and a parameter shape the engine reads, ports follow the kind",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "people: new users start as direct support or supervisor; clinician and administrator go through a role change",
+     "title": "trigger units_used: the authorizations at the warning share; the rule-bound number is the rule (a stored 99 does not win), and editing the rule moves the line",
+     "note": ""
+    },
+    {
+     "status": "FAIL",
+     "title": "trigger payer_reply: one stage group each (info, partial, denied, p2p, overdue); an empty choice starts nothing",
+     "note": "expected [\"R-0399\"] but got []"
+    },
+    {
+     "status": "PASS",
+     "title": "trigger deadline_near: within N days or past it; the kind of deadline narrows it (renewal, decision, appeal)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "designated access: proposed by an administrator, confirmed by someone else, never for yourself, never a clinical-record grant for an administrator",
+     "title": "trigger followup_day: a submitted request on or past the follow-up day (the rule), judged on the day given",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "rules: a reason is required, only the administrator edits, the type is kept, and a change is audited with its values",
+     "title": "trigger note_late: notes behind (daily, weekly guardian, monthly collateral), filtered by type, labelled by initials",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "rules: the dependent screen changes (day-5 follow-up makes the Aetna request a follow-up call in My Work); reset restores it",
+     "title": "trigger eligibility_due: a check older than the interval (the rule) is a candidate; a patient with no recorded check is not",
+     "note": ""
+    },
+    {
+     "status": "FAIL",
+     "title": "conditions route a record down Yes or No: payer is, service is, units left, partial award, owner is, evidence has gaps",
+     "note": "expected 5 but got 4"
+    },
+    {
+     "status": "FAIL",
+     "title": "condition evidence_missing: Yes for a patient whose stored evidence has gaps, No for one without (a one-day window and a note on file)",
+     "note": "T.N. has a note for the one day in the window expected [\"TN\"] but got [\"MR\",\"TN\"]"
+    },
+    {
+     "status": "PASS",
+     "title": "actions: notify, add a task and suggest a flag each give one effect with its roles; messages fill only {patient}, {payer}, {date}",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "units: the alternate bands change the units a day earns; restore returns the official bands (audited)",
+     "title": "branching: a fan-out reaches every branch once; a chain passes through guardrails; a record that falls off the map is counted, not matched",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "signature mode per document type: default remote (not validated); In person changes the rule the family screens read",
+     "title": "guardrail roles_only: only those roles receive what follows; no role left stops the path and says why",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "family link questions: ask and required switches (the guardian link reads them); the insurance question is locked",
+     "title": "guardrail person_confirms: the item waits for the named roles (\"needs your confirmation\"); other roles are not asked",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the administrator has no clinical-record access: Settings never carries note text, and the matrix says so",
+     "title": "guardrail max_per_day: at most n items per role; the most urgent stay, the rest are counted as limited and not shown",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Settings: seven tabs, one h1, every tab renders without console errors; only the administrator opens it",
+     "title": "guardrail source_required: stops a path whose rule is an unverified demo assumption (and says which); lets a Harvest-reported or verified one through",
+     "note": ""
+    },
+    {
+     "status": "FAIL",
+     "title": "guardrail evidence_required: stops a record with evidence gaps and keeps the one without",
+     "note": "expected [\"TN\"] but got [\"MR\",\"TN\"]"
+    },
+    {
+     "status": "PASS",
+     "title": "two_person and the locked never_auto have no effect at run time: the locked guardrail takes no links and is never walked",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "rules tab: filter by source, search, edit in the drawer (reason required, value type kept), history and the audit tab show it",
+     "title": "validate: a good workflow is ok; errors for no trigger, an unknown block, a link to a missing block, a port the block lacks, a link into a trigger or the locked block",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "units tab: the try-it box follows the bands; switching to the alternate asks why and is audited",
+     "title": "validate: a cycle, a block no trigger reaches (the locked guardrail needs no link), a rule key that is not in the rules table",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "roles tab: the matrix is drawn from permissions.js; designate in the UI, the clinician confirms from My Work, the grant takes effect",
+     "title": "validate: a parameter out of range or of the wrong type (number, whole number, select, multi, roles, payers, text, bool)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "people tab: change a role with a reason (a lowering applies, a raise waits), the second person confirms in Settings or My Work",
+     "title": "validate warns (does not refuse): nothing after a trigger, a Yes or No exit that leads nowhere",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "family tab: In person changes the rule, asks why, shows Policy not validated; the family-link question switches work",
+     "title": "tidy: x and y are multiples of the grid, triggers sit at the left, Yes is above No, the locked guardrail is bottom right, the input is untouched and it is idempotent",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "presenter tab: how it fits, architecture, maturity legend with all four levels, the unresolved decisions with where each is set",
+     "title": "tidy: two triggers stack, a block nobody links to is placed (not lost), a cycle does not hang it",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Login at 1440: a small card near the top of the window, not a page of boxes: under 440 px wide, no role cards, no scrolling",
+     "title": "normalize and ensureLocked: positions snap to the grid, settings come from the catalog, one locked guardrail is always present, duplicate links go",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Login: one small card with one dropdown of people grouped by role, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390",
+     "title": "newId: n-xxxx, unique among the ids taken",
      "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "run and workflowItems are deterministic and never write: a deep-frozen state and workflow give the same answer twice",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the same answer from the clinician, supervisor and administrator projections (the engine reads status, never note text)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "workflowItems: enabled workflows only, items for the role named, ids \"wf:<workflow>:<record>:<node>\", group Workflows, a source and a link the role may open",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "workflowItems for direct support: only their own patients, linked to the patient chart",
+     "note": ""
+    },
+    {
+     "status": "FAIL",
+     "title": "notificationsFor appends the workflow items (unread, group Workflows) without changing the others; read state works on their ids",
+     "note": "expected 12 but got 11"
+    },
+    {
+     "status": "PASS",
+     "title": "seed: five workflows (two on, three off), each valid and laid out on the grid with the locked guardrail; the same graphs as the templates",
+     "note": ""
+    },
+    {
+     "status": "FAIL",
+     "title": "seed behaviour on the Oct 29 canvas: the partial offer gives the clinician a task (to confirm) and the supervisor a notice; follow-up day gives nothing yet; templates run when turned on",
+     "note": "M.R. (25% left), S.B. and T.N.: "
     }
    ],
-   "runId": "2026-11-12T14-31-59Z"
+   "runId": "2026-11-12T17-05-05Z"
   }
  ],
  "manual": [

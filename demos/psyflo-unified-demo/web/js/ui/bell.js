@@ -2,7 +2,8 @@
 // close, and one click opens the record. Opened by the shell's top bar (window event `psyflo:topbar`, detail.id === 'bell'); the unread
 // number on the bell is set with window.psyfloTopbar.setBadge('bell', n) every time the state changes.
 //   · the list is computed from the role-projected state by shared/sel/notify.js (flags raised by somebody else, payer items, deadlines,
-//     units at the warning threshold, notes sent back); a role never gets an item about a record it cannot open
+//     units at the warning threshold, notes sent back, and the enabled workflows' items under Workflows with a "From workflow: <name>" line);
+//     a role never gets an item about a record it cannot open
 //   · read state is per person: "Mark read" and "Mark all read" call the notify.read action (their own list only; it is not an audit event)
 //   · nothing here sends anything to anybody: no email, no text, no push. The bell shows; a person acts.
 //   window.psyfloBell = { open(opener?), close(), count() }   (the tests use it)
@@ -12,9 +13,9 @@ import { esc, icon } from './util.js';
 import { notificationsFor } from '../shared/sel/notify.js';
 import { fmtDate, fmtDateTime } from '../shared/dates.js';
 
-const KIND_ICON = { flag: 'flag', payer: 'inbox', deadline: 'clock', units: 'bars', note: 'pencil' };
+const KIND_ICON = { flag: 'flag', payer: 'inbox', deadline: 'clock', units: 'bars', note: 'pencil', workflow: 'bolt' };
 const SEV_WORD = { r: 'Urgent', y: 'Soon', n: 'Info' };
-const GROUPS = ['Flags', 'Payer', 'Deadlines', 'Units', 'Notes'];
+const GROUPS = ['Flags', 'Payer', 'Deadlines', 'Units', 'Notes', 'Workflows'];
 let handle = null, lastKey = '';
 
 const actorNow = () => { try { return window.psyflo && window.psyflo.session && window.psyflo.session.actor; } catch { return null; } };
@@ -50,7 +51,7 @@ function itemHtml(n) {
   const link = `<a class="bell__t" href="${esc(hrefOf(n.to))}" data-bell="open" data-id="${esc(n.id)}">${esc(n.title)}<span class="ui-sr">${n.read ? '' : '. Unread'}</span></a>`;
   return `<li class="bell__i sev-${esc(n.sev)}${n.read ? '' : ' is-unread'}" data-bell-item="${esc(n.id)}" data-kind="${esc(n.kind)}">`
     + `<span class="bell__ic" aria-hidden="true">${icon(KIND_ICON[n.kind] || 'dot', 16)}</span>`
-    + `<div>${link}${n.sub ? `<div class="bell__s">${esc(n.sub)}</div>` : ''}<div class="bell__m"><b>${esc(SEV_WORD[n.sev] || '')}</b><span>${esc(n.group || '')}</span><span>${esc(when(n.at))}</span></div></div>`
+    + `<div>${link}${n.sub ? `<div class="bell__s">${esc(n.sub)}</div>` : ''}${n.source && n.source.name ? `<div class="bell__s" data-bell-from>From workflow: ${esc(n.source.name)}</div>` : ''}<div class="bell__m">${n.needsConfirm ? '<b data-bell-confirm>Needs your confirmation</b>' : ''}<b>${esc(SEV_WORD[n.sev] || '')}</b><span>${esc(n.group || '')}</span><span>${esc(when(n.at))}</span></div></div>`
     + (n.read ? '' : `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm bell__x" data-bell="read" data-id="${esc(n.id)}" aria-label="Mark as read: ${esc(n.title)}">Mark read</button>`)
     + '</li>';
 }

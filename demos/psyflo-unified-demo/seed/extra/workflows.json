@@ -1,0 +1,478 @@
+{
+ "_about": "Workflows (round 5, Settings > Workflows). Five starter workflows: two on (a partial payer offer needs a decision; follow-up call day) and three off (units running low; late notes; evidence gaps before a renewal), each valid and laid out on a 20 px grid. A workflow is blocks joined by links (web/js/shared/workflows/catalog.js); it only decides which bell items, suggestions and reminders a person sees. Nothing here sends, calls, files, signs or texts: every workflow carries the locked guardrail \"Nothing is sent, called or filed on its own\". Messages use only {patient} (initials), {payer} and {date}. The templates in web/js/shared/workflows/templates.js are these same graphs. workflow_confirmations lists a saved change that waits for a second person (two-person guardrail); empty at the start.",
+ "workflows": [
+  {
+   "id": "wf-partial-offer",
+   "name": "Partial offer needs a decision",
+   "description": "When a payer offers part of the units, a clinician gets a task to decide and the supervisor is told. The clinician confirms first.",
+   "enabled": true,
+   "version": 1,
+   "nodes": [
+    {
+     "id": "t1",
+     "block": "payer_reply",
+     "x": 40,
+     "y": 40,
+     "params": {
+      "stages": [
+       "partial"
+      ]
+     },
+     "rules": [
+      "decision.overdue_after_days"
+     ]
+    },
+    {
+     "id": "g1",
+     "block": "person_confirms",
+     "x": 340,
+     "y": 40,
+     "params": {
+      "roles": [
+       "clinician"
+      ]
+     },
+     "rules": []
+    },
+    {
+     "id": "a1",
+     "block": "add_task",
+     "x": 640,
+     "y": 40,
+     "params": {
+      "roles": [
+       "clinician"
+      ],
+      "message": "Decide on the partial offer for {patient} · {payer} (reply by {date})"
+     },
+     "rules": []
+    },
+    {
+     "id": "a2",
+     "block": "notify",
+     "x": 940,
+     "y": 40,
+     "params": {
+      "roles": [
+       "supervisor"
+      ],
+      "message": "{patient} · {payer} offered part of the units: a clinician decides"
+     },
+     "rules": []
+    },
+    {
+     "id": "never_auto",
+     "block": "never_auto",
+     "x": 940,
+     "y": 180,
+     "params": {},
+     "rules": []
+    }
+   ],
+   "edges": [
+    {
+     "id": "e1",
+     "from": "t1",
+     "to": "g1",
+     "port": "out"
+    },
+    {
+     "id": "e2",
+     "from": "g1",
+     "to": "a1",
+     "port": "out"
+    },
+    {
+     "id": "e3",
+     "from": "a1",
+     "to": "a2",
+     "port": "out"
+    }
+   ],
+   "updated_at": "2026-10-28T09:00",
+   "updated_by": "dowens",
+   "history": [
+    {
+     "version": 1,
+     "at": "2026-10-28T09:00",
+     "by": "dowens",
+     "note": "Starter workflow for the demo"
+    }
+   ]
+  },
+  {
+   "id": "wf-followup-day",
+   "name": "Follow-up call day",
+   "description": "On the follow-up day after a request was sent, the clinician gets a task to call the payer. Only clinicians, at most five a day.",
+   "enabled": true,
+   "version": 1,
+   "nodes": [
+    {
+     "id": "t1",
+     "block": "followup_day",
+     "x": 40,
+     "y": 40,
+     "params": {
+      "day": 10
+     },
+     "rules": [
+      "decision.followup_day"
+     ]
+    },
+    {
+     "id": "g1",
+     "block": "roles_only",
+     "x": 340,
+     "y": 40,
+     "params": {
+      "roles": [
+       "clinician"
+      ]
+     },
+     "rules": []
+    },
+    {
+     "id": "g2",
+     "block": "max_per_day",
+     "x": 640,
+     "y": 40,
+     "params": {
+      "n": 5
+     },
+     "rules": []
+    },
+    {
+     "id": "a1",
+     "block": "add_task",
+     "x": 940,
+     "y": 40,
+     "params": {
+      "roles": [
+       "clinician"
+      ],
+      "message": "Call {payer} about {patient}"
+     },
+     "rules": []
+    },
+    {
+     "id": "never_auto",
+     "block": "never_auto",
+     "x": 940,
+     "y": 180,
+     "params": {},
+     "rules": []
+    }
+   ],
+   "edges": [
+    {
+     "id": "e1",
+     "from": "t1",
+     "to": "g1",
+     "port": "out"
+    },
+    {
+     "id": "e2",
+     "from": "g1",
+     "to": "g2",
+     "port": "out"
+    },
+    {
+     "id": "e3",
+     "from": "g2",
+     "to": "a1",
+     "port": "out"
+    }
+   ],
+   "updated_at": "2026-10-28T09:00",
+   "updated_by": "dowens",
+   "history": [
+    {
+     "version": 1,
+     "at": "2026-10-28T09:00",
+     "by": "dowens",
+     "note": "Starter workflow for the demo"
+    }
+   ]
+  },
+  {
+   "id": "wf-units-low",
+   "name": "Units running low",
+   "description": "When units used reach the warning level: suggest a flag if a quarter or less is left, otherwise tell the supervisor.",
+   "enabled": false,
+   "version": 1,
+   "nodes": [
+    {
+     "id": "t1",
+     "block": "units_used",
+     "x": 40,
+     "y": 40,
+     "params": {
+      "pct": 75
+     },
+     "rules": [
+      "units.warn_used_pct"
+     ]
+    },
+    {
+     "id": "c1",
+     "block": "units_left",
+     "x": 340,
+     "y": 40,
+     "params": {
+      "pct": 25
+     },
+     "rules": []
+    },
+    {
+     "id": "a1",
+     "block": "suggest_flag",
+     "x": 640,
+     "y": 40,
+     "params": {
+      "roles": [
+       "supervisor"
+      ],
+      "reason": "units_low"
+     },
+     "rules": []
+    },
+    {
+     "id": "a2",
+     "block": "notify",
+     "x": 640,
+     "y": 180,
+     "params": {
+      "roles": [
+       "supervisor"
+      ],
+      "message": "{patient} · {payer}: units are getting low"
+     },
+     "rules": []
+    },
+    {
+     "id": "never_auto",
+     "block": "never_auto",
+     "x": 640,
+     "y": 320,
+     "params": {},
+     "rules": []
+    }
+   ],
+   "edges": [
+    {
+     "id": "e1",
+     "from": "t1",
+     "to": "c1",
+     "port": "out"
+    },
+    {
+     "id": "e2",
+     "from": "c1",
+     "to": "a1",
+     "port": "yes"
+    },
+    {
+     "id": "e3",
+     "from": "c1",
+     "to": "a2",
+     "port": "no"
+    }
+   ],
+   "updated_at": "2026-10-28T09:00",
+   "updated_by": "dowens",
+   "history": [
+    {
+     "version": 1,
+     "at": "2026-10-28T09:00",
+     "by": "dowens",
+     "note": "Starter workflow for the demo"
+    }
+   ]
+  },
+  {
+   "id": "wf-late-notes",
+   "name": "Late notes",
+   "description": "When a note is past due, tell the supervisor. At most five alerts a day.",
+   "enabled": false,
+   "version": 1,
+   "nodes": [
+    {
+     "id": "t1",
+     "block": "note_late",
+     "x": 40,
+     "y": 40,
+     "params": {
+      "type": "any"
+     },
+     "rules": [
+      "notes.daily_due_hours"
+     ]
+    },
+    {
+     "id": "g1",
+     "block": "max_per_day",
+     "x": 340,
+     "y": 40,
+     "params": {
+      "n": 5
+     },
+     "rules": []
+    },
+    {
+     "id": "a1",
+     "block": "notify",
+     "x": 640,
+     "y": 40,
+     "params": {
+      "roles": [
+       "supervisor"
+      ],
+      "message": "{patient}: a note is past due"
+     },
+     "rules": []
+    },
+    {
+     "id": "never_auto",
+     "block": "never_auto",
+     "x": 640,
+     "y": 180,
+     "params": {},
+     "rules": []
+    }
+   ],
+   "edges": [
+    {
+     "id": "e1",
+     "from": "t1",
+     "to": "g1",
+     "port": "out"
+    },
+    {
+     "id": "e2",
+     "from": "g1",
+     "to": "a1",
+     "port": "out"
+    }
+   ],
+   "updated_at": "2026-10-28T09:00",
+   "updated_by": "dowens",
+   "history": [
+    {
+     "version": 1,
+     "at": "2026-10-28T09:00",
+     "by": "dowens",
+     "note": "Starter workflow for the demo"
+    }
+   ]
+  },
+  {
+   "id": "wf-evidence-gaps",
+   "name": "Evidence gaps before a renewal",
+   "description": "A week before a renewal is due: if the stored evidence has gaps, tell the clinician and stop; if not, tell the supervisor.",
+   "enabled": false,
+   "version": 1,
+   "nodes": [
+    {
+     "id": "t1",
+     "block": "deadline_near",
+     "x": 40,
+     "y": 40,
+     "params": {
+      "days": 7,
+      "which": "renewal"
+     },
+     "rules": [
+      "continued_stay.lead_business_days"
+     ]
+    },
+    {
+     "id": "c1",
+     "block": "evidence_missing",
+     "x": 340,
+     "y": 40,
+     "params": {},
+     "rules": []
+    },
+    {
+     "id": "a1",
+     "block": "notify",
+     "x": 640,
+     "y": 40,
+     "params": {
+      "roles": [
+       "clinician"
+      ],
+      "message": "{patient} · {payer}: evidence has gaps before the renewal"
+     },
+     "rules": []
+    },
+    {
+     "id": "g1",
+     "block": "evidence_required",
+     "x": 940,
+     "y": 40,
+     "params": {},
+     "rules": []
+    },
+    {
+     "id": "a2",
+     "block": "notify",
+     "x": 640,
+     "y": 180,
+     "params": {
+      "roles": [
+       "supervisor"
+      ],
+      "message": "{patient} · {payer}: the renewal is near"
+     },
+     "rules": []
+    },
+    {
+     "id": "never_auto",
+     "block": "never_auto",
+     "x": 940,
+     "y": 320,
+     "params": {},
+     "rules": []
+    }
+   ],
+   "edges": [
+    {
+     "id": "e1",
+     "from": "t1",
+     "to": "c1",
+     "port": "out"
+    },
+    {
+     "id": "e2",
+     "from": "c1",
+     "to": "a1",
+     "port": "yes"
+    },
+    {
+     "id": "e3",
+     "from": "a1",
+     "to": "g1",
+     "port": "out"
+    },
+    {
+     "id": "e4",
+     "from": "c1",
+     "to": "a2",
+     "port": "no"
+    }
+   ],
+   "updated_at": "2026-10-28T09:00",
+   "updated_by": "dowens",
+   "history": [
+    {
+     "version": 1,
+     "at": "2026-10-28T09:00",
+     "by": "dowens",
+     "note": "Starter workflow for the demo"
+    }
+   ]
+  }
+ ],
+ "workflow_confirmations": []
+}

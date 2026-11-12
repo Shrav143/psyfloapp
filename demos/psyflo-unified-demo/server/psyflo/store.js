@@ -158,6 +158,7 @@ class Store {
     else { st.clock.anchor_wall = Date.now(); st.clock.fixed = process.env.DEMO_TIME || st.clock.fixed || null; if (st.clock.anchor_time == null) st.clock.anchor_time = DEFAULT_TIME; }
     st.today = st.clock.date;
     if (!st.rules) { try { st.rules = loadSeed().rules || []; } catch { st.rules = []; } }
+    if (!st.workflows) { try { const sd = loadSeed(); st.workflows = sd.workflows || []; st.workflow_confirmations = sd.workflow_confirmations || []; } catch { st.workflows = []; st.workflow_confirmations = []; } }   // round 5: a state file saved before Workflows
   }
   register(mod) { Object.assign(this.actions, mod); }
   // defineAction(name, fn, authz): the way for another engineer's action file to add an action with its capability entry in one place
