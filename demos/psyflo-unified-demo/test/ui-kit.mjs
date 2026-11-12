@@ -379,5 +379,26 @@ await T.test('framed Lauris routes: a slim top bar with "Back to Psyflo", the ro
   await page.click('.xbar .xback'); await page.waitForFunction(() => /#\/Dashboard/.test(location.hash)); await closeAll();
 });
 
+await T.test('hint: an icon whose definition shows on hover and on keyboard focus, is named for assistive tech, is not clipped by a scroll region, and Escape hides it', async () => {
+  const page = await open('jperez', '/#/Dashboard');
+  await page.evaluate(() => {
+    const ui = window.psyflo.ui; const d = document.createElement('div'); d.id = 'hint-lab'; d.style.cssText = 'position:fixed;left:520px;top:200px;width:200px;height:40px;overflow:auto;background:#fff;z-index:60;padding:4px';
+    d.innerHTML = ui.hint('clock', 'Due soon: within 7 days', { tone: 'y' }) + ui.hint('alert', 'Past due: renewal', { tone: 'r', href: '#/Authorizations', text: '3' });
+    document.body.appendChild(d);
+  });
+  const b = page.locator('#hint-lab .ui-hint__b').first(); const tip = page.locator('#hint-lab .ui-hint__t').first();
+  assert.eq(await b.getAttribute('aria-label'), 'Due soon: within 7 days', 'the definition is the accessible name');
+  assert.eq(await tip.getAttribute('aria-hidden'), 'true', 'the bubble is not read twice');
+  assert.ok((await b.boundingBox()).height >= 24 && (await b.boundingBox()).width >= 24, 'a 24 px target');
+  assert.ok(!(await tip.isVisible()), 'hidden at rest');
+  await b.hover(); await page.waitForTimeout(250); assert.ok(await tip.isVisible(), 'shown on hover'); assert.match(await tip.innerText(), /Due soon/);
+  const box = await tip.boundingBox(); assert.ok(box.x >= 0 && box.y >= 0 && box.x + box.width <= 1440, 'inside the window, although its host scrolls');
+  await page.mouse.move(700, 600); await page.waitForTimeout(250); assert.ok(!(await tip.isVisible()), 'hidden when the pointer leaves');
+  await b.focus(); await page.waitForTimeout(250); assert.ok(await tip.isVisible(), 'shown on keyboard focus');
+  await page.keyboard.press('Escape'); await page.waitForTimeout(250); assert.ok(!(await tip.isVisible()), 'Escape hides it');
+  const link = page.locator('#hint-lab a.ui-hint__b'); assert.eq(await link.getAttribute('href'), '#/Authorizations'); assert.match(await link.innerText(), /3/);
+  await closeAll();
+});
+
 await browser.close();
 await T.done();

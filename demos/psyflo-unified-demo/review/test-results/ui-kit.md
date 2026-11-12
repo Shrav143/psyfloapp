@@ -1,6 +1,6 @@
 # ui-kit · PASS
 
-Run 2026-11-12T02-59-17Z · 63293 ms · instance 1 · exit 0
+Run 2026-11-12T14-27-03Z · 57189 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -41,3 +41,4 @@ Run 2026-11-12T02-59-17Z · 63293 ms · instance 1 · exit 0
 | PASS | rail foot stays reachable at 700 px: Sign out and Help as named controls, "Demo data · nothing is real" visible |  |
 | PASS | the wordmark on the navy rail is the reverse logo (white, teal, marigold), not the full-colour one |  |
 | PASS | framed Lauris routes: a slim top bar with "Back to Psyflo", the route title as the h1 and no developer text |  |
+| PASS | hint: an icon whose definition shows on hover and on keyboard focus, is named for assistive tech, is not clipped by a scroll region, and Escape hides it |  |

@@ -415,3 +415,16 @@ body[data-surface="parent"] .sh-rail,body[data-surface="school"] .sh-rail,body[d
 
 /* ---- document rows: the "Open in Lauris" link sits beside the other action (Documentation table, patient chart) ---- */
 .pt-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+
+/* ---- hint: an icon with its definition on hover or focus (ui.hint). The bubble is fixed-position, so a table's scroll region never clips it ---- */
+.ui-hint{position:relative;display:inline-flex;vertical-align:middle}
+.ui-hint__b{display:inline-flex;align-items:center;justify-content:center;gap:3px;min-width:24px;min-height:24px;padding:0 3px;border:0;background:none;color:var(--muted-700);border-radius:var(--r-1);font:600 var(--fs-12) var(--font);cursor:help;text-decoration:none}
+a.ui-hint__b{cursor:pointer}
+.ui-hint__b:hover{background:var(--sand-100)}
+.ui-hint__n{font-weight:600;font-variant-numeric:tabular-nums}
+.ui-hint--r .ui-hint__b{color:var(--danger-fg)}
+.ui-hint--y .ui-hint__b{color:var(--warning-fg)}
+.ui-hint--g .ui-hint__b{color:var(--success-fg)}
+.ui-hint--b .ui-hint__b{color:var(--info-fg)}
+.ui-hint__t{position:fixed;left:0;top:0;z-index:calc(var(--z-rail) + 40);width:max-content;max-width:min(280px,calc(100vw - 16px));background:var(--navy-900);color:#fff;border-radius:var(--r-2);padding:6px 10px;font:500 var(--fs-12)/var(--lh-12) var(--font);box-shadow:0 6px 18px rgba(21,27,36,.28);visibility:hidden;opacity:0;pointer-events:none;transition:opacity var(--dur)}
+.ui-hint__t[data-on]{visibility:visible;opacity:1}
