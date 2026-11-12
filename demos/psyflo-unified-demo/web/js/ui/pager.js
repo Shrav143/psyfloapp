@@ -36,7 +36,7 @@ export function pager(o = {}) {
   return `<nav class="ui-pager" aria-label="${esc(o.label || 'Pagination')}" data-ui-pager="${esc(id)}">
 <div class="ui-pager__size"><label for="${esc(id)}-size">Rows per page</label><select class="ui-select" id="${esc(id)}-size" data-ui-pgsize>${sizes.map(s => `<option value="${s}"${s === size ? ' selected' : ''}>${s}</option>`).join('')}</select></div>
 <span class="ui-pager__range" role="status" aria-live="polite">${total ? `Showing <b class="ui-num">${from}–${to}</b> of <b class="ui-num">${total}</b>${noun}` : `No${noun || ' rows'}`}</span>
-<div class="ui-pager__nav"><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-ui-pgprev aria-label="Previous page"${page <= 1 ? ' disabled' : ''}>Previous</button><span class="ui-pager__pg" aria-hidden="true">Page ${page} of ${n}</span><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-ui-pgnext aria-label="Next page"${page >= n ? ' disabled' : ''}>Next</button></div>
+<div class="ui-pager__nav"><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-ui-pgprev aria-label="Previous page"${page <= 1 ? ' disabled title="This is the first page"' : ''}>Previous</button><span class="ui-pager__pg" aria-hidden="true">Page ${page} of ${n}</span><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-ui-pgnext aria-label="Next page"${page >= n ? ' disabled title="This is the last page"' : ''}>Next</button></div>
 </nav>`;
 }
 pager.slice = slice; pager.fromQuery = fromQuery; pager.SIZES = PAGE_SIZES; pager.clampPage = clampPage;

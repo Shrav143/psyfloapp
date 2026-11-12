@@ -31,13 +31,13 @@ M-029,Authorizations (n29),Authorizations (queue),MOVED,"route /Authorizations a
 M-030,Parent survey (n31),Family Portal,MOVED,"route /ParentSurvey as guardian · suite family PASS, flowD PASS",lands on #/ParentSurvey
 M-031,Quarterly report (n32),Extension › Clinical documents,MOVED,"route /ExtQuarterly as jperez · suite panels PASS, smoke PASS",lands on #/ExtQuarterly?client=MR
 M-032,Continued stay (n33),Authorizations › evidence; Extension › Scan & Enhance,MOVED,"route /ExtCase as jperez · route /Authorization as jperez · suite panels PASS, smoke PASS",lands on #/ExtCase?client=MR; lands on #/Authorization?id=R-0411&section=evidence
-M-033,Information request (n34),Denial Intelligence › action,MOVED,"route /InfoRequest as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialCase?id=R-0408&section=action&action=info
-M-034,Partials and denials (n35),Denial Intelligence › options,MOVED,"route /Partials as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialCase?id=R-0402&section=action&action=options
+M-033,Information request (n34),Denial Intelligence › action,MOVED,"route /InfoRequest as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0408&section=action&action=info
+M-034,Partials and denials (n35),Denial Intelligence › options,MOVED,"route /Partials as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0402&section=action&action=options
 M-035,Early discharge (n36),Authorization case › transition,MOVED,"route /EarlyDischarge as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0402&section=transition
 M-036,Discharge summary (n37),Extension › Clinical documents,MOVED,"route /ExtDischarge as jperez · suite panels PASS, smoke PASS",lands on #/ExtDischarge?client=TN
-M-037,Peer-to-peer call notes (n38),Denial Intelligence › action,MOVED,"route /PeerBrief as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialCase?id=R-0388&section=action&action=p2p
-M-038,Appeal letter (n39),Denial Intelligence + Family Portal,MOVED,"route /AppealLetter as guardian · route /DenialCase as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/AppealLetter?id=R-0384; lands on #/DenialCase?id=R-0384&section=action&action=appeal
-M-039,Payer playbook (n40),Payer guidance (Analytics › Payer),MOVED,"route /PayerPlaybook as jperez · code: payer guidance module · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/Analytics?section=payer&panel=guidance; web/js/screens/Analytics.js web/js/screens/DenialCase.js
+M-037,Peer-to-peer call notes (n38),Denial Intelligence › action,MOVED,"route /PeerBrief as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0388&section=action&action=p2p
+M-038,Appeal letter (n39),Denial Intelligence + Family Portal,MOVED,"route /AppealLetter as guardian · route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/AppealLetter?id=R-0384; lands on #/DenialCase?id=R-0384&section=action&action=appeal
+M-039,Payer playbook (n40),Payer guidance (Analytics › Payer),MOVED,"route /PayerPlaybook as jperez · code: payer guidance module · suite denials PASS, denials-ui PASS, rules PASS",lands on #/Analytics?section=payer&panel=guidance; web/js/screens/Analytics.js web/js/screens/DenialCase.js
 M-040,Analytics (n42),"Analytics (three sections, provenance-tagged)",MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
 M-041,Users and roles (n43),Settings › Users,MOVED,"route /Users as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=people
 M-042,Enrollment packet (n46),Family Portal,MOVED,"route /ParentEnroll as guardian · suite family PASS, flowD PASS",lands on #/ParentEnroll
@@ -59,7 +59,7 @@ M-057,Incident report,Extension › Additional actions,MOVED,"route /ExtIncident
 M-058,Initial SRA (Flow C),Extension › Authorization preparation,MOVED,"panel on Lauris #4492/sra-initial as jperez · suite flowC PASS, enhance PASS, s4 PASS",
 M-059,Quarterly report,Extension › Clinical documents,MOVED,"panel on Lauris #3310/quarterly as jperez · suite flowC PASS, enhance PASS, s4 PASS",
 M-060,Continued stay,Authorizations › evidence,MOVED,"panel on Lauris #3310/sra-continued as jperez · suite flowC PASS, enhance PASS, s4 PASS",
-M-061,Sign-off (Forms to Approve),Extension › Authorization preparation,NOT-VERIFIED,"panel on Lauris #4492/sra-initial as jperez · suite authorizations PASS, flowC PASS",
+M-061,Sign-off (Forms to Approve),Extension › Authorization preparation,MOVED,"panel on Lauris #4492/sra-initial as jperez · suite authorizations PASS, flowC PASS",
 M-062,Discharge summary,Extension › Clinical documents,MOVED,"panel on Lauris #3402/discharge as jperez · suite flowC PASS, enhance PASS, s4 PASS",
 M-063,Portal confirmation view,Extension (keep),MOVED,"portal GET /availity/upload · suite panels PASS, smoke PASS",200
 M-064,Saved / rejected lists view,Extension home,MOVED,"panel on Lauris #3310/dpn as khale · Lauris GET /saved · Lauris GET /rejected · suite panels PASS, smoke PASS",200; 200
@@ -89,7 +89,7 @@ M-087,Mock DMAS lookup,Keep (visibly simulated),PRESERVED,"portal GET /dmas/look
 M-088,Portal bridge,Keep,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite bridge-contract PASS, lauris PASS",
 M-089,Single global store + persistence,Keep + hooks,PRESERVED,state key rev · code: persistence file · code: store hooks,server/psyflo/store.js; server/index.js server/psyflo/actions/core.js
 M-090,SSE sync,Keep,PRESERVED,GET /api/stream answers,200
-M-091,Presets live / canvas,Presenter,MOVED,"action demo.reset registered with a capability entry · presets live and canvas · suite ui-kit PASS, fixtures PASS",live
+M-091,Presets live / canvas,Presenter,MOVED,"action demo.reset registered with a capability entry · presets live and canvas · suite ui-kit PASS, fixtures PASS",canvas
 M-092,Seed merge,Keep,PRESERVED,code: seed merge from seed/extra,web/js/screens/DenialCase.js web/js/shared/rules.js
 M-093,Audit events,Extend (actor kind),MOVED,every audit event has actor_kind,
 M-094,PDF writer,Extend raw-bytes path,MOVED,file server/pdf.js,
@@ -103,7 +103,7 @@ M-101,Generated sidebar,Three-tab nav,MOVED,code: data-driven nav,web/js/screens
 M-102,Template engine,Keep,PRESERVED,file web/js/runtime.js,
 M-103,Tokenized links,Keep,PRESERVED,"action familyLink.open registered with a capability entry · action familyLink.send registered with a capability entry · suite family PASS, flowD PASS",
 M-104,`analytics_baseline`,Analytics `harvest_export` dataset,MOVED,state key analytics_baseline · code: baseline relabelled · suite analytics PASS,web/js/screens/Analytics.js web/js/screens/DenialCaseViews.js
-M-105,"`payer_history`, `denial_reasons`",Denial Intelligence › evidence,MOVED,"state key payer_history, denial_reasons · code: denial intelligence evidence · suite denials PASS, denials-ui FAIL, rules PASS",web/js/screens/Partials.js server/psyflo/project.js
+M-105,"`payer_history`, `denial_reasons`",Denial Intelligence › evidence,MOVED,"state key payer_history, denial_reasons · code: denial intelligence evidence · suite denials PASS, denials-ui PASS, rules PASS",web/js/screens/Partials.js server/psyflo/project.js
 M-106,"`compliance`, `migration`, `library`, `incidents`",Settings / roadmap,MOVED,"state key compliance, migration, library · route /Settings as dowens · suite analytics PASS",lands on #/Settings?tab=presenter
 M-107,`settings.family_link`,Settings › Family link,MOVED,state key settings · route /Settings as dowens · suite analytics PASS,lands on #/Settings?tab=family
 M-108,"`request_details`, `staff_dashboard`, `parent_progress`, `school_goals`, `assessments_due/history`",Keep,PRESERVED,"state key request_details, staff_dashboard, parent_progress · suite analytics PASS",
@@ -132,9 +132,9 @@ M-130,`request.overdueNotice`,Authorizations,MOVED,"action request.overdueNotice
 M-131,`request.receiptCheck`,Authorizations,MOVED,"action request.receiptCheck · suite authorizations PASS, flowC PASS",
 M-132,`request.demoReply`,Presenter,MOVED,"action request.demoReply · suite ui-kit PASS, fixtures PASS",
 M-133,`request.partialDecide`*,Remove,PRESERVED,action request.partialDecide,kept registered (internal or still used); still registered (internal or kept)
-M-134,`request.infoReply`,Denial Intelligence,MOVED,"action request.infoReply · suite denials PASS, denials-ui FAIL, rules PASS",
-M-135,`request.infoSend`,Denial Intelligence,MOVED,"action request.infoSend · suite denials PASS, denials-ui FAIL, rules PASS",
-M-136,`request.appealSign`,Denial Intelligence + Family Portal,MOVED,"action request.appealSign · suite denials PASS, denials-ui FAIL, rules PASS",
+M-134,`request.infoReply`,Denial Intelligence,MOVED,"action request.infoReply · suite denials PASS, denials-ui PASS, rules PASS",
+M-135,`request.infoSend`,Denial Intelligence,MOVED,"action request.infoSend · suite denials PASS, denials-ui PASS, rules PASS",
+M-136,`request.appealSign`,Denial Intelligence + Family Portal,MOVED,"action request.appealSign · suite denials PASS, denials-ui PASS, rules PASS",
 M-137,`request.close`*,Remove or use in disputes,PRESERVED,action request.close,kept registered (internal or still used); still registered (internal or kept)
 M-138,`request.set`*,Remove,DROPPED-WITH-REASON,action request.set,"orphan action with no caller; removed or kept internal, listed in the inventory [04b feature inventory (orphans) and 04 section A]; not itemised in 00-unified-recommendations decisions"
 M-139,`plan.set`,Authorizations,MOVED,"action plan.set · suite authorizations PASS, flowC PASS",
@@ -181,11 +181,11 @@ M-179,`referral.scheduleAndText`,Referrals,MOVED,"action referral.scheduleAndTex
 M-180,`referral.routeAndNotify`,Referrals,MOVED,"action referral.routeAndNotify · suite referrals PASS, flowD PASS",
 M-181,`referral.hold` / `referral.unhold`,Referrals,MOVED,"action referral.hold / referral.unhold · suite referrals PASS, flowD PASS",
 M-182,`eligibility.recordProof`,Referrals,MOVED,"action eligibility.recordProof · suite referrals PASS, flowD PASS",
-M-183,`request.partialChoice`,Denial Intelligence,MOVED,"action request.partialChoice · suite denials PASS, denials-ui FAIL, rules PASS",
-M-184,`request.p2pSchedule`,Denial Intelligence,NOT-VERIFIED,"suite denials PASS, denials-ui FAIL, rules PASS",
-M-185,`request.p2pLog`,Denial Intelligence,NOT-VERIFIED,"suite denials PASS, denials-ui FAIL, rules PASS",
+M-183,`request.partialChoice`,Denial Intelligence,MOVED,"action request.partialChoice · suite denials PASS, denials-ui PASS, rules PASS",
+M-184,`request.p2pSchedule`,Denial Intelligence,MOVED,"suite denials PASS, denials-ui PASS, rules PASS",proved by the suite(s) only
+M-185,`request.p2pLog`,Denial Intelligence,MOVED,"suite denials PASS, denials-ui PASS, rules PASS",proved by the suite(s) only
 M-186,`request.p2pOutcome`*,Remove,DROPPED-WITH-REASON,,"orphan action with no caller; removed or kept internal, listed in the inventory [04b feature inventory (orphans) and 04 section A]; not itemised in 00-unified-recommendations decisions"
-M-187,`request.p2pRecording`,Denial Intelligence,NOT-VERIFIED,"suite denials PASS, denials-ui FAIL, rules PASS",
+M-187,`request.p2pRecording`,Denial Intelligence,MOVED,"suite denials PASS, denials-ui PASS, rules PASS",proved by the suite(s) only
 M-188,`request.pdfCopy`,Authorizations,MOVED,"action request.pdfCopy · suite authorizations PASS, flowC PASS",
 M-189,`school.share` / `school.shareUsed`,School Portal + Extension,MOVED,action school.share / school.shareUsed · suite school PASS,
 M-190,`staff.reviewMode`,Documentation › By staff,MOVED,action staff.reviewMode · suite mywork PASS,
@@ -195,19 +195,19 @@ V-002,Family link (public),Drop (master M-009),DROPPED-WITH-REASON,,duplicate of
 V-003,Family-link settings,PORT → Settings › Family link (fills M-107 orphan),MOVED,"route /Settings as dowens · suite family PASS, flowD PASS",lands on #/Settings?tab=family
 V-004,Referral review and home,**Do not port** (removes Referrals),DROPPED-WITH-REASON,"suite referrals PASS, flowD PASS",v3 referral review would remove Referrals; Referrals is never redirected [00 decision #3 and §4.1]
 V-005,All Authorizations list,PORT → Authorizations queue,MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
-V-006,Authorization detail,PORT → Authorization case shell,NOT-VERIFIED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",hash #/Authorization?id=R-0416;  text missing: /Next step/
-V-007,Draft mirrors,PORT → case › Documentation,NOT-VERIFIED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",hash #/Authorization?id=R-0416&section=documents;  text missing: /Clinical documentation/
-V-008,Delivery trail,REPLACE with master Submission,NOT-VERIFIED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",hash #/Authorization?id=R-0416&section=submission;  text missing: /Delivery/
-V-009,Denial Intelligence queue,PORT → Denial Intelligence queue,MOVED,"route /DenialIntelligence as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialIntelligence
-V-010,Denial case workspace,PORT → DenialCase,MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialCase?id=R-0402
-V-011,Options per issue,"PORT (spec 8.2 ""show only valid options"")",MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialCase?id=R-0402&section=options
-V-012,Dispute documents,PORT; replace submit with person-initiated record,MOVED,"action dispute.genDoc, dispute.reviewDoc, dispute.send registered with a capability entry · suite denials PASS, denials-ui FAIL, rules PASS",
-V-013,Evidence and weak points,PORT → Evidence section (grounded only),MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialCase?id=R-0402&section=evidence
-V-014,Peer-to-peer script,PORT → merge into PeerBrief,MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialCase?id=R-0388&section=action&action=p2p
-V-015,Partial doors,REPLACE with master `partialChoice` + early discharge,REPLACED-BY,"action request.partialChoice registered with a capability entry · suite denials PASS, denials-ui FAIL, rules PASS",
-V-016,Resolution status,PORT → `disputes.status` + reconcile,MOVED,"state key disputes · action dispute.resolve registered with a capability entry · suite denials PASS, denials-ui FAIL, rules PASS",
+V-006,Authorization detail,PORT → Authorization case shell,MOVED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416
+V-007,Draft mirrors,PORT → case › Documentation,MOVED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416&section=documents
+V-008,Delivery trail,REPLACE with master Submission,REPLACED-BY,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416&section=submission
+V-009,Denial Intelligence queue,PORT → Denial Intelligence queue,MOVED,"route /DenialIntelligence as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialIntelligence
+V-010,Denial case workspace,PORT → DenialCase,MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0402
+V-011,Options per issue,"PORT (spec 8.2 ""show only valid options"")",MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0402&section=options
+V-012,Dispute documents,PORT; replace submit with person-initiated record,MOVED,"action dispute.genDoc, dispute.reviewDoc, dispute.send registered with a capability entry · suite denials PASS, denials-ui PASS, rules PASS",
+V-013,Evidence and weak points,PORT → Evidence section (grounded only),MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0402&section=evidence
+V-014,Peer-to-peer script,PORT → merge into PeerBrief,MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0388&section=action&action=p2p
+V-015,Partial doors,REPLACE with master `partialChoice` + early discharge,REPLACED-BY,"action request.partialChoice registered with a capability entry · suite denials PASS, denials-ui PASS, rules PASS",
+V-016,Resolution status,PORT → `disputes.status` + reconcile,MOVED,"state key disputes · action dispute.resolve registered with a capability entry · suite denials PASS, denials-ui PASS, rules PASS",
 V-017,Claims disputes,Roadmap (not in master domain),DROPPED-WITH-REASON,,claims disputes and money exposure are Tier 3 roadmap labels [00 §7 Tier 3]
-V-018,Info-request (K.T.),REPLACE with master M-033,REPLACED-BY,"route /DenialCase as jperez · suite denials PASS, denials-ui FAIL, rules PASS",lands on #/DenialCase?id=R-0408&section=action&action=info
+V-018,Info-request (K.T.),REPLACE with master M-033,REPLACED-BY,"route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0408&section=action&action=info
 V-019,Analytics shell,PORT → Analytics,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
 V-020,Patient Outcomes,PORT,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?section=outcomes
 V-021,Payer Performance,PORT (case-backed adapter),MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?section=payer
@@ -222,7 +222,7 @@ V-029,Roles permission editor,PORT (permission matrix),MOVED,"route /Settings as
 V-030,Unit rules editor,PORT,MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=units
 V-031,Reimbursement rates / money exposure,Defer (Tier 3),DROPPED-WITH-REASON,"suite roles PASS, settings PASS",claims disputes and money exposure are Tier 3 roadmap labels [00 §7 Tier 3]
 V-032,Audit trail,PORT (map to master `events`),MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=audit
-V-033,Payer requirement registry,PORT → rules (spec 4.6),MOVED,"state key rules · rules table · suite denials PASS, denials-ui FAIL, rules PASS",73 rules
+V-033,Payer requirement registry,PORT → rules (spec 4.6),MOVED,"state key rules · rules table · suite denials PASS, denials-ui PASS, rules PASS",73 rules
 V-034,Eligibility vs benefits,PORT (Eligibility enhancement),MOVED,"route /Referral as jperez · suite referrals PASS, flowD PASS",lands on #/Referral?id=REF-118&panel=eligibility
 V-035,Alerts,REPLACE with Dashboard alerts,REPLACED-BY,route /Dashboard as jperez · suite mywork PASS,lands on #/Dashboard
 V-036,History dropdown,REFACTOR (drop voice/agent actors),MOVED,"code: history component · suite authorizations PASS, flowC PASS",web/js/screens/DenialCaseViews.js web/js/screens/UiKit.js
@@ -276,7 +276,7 @@ V-083,Build script,Drop,DROPPED-WITH-REASON,suite ui-kit PASS,v3 build or in-bro
 V-084,S1 DSS creates a progress note,Spec Scenario 1 (master flow B),MOVED,"route /MobileApp as khale · code: scenario s1 · suite ui-kit PASS, fixtures PASS",lands on #/MobileApp; seed/extra/scenarios.json
 V-085,S2 DSS tracks interventions,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
 V-086,S3 Clinician enhances a progress note,Enhance Mode A,MOVED,"action enhance.scan registered with a capability entry · suite ui-kit PASS, fixtures PASS",
-V-087,S4 Clinician enhances an SRA,Spec Scenario 3,NOT-VERIFIED,"route /Authorization as jperez · suite ui-kit PASS, fixtures PASS",hash #/Authorization?id=R-0416;  text missing: /Next step/
+V-087,S4 Clinician enhances an SRA,Spec Scenario 3,MOVED,"route /Authorization as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorization?id=R-0416
 V-088,S5 Admin tracks authorizations,Authorizations demo,MOVED,"route /Authorizations as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorizations
 V-089,S6 Clinician manages a denial,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence
 V-090,S7 Clinician prepares peer-to-peer,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence

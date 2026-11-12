@@ -11,6 +11,15 @@ The product owner asked for the artifact's All Authorizations list and authoriza
 | **History** | The artifact's block: a count, a filter by who did it, a row per step (date and time, the step, a detail line, a *View* link, an **actor tag**), a pop-up per row (What · When · Who · Document · Source · Next action), and **Add to history** (call, note, document received, payer contact; audited, sends nothing). Actor tags: Voice agent · Psyflo agent · Psyflo · Staff · From Lauris · Payer. |
 | **The bell** (top bar) | A separate notification centre. The number on the bell is the unread count; the drawer is grouped Flags / Payer / Deadlines / Units / Notes, each item opens its record, *Mark read* and *Mark all read* are per person. |
 
+## Captures (synthetic data)
+
+| Screen | Capture |
+|---|---|
+| Authorizations, administrator, 1440 px | ![Authorizations list](deliverables/img/r3-authorizations-list-admin.png) |
+| Authorization case page with the flag banner and History, site supervisor, 1440 px | ![Authorization case page](deliverables/img/r3-authorization-case-supervisor.png) |
+| The bell, site supervisor | ![The bell](deliverables/img/r3-bell-supervisor.png) |
+| Authorizations at phone width, 390 px | ![Authorizations on a phone](deliverables/img/r3-authorizations-list-phone.png) |
+
 ## Flags
 
 - A flag is workflow, not clinical. The person picks a **reason from a short list** (Needs a decision, Deadline is close, Units running low, Payer follow-up needed, Waiting on the family, Documents missing, Other) and may add a one-line note (140 characters, "no clinical details").
