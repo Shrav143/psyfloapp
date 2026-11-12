@@ -236,8 +236,10 @@ for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
     { role: 'jperez', route: ['DenialCase', { id: 'R-0408' }], label: 'Denial case clinical review panel', open: p => p.getByRole('button', { name: /^Mark for Clinical Review/ }).click(), kind: 'drawer' },
     { role: 'jperez', route: ['Referral', { id: 'REF-118' }], label: 'Referral schedule, hold or route', open: p => p.getByRole('button', { name: /Schedule|Reschedule|Hold|Route/i }).first().click(), kind: 'any' },
     { role: 'dowens', route: ['Settings', { tab: 'people' }], label: 'Settings people action', open: p => p.locator('#root .ui-btn--primary, #root button.ui-btn').first().click(), kind: 'any' },
-    { role: 'dowens', route: ['Settings', { tab: 'rules' }], label: 'Settings rule drawer', open: p => p.locator('#root [data-wm="editRule"]').first().click(), kind: 'any' },
-    { role: 'dowens', route: ['Settings', {}], label: 'Settings block editor (narrow screens open it as a drawer)', open: p => p.locator('#root .wm-node').first().click(), kind: 'any' }
+    // R5: the rule editor opens from the rule library (wide) or from the block editor drawer (400 px, where the Outline is the layout)
+    { role: 'dowens', route: ['Settings', { tab: 'rules' }], label: 'Settings rule drawer', open: async p => { const lib = p.locator('#root [data-wm="editRule"]'); if (await lib.count()) await lib.first().click(); else { await p.locator('#root [data-wm="editNode"]').first().click(); await p.waitForSelector('.ui-dialog--drawer [data-wm="editRule"]'); await p.locator('.ui-dialog--drawer [data-wm="editRule"]').first().click(); } }, kind: 'any' },
+    { role: 'dowens', route: ['Settings', {}], label: 'Settings new workflow dialog', open: p => p.locator('#root #wm-new').click(), kind: 'any' },
+    { role: 'dowens', route: ['Settings', {}], label: 'Settings workflow menu', open: p => p.locator('#root #wm-more').click(), kind: 'any' }
   ];
   for (const role of ['jperez', 'dowens']) {
     const page = await newPage({ who: role });

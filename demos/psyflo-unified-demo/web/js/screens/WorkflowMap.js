@@ -10,11 +10,11 @@ import { esc } from '../runtime.js';
 import { M } from '../app.js';
 import { can } from '../shared/permissions.js';
 import { rule } from '../shared/rules.js';
-import { BLOCKS, GRID, KINDS, KIND_LABEL } from '../shared/workflows/catalog.js';
+import { BLOCKS, GRID } from '../shared/workflows/catalog.js';
 import * as ENGINE from '../shared/workflows/engine.js';
 import { TEMPLATES } from '../shared/workflows/templates.js';
 import * as MD from './WorkflowModel.js';
-import { canvasHtml, edgePath, outPos, inPos, verifHint } from './WorkflowCanvas.js';
+import { canvasHtml, edgePath, outPos, inPos } from './WorkflowCanvas.js';
 import { inspectorHtml } from './WorkflowInspector.js';
 import { outlineHtml } from './WorkflowOutline.js';
 import { paletteHtml, rulesRows, filterRules } from './WorkflowPalette.js';
@@ -85,7 +85,10 @@ export class WorkflowMap {
   }
   html() { this.sync(); return `<div class="wm" id="wm" data-view="${this.view}">${this.inner()}</div>`; }
   inner() {
-    if (!this.workflows().length || !this.draft) return `<div class="wm-none">${ui.emptyState({ title: 'No workflows yet', body: 'Workflows are not available on this server yet.' })}</div>`;
+    if (!this.workflows().length || !this.draft) {
+      const known = Array.isArray(this.s.workflows);   // an empty list (all deleted) can start a new one; a missing one means this server has no workflows
+      return `<div class="wm-none">${known ? `<div class="wm-bar"><div class="wm-bar__r1"><button type="button" class="ui-btn ui-btn--primary ui-btn--sm" id="wm-new" data-wm="new">${icon('plus', 14)} New workflow</button></div></div>` : ''}${ui.emptyState({ title: 'No workflows yet', body: known ? 'Start from a template or a blank map.' : 'Workflows are not available on this server yet.' })}</div>`;
+    }
     const c = this.ctx(); const nr = narrow(); const showPal = !nr && this.ui.pal; const showInsp = !nr && (roomy() || !!this.sel || this.ui.insp);
     const main = this.view === 'outline' ? outlineHtml(c) : canvasHtml(c);
     return `${this.barHtml(c)}
@@ -116,7 +119,7 @@ export class WorkflowMap {
         <span class="wm-bar__sp"></span>
         ${nr ? `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" id="wm-blocks" data-wm="openPicker">${icon('plus', 14)} Add block</button>` : `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" id="wm-blocks" data-wm="palToggle" aria-pressed="${this.ui.pal}">${icon('plus', 14)} Blocks</button>`}
         ${ui.hint('info', 'Details: problems, history and what this workflow is for', { cls: 'ui-hint--act wm-h-info', label: 'Workflow details', extra: `data-wm="showProblems" id="wm-details" aria-pressed="${!this.sel && !nr && (roomy() || this.ui.insp)}"` })}
-        ${ui.hint('undo', 'Undo the last change (Ctrl+Z)', { cls: 'ui-hint--act wm-h-undo', label: 'Undo', extra: `data-wm="undo" id="wm-undo"${this.undo.length ? '' : ' aria-disabled="true"'}` })}
+        ${ui.hint('undo', this.undo.length ? 'Undo the last change (Ctrl+Z)' : 'Nothing to undo yet. Make a change first.', { cls: 'ui-hint--act wm-h-undo', label: 'Undo', extra: `data-wm="undo" id="wm-undo"${this.undo.length ? '' : ' aria-disabled="true"'}` })}
         ${ui.hint('tidy', 'Tidy up: lay the blocks out left to right on the grid', { cls: 'ui-hint--act wm-h-tidy', label: 'Tidy up', extra: 'data-wm="tidy" id="wm-tidy"' })}
         <button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" id="wm-test" data-wm="test">${icon('play', 14)} Test run</button>
         ${errs || warns ? ui.hint('alert', `${errs ? errs + ' to fix' : ''}${errs && warns ? ', ' : ''}${warns ? warns + ' to look at' : ''}. Select nothing to see them.`, { tone: errs ? 'r' : 'y', text: String(errs + warns), cls: 'wm-probhint', label: `${errs + warns} problem${errs + warns === 1 ? '' : 's'} in this workflow`, extra: 'data-wm="showProblems"' }) : ''}
@@ -178,6 +181,7 @@ export class WorkflowMap {
     this.sel = sel; this.linking = null;
     if (sel && narrow()) this.openInspDrawer();
     if (sel && sel.type === 'node') this.focusAfter = o.focusInsp ? '#wm-insp-t' : `[data-fk="node-${sel.id}"]`;
+    if (sel && sel.type === 'edge' && !narrow()) this.focusAfter = `[data-fk="edge-${sel.id}"]`;   // so Delete removes the line that was just clicked
     this.redraw();
     if (sel && o.focusInsp && narrow()) setTimeout(() => { const t = this.find('#wm-insp-t'); if (t) t.focus({ preventScroll: true }); }, 0);
   }
@@ -416,7 +420,8 @@ export class WorkflowMap {
     this.mut(d => { MD.nodeById(d, id).rules.push(key); }, { draw: false });
     this.sel = { type: 'node', id }; this.draw(); this.h.toast(`${r.label} attached to ${MD.nodeTitle(n)}`);
   }
-  editRule(key, opener) { this.h.editRule(key, opener, { lead: 'This changes the rule everywhere in Psyflo (deadlines, unit warnings, the Dashboard), not only in this workflow. It asks why and is kept in the audit log.' }); }
+  editRule(key, opener) { if (this.drawer) { this.drawer.close('rule'); opener = null; }   // narrow screens: the rule editor replaces the block editor drawer instead of stacking on it
+    this.h.editRule(key, opener, { lead: 'This changes the rule everywhere in Psyflo (deadlines, unit warnings, the Dashboard), not only in this workflow. It asks why and is kept in the audit log.' }); }
   pickRule(nodeId, opener) {
     const n = MD.nodeById(this.draft, nodeId); if (!n) return;
     const have = new Set(n.rules || []); const f = { q: '', cat: '', area: '' };

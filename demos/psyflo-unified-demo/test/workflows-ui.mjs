@@ -5,9 +5,31 @@
 // A workflow only configures what the bell shows a person: nothing it does sends, calls, files or signs, and the test run changes nothing.
 import { suite, assert, api, tryApi, state, reset, session, playwright, errors, login, BASE, SHOTS } from './lib/index.mjs';
 import { rule } from '../web/js/shared/rules.js';
+import * as MD from '../web/js/screens/WorkflowModel.js';
+import { validate, tidy, newId } from '../web/js/shared/workflows/engine.js';
 
 const T = suite('workflows-ui');
 await reset('live');
+// ------------------------------------------------------------------------------------------------ the pure model behind the map (no browser)
+await T.test('model: links obey the rules of the map (no self link, none into a When block, none into the locked guardrail, no loop, no duplicate), an exit may fan out, removing a block removes its links', async () => {
+  const s = await state('dowens'); const wf = MD.draftOf(s.workflows.find(w => w.id === 'wf-units-low')); const id = p => newId(p, [...wf.nodes.map(n => n.id), ...wf.edges.map(e => e.id)]);
+  assert.eq(MD.canLink(wf, 'c1', 'yes', 'c1').ok, false, 'self'); assert.eq(MD.canLink(wf, 'c1', 'yes', 't1').ok, false, 'into a When'); assert.eq(MD.canLink(wf, 'c1', 'yes', 'never_auto').ok, false, 'into the locked guardrail');
+  assert.eq(MD.canLink(wf, 'a1', 'out', 'c1').ok, false, 'a loop'); assert.eq(MD.canLink(wf, 'c1', 'yes', 'a1').ok, false, 'a duplicate'); assert.eq(MD.canLink(wf, 'never_auto', 'out', 'a1').ok, false, 'the locked guardrail has no exit');
+  const e = MD.link(wf, 'c1', 'yes', 'a2', id); assert.ok(e && wf.edges.filter(x => x.from === 'c1' && x.port === 'yes').length === 2, 'a second link from the same exit'); assert.ok(validate({ ...wf, id: 'x' }, s).ok, 'still a valid workflow');
+  const n = MD.addNode(wf, 'notify', 333, 41, id); assert.deepEq([n.x % 20, n.y % 20], [0, 0], 'placed on the grid'); assert.ok(MD.removeNode(wf, n.id)); assert.eq(MD.removeNode(wf, 'never_auto'), false, 'the locked guardrail cannot be removed');
+  assert.ok(MD.removeNode(wf, 'a1') && !wf.edges.some(x => x.from === 'a1' || x.to === 'a1'), 'its links go with it');
+  assert.eq(MD.snap(31), 40); assert.eq(MD.snap(29), 20); assert.eq(MD.snap(-7), 0, 'never negative');
+});
+await T.test('model: the summary of a rule-bound block reads the live rule; the outline keeps every block (joins shown once, strays under Not connected); draftKey ignores order; tidy puts blocks on the grid', async () => {
+  const s = await state('dowens'); const w = s.workflows.find(x => x.id === 'wf-units-low'); const wf = MD.draftOf(w); const t1 = MD.nodeById(wf, 't1');
+  assert.eq(MD.summaryOf(s, t1), 'Units used reach 75%'); const s2 = JSON.parse(JSON.stringify(s)); s2.rules.find(r => r.key === 'units.warn_used_pct').value = 60; assert.eq(MD.summaryOf(s2, t1), 'Units used reach 60%', 'the rule is the number');
+  const { roots, orphans } = MD.outlineTree(wf); assert.eq(roots.length, 1); assert.eq(orphans.length, 0); assert.deepEq(roots[0].kids.map(k => k.port), ['out']);
+  const cond = roots[0].kids[0].links[0].child; assert.deepEq(cond.kids.map(k => k.port), ['yes', 'no']);
+  const stray = MD.addNode(wf, 'payer_is', 600, 600, p => newId(p)); assert.eq(MD.outlineTree(wf).orphans.map(o => o.node.id).join(), stray.id, 'a stray block is listed under Not connected');
+  const shuffled = { ...wf, nodes: [...wf.nodes].reverse(), edges: [...wf.edges].reverse() }; assert.eq(MD.draftKey(shuffled), MD.draftKey(wf), 'order does not matter');
+  const laid = tidy({ ...w, nodes: MD.clone(w.nodes), edges: MD.clone(w.edges) }); assert.ok(laid.nodes.every(n => n.x % 20 === 0 && n.y % 20 === 0), 'tidy: on the grid');
+});
+
 const { chromium } = playwright();
 const browser = await chromium.launch(); const ctxs = [];
 async function open(user, path, o = {}) {
@@ -276,6 +298,26 @@ try {
     let w = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth })); assert.ok(w.sw <= w.iw + 1, 'no sideways scroll'); await p.screenshot({ path: SHOTS + '/r5-map-1024.png' });
     await p.click('.wm-node[data-node="c1"] .wm-node__t'); await p.waitForSelector('#wm-insp'); await p.click('#wm-blocks'); await p.waitForSelector('#wm-pal');
     w = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth })); assert.ok(w.sw <= w.iw + 1, 'no sideways scroll with both panels'); await p.screenshot({ path: SHOTS + '/r5-panels-1024.png' });
+    assert.deepEq(fatal(p), [], 'console errors'); await done();
+  });
+
+  await T.test('accessibility at 1440 with the palette, the editor and a test run open: targets 24 px or more, every control named, ids unique, nodes and lines reachable by keyboard, one h1, no text under 12 px', async () => {
+    const p = await open('dowens', '/#/Settings?wf=wf-evidence-gaps'); await p.waitForSelector('.wm-node'); await p.click('#wm-blocks'); await p.waitForSelector('#wm-pal'); await p.click('.wm-node[data-node="t1"] .wm-node__t'); await p.waitForSelector('#wm-insp h2'); await p.click('#wm-test'); await p.waitForSelector('#wm-testp'); await p.click('#wm-pal details[data-g="rules"] summary'); await p.waitForTimeout(300);
+    const r = await p.evaluate(() => {
+      const vis = e => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && !e.closest('[hidden],[inert]') && (!e.checkVisibility || e.checkVisibility()); };   // a closed <details> content is not visible
+      const ctl = [...document.querySelectorAll('#root button, #root select, #root input, #root textarea, #root a[href], #root [tabindex="0"]')].filter(vis);
+      const small = ctl.filter(e => { if (e.closest('svg')) return false; const r = e.getBoundingClientRect(); return r.width < 24 || r.height < 24; }).map(e => (e.id || e.className || e.tagName) + ' ' + Math.round(e.getBoundingClientRect().width) + 'x' + Math.round(e.getBoundingClientRect().height));
+      const name = e => (e.getAttribute('aria-label') || (e.labels && e.labels.length && [...e.labels].map(l => l.innerText).join('')) || e.getAttribute('aria-labelledby') || (['BUTTON', 'A', 'SUMMARY'].includes(e.tagName) ? e.innerText.trim() : '') || (e.getAttribute('role') === 'group' ? e.getAttribute('aria-label') : '')).toString().trim();
+      const unnamed = ctl.filter(e => !name(e) && e.tagName !== 'DIV').map(e => e.id || e.className || e.tagName);
+      const ids = {}; document.querySelectorAll('[id]').forEach(e => { ids[e.id] = (ids[e.id] || 0) + 1; }); const dup = Object.keys(ids).filter(k => ids[k] > 1);
+      const tiny = [...document.querySelectorAll('#root *')].filter(e => vis(e) && e.children.length === 0 && (e.textContent || '').trim() && parseFloat(getComputedStyle(e).fontSize) < 12).map(e => e.className + ':' + e.textContent.trim().slice(0, 20));
+      return { small, unnamed, dup, tiny, h1: document.querySelectorAll('#root h1').length, nodes: [...document.querySelectorAll('.wm-node')].every(n => n.tabIndex === 0 && n.getAttribute('aria-label')), lines: [...document.querySelectorAll('.wm-edge__hit')].every(n => n.getAttribute('tabindex') === '0' && n.getAttribute('aria-label')) };
+    });
+    assert.deepEq(r.small, [], 'targets under 24 px: ' + r.small.join(', ')); assert.deepEq(r.unnamed, [], 'controls without a name: ' + r.unnamed.join(', ')); assert.deepEq(r.dup, [], 'duplicate ids: ' + r.dup.join(', ')); assert.deepEq(r.tiny, [], 'text under 12 px: ' + r.tiny.join(', '));
+    assert.eq(r.h1, 1); assert.ok(r.nodes, 'every block is a tab stop with a name'); assert.ok(r.lines, 'every line is a tab stop with a name');
+    // Tab reaches a block, then its exit dot; the dot opens a link mode that Escape cancels
+    await p.focus('.wm-node[data-node="t1"]'); await p.keyboard.press('Tab'); assert.eq(await p.evaluate(() => document.activeElement.dataset.port), 'out'); await p.keyboard.press('Enter'); await p.waitForTimeout(250); assert.ok(await p.locator('.wm-node.is-target').count() >= 1, 'link mode marks the blocks that can be linked to');
+    await p.keyboard.press('Escape'); await p.waitForTimeout(200); assert.eq(await p.locator('.wm-node.is-target').count(), 0);
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
 

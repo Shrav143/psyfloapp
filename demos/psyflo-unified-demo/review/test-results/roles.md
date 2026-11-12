@@ -1,6 +1,6 @@
 # roles · PASS
 
-Run 2026-11-12T02-59-17Z · 10575 ms · instance 2 · exit 0
+Run 2026-11-12T17-36-09Z · 10396 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -8,6 +8,7 @@ Run 2026-11-12T02-59-17Z · 10575 ms · instance 2 · exit 0
 | PASS | admin has no clinical-record access; notes.view is never granted by a designation |  |
 | PASS | can(): A needs the caseload, D needs the designation, unknown role/capability/user fail closed |  |
 | PASS | routes: every registry route has a capability entry; each role opens exactly what the matrix allows |  |
+| PASS | R4 the merged Dashboard follows the matrix: Documents and Staff views need documentation (supervisor, clinician, administrator), Open in Lauris needs ext.use (never the administrator); direct support, guardian and school get neither view |  |
 | PASS | every action has a capability entry (and nothing is declared for an action that does not exist) |  |
 | PASS | anonymous: /api/state, /api/do (admin and plain actions), /files and the roster |  |
 | PASS | no screening transcript reaches an unauthenticated caller: /api/state is 401, the roster is empty, the scripted call needs a session |  |

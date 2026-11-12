@@ -35,9 +35,11 @@ if (typeof document !== 'undefined' && !window.__uiHint) {
   window.__uiHint = true;
   const host = e => (e.target && e.target.closest ? e.target.closest('[data-ui-hint]') : null);
   document.addEventListener('mouseover', e => { const h = host(e); if (h && h !== on) { hide(); place(h); } else if (!h) hide(); });
-  document.addEventListener('focusin', e => { const h = host(e); if (h) { hide(); place(h); } });
+  let focusAt = 0;
+  document.addEventListener('focusin', e => { const h = host(e); if (h) { hide(); place(h); focusAt = Date.now(); } });
   document.addEventListener('focusout', e => { if (on && !(e.relatedTarget && on.contains(e.relatedTarget))) hide(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') hide(); });
-  document.addEventListener('scroll', hide, true);
+  // a scroll hides the bubble, except the scroll that focusing a control causes (the browser brings it into view): then it is placed again
+  document.addEventListener('scroll', () => { if (on && Date.now() - focusAt < 250) place(on); else hide(); }, true);
   document.addEventListener('click', hide, true);
 }

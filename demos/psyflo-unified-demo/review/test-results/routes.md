@@ -1,11 +1,12 @@
 # routes · PASS
 
-Run 2026-11-12T02-59-17Z · 114693 ms · instance 2 · exit 0
+Run 2026-11-12T17-36-09Z · 100214 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
 | PASS | registry keeps every historic route id and pre-registers the new routes |  |
 | PASS | redirect table matches review/04-architecture.md E1 and 03-ux-audit.md e |  |
+| PASS | R4 Documentation stays a registered route id and a redirect source only: no nav item points at it, every redirect that used to land on it lands on the Dashboard's Documents or Staff view |  |
 | PASS | referrals are never redirected away; AppealLetter and every portal route stay put |  |
 | PASS | every redirect has a flag, a registered target and no cycle; every flag is used |  |
 | PASS | with every flag on, every historic deep link still resolves to a registered route (no dead ids) |  |
@@ -49,6 +50,8 @@ Run 2026-11-12T02-59-17Z · 114693 ms · instance 2 · exit 0
 | PASS | deep link #/Dashboard as jperez renders Dashboard with its params, no stub unless the route is not live |  |
 | PASS | deep link #/Documentation?status=pending_review as jperez renders Documentation with its params, no stub unless the route is not live |  |
 | PASS | deep link #/Documentation?view=staff as cdiaz renders Documentation with its params, no stub unless the route is not live |  |
+| PASS | deep link #/Dashboard?view=documents&status=pending_review as jperez renders Dashboard with its params, no stub unless the route is not live |  |
+| PASS | deep link #/Dashboard?view=staff as cdiaz renders Dashboard with its params, no stub unless the route is not live |  |
 | PASS | deep link #/Patient?id=MR as jperez renders Patient with its params, no stub unless the route is not live |  |
 | PASS | deep link #/Dashboard as khale renders Dashboard with its params, no stub unless the route is not live |  |
 | PASS | deep link #/Authorization?id=R-0416&section=submission as jperez renders Authorization with its params, no stub unless the route is not live |  |

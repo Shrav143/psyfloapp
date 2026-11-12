@@ -1,6 +1,6 @@
 # parity · PASS
 
-Run 2026-11-12T02-59-17Z · 147034 ms · instance 2 · exit 0
+Run 2026-11-12T17-36-09Z · 146417 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|

@@ -1,6 +1,6 @@
 # settings · PASS
 
-Run 2026-11-12T14-31-59Z · 64755 ms · instance 0 · exit 0
+Run 2026-11-12T17-43-18Z · 63412 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -13,8 +13,8 @@ Run 2026-11-12T14-31-59Z · 64755 ms · instance 0 · exit 0
 | PASS | signature mode per document type: default remote (not validated); In person changes the rule the family screens read |  |
 | PASS | family link questions: ask and required switches (the guardian link reads them); the insurance question is locked |  |
 | PASS | the administrator has no clinical-record access: Settings never carries note text, and the matrix says so |  |
-| PASS | Settings: seven tabs, one h1, every tab renders without console errors; only the administrator opens it |  |
-| PASS | rules tab: filter by source, search, edit in the drawer (reason required, value type kept), history and the audit tab show it |  |
+| PASS | Settings: opens on the workflow map (no tab bar), the six older pages open from More settings with one h1 and a way back, no console errors; only the administrator opens it |  |
+| PASS | rule library (the old Rules tab, now in the workflow map): filter by source, search, edit in the drawer (reason required, value type kept), and the audit tab shows it |  |
 | PASS | units tab: the try-it box follows the bands; switching to the alternate asks why and is audited |  |
 | PASS | roles tab: the matrix is drawn from permissions.js; designate in the UI, the clinician confirms from My Work, the grant takes effect |  |
 | PASS | people tab: change a role with a reason (a lowering applies, a raise waits), the second person confirms in Settings or My Work |  |

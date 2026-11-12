@@ -19,7 +19,7 @@ function field(c, n, key, p) {
   const legend = `<legend class="ui-field__l">${esc(p.label)}${help}</legend>`;
   if (p.rule) {
     const r = rule(c.s, p.rule); const live = r.missing ? '—' : showValue(r);
-    return `<div class="ui-field wm-rb">${label}<div class="wm-rb__row"><output class="wm-rb__v" id="${id}">${esc(live)}</output>${r.missing ? '' : verifHint(r)}${ui.hint('gear', 'This number is a rule. Editing it changes the rule everywhere in Psyflo, not only in this workflow. It asks why and is audited.', { cls: 'ui-hint--act', label: 'Edit the rule: ' + (r.label || p.rule), extra: `data-wm="editRule" data-key="${esc(p.rule)}"` })}</div></div>`;
+    return `<div class="ui-field wm-rb">${label}<div class="wm-rb__row"><output class="wm-rb__v" id="${id}">${esc(live)}</output>${r.missing ? '' : verifHint(r)}${ui.hint('gear', 'This number is a rule. Editing it changes the rule everywhere in Psyflo, not only in this workflow. It asks why and is audited.', { cls: 'ui-hint--act', label: 'Edit the rule: ' + (r.label || p.rule), extra: `data-wm="editRule" data-key="${esc(p.rule)}" data-fk="fe-${esc(p.rule)}" data-ui-return="fe-${esc(p.rule)}"` })}</div></div>`;
   }
   switch (p.type) {
     case 'number': return `<div class="ui-field">${label}<div class="wm-num"><input class="ui-input" id="${id}" type="number" inputmode="numeric" min="${p.min}" max="${p.max}" step="1" value="${esc(val ?? '')}" data-wmp="${key}" data-t="number"><span>${esc(p.unit || '')}</span></div><span class="ui-field__h">${p.min} to ${p.max}</span></div>`;
@@ -29,7 +29,7 @@ function field(c, n, key, p) {
     case 'multi': case 'roles': case 'payers': {
       const opts = p.type === 'roles' ? ROLE_OPTIONS : p.type === 'payers' ? ((c.s.payers || []).map(x => [x.id, x.name])) : p.options;
       const cur = Array.isArray(val) ? val : [];
-      return `<fieldset class="ui-field wm-fs" id="${id}">${legend}<div class="wm-checks">${opts.map(([v, l]) => check(`data-wmp="${key}" data-t="set" data-v="${esc(v)}"`, l, cur.includes(v))).join('')}</div></fieldset>`;
+      return `<fieldset class="ui-field wm-fs" id="${id}">${legend}<div class="wm-checks">${opts.map(([v, l]) => check(`data-wmp="${key}" data-t="set" data-v="${esc(v)}" data-fk="wmp-${key}-${esc(v)}"`, l, cur.includes(v))).join('')}</div></fieldset>`;
     }
     default: return '';
   }
@@ -42,7 +42,7 @@ export function pickerHtml(c, n, port, o = {}) {
   const targets = c.wf.nodes.filter(t => t.id !== n.id && !isLocked(t) && BLOCKS[t.block] && canLink(c.wf, n.id, port, t.id).ok);
   const news = KINDS.filter(k => k !== 'trigger').map(k => `<optgroup label="Add a new ${esc(KIND_LABEL[k])} block">${Object.entries(BLOCKS).filter(([, b]) => b.kind === k && !b.locked).map(([bid, b]) => `<option value="new:${bid}">${esc(b.short)}</option>`).join('')}</optgroup>`).join('');
   const label = o.label || PORT_LABEL[port];
-  const list = links.length ? `<ul class="wm-links">${links.map(e => { const t = nodeById(c.wf, e.to); return t ? `<li><span>${esc(KIND_LABEL[BLOCKS[t.block].kind])}: ${esc(summaryOf(c.s, t))}</span>${ui.hint('x', 'Remove this link', { cls: 'ui-hint--act', label: `Remove the link to ${nodeTitle(t)}`, extra: `data-wm="removeEdge" data-id="${esc(e.id)}"` })}</li>` : ''; }).join('')}</ul>` : '<p class="wm-muted wm-links__none">Nothing yet. The path ends here.</p>';
+  const list = links.length ? `<ul class="wm-links">${links.map(e => { const t = nodeById(c.wf, e.to); return t ? `<li><span>${esc(KIND_LABEL[BLOCKS[t.block].kind])}: ${esc(summaryOf(c.s, t))}</span>${ui.hint('x', 'Remove this link', { cls: 'ui-hint--act', label: `Remove the link to ${nodeTitle(t)}`, extra: `data-wm="removeEdge" data-id="${esc(e.id)}" data-fk="rl-${esc(e.id)}"` })}</li>` : ''; }).join('')}</ul>` : '<p class="wm-muted wm-links__none">Nothing yet. The path ends here.</p>';
   return `<div class="ui-field wm-logic"><span class="ui-field__l" id="${id}-l">${esc(label)}</span>${list}<label class="ui-sr" for="${id}">${esc(label)}: add a link</label><select class="ui-select" id="${id}" data-next="${port}" data-node="${esc(n.id)}"><option value="">${links.length ? 'Add another link' : 'Link to a block'}</option>${targets.length ? `<optgroup label="A block on the map">${targets.map(t => `<option value="node:${esc(t.id)}">${esc(KIND_LABEL[BLOCKS[t.block].kind] + ': ' + summaryOf(c.s, t))}</option>`).join('')}</optgroup>` : ''}${news}</select></div>`;
 }
 // "+ Add a block here" picker for the outline: a native select (works with a keyboard and on a phone)
@@ -56,7 +56,7 @@ export function addPickerHtml(c, n, port, o = {}) {
 function ruleRows(c, n) {
   const rows = (n.rules || []).map(k => rule(c.s, k));
   if (!rows.length) return `<p class="wm-muted">No rules attached. A rule gives a number its source and its check.</p>`;
-  return `<ul class="wm-rl">${rows.map(r => `<li class="wm-rl__i"><div class="wm-rl__t"><b>${esc(r.label || r.key)}</b><small>${r.missing ? 'This rule is not in the table.' : esc(showValue(r)) + (r.enabled === false ? ' · off' : '')}</small></div><div class="wm-rl__a">${r.missing ? '' : verifHint(r)}${(r.history || []).length ? ui.hint('refresh', `${r.history.length} change${r.history.length === 1 ? '' : 's'}, kept with a reason`, { text: String(r.history.length), label: 'Rule history: ' + (r.label || r.key) }) : ''}${r.missing ? '' : ui.hint('pencil', 'Edit the value. This changes the rule everywhere, and it asks why.', { cls: 'ui-hint--act', label: 'Edit rule: ' + r.label, extra: `data-wm="editRule" data-key="${esc(r.key)}"` })}${ui.hint('x', 'Take the rule off this block. The rule stays in the table.', { cls: 'ui-hint--act', label: 'Detach rule: ' + (r.label || r.key), extra: `data-wm="detachRule" data-key="${esc(r.key)}"` })}</div></li>`).join('')}</ul>`;
+  return `<ul class="wm-rl">${rows.map(r => `<li class="wm-rl__i"><div class="wm-rl__t"><b>${esc(r.label || r.key)}</b><small>${r.missing ? 'This rule is not in the table.' : esc(showValue(r)) + (r.enabled === false ? ' · off' : '')}</small></div><div class="wm-rl__a">${r.missing ? '' : verifHint(r)}${(r.history || []).length ? ui.hint('refresh', `${r.history.length} change${r.history.length === 1 ? '' : 's'}, kept with a reason`, { text: String(r.history.length), label: 'Rule history: ' + (r.label || r.key) }) : ''}${r.missing ? '' : ui.hint('pencil', 'Edit the value. This changes the rule everywhere, and it asks why.', { cls: 'ui-hint--act', label: 'Edit rule: ' + r.label, extra: `data-wm="editRule" data-key="${esc(r.key)}" data-fk="re-${esc(r.key)}" data-ui-return="re-${esc(r.key)}"` })}${ui.hint('x', 'Take the rule off this block. The rule stays in the table.', { cls: 'ui-hint--act', label: 'Detach rule: ' + (r.label || r.key), extra: `data-wm="detachRule" data-key="${esc(r.key)}" data-fk="rd-${esc(r.key)}"` })}</div></li>`).join('')}</ul>`;
 }
 
 function problemList(list, selectable) {

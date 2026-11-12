@@ -1,6 +1,6 @@
 {
- "runId": "2026-11-12T17-18-53Z",
- "commit": "b6843f8",
+ "runId": "2026-11-12T17-43-18Z",
+ "commit": "c072a02",
  "release": false,
  "releaseReady": false,
  "env": {
@@ -12,34 +12,151 @@
   "basePort": 7500
  },
  "summary": {
-  "pass": 0,
-  "fail": 1,
+  "pass": 2,
+  "fail": 0,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 57847,
+  "durationMs": 126060,
   "tests": {
-   "pass": 18,
-   "fail": 1,
+   "pass": 40,
+   "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
+   "name": "settings",
+   "tags": [],
+   "instance": 0,
+   "attempt": 1,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 63412,
+   "counts": {
+    "pass": 18,
+    "fail": 0,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "roles: a raise needs a second person (not the proposer, an administrator or a clinician); a lowering applies at once; never your own",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "people: new users start as direct support or supervisor; clinician and administrator go through a role change",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "designated access: proposed by an administrator, confirmed by someone else, never for yourself, never a clinical-record grant for an administrator",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rules: a reason is required, only the administrator edits, the type is kept, and a change is audited with its values",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rules: the dependent screen changes (day-5 follow-up makes the Aetna request a follow-up call in My Work); reset restores it",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "units: the alternate bands change the units a day earns; restore returns the official bands (audited)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "signature mode per document type: default remote (not validated); In person changes the rule the family screens read",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "family link questions: ask and required switches (the guardian link reads them); the insurance question is locked",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the administrator has no clinical-record access: Settings never carries note text, and the matrix says so",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "Settings: opens on the workflow map (no tab bar), the six older pages open from More settings with one h1 and a way back, no console errors; only the administrator opens it",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rule library (the old Rules tab, now in the workflow map): filter by source, search, edit in the drawer (reason required, value type kept), and the audit tab shows it",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "units tab: the try-it box follows the bands; switching to the alternate asks why and is audited",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "roles tab: the matrix is drawn from permissions.js; designate in the UI, the clinician confirms from My Work, the grant takes effect",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "people tab: change a role with a reason (a lowering applies, a raise waits), the second person confirms in Settings or My Work",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "family tab: In person changes the rule, asks why, shows Policy not validated; the family-link question switches work",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "presenter tab: how it fits, architecture, maturity legend with all four levels, the unresolved decisions with where each is set",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "Login at 1440: a small card near the top of the window, not a page of boxes: under 440 px wide, no role cards, no scrolling",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "Login: one small card with one dropdown of people grouped by role, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-12T17-43-18Z"
+  },
+  {
    "name": "workflows-ui",
    "tags": [],
    "instance": 0,
    "attempt": 1,
-   "status": "FAIL",
-   "exit": 1,
-   "durationMs": 57746,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 62444,
    "counts": {
-    "pass": 18,
-    "fail": 1,
+    "pass": 22,
+    "fail": 0,
     "skip": 0
    },
    "tests": [
+    {
+     "status": "PASS",
+     "title": "model: links obey the rules of the map (no self link, none into a When block, none into the locked guardrail, no loop, no duplicate), an exit may fan out, removing a block removes its links",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "model: the summary of a rule-bound block reads the live rule; the outline keeps every block (joins shown once, strays under Not connected); draftKey ignores order; tidy puts blocks on the grid",
+     "note": ""
+    },
     {
      "status": "PASS",
      "title": "Settings opens on the workflow map: one h1 and the Pilot chip, no seven-tab bar, the toolbar, the locked guardrail drawn, the seeded workflows listed",
@@ -121,9 +238,14 @@
      "note": ""
     },
     {
-     "status": "FAIL",
+     "status": "PASS",
+     "title": "accessibility at 1440 with the palette, the editor and a test run open: targets 24 px or more, every control named, ids unique, nodes and lines reachable by keyboard, one h1, no text under 12 px",
+     "note": ""
+    },
+    {
+     "status": "PASS",
      "title": "the \"second person\" guardrail: a saved change waits (the live version does not change), Settings says so, a different person (the clinician, from the Dashboard) confirms, the proposer cannot",
-     "note": "\"Confirm a workflow change\\nWorkflow\\nLate notes, two people\\nChange\\n1 block added, 1 link added, renamed\\nProposed by\\nD. Owens · Oct 29, 3:30 pm\\n\\nA workflow only de\" does not match /Dana Owens/"
+     "note": ""
     },
     {
      "status": "PASS",
@@ -136,7 +258,7 @@
      "note": ""
     }
    ],
-   "runId": "2026-11-12T17-18-53Z"
+   "runId": "2026-11-12T17-43-18Z"
   }
  ],
  "manual": [

@@ -3,7 +3,7 @@
 // and absolutely placed block cards. The locked guardrail is drawn outside the stage, fixed to the bottom right of the viewport.
 import { ui, chipMod } from '../ui/index.js';
 import { esc } from '../runtime.js';
-import { BLOCKS, KIND_LABEL, KIND_ICON, LOCKED_WHY, portsOf } from '../shared/workflows/catalog.js';
+import { BLOCKS, KIND_LABEL, LOCKED_WHY, portsOf } from '../shared/workflows/catalog.js';
 import { NODE_W, NODE_H, PORT_Y, PORT_LABEL, summaryOf, nodeTitle, worstRule, isLocked, edgesFrom } from './WorkflowModel.js';
 
 const icon = (n, s) => ui.icon(n, s);
@@ -61,7 +61,7 @@ export function lockedHtml() {
 
 export function canvasHtml(c) {
   const wf = c.wf; const nodes = wf.nodes.filter(n => BLOCKS[n.block] && !isLocked(n)); const by = new Map(nodes.map(n => [n.id, n]));
-  const w = Math.max(760, ...nodes.map(n => n.x + NODE_W + 140)), h = Math.max(440, ...nodes.map(n => n.y + NODE_H + 120));
+  const w = Math.max(760, ...nodes.map(n => n.x + NODE_W + 140)), h = Math.max(360, ...nodes.map(n => n.y + NODE_H + 140));
   const edges = wf.edges.filter(e => by.has(e.from) && by.has(e.to) && portsOf(by.get(e.from).block).includes(e.port));
   const paths = edges.map(e => {
     const a = by.get(e.from), t = by.get(e.to); const [ax, ay] = outPos(a, e.port), [bx, by2] = inPos(t); const d = edgePath(ax, ay, bx, by2);
@@ -70,7 +70,7 @@ export function canvasHtml(c) {
   }).join('');
   const marker = (id, cls) => `<marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="${cls}" d="M1 1L9 5L1 9z"/></marker>`;
   return `<div class="wm-cv">
-    <div class="wm-canvas" id="wm-canvas" role="region" aria-label="Workflow map" tabindex="-1" style="height:min(var(--wm-h),${Math.max(400, h + 20)}px)">
+    <div class="wm-canvas" id="wm-canvas" role="region" aria-label="Workflow map" tabindex="-1" style="height:min(var(--wm-h),${h + 20}px)">
       <div class="wm-stage" id="wm-stage" style="min-width:${w}px;min-height:${h}px">
         <svg class="wm-lines" width="${w}" height="${h}" role="group" aria-label="Links"><defs>${marker('wm-arr', 'wm-arr')}${marker('wm-arr-sel', 'wm-arr wm-arr--sel')}${marker('wm-arr-lit', 'wm-arr wm-arr--lit')}</defs>${paths}<path id="wm-temp" class="wm-edge__tmp" d="" hidden/></svg>
         ${nodes.map(n => nodeHtml(c, n)).join('')}
