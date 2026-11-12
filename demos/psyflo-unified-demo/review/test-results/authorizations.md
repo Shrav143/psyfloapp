@@ -1,6 +1,6 @@
 # authorizations · PASS
 
-Run 2026-11-11T21-13-30Z · 53209 ms · instance 0 · exit 0
+Run 2026-11-12T01-30-29Z · 47082 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -18,10 +18,10 @@ Run 2026-11-11T21-13-30Z · 53209 ms · instance 0 · exit 0
 | PASS | the task closes only when the open Lauris page shows the units: a forged event, or no action at all, cannot close it |  |
 | PASS | partial and denied: the stage follows, the appeal window comes from the rules table |  |
 | PASS | reconcile: units approved at 150 on T.N. replace the 65, and T.W. is not Active without units |  |
-| PASS | the queue: no demo buttons, chips with counts, URL state, v3 links, sort, search, Denial Intelligence links |  |
-| PASS | simple table (feedback Nov 11): units are one bar "N left of M" flagged from 75% used; a deadline is a date with a warning icon; every filter is on the page |  |
+| PASS | the queue (R3, after the artifact): no demo buttons, a Status dropdown instead of chips, URL state, v3 links, sort, search, Denial Intelligence links |  |
+| PASS | the table (feedback Nov 11, laid out like the artifact): units are one bar "N left of M" flagged from 75% used; the Next action cell holds the button and a dated deadline with a warning icon; ten filters on the page |  |
 | PASS | S3 R-0416: Review packet -> Approve (Pending clinical approval) -> Sign in Lauris -> Send -> Submitted with the Sfax receipt |  |
-| PASS | the timeline: events open What · When · Who · Document · Source · Next action; ?section= opens that section |  |
+| PASS | the history: rows open What · When · Who · Document · Source · Next action in a pop-up; ?section=timeline lands on History; every row has an actor tag |  |
 | PASS | Record decision: approved opens the Enter units in Lauris task (card with the Lauris link); Psyflo does not write units; admin sees the task read-only |  |
 | PASS | a supervisor may approve once designated (two people confirm it); the approval is recorded under the supervisor, and a different person can send |  |
 | PASS | case actions on an overdue request: Log call, Overdue notice (no legal standard cited), Send again with a reason, Change owner |  |

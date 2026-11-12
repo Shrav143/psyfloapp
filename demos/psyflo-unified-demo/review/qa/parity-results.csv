@@ -5,64 +5,64 @@ M-003,Do next (n2),Dashboard (patient roster),MOVED,route /DoNext as jperez · s
 M-004,School portal home (n3),School Portal,MOVED,route /SchoolPortal as school · suite school PASS,lands on #/SchoolPortal
 M-005,Referral form (n4),School Portal,MOVED,route /ReferralForm as school · suite school PASS,lands on #/ReferralForm
 M-006,Referral sent (n5),School Portal,MOVED,route /ReferralSent as school · suite school PASS,lands on #/ReferralSent
-M-007,Referrals list (n6),Referrals workspace (never redirected),NOT-VERIFIED,"probe threw · suite referrals PASS, flowD PASS","page.waitForTimeout: Target page, context or browser has been closed"
-M-008,Referral review (n7),Referrals workspace,NOT-VERIFIED,"probe threw · suite referrals PASS, flowD PASS","page.goto: Target page, context or browser has been closed"
-M-009,Family link (n8),Family Portal,NOT-VERIFIED,"probe threw · suite family PASS, flowD PASS","page.goto: Target page, context or browser has been closed"
-M-010,Eligibility check (n9),Referral panel (contextual),NOT-VERIFIED,"probe threw · suite referrals PASS, flowD PASS","page.goto: Target page, context or browser has been closed"
-M-011,Parent signs (n11),Family Portal (signature mode configurable),NOT-VERIFIED,"probe threw · suite family PASS, flowD PASS","browser.newContext: Target page, context or browser has been closed"
-M-012,Parent portal (n12),Family Portal checklist home,NOT-VERIFIED,"probe threw · suite family PASS, flowD PASS","browser.newContext: Target page, context or browser has been closed"
-M-013,Extension home (n13),Extension › home,NOT-VERIFIED,"probe threw · probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed; browser.newContext: Target page, context or browser has been closed"
-M-014,Screening call (n14),Extension › Scribe,NOT-VERIFIED,"probe threw · probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed; browser.newContext: Target page, context or browser has been closed"
-M-015,Intake / CNA (n15),Extension › Scribe,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed"
-M-016,Treatment plan (n16),Extension › Clinical review,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed"
-M-017,Initial SRA (n17),Extension › Authorization preparation,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed"
-M-018,Sign-off (n18),Extension › Authorization preparation,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed"
-M-019,Sent (n19),Authorization case › Submission,NOT-VERIFIED,"probe threw · suite authorizations PASS, flowC PASS","page.goto: Target page, context or browser has been closed"
-M-020,Mobile app (n20),Mobile › My students,NOT-VERIFIED,probe threw · suite mobile PASS,"browser.newContext: Target page, context or browser has been closed"
-M-021,Say what happened (n21),"Mobile › Say what happened, Review",NOT-VERIFIED,probe threw · suite mobile PASS,"browser.newContext: Target page, context or browser has been closed"
-M-022,Assessments (n22),Mobile › assessments,NOT-VERIFIED,probe threw · suite mobile PASS,"browser.newContext: Target page, context or browser has been closed"
-M-023,Daily note (n23),Extension › Scribe,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","browser.newContext: Target page, context or browser has been closed"
-M-024,Weekly guardian call (n24),Extension › Scribe,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed"
-M-025,Monthly collateral (n25),Extension › Scribe,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed"
-M-026,Incident report (n26),Extension › Additional actions,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed"
-M-027,Supervisor review queue (n27),Documentation › Needs review,NOT-VERIFIED,probe threw · suite mywork PASS,"browser.newContext: Target page, context or browser has been closed"
-M-028,Staff dashboard (n28),Dashboard (staff filter) · Documentation › By staff,NOT-VERIFIED,probe threw · suite mywork PASS,"browser.newContext: Target page, context or browser has been closed"
-M-029,Authorizations (n29),Authorizations (queue),NOT-VERIFIED,"probe threw · suite authorizations PASS, flowC PASS","page.goto: Target page, context or browser has been closed"
-M-030,Parent survey (n31),Family Portal,NOT-VERIFIED,"probe threw · suite family PASS, flowD PASS","browser.newContext: Target page, context or browser has been closed"
-M-031,Quarterly report (n32),Extension › Clinical documents,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed"
-M-032,Continued stay (n33),Authorizations › evidence; Extension › Scan & Enhance,NOT-VERIFIED,"probe threw · probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed; page.goto: Target page, context or browser has been closed"
-M-033,Information request (n34),Denial Intelligence › action,NOT-VERIFIED,"probe threw · suite denials PASS, denials-ui PASS, rules PASS","page.goto: Target page, context or browser has been closed"
-M-034,Partials and denials (n35),Denial Intelligence › options,NOT-VERIFIED,"probe threw · suite denials PASS, denials-ui PASS, rules PASS","page.goto: Target page, context or browser has been closed"
-M-035,Early discharge (n36),Authorization case › transition,NOT-VERIFIED,"probe threw · suite authorizations PASS, flowC PASS","page.goto: Target page, context or browser has been closed"
-M-036,Discharge summary (n37),Extension › Clinical documents,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed"
-M-037,Peer-to-peer call notes (n38),Denial Intelligence › action,NOT-VERIFIED,"probe threw · suite denials PASS, denials-ui PASS, rules PASS","page.goto: Target page, context or browser has been closed"
-M-038,Appeal letter (n39),Denial Intelligence + Family Portal,NOT-VERIFIED,"probe threw · probe threw · suite denials PASS, denials-ui PASS, rules PASS","browser.newContext: Target page, context or browser has been closed; page.goto: Target page, context or browser has been closed"
-M-039,Payer playbook (n40),Payer guidance (Analytics › Payer),NOT-VERIFIED,"probe threw · code: payer guidance module · suite denials PASS, denials-ui PASS, rules PASS","page.goto: Target page, context or browser has been closed; web/js/screens/Analytics.js web/js/screens/DenialCase.js"
-M-040,Analytics (n42),"Analytics (three sections, provenance-tagged)",NOT-VERIFIED,probe threw · suite analytics PASS,"browser.newContext: Target page, context or browser has been closed"
-M-041,Users and roles (n43),Settings › Users,NOT-VERIFIED,"probe threw · suite roles PASS, settings PASS","browser.newContext: Target page, context or browser has been closed"
-M-042,Enrollment packet (n46),Family Portal,NOT-VERIFIED,"probe threw · suite family PASS, flowD PASS","browser.newContext: Target page, context or browser has been closed"
-M-043,"Progress, family view (n47)",Family Portal,NOT-VERIFIED,"probe threw · suite family PASS, flowD PASS","browser.newContext: Target page, context or browser has been closed"
-M-044,"Quarterly, guardian signs (n48)",Family Portal,NOT-VERIFIED,"probe threw · suite family PASS, flowD PASS","browser.newContext: Target page, context or browser has been closed"
-M-045,Insurance letters explained (n49),Family Portal,NOT-VERIFIED,"probe threw · suite family PASS, flowD PASS","browser.newContext: Target page, context or browser has been closed"
-M-046,Book a time (n50),Family Portal,NOT-VERIFIED,"probe threw · suite family PASS, flowD PASS","browser.newContext: Target page, context or browser has been closed"
-M-047,Panel home / consumers list,"Extension home (Current student, Scribe, Scan & Enhance, Next task)",NOT-VERIFIED,"probe threw · probe threw · suite panels PASS, smoke PASS","page.goto: Target page, context or browser has been closed; browser.newContext: Target page, context or browser has been closed"
-M-048,New consumer from referral,Referrals workspace + Extension,NOT-VERIFIED,"probe threw · suite referrals PASS, flowD PASS","browser.newContext: Target page, context or browser has been closed"
-M-049,Consumer record view,Extension › Scribe,NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","browser.newContext: Target page, context or browser has been closed"
-M-050,Non-TDT guard,Extension (keep),NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS","browser.newContext: Target page, context or browser has been closed"
-M-051,Screening call (Flow A),Extension › Scribe,NOT-VERIFIED,"probe threw · suite flowA PASS, flowB PASS, scribe PASS","browser.newContext: Target page, context or browser has been closed"
-M-052,Intake / CNA,Extension › Scribe,NOT-VERIFIED,"probe threw · suite flowA PASS, flowB PASS, scribe PASS","browser.newContext: Target page, context or browser has been closed"
-M-053,Treatment plan (ISP),Extension › Clinical review,NOT-VERIFIED,"probe threw · suite flowC PASS, enhance PASS, s4 PASS","browser.newContext: Target page, context or browser has been closed"
-M-054,Daily note (Flow B),Extension › Scribe,NOT-VERIFIED,"probe threw · suite flowA PASS, flowB PASS, scribe PASS","browser.newContext: Target page, context or browser has been closed"
-M-055,Weekly guardian call,Extension › Scribe,NOT-VERIFIED,"probe threw · suite flowA PASS, flowB PASS, scribe PASS","browser.newContext: Target page, context or browser has been closed"
-M-056,Monthly collateral,Extension › Scribe,NOT-VERIFIED,"probe threw · suite flowA PASS, flowB PASS, scribe PASS","browser.newContext: Target page, context or browser has been closed"
-M-057,Incident report,Extension › Additional actions,NOT-VERIFIED,"probe threw · code: incident filing action · suite flowA PASS, flowB PASS, scribe PASS","page.goto: Target page, context or browser has been closed; web/panel/views/incident.js server/psyflo/actions/core.js"
-M-058,Initial SRA (Flow C),Extension › Authorization preparation,NOT-VERIFIED,"probe threw · suite flowC PASS, enhance PASS, s4 PASS","browser.newContext: Target page, context or browser has been closed"
-M-059,Quarterly report,Extension › Clinical documents,NOT-VERIFIED,"probe threw · suite flowC PASS, enhance PASS, s4 PASS","browser.newContext: Target page, context or browser has been closed"
-M-060,Continued stay,Authorizations › evidence,NOT-VERIFIED,"probe threw · suite flowC PASS, enhance PASS, s4 PASS","browser.newContext: Target page, context or browser has been closed"
-M-061,Sign-off (Forms to Approve),Extension › Authorization preparation,NOT-VERIFIED,"probe threw · suite authorizations PASS, flowC PASS","browser.newContext: Target page, context or browser has been closed"
-M-062,Discharge summary,Extension › Clinical documents,NOT-VERIFIED,"probe threw · suite flowC PASS, enhance PASS, s4 PASS","browser.newContext: Target page, context or browser has been closed"
-M-063,Portal confirmation view,Extension (keep),NOT-VERIFIED,"probe threw · suite panels PASS, smoke PASS",fetch failed
-M-064,Saved / rejected lists view,Extension home,NOT-VERIFIED,"probe threw · probe threw · probe threw · suite panels PASS, smoke PASS","browser.newContext: Target page, context or browser has been closed; fetch failed; fetch failed"
+M-007,Referrals list (n6),Referrals workspace (never redirected),MOVED,"route /Referrals as jperez · suite referrals PASS, flowD PASS",lands on #/Referrals
+M-008,Referral review (n7),Referrals workspace,MOVED,"route /Referral as jperez · suite referrals PASS, flowD PASS",lands on #/Referral?id=REF-118&panel=criteria
+M-009,Family link (n8),Family Portal,MOVED,"route /FamilyLink as jperez · suite family PASS, flowD PASS",lands on #/FamilyLink?preview=1
+M-010,Eligibility check (n9),Referral panel (contextual),MOVED,"route /Eligibility as jperez · suite referrals PASS, flowD PASS",lands on #/Referral?id=REF-118&panel=eligibility
+M-011,Parent signs (n11),Family Portal (signature mode configurable),MOVED,"route /ParentSign as guardian · suite family PASS, flowD PASS",lands on #/ParentSign
+M-012,Parent portal (n12),Family Portal checklist home,MOVED,"route /ParentPortal as guardian · suite family PASS, flowD PASS",lands on #/ParentPortal?c=TW
+M-013,Extension home (n13),Extension › home,MOVED,"route /ExtHome as jperez · panel on Lauris #3310 as jperez · suite panels PASS, smoke PASS",lands on #/ExtHome
+M-014,Screening call (n14),Extension › Scribe,MOVED,"route /ExtScreening as jperez · panel on Lauris #4492/screening as jperez · suite panels PASS, smoke PASS",lands on #/ExtScreening?referral=REF-118
+M-015,Intake / CNA (n15),Extension › Scribe,MOVED,"route /ExtCNA as jperez · suite panels PASS, smoke PASS",lands on #/ExtCNA?client=TW
+M-016,Treatment plan (n16),Extension › Clinical review,MOVED,"route /ExtISP as jperez · suite panels PASS, smoke PASS",lands on #/ExtISP?client=TW
+M-017,Initial SRA (n17),Extension › Authorization preparation,MOVED,"route /ExtSRA as jperez · suite panels PASS, smoke PASS",lands on #/ExtSRA?client=TW
+M-018,Sign-off (n18),Extension › Authorization preparation,MOVED,"route /ExtSignOff as jperez · suite panels PASS, smoke PASS",lands on #/ExtSignOff?request=R-0416
+M-019,Sent (n19),Authorization case › Submission,MOVED,"route /Submission as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416&section=submission
+M-020,Mobile app (n20),Mobile › My students,MOVED,route /MobileApp as khale · suite mobile PASS,lands on #/MobileApp
+M-021,Say what happened (n21),"Mobile › Say what happened, Review",MOVED,route /MobileDictate as khale · suite mobile PASS,lands on #/MobileDictate?client=MR
+M-022,Assessments (n22),Mobile › assessments,MOVED,route /MobileAssess as khale · suite mobile PASS,lands on #/MobileAssess?client=AG
+M-023,Daily note (n23),Extension › Scribe,MOVED,"route /ExtDPN as khale · suite panels PASS, smoke PASS",lands on #/ExtDPN?client=MR
+M-024,Weekly guardian call (n24),Extension › Scribe,MOVED,"route /ExtWeekly as jperez · suite panels PASS, smoke PASS",lands on #/ExtWeekly?client=MR
+M-025,Monthly collateral (n25),Extension › Scribe,MOVED,"route /ExtMonthly as jperez · suite panels PASS, smoke PASS",lands on #/ExtMonthly?client=MR
+M-026,Incident report (n26),Extension › Additional actions,MOVED,"route /ExtIncident as jperez · suite panels PASS, smoke PASS",lands on #/ExtIncident
+M-027,Supervisor review queue (n27),Documentation › Needs review,MOVED,route /ReviewQueue as cdiaz · suite mywork PASS,lands on #/Documentation?status=pending_review
+M-028,Staff dashboard (n28),Dashboard (staff filter) · Documentation › By staff,MOVED,route /StaffDashboard as cdiaz · suite mywork PASS,lands on #/Dashboard
+M-029,Authorizations (n29),Authorizations (queue),MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
+M-030,Parent survey (n31),Family Portal,MOVED,"route /ParentSurvey as guardian · suite family PASS, flowD PASS",lands on #/ParentSurvey
+M-031,Quarterly report (n32),Extension › Clinical documents,MOVED,"route /ExtQuarterly as jperez · suite panels PASS, smoke PASS",lands on #/ExtQuarterly?client=MR
+M-032,Continued stay (n33),Authorizations › evidence; Extension › Scan & Enhance,MOVED,"route /ExtCase as jperez · route /Authorization as jperez · suite panels PASS, smoke PASS",lands on #/ExtCase?client=MR; lands on #/Authorization?id=R-0411&section=evidence
+M-033,Information request (n34),Denial Intelligence › action,MOVED,"route /InfoRequest as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0408&section=action&action=info
+M-034,Partials and denials (n35),Denial Intelligence › options,MOVED,"route /Partials as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0402&section=action&action=options
+M-035,Early discharge (n36),Authorization case › transition,MOVED,"route /EarlyDischarge as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0402&section=transition
+M-036,Discharge summary (n37),Extension › Clinical documents,MOVED,"route /ExtDischarge as jperez · suite panels PASS, smoke PASS",lands on #/ExtDischarge?client=TN
+M-037,Peer-to-peer call notes (n38),Denial Intelligence › action,MOVED,"route /PeerBrief as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0388&section=action&action=p2p
+M-038,Appeal letter (n39),Denial Intelligence + Family Portal,MOVED,"route /AppealLetter as guardian · route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/AppealLetter?id=R-0384; lands on #/DenialCase?id=R-0384&section=action&action=appeal
+M-039,Payer playbook (n40),Payer guidance (Analytics › Payer),MOVED,"route /PayerPlaybook as jperez · code: payer guidance module · suite denials PASS, denials-ui PASS, rules PASS",lands on #/Analytics?section=payer&panel=guidance; web/js/screens/Analytics.js web/js/screens/DenialCase.js
+M-040,Analytics (n42),"Analytics (three sections, provenance-tagged)",MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
+M-041,Users and roles (n43),Settings › Users,MOVED,"route /Users as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=people
+M-042,Enrollment packet (n46),Family Portal,MOVED,"route /ParentEnroll as guardian · suite family PASS, flowD PASS",lands on #/ParentEnroll
+M-043,"Progress, family view (n47)",Family Portal,MOVED,"route /ParentProgress as guardian · suite family PASS, flowD PASS",lands on #/ParentProgress?c=TW
+M-044,"Quarterly, guardian signs (n48)",Family Portal,MOVED,"route /ParentQuarterly as guardian · suite family PASS, flowD PASS",lands on #/ParentQuarterly
+M-045,Insurance letters explained (n49),Family Portal,MOVED,"route /ParentLetters as guardian · suite family PASS, flowD PASS",lands on #/ParentLetters
+M-046,Book a time (n50),Family Portal,MOVED,"route /ParentSchedule as guardian · suite family PASS, flowD PASS",lands on #/ParentSchedule
+M-047,Panel home / consumers list,"Extension home (Current student, Scribe, Scan & Enhance, Next task)",MOVED,"route /ExtHome as jperez · panel on Lauris #3310 as jperez · suite panels PASS, smoke PASS",lands on #/ExtHome
+M-048,New consumer from referral,Referrals workspace + Extension,MOVED,"panel on Lauris #4492 as jperez · suite referrals PASS, flowD PASS",
+M-049,Consumer record view,Extension › Scribe,MOVED,"panel on Lauris #3310 as jperez · suite panels PASS, smoke PASS",
+M-050,Non-TDT guard,Extension (keep),MOVED,"panel on Lauris #4300 as jperez · suite panels PASS, smoke PASS",
+M-051,Screening call (Flow A),Extension › Scribe,MOVED,"panel on Lauris #4492/screening as jperez · suite flowA PASS, flowB PASS, scribe PASS",
+M-052,Intake / CNA,Extension › Scribe,MOVED,"panel on Lauris #4492/cna as jperez · suite flowA PASS, flowB PASS, scribe PASS",
+M-053,Treatment plan (ISP),Extension › Clinical review,MOVED,"panel on Lauris #4492/isp as jperez · suite flowC PASS, enhance PASS, s4 PASS",
+M-054,Daily note (Flow B),Extension › Scribe,MOVED,"panel on Lauris #3310/dpn as khale · suite flowA PASS, flowB PASS, scribe PASS",
+M-055,Weekly guardian call,Extension › Scribe,MOVED,"panel on Lauris #3310/weekly as jperez · suite flowA PASS, flowB PASS, scribe PASS",
+M-056,Monthly collateral,Extension › Scribe,MOVED,"panel on Lauris #3310/collateral as jperez · suite flowA PASS, flowB PASS, scribe PASS",
+M-057,Incident report,Extension › Additional actions,MOVED,"route /ExtIncident as jperez · code: incident filing action · suite flowA PASS, flowB PASS, scribe PASS",lands on #/ExtIncident; web/panel/views/incident.js server/psyflo/actions/core.js
+M-058,Initial SRA (Flow C),Extension › Authorization preparation,MOVED,"panel on Lauris #4492/sra-initial as jperez · suite flowC PASS, enhance PASS, s4 PASS",
+M-059,Quarterly report,Extension › Clinical documents,MOVED,"panel on Lauris #3310/quarterly as jperez · suite flowC PASS, enhance PASS, s4 PASS",
+M-060,Continued stay,Authorizations › evidence,MOVED,"panel on Lauris #3310/sra-continued as jperez · suite flowC PASS, enhance PASS, s4 PASS",
+M-061,Sign-off (Forms to Approve),Extension › Authorization preparation,MOVED,"panel on Lauris #4492/sra-initial as jperez · suite authorizations PASS, flowC PASS",
+M-062,Discharge summary,Extension › Clinical documents,MOVED,"panel on Lauris #3402/discharge as jperez · suite flowC PASS, enhance PASS, s4 PASS",
+M-063,Portal confirmation view,Extension (keep),MOVED,"portal GET /availity/upload · suite panels PASS, smoke PASS",200
+M-064,Saved / rejected lists view,Extension home,MOVED,"panel on Lauris #3310/dpn as khale · Lauris GET /saved · Lauris GET /rejected · suite panels PASS, smoke PASS",200; 200
 M-065,Saved version tracking,Scan & Enhance › version history,MOVED,"code: saved version tracking (doc_versions) · state key doc_versions · suite panels PASS, smoke PASS",web/panel/lib/review.js web/panel/views/enhance.js
 M-066,Bridge: read page,Keep unchanged,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite bridge-contract PASS, lauris PASS",
 M-067,Bridge: fill by label,Keep unchanged,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite bridge-contract PASS, lauris PASS",
@@ -70,42 +70,42 @@ M-068,Bridge: focus and mark,Keep,PRESERVED,"file web/panel/bridge.js · file ex
 M-069,Bridge: observe events,Keep unchanged,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite bridge-contract PASS, lauris PASS",
 M-070,Bridge: portal reader,Keep,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite bridge-contract PASS, lauris PASS",
 M-071,Bridge transports,Keep,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite panels PASS, smoke PASS",
-M-072,Lauris login,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-073,Consumers list,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-074,New consumer,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-075,Consumer record,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-076,Add session / form picker,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
+M-072,Lauris login,Keep,PRESERVED,"Lauris GET /login · suite bridge-contract PASS, lauris PASS",200
+M-073,Consumers list,Keep,PRESERVED,"Lauris GET /consumers · suite bridge-contract PASS, lauris PASS",200
+M-074,New consumer,Keep,PRESERVED,"Lauris GET /consumers/new · suite bridge-contract PASS, lauris PASS",200
+M-075,Consumer record,Keep,PRESERVED,"Lauris GET /consumers/3310 · suite bridge-contract PASS, lauris PASS",200
+M-076,Add session / form picker,Keep,PRESERVED,"Lauris GET /add-session · suite bridge-contract PASS, lauris PASS",200
 M-077,Session forms (11),Keep (+ field aliases),PRESERVED,"server/lauris/forms.js · suite bridge-contract PASS, lauris PASS",11 forms
-M-078,Saved sessions,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-079,Forms to Approve,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-080,Rejected forms,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-081,Surveys,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-082,Consumers without authorizations,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-083,"Reports, User, Time Tracker pages",PORT v3 Time Tracker and Authorizations layouts here,NOT-VERIFIED,"probe threw · probe threw · probe threw · probe threw · suite bridge-contract PASS, lauris PASS",fetch failed; fetch failed; fetch failed; fetch failed
-M-084,Non-TDT records,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-085,Mock Availity / UHC upload,Keep,NOT-VERIFIED,"probe threw · probe threw · suite bridge-contract PASS, lauris PASS",fetch failed; fetch failed
-M-086,Mock state incident portal,Keep,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-M-087,Mock DMAS lookup,Keep (visibly simulated),NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
+M-078,Saved sessions,Keep,PRESERVED,"Lauris GET /saved · suite bridge-contract PASS, lauris PASS",200
+M-079,Forms to Approve,Keep,PRESERVED,"Lauris GET /approvals · suite bridge-contract PASS, lauris PASS",200
+M-080,Rejected forms,Keep,PRESERVED,"Lauris GET /rejected · suite bridge-contract PASS, lauris PASS",200
+M-081,Surveys,Keep,PRESERVED,"Lauris GET /consumers/3310?tab=surveys · suite bridge-contract PASS, lauris PASS",200
+M-082,Consumers without authorizations,Keep,PRESERVED,"Lauris GET /authorizations?view=none · suite bridge-contract PASS, lauris PASS",200
+M-083,"Reports, User, Time Tracker pages",PORT v3 Time Tracker and Authorizations layouts here,MOVED,"Lauris GET /time · Lauris GET /authorizations · Lauris GET /reports · Lauris GET /user · suite bridge-contract PASS, lauris PASS",200; 200; 200; 200
+M-084,Non-TDT records,Keep,PRESERVED,"Lauris GET /consumers/4300 · suite bridge-contract PASS, lauris PASS",200
+M-085,Mock Availity / UHC upload,Keep,PRESERVED,"portal GET /availity/upload · portal GET /uhc/upload · suite bridge-contract PASS, lauris PASS",200; 200
+M-086,Mock state incident portal,Keep,PRESERVED,"mock state incident portal · suite bridge-contract PASS, lauris PASS",404/404
+M-087,Mock DMAS lookup,Keep (visibly simulated),PRESERVED,"portal GET /dmas/lookup · suite bridge-contract PASS, lauris PASS",200
 M-088,Portal bridge,Keep,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite bridge-contract PASS, lauris PASS",
 M-089,Single global store + persistence,Keep + hooks,PRESERVED,state key rev · code: persistence file · code: store hooks,server/psyflo/store.js; server/index.js server/psyflo/actions/core.js
-M-090,SSE sync,Keep,NOT-VERIFIED,probe threw,fetch failed
-M-091,Presets live / canvas,Presenter,NOT-VERIFIED,"action demo.reset registered with a capability entry · probe threw · suite ui-kit PASS, fixtures PASS",fetch failed
+M-090,SSE sync,Keep,PRESERVED,GET /api/stream answers,200
+M-091,Presets live / canvas,Presenter,MOVED,"action demo.reset registered with a capability entry · presets live and canvas · suite ui-kit PASS, fixtures PASS",canvas
 M-092,Seed merge,Keep,PRESERVED,code: seed merge from seed/extra,web/js/screens/DenialCase.js web/js/shared/rules.js
-M-093,Audit events,Extend (actor kind),NOT-VERIFIED,probe threw,fetch failed
+M-093,Audit events,Extend (actor kind),MOVED,every audit event has actor_kind,
 M-094,PDF writer,Extend raw-bytes path,MOVED,file server/pdf.js,
 M-095,File store,Keep,PRESERVED,code: file store route,web/js/screens/Submission.js web/js/screens/UiKit.js
 M-096,Sfax stub,Keep (labelled),PRESERVED,"code: Sfax stub (labelled Simulated) · action request.send registered with a capability entry · suite authorizations PASS, flowC PASS",web/js/screens/Analytics.js web/js/screens/Authorization.js
 M-097,SMS and email stubs,Keep,PRESERVED,code: SMS stub · code: email stub,web/js/screens/Eligibility.js web/js/screens/Referral.js; server/psyflo/actions/x-referrals.js
 M-098,Drafting engine + 14 checks,Keep; add finding schema,PRESERVED,code: 14 checks · drafting checks,web/js/shared/draft.js; 7 groups
-M-099,Notes drawer,Presenter drawer,NOT-VERIFIED,"probe threw · suite ui-kit PASS, fixtures PASS","page.goto: Target page, context or browser has been closed"
+M-099,Notes drawer,Presenter drawer,MOVED,"route /WhereThingsLive as jperez · suite ui-kit PASS, fixtures PASS",lands on #/WhereThingsLive
 M-100,Demo bar,Presenter toolbar,MOVED,"code: presenter dock · suite ui-kit PASS, fixtures PASS",web/js/api.js web/js/app.js
 M-101,Generated sidebar,Three-tab nav,MOVED,code: data-driven nav,web/js/screens/Users.js web/js/shared/nav.js
 M-102,Template engine,Keep,PRESERVED,file web/js/runtime.js,
 M-103,Tokenized links,Keep,PRESERVED,"action familyLink.open registered with a capability entry · action familyLink.send registered with a capability entry · suite family PASS, flowD PASS",
 M-104,`analytics_baseline`,Analytics `harvest_export` dataset,MOVED,state key analytics_baseline · code: baseline relabelled · suite analytics PASS,web/js/screens/Analytics.js web/js/screens/DenialCaseViews.js
 M-105,"`payer_history`, `denial_reasons`",Denial Intelligence › evidence,MOVED,"state key payer_history, denial_reasons · code: denial intelligence evidence · suite denials PASS, denials-ui PASS, rules PASS",web/js/screens/Partials.js server/psyflo/project.js
-M-106,"`compliance`, `migration`, `library`, `incidents`",Settings / roadmap,NOT-VERIFIED,"state key compliance, migration, library · probe threw · suite analytics PASS","browser.newContext: Target page, context or browser has been closed"
-M-107,`settings.family_link`,Settings › Family link,NOT-VERIFIED,state key settings · probe threw · suite analytics PASS,"browser.newContext: Target page, context or browser has been closed"
+M-106,"`compliance`, `migration`, `library`, `incidents`",Settings / roadmap,MOVED,"state key compliance, migration, library · route /Settings as dowens · suite analytics PASS",lands on #/Settings?tab=presenter
+M-107,`settings.family_link`,Settings › Family link,MOVED,state key settings · route /Settings as dowens · suite analytics PASS,lands on #/Settings?tab=family
 M-108,"`request_details`, `staff_dashboard`, `parent_progress`, `school_goals`, `assessments_due/history`",Keep,PRESERVED,"state key request_details, staff_dashboard, parent_progress · suite analytics PASS",
 M-109,`demo.reset`,Presenter,MOVED,"action demo.reset registered with a capability entry · action demo.reset · suite ui-kit PASS, fixtures PASS",
 M-110,`demo.advanceDay`,Presenter,MOVED,"action demo.advanceDay registered with a capability entry · action demo.advanceDay · suite ui-kit PASS, fixtures PASS",
@@ -192,49 +192,49 @@ M-190,`staff.reviewMode`,Documentation › By staff,MOVED,action staff.reviewMod
 M-191,`compliance.qiCheck`*,Roadmap,PRESERVED,action compliance.qiCheck,kept registered (internal or still used); still registered (internal or kept)
 V-001,Referral form (public),Drop (master M-005),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-002,Family link (public),Drop (master M-009),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
-V-003,Family-link settings,PORT → Settings › Family link (fills M-107 orphan),NOT-VERIFIED,"probe threw · suite family PASS, flowD PASS","browser.newContext: Target page, context or browser has been closed"
+V-003,Family-link settings,PORT → Settings › Family link (fills M-107 orphan),MOVED,"route /Settings as dowens · suite family PASS, flowD PASS",lands on #/Settings?tab=family
 V-004,Referral review and home,**Do not port** (removes Referrals),DROPPED-WITH-REASON,"suite referrals PASS, flowD PASS",v3 referral review would remove Referrals; Referrals is never redirected [00 decision #3 and §4.1]
-V-005,All Authorizations list,PORT → Authorizations queue,NOT-VERIFIED,"probe threw · suite authorizations PASS, flowC PASS","page.goto: Target page, context or browser has been closed"
-V-006,Authorization detail,PORT → Authorization case shell,NOT-VERIFIED,"probe threw · suite authorizations PASS, flowC PASS","page.goto: Target page, context or browser has been closed"
-V-007,Draft mirrors,PORT → case › Documentation,NOT-VERIFIED,"probe threw · suite authorizations PASS, flowC PASS","page.goto: Target page, context or browser has been closed"
-V-008,Delivery trail,REPLACE with master Submission,NOT-VERIFIED,"probe threw · suite authorizations PASS, flowC PASS","page.goto: Target page, context or browser has been closed"
-V-009,Denial Intelligence queue,PORT → Denial Intelligence queue,NOT-VERIFIED,"probe threw · suite denials PASS, denials-ui PASS, rules PASS","page.goto: Target page, context or browser has been closed"
-V-010,Denial case workspace,PORT → DenialCase,NOT-VERIFIED,"probe threw · suite denials PASS, denials-ui PASS, rules PASS","page.goto: Target page, context or browser has been closed"
-V-011,Options per issue,"PORT (spec 8.2 ""show only valid options"")",NOT-VERIFIED,"probe threw · suite denials PASS, denials-ui PASS, rules PASS","page.goto: Target page, context or browser has been closed"
+V-005,All Authorizations list,PORT → Authorizations queue,MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
+V-006,Authorization detail,PORT → Authorization case shell,MOVED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416
+V-007,Draft mirrors,PORT → case › Documentation,MOVED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416&section=documents
+V-008,Delivery trail,REPLACE with master Submission,REPLACED-BY,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416&section=submission
+V-009,Denial Intelligence queue,PORT → Denial Intelligence queue,MOVED,"route /DenialIntelligence as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialIntelligence
+V-010,Denial case workspace,PORT → DenialCase,MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0402
+V-011,Options per issue,"PORT (spec 8.2 ""show only valid options"")",MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0402&section=options
 V-012,Dispute documents,PORT; replace submit with person-initiated record,MOVED,"action dispute.genDoc, dispute.reviewDoc, dispute.send registered with a capability entry · suite denials PASS, denials-ui PASS, rules PASS",
-V-013,Evidence and weak points,PORT → Evidence section (grounded only),NOT-VERIFIED,"probe threw · suite denials PASS, denials-ui PASS, rules PASS","page.goto: Target page, context or browser has been closed"
-V-014,Peer-to-peer script,PORT → merge into PeerBrief,NOT-VERIFIED,"probe threw · suite denials PASS, denials-ui PASS, rules PASS","page.goto: Target page, context or browser has been closed"
+V-013,Evidence and weak points,PORT → Evidence section (grounded only),MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0402&section=evidence
+V-014,Peer-to-peer script,PORT → merge into PeerBrief,MOVED,"route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0388&section=action&action=p2p
 V-015,Partial doors,REPLACE with master `partialChoice` + early discharge,REPLACED-BY,"action request.partialChoice registered with a capability entry · suite denials PASS, denials-ui PASS, rules PASS",
 V-016,Resolution status,PORT → `disputes.status` + reconcile,MOVED,"state key disputes · action dispute.resolve registered with a capability entry · suite denials PASS, denials-ui PASS, rules PASS",
 V-017,Claims disputes,Roadmap (not in master domain),DROPPED-WITH-REASON,,claims disputes and money exposure are Tier 3 roadmap labels [00 §7 Tier 3]
-V-018,Info-request (K.T.),REPLACE with master M-033,NOT-VERIFIED,"probe threw · suite denials PASS, denials-ui PASS, rules PASS","page.goto: Target page, context or browser has been closed"
-V-019,Analytics shell,PORT → Analytics,NOT-VERIFIED,probe threw · suite analytics PASS,"browser.newContext: Target page, context or browser has been closed"
-V-020,Patient Outcomes,PORT,NOT-VERIFIED,probe threw · suite analytics PASS,"browser.newContext: Target page, context or browser has been closed"
-V-021,Payer Performance,PORT (case-backed adapter),NOT-VERIFIED,probe threw · suite analytics PASS,"browser.newContext: Target page, context or browser has been closed"
-V-022,Patient Population,PORT,NOT-VERIFIED,probe threw · suite analytics PASS,"browser.newContext: Target page, context or browser has been closed"
-V-023,Ask FLO (suggested questions),"PORT as ""Ask"" (rename; unsupported → limitation message)",NOT-VERIFIED,probe threw · suite analytics PASS,"browser.newContext: Target page, context or browser has been closed"
-V-024,Export Report,PORT,NOT-VERIFIED,probe threw · suite analytics PASS,"browser.newContext: Target page, context or browser has been closed"
-V-025,Simulated cohort,PORT as `illustrative` dataset,NOT-VERIFIED,probe threw · suite analytics PASS,"browser.newContext: Target page, context or browser has been closed"
-V-026,Case-derived metrics,PORT → `case_backed` dataset,NOT-VERIFIED,probe threw · suite analytics PASS,"browser.newContext: Target page, context or browser has been closed"
-V-027,Settings,PORT → Settings,NOT-VERIFIED,"probe threw · suite roles PASS, settings PASS","browser.newContext: Target page, context or browser has been closed"
+V-018,Info-request (K.T.),REPLACE with master M-033,REPLACED-BY,"route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/DenialCase?id=R-0408&section=action&action=info
+V-019,Analytics shell,PORT → Analytics,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
+V-020,Patient Outcomes,PORT,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?section=outcomes
+V-021,Payer Performance,PORT (case-backed adapter),MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?section=payer
+V-022,Patient Population,PORT,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?section=population
+V-023,Ask FLO (suggested questions),"PORT as ""Ask"" (rename; unsupported → limitation message)",MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
+V-024,Export Report,PORT,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
+V-025,Simulated cohort,PORT as `illustrative` dataset,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?section=population&dataset=illustrative
+V-026,Case-derived metrics,PORT → `case_backed` dataset,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?dataset=case
+V-027,Settings,PORT → Settings,MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings
 V-028,Help,Drop or Settings › Help,DROPPED-WITH-REASON,"code: Help in the shell · suite roles PASS, settings PASS",Help is a rail foot link in the unified shell [docs/UI-KIT.md §4]; not itemised in 00-unified-recommendations decisions
-V-029,Roles permission editor,PORT (permission matrix),NOT-VERIFIED,"probe threw · suite roles PASS, settings PASS","browser.newContext: Target page, context or browser has been closed"
-V-030,Unit rules editor,PORT,NOT-VERIFIED,"probe threw · suite roles PASS, settings PASS","browser.newContext: Target page, context or browser has been closed"
+V-029,Roles permission editor,PORT (permission matrix),MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=roles
+V-030,Unit rules editor,PORT,MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=units
 V-031,Reimbursement rates / money exposure,Defer (Tier 3),DROPPED-WITH-REASON,"suite roles PASS, settings PASS",claims disputes and money exposure are Tier 3 roadmap labels [00 §7 Tier 3]
-V-032,Audit trail,PORT (map to master `events`),NOT-VERIFIED,"probe threw · suite roles PASS, settings PASS","browser.newContext: Target page, context or browser has been closed"
+V-032,Audit trail,PORT (map to master `events`),MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=audit
 V-033,Payer requirement registry,PORT → rules (spec 4.6),MOVED,"state key rules · rules table · suite denials PASS, denials-ui PASS, rules PASS",73 rules
-V-034,Eligibility vs benefits,PORT (Eligibility enhancement),NOT-VERIFIED,"probe threw · suite referrals PASS, flowD PASS","page.goto: Target page, context or browser has been closed"
-V-035,Alerts,REPLACE with Dashboard alerts,NOT-VERIFIED,probe threw · suite mywork PASS,"page.goto: Target page, context or browser has been closed"
+V-034,Eligibility vs benefits,PORT (Eligibility enhancement),MOVED,"route /Referral as jperez · suite referrals PASS, flowD PASS",lands on #/Referral?id=REF-118&panel=eligibility
+V-035,Alerts,REPLACE with Dashboard alerts,REPLACED-BY,route /Dashboard as jperez · suite mywork PASS,lands on #/Dashboard
 V-036,History dropdown,REFACTOR (drop voice/agent actors),MOVED,"code: history component · suite authorizations PASS, flowC PASS",web/js/screens/DenialCaseViews.js web/js/screens/UiKit.js
 V-037,Voice agent,Roadmap only,DROPPED-WITH-REASON,,"voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
 V-038,FLO data agent,Roadmap only (conflicts with 9.6),DROPPED-WITH-REASON,,"voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
 V-039,In-browser demo backend,Drop,DROPPED-WITH-REASON,,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
-V-040,Presenter menu,PORT idea → presenter toolbar,NOT-VERIFIED,"probe threw · code: presenter dock · suite ui-kit PASS, fixtures PASS","browser.newContext: Target page, context or browser has been closed; web/js/app.js web/js/screens/UiKit.js"
-V-041,Locality filter and bell,PORT (filter),NOT-VERIFIED,"probe threw · suite authorizations PASS, flowC PASS","page.goto: Target page, context or browser has been closed"
+V-040,Presenter menu,PORT idea → presenter toolbar,MOVED,"route /Dashboard as dowens · code: presenter dock · suite ui-kit PASS, fixtures PASS",lands on #/Dashboard?present=1; web/js/app.js web/js/screens/UiKit.js
+V-041,Locality filter and bell,PORT (filter),MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
 V-042,Sync version flow,REFACTOR (`doc_versions`; Synced only from observed event),MOVED,"state key doc_versions · action lauris.savedVersion registered with a capability entry · suite scribe PASS, enhance PASS",
 V-043,"Downloads, CSV, PDF helpers",PORT (report builder only),MOVED,code: CSV report builder · code: PDF report builder · suite analytics PASS,web/js/screens/Analytics.js web/js/shared/analytics/export.js; web/js/screens/Analytics.js web/js/shared/analytics/export.js
 V-044,Panel shell and modes,Drop (master panel),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
-V-045,Overview roster,PORT (stretch) → Extension home next task,NOT-VERIFIED,"probe threw · suite scribe PASS, enhance PASS","page.goto: Target page, context or browser has been closed"
+V-045,Overview roster,PORT (stretch) → Extension home next task,MOVED,"route /ExtHome as jperez · suite scribe PASS, enhance PASS",lands on #/ExtHome
 V-046,Scribe: type selector,PORT → Extension › Scribe,MOVED,"action scribe.draft registered with a capability entry · suite scribe PASS, enhance PASS",
 V-047,Scribe: recording and transcript,Drop (master has real STT + scripted),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-048,"Scribe: draft and ""Not stated""",PORT concept (missing info becomes a question),MOVED,"code: missing info becomes a question · suite scribe PASS, enhance PASS",web/js/screens/DenialCaseViews.js web/js/shared/draft.js
@@ -242,7 +242,7 @@ V-049,Scribe: Save & Push,REFACTOR (fill open form via bridge; Synced from obser
 V-050,Admission screening scribe,Drop (master M-051),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-051,Intake scribe,Drop (master M-052),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-052,DPN scribe,PORT concepts only,MOVED,"action scribe.draft registered with a capability entry · suite scribe PASS, enhance PASS",
-V-053,Collateral / monthly scribe,PORT concepts only,NOT-VERIFIED,"probe threw · suite scribe PASS, enhance PASS","browser.newContext: Target page, context or browser has been closed"
+V-053,Collateral / monthly scribe,PORT concepts only,MOVED,"panel on Lauris #3310/collateral as jperez · suite scribe PASS, enhance PASS",
 V-054,Addendum on processed notes,**Do not port by default** (Mode B; spec 4.1),DROPPED-WITH-REASON,,addendum on processed notes is refused: processed records are write-once; Mode B is read-only [00 decision #1]
 V-055,Track Time control,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite scribe PASS, enhance PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
 V-056,Today list and entries,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite scribe PASS, enhance PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
@@ -254,12 +254,12 @@ V-061,Original vs enhanced and approve,PORT,MOVED,"action enhance.decide, enhanc
 V-062,CNA scan,PORT,MOVED,"code: CNA scan · suite scribe PASS, enhance PASS",web/js/ext-composite.js web/js/registry.js
 V-063,SRA required fields to submission,Replace submit with master human Send; keep validation,REPLACED-BY,"action request.send registered with a capability entry · code: human Send · suite scribe PASS, enhance PASS",web/js/screens/Authorization.js web/js/screens/SettingsData.js
 V-064,Recommended actions per case,REFACTOR → missing-evidence list,MOVED,"code: missing-evidence list · suite scribe PASS, enhance PASS",web/js/screens/DenialCase.js web/js/screens/DenialCaseViews.js
-V-065,Extension view switching,clinical,NOT-VERIFIED,probe threw,"browser.newContext: Target page, context or browser has been closed"
+V-065,Extension view switching,clinical,MOVED,panel on Lauris #3310 as jperez,
 V-066,Consumers list,Drop (master M-073),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-067,Consumer file (6 tabs),Drop,DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-068,"Add session, Saved, Rejected, Reports, User, No-auth",Drop,DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
-V-069,Time Tracker page,PORT layout → master `/time`,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
-V-070,"Authorizations (Lauris; `lauris-auths`, alias `lauris-auth`)",PORT layout → master `/authorizations`,NOT-VERIFIED,"probe threw · suite bridge-contract PASS, lauris PASS",fetch failed
+V-069,Time Tracker page,PORT layout → master `/time`,MOVED,"Lauris GET /time · suite bridge-contract PASS, lauris PASS",200
+V-070,"Authorizations (Lauris; `lauris-auths`, alias `lauris-auth`)",PORT layout → master `/authorizations`,MOVED,"Lauris GET /authorizations · suite bridge-contract PASS, lauris PASS",200
 V-071,Forms to Approve,Drop (master M-079),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-072,Form kit,Drop,DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-073,"Daily note (`lauris-dpn`), admission screening, CNA, ISP, collateral, monthly forms",Drop,DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
@@ -273,19 +273,19 @@ V-080,Dash helpers,REFACTOR → selectors,MOVED,code: selectors · suite ui-kit 
 V-081,Theme remap,PORT (cheap re-skin of 46 templates),MOVED,code: theme remap · suite ui-kit PASS,web/css/tokens.css
 V-082,Platform CSS patterns,PORT → `components.css`,MOVED,file web/css/components.css · suite ui-kit PASS,
 V-083,Build script,Drop,DROPPED-WITH-REASON,suite ui-kit PASS,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
-V-084,S1 DSS creates a progress note,Spec Scenario 1 (master flow B),NOT-VERIFIED,"probe threw · code: scenario s1 · suite ui-kit PASS, fixtures PASS","browser.newContext: Target page, context or browser has been closed; seed/extra/scenarios.json"
+V-084,S1 DSS creates a progress note,Spec Scenario 1 (master flow B),MOVED,"route /MobileApp as khale · code: scenario s1 · suite ui-kit PASS, fixtures PASS",lands on #/MobileApp; seed/extra/scenarios.json
 V-085,S2 DSS tracks interventions,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
 V-086,S3 Clinician enhances a progress note,Enhance Mode A,MOVED,"action enhance.scan registered with a capability entry · suite ui-kit PASS, fixtures PASS",
-V-087,S4 Clinician enhances an SRA,Spec Scenario 3,NOT-VERIFIED,"probe threw · suite ui-kit PASS, fixtures PASS","page.goto: Target page, context or browser has been closed"
-V-088,S5 Admin tracks authorizations,Authorizations demo,NOT-VERIFIED,"probe threw · suite ui-kit PASS, fixtures PASS","page.goto: Target page, context or browser has been closed"
-V-089,S6 Clinician manages a denial,Spec Scenario 5,NOT-VERIFIED,"probe threw · suite ui-kit PASS, fixtures PASS","page.goto: Target page, context or browser has been closed"
-V-090,S7 Clinician prepares peer-to-peer,Spec Scenario 5,NOT-VERIFIED,"probe threw · suite ui-kit PASS, fixtures PASS","page.goto: Target page, context or browser has been closed"
-V-091,S8 Admin reviews denial patterns,Spec Scenario 6,NOT-VERIFIED,"probe threw · suite ui-kit PASS, fixtures PASS","browser.newContext: Target page, context or browser has been closed"
-V-092,S9 Admin reviews population trends,Spec Scenario 6,NOT-VERIFIED,"probe threw · suite ui-kit PASS, fixtures PASS","browser.newContext: Target page, context or browser has been closed"
+V-087,S4 Clinician enhances an SRA,Spec Scenario 3,MOVED,"route /Authorization as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorization?id=R-0416
+V-088,S5 Admin tracks authorizations,Authorizations demo,MOVED,"route /Authorizations as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorizations
+V-089,S6 Clinician manages a denial,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence
+V-090,S7 Clinician prepares peer-to-peer,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence
+V-091,S8 Admin reviews denial patterns,Spec Scenario 6,MOVED,"route /Analytics as dowens · suite ui-kit PASS, fixtures PASS",lands on #/Analytics
+V-092,S9 Admin reviews population trends,Spec Scenario 6,MOVED,"route /Analytics as dowens · suite ui-kit PASS, fixtures PASS",lands on #/Analytics
 V-093,S10 FLO custom data pull,Roadmap,DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
 V-094,S11 Voice agent follow-up,Roadmap,DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
-V-095,S12 Roster check in the extension,Extension home,NOT-VERIFIED,"probe threw · suite ui-kit PASS, fixtures PASS","page.goto: Target page, context or browser has been closed"
-V-096,S13 Outcomes and timelines,Spec Scenario 6,NOT-VERIFIED,"probe threw · suite ui-kit PASS, fixtures PASS","browser.newContext: Target page, context or browser has been closed"
+V-095,S12 Roster check in the extension,Extension home,MOVED,"route /ExtHome as jperez · suite ui-kit PASS, fixtures PASS",lands on #/ExtHome
+V-096,S13 Outcomes and timelines,Spec Scenario 6,MOVED,"route /Analytics as dowens · suite ui-kit PASS, fixtures PASS",lands on #/Analytics
 V-097,"`data.js`, `lauris-data.js`, `02-core-data.js`",Crosswalk and `rules.json` only,MOVED,state key crosswalk · file seed/extra/crosswalk.json · file seed/extra/rules.json,
 V-098,"`10-referrals.js`, `81-connect-lauris.js`, `82-payers.js`, `20-case.js`, `40-home.js`, `79-flow-decision.js`, `03-ext-status.js`, `00-starter.js`",Drop,DROPPED-WITH-REASON,,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
 V-099,`captured/*.html` (19 canvas copies),Drop,DROPPED-WITH-REASON,,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]

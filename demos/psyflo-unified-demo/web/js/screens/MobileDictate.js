@@ -7,6 +7,7 @@
 import { register, Screen, M, raw, toast, go, session, ui, app } from '../app.js';
 import { enhanceDictation } from '../shared/draft.js';
 import { today as clockToday } from '../shared/clock.js';
+import { isHosted } from '../shared/links.js';
 import { identityCard, micConsentOf } from '../shared/identity.js';
 import { phoneUser, myStudents, whoLine, dueAssessments, tick, patientBar, STATE_CHIP } from './MobileApp.js';
 
@@ -31,7 +32,7 @@ register('MobileDictate', class extends Screen {
   }
   dispose() { window.removeEventListener('online', this.onOnline); window.removeEventListener('offline', this.onOffline); this.stopListening(); }
   // demo chrome only while the presenter's dock is on (Ctrl+Shift+P, ?present=1, or Explore mode); a person using the phone never sees it
-  presenter() { return !!(session.actor && session.actor.presenter) && !!(app.dock && app.dock.state && app.dock.state !== 'hidden'); }
+  presenter() { return !!(session.actor && session.actor.presenter) && (isHosted() || !!(app.dock && app.dock.state && app.dock.state !== 'hidden')); }   // hosted preview: no microphone and no ribbon, so the example is always offered
   user() { return phoneUser(this.s); }
   mine(id) { const u = this.user(); return !!id && !!u && myStudents(this.s, u.id).some(c => c.id === id); }
   client() { return this.state.client && this.mine(this.state.client) ? M.byId(this.s.clients, this.state.client) : null; }

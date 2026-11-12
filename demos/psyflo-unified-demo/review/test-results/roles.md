@@ -1,6 +1,6 @@
 # roles · PASS
 
-Run 2026-11-12T00-38-33Z · 19532 ms · instance 2 · exit 0
+Run 2026-11-12T01-53-05Z · 10303 ms · instance 1 · exit 0
 
 | Result | Test | Note |
 |---|---|---|

@@ -205,7 +205,7 @@ async function auth() {
   await H.signIn('Clinician');
   ok(/Dashboard/.test(await H.root(60)), 'the clinician lands on the Dashboard (patient roster)');
   // the presenter dock: Scenario 3 (Initial authorization) resets both stores to the canvas snapshot with R-0416 drafted
-  await ui.locator('[data-dock="toggle"]').click();
+  await page.keyboard.press('Control+Shift+P'); await ui.locator('[data-dock-menu="scenario"]').waitFor();   // the ribbon is hidden until asked for
   await ui.locator('[data-dock-menu="scenario"]').click();
   await ui.locator('.sh-menu [role=menuitem]', { hasText: 'Initial authorization' }).click();
   ok(await until(async () => /R-0416/.test(await H.hash()), 10000), 'the scenario opens the R-0416 case: ' + await H.hash());
@@ -255,7 +255,7 @@ async function auth() {
   // PDFs open as text in the viewer overlay, never as a download
   const files = (await H.state()).files.filter(f => f.record === 'R-0416'); const signed = files.find(f => /signed/.test(f.url)), receipt = files.find(f => /fax/.test(f.url));
   ok(!!signed && !!receipt, 'the signed PDF and the fax receipt are stored files: ' + files.map(f => f.kind).join(', '));
-  await ui.locator('summary', { hasText: 'Documentation' }).click();
+  const docSummary = ui.locator('summary', { hasText: 'Documentation' }); if (await docSummary.count()) await docSummary.first().click();   // the case page now shows its cards open
   await ui.locator(`main a[href="${signed.url}"]:visible`).first().click();
   await ui.locator('#vov').waitFor();
   const body = await ui.frameLocator('#vov iframe').locator('body').innerText();
@@ -328,14 +328,14 @@ async function analytics() {
   console.log('analytics · sections, dataset, export');
   const H = await fresh(); const { ui, page } = H;
   await H.signIn('Clinician');
-  await H.go('#/Analytics'); await ui.locator('.a-card').first().waitFor();
-  const tabs = await ui.locator('.a-tabs a').allInnerTexts(); ok(tabs.join('|') === 'Patient Outcomes|Payer Performance|Patient Population', 'three sections: ' + tabs.join(' | '));
+  await H.go('#/Analytics'); await ui.locator('.an-card').first().waitFor();
+  const tabs = await ui.locator('.an-stabs a').allInnerTexts(); ok(tabs.join('|') === 'Patient Outcomes|Payer Performance|Patient Population', 'three sections: ' + tabs.join(' | '));
   for (const [name, sec] of [['Payer Performance', 'payer'], ['Patient Population', 'population'], ['Patient Outcomes', 'outcomes']]) {
-    await ui.locator('.a-tabs a', { hasText: name }).click(); await page.waitForTimeout(400);
-    ok(new RegExp('section=' + sec).test(await H.hash()) && /Case-backed/.test(await ui.locator('.a-banner').innerText()), `${name}: the section opens on the case-backed dataset`);
+    await ui.locator('.an-stabs a', { hasText: name }).click(); await page.waitForTimeout(400);
+    ok(new RegExp('section=' + sec).test(await H.hash()) && /Case-backed/.test(await ui.locator('.an-notice').innerText()), `${name}: the section opens on the case-backed dataset`);
   }
   await ui.getByRole('link', { name: 'Illustrative cohort' }).click(); await page.waitForTimeout(500);
-  ok(/dataset=illustrative/.test(await H.hash()) && /Illustrative|Sample data|cohort/i.test(await ui.locator('.a-banner').innerText()), 'the dataset toggle switches to the illustrative cohort: ' + (await ui.locator('.a-banner').innerText()).replace(/\s+/g, ' ').slice(0, 80));
+  ok(/dataset=illustrative/.test(await H.hash()) && /Illustrative|Sample data|cohort/i.test(await ui.locator('.an-notice').innerText()), 'the dataset toggle switches to the illustrative cohort: ' + (await ui.locator('.an-notice').innerText()).replace(/\s+/g, ' ').slice(0, 80));
   ok(await ui.locator('#a-score-h').count() === 0, 'the pilot scorecard is case-backed only (not shown over the cohort)');
   await ui.getByRole('link', { name: 'Case-backed' }).first().click(); await page.waitForTimeout(400);
   await H.shot('analytics-1');

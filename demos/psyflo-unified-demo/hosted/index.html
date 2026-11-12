@@ -18162,6 +18162,7 @@ textarea.sp-in{min-height:96px;resize:vertical}
       init_app();
       init_draft();
       init_clock();
+      init_links();
       init_identity();
       init_MobileApp();
       SR2 = () => window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -18222,8 +18223,9 @@ textarea.sp-in{min-height:96px;resize:vertical}
         }
         // demo chrome only while the presenter's dock is on (Ctrl+Shift+P, ?present=1, or Explore mode); a person using the phone never sees it
         presenter() {
-          return !!(session.actor && session.actor.presenter) && !!(app.dock && app.dock.state && app.dock.state !== "hidden");
+          return !!(session.actor && session.actor.presenter) && (isHosted() || !!(app.dock && app.dock.state && app.dock.state !== "hidden"));
         }
+        // hosted preview: no microphone and no ribbon, so the example is always offered
         user() {
           return phoneUser(this.s);
         }

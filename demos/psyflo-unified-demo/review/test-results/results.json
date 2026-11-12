@@ -1,6 +1,6 @@
 {
- "runId": "2026-11-12T01-29-46Z",
- "commit": "5ae0dff",
+ "runId": "2026-11-12T02-08-59Z",
+ "commit": "714733c",
  "release": false,
  "releaseReady": false,
  "env": {
@@ -9,7 +9,7 @@
   "preset": "live",
   "workers": 1,
   "repeat": 1,
-  "basePort": 5770
+  "basePort": 5830
  },
  "summary": {
   "pass": 1,
@@ -18,150 +18,29 @@
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 25092,
+  "durationMs": 268539,
   "tests": {
-   "pass": 24,
+   "pass": 0,
    "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "analytics",
+   "name": "hosted",
    "tags": [],
    "instance": 0,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 24991,
+   "durationMs": 268437,
    "counts": {
-    "pass": 24,
+    "pass": 0,
     "fail": 0,
     "skip": 0
    },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "every selector result and panel carries one provenance tag, and the baseline is labelled \"Sample data, illustrative\"",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a group of fewer than 5 is never shown, in any role, dataset, section, period or site",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the group-size rule can be raised in Settings but never lowered below 5",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "one dataset per view: a cohort view holds no case-backed figure, a case view holds no cohort figure, exports never mix",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "administrator and supervisor get aggregates only: no clinical text in their state, no drill-down, no patient initials in the digest",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "direct support gets no analytics; a supervisor counts only their own sites",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the clinician digest equals what the clinician would compute from their own state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a payer decision moves the unresolved count, the awarded units and the offers waiting (S5 → S6)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a request that is sent moves \"sends with receipts\" (S3 → S6)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a processed note moves notes on time, and a draft with a failed check moves items caught early (S1 → S6)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the CSV prints exactly what the panels print, with period, filters, dataset and definitions",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the PDF is a valid multi-page document carrying the same cells, the dataset, the period and the definitions",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the question box answers from the data on screen, says so when it cannot, and labels itself Simulated",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no story date is written into the analytics code (the demo clock is the only source)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "admin: three sections render, aggregates only, no drill-down, no console errors, within the density target",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "clinician: drill-down opens the patients behind a group; the cohort offers none",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "supervisor: own sites only, scorecard and sections render",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a filter changes the figures and the URL; a tab is a real link; reload keeps the view",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the artifact layout: headline cards, lines with metric chips, tiles, feedback blocks, bars; every chart keeps its table; nothing computed on screen",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a table over 10 rows pages at the bottom with 10, 25, 50 and 100 rows per page; the choice is in the URL and survives a reload",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the CSV file the Export button writes matches the panels on screen, cell for cell",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the PDF export downloads and the question box answers on screen",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the old payer playbook link (?panel=guidance) opens the payer guidance drawer from Payer Performance",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "earlier views stay reachable and the scorecard opens its detail",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-12T01-29-46Z"
+   "tests": [],
+   "runId": "2026-11-12T02-08-59Z"
   }
  ],
  "manual": [
