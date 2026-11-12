@@ -1,14 +1,12 @@
-# Test results · 2026-11-12T00-16-46Z
+# Test results · 2026-11-12T00-20-05Z
 
-3 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 69 pass, 0 fail, 0 skip · 62 s
+1 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 21 pass, 0 fail, 0 skip · 24 s
 
-Commit 6dc6a66 · node v22.22.0 · demo time 15:30 · workers 3 · base port 5700
+Commit 67edb1c · node v22.22.0 · demo time 15:30 · workers 1 · base port 5500
 
 | Suite | Status | Pass | Fail | Skip | Seconds |
 |---|---|---|---|---|---|
-| [dashboard](dashboard.md) | PASS | 16 | 0 | 0 | 35.2 |
-| [documentation](documentation.md) | PASS | 16 | 0 | 0 | 37.5 |
-| [ui-kit](ui-kit.md) | PASS | 37 | 0 | 0 | 61.3 |
+| [flo](flo.md) | PASS | 21 | 0 | 0 | 23.5 |
 
 ## Manual checklist (not automatable)
 

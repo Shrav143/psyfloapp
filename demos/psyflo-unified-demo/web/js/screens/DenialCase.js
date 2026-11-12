@@ -1,50 +1,60 @@
-// Denial case workspace (E3): #/DenialCase?id=<requestId>&section=decision|evidence|options|action|history&action=info|options|p2p|appeal|reconsider
-// One workspace per request that needs a payer-decision response. The old InfoRequest, Partials and PeerBrief screens are actions here;
-// the guardian side of the appeal stays AppealLetter (E6). Every change goes through a dispute.* action, which calls the existing
-// request.* actions: request.stage stays the only lifecycle.
+// Denial case workspace (E3, rebuilt in the artifact's layout for R3):
+//   #/DenialCase?id=<requestId>&section=overview|said|evidence|weak|action|docreq|history&action=info|options|p2p|appeal|reconsider
+// One workspace per request that needs a payer-decision response. The old InfoRequest, Partials and PeerBrief screens are replies here
+// (section=action); the old section=decision and section=options links still open What the payer said and the Decide reply. The guardian side of
+// the appeal stays AppealLetter (E6). Every change goes through a dispute.* action, which calls the existing request.* actions: request.stage
+// stays the only lifecycle. The voice agent is Simulated: a person starts it and records it, nothing is dialled.
 import { register, Screen, raw, ui, M, api, hrefFor, toast, go } from '../app.js';
 import * as D from '../shared/sel/disputes.js';
 import * as V from './DenialCaseViews.js';
 import { payerGuidance, payerGuidanceBody } from '../shared/payer-guidance.js';
 import { fmtDate, fmtDateTime } from '../shared/dates.js';
 import { rule } from '../shared/rules.js';
+import { can } from '../shared/permissions.js';
 
 const esc = ui.esc;
 const field = (id, label, control, hint) => `<div class="d-f"><label for="${id}">${esc(label)}</label>${control}${hint ? `<span class="d-modal-note">${esc(hint)}</span>` : ''}</div>`;
 const SR = () => window.SpeechRecognition || window.webkitSpeechRecognition;
 
+// the Update status menu closes when you click away from it
+if (typeof document !== 'undefined' && !window.__dUpdClose) { window.__dUpdClose = true; document.addEventListener('click', ev => { const u = document.getElementById('d-upd'); if (u && u.open && !u.contains(ev.target)) u.open = false; }); document.addEventListener('keydown', ev => { const u = document.getElementById('d-upd'); if (ev.key === 'Escape' && u && u.open) { u.open = false; u.querySelector('summary').focus(); } }); }
+
 register('DenialCase', class extends Screen {
   init() {
-    const p = this.params;
-    const section = V.SECTIONS.some(([k]) => k === p.section) ? p.section : (p.action ? 'action' : 'decision');
-    this.state = { section, action: V.ACTIONS.includes(p.action) ? p.action : null, door: 'plain', editing: null, consent: false, rec: false };
+    const e = V.entry(this.params);
+    this.state = { section: e.section, action: e.action, door: 'plain', editing: null, consent: false, rec: false, hist: false, paths: false, drTo: null };
   }
   get reqId() { return this.params.id; }
   // one context per paint: the case view, the evidence index (lazy) and the history (lazy)
   ctx() {
     const s = this.s; const me = this.me; const cv = D.caseView(s, this.reqId, me);
     let idx = null, hist = null;
-    return { s, me, cv, ui, M, hrefFor, st: this.state, clinical: D.canReadClinical(me), extUrl: api.config && api.config.extURL || '',
+    const cl = cv.c || {}; const no = cl.lauris_no || cl.harvest_no;
+    const laurisUrl = api.config && api.config.laurisURL && me ? `${api.config.laurisURL}/login?as=${encodeURIComponent(me.id || 'jperez')}&next=${encodeURIComponent(no ? `/consumers/${no}` : '/consumers')}` : '';
+    return { s, me, cv, ui, M, hrefFor, st: this.state, clinical: D.canReadClinical(me), extUrl: api.config && api.config.extURL || '', laurisUrl, canLauris: !!me && can(me, 'ext.use'),
       idx: () => idx || (idx = D.evidenceIndex(s, cv.d, cv.r, { read: D.canReadClinical(me) })), history: () => hist || (hist = D.historyEvents(s, cv.d, cv.r)) };
   }
   renderVals() {
     const s = this.s; const r = M.byId(s.requests, this.reqId);
-    const empty = html => ({ head: raw(`<nav class="d-crumb" aria-label="Breadcrumb"><a href="#/DenialIntelligence">Denial Intelligence</a></nav><h1>Denial case</h1>`), strip: raw(''), tabs: raw(''), body: raw(html) });
+    const empty = html => ({ head: raw(`<nav class="d-crumb" aria-label="Breadcrumb"><a href="#/DenialIntelligence">Denial Intelligence</a></nav><h1>Denial case</h1>`), menu: raw(''), body: raw(html), hist: raw('') });
     if (!r) return empty(ui.emptyState({ tone: 'error', title: 'Case not found', body: `There is no request ${this.reqId || ''}.`, action: { label: 'Back to Denial Intelligence', href: '#/DenialIntelligence' } }));
     const c = this.ctx(); const cv = c.cv;
     if (!cv.d) return empty(ui.emptyState({ title: `${r.id} is ${M.STAGE_LABEL[r.stage] || r.stage}`, body: 'Denial Intelligence works requests that need a payer-decision response: a partial offer, an information request, a peer-to-peer, a denial or an appeal.', action: { label: 'Open the authorization', href: hrefFor('Authorizations.dc.html?id=' + r.id) } }));
     const st = this.state;
-    const body = { decision: V.decisionSection, evidence: V.evidenceSection, options: V.optionsSection, action: V.actionSection, history: V.historySection }[st.section](c);
-    return { head: raw(V.header(c)), strip: raw(V.strip(c)), tabs: raw(V.tabs(c)), body: raw(body) };
+    const body = { overview: V.overviewSection, said: V.saidSection, evidence: V.evidenceSection, weak: V.weakSection, action: V.actionSection, docreq: V.docreqSection, history: V.overviewSection }[st.section](c);
+    return { head: raw(V.header(c)), menu: raw(V.menu(c)), body: raw(body), hist: raw(V.historyCard(c)) };
   }
   after(root) {
     root.querySelectorAll('[data-x]').forEach(el => {
       const x = el.dataset.x;
       if (x === 'door') { el.onchange = () => this.setState({ door: el.value }); return; }
       if (x === 'consent') { el.onchange = () => { this.state.consent = el.checked; }; return; }
-      el.onclick = ev => { ev.preventDefault(); this.act(x, el.dataset, el); };
+      el.onclick = ev => { ev.preventDefault(); const u = document.getElementById('d-upd'); if (u && u.open) u.open = false; this.act(x, el.dataset, el); };
     });
-    if (this._focus) { const h = root.querySelector('.d-body h2'); this._focus = false; if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } }
+    const h = root.querySelector('#d-hist'); if (h) h.addEventListener('toggle', () => { this.state.hist = h.open; });
+    const pa = root.querySelector('#d-paths'); if (pa) pa.addEventListener('toggle', () => { this.state.paths = pa.open; });
+    root.querySelectorAll('[name=d-dr-to]').forEach(i => { i.onchange = () => { this.state.drTo = i.value; }; });
+    if (this._focus) { const hh = root.querySelector('.d-body h2'); this._focus = false; if (hh) { hh.setAttribute('tabindex', '-1'); hh.focus({ preventScroll: true }); } }
   }
   // move inside the workspace without re-creating the screen: the URL follows (so a link can be copied), local state survives
   go({ section, action }) {
@@ -61,9 +71,11 @@ register('DenialCase', class extends Screen {
     const d = this.d; if (!d && x !== 'tab') return;
     const id = d && d.id;
     switch (x) {
-      case 'tab': return this.go({ section: data.section });
-      case 'subnav': return this.go({ section: 'action', action: data.action });
-      case 'goto': return this.go({ section: data.section, action: data.action || null });
+      case 'tab': case 'goto': return this.go({ section: data.section, action: data.action || null });
+      case 'step': return this.step(data.k, el);
+      case 'call': return this.callFlow(el);
+      case 'docreq': { const sec = el.closest('section'); const keys = [...sec.querySelectorAll('[name=d-dr-k]:checked')].map(i => i.value); const to = (sec.querySelector('[name=d-dr-to]:checked') || {}).value; if (!keys.length) return toast('Select at least one missing item', 'err'); return this.call('dispute.docRequest', { id, to, keys }, res => `Request recorded · ${res.items} item${res.items === 1 ? '' : 's'} · nothing was sent`); }
+      case 'docrecv': return this.call('dispute.docReceived', { id, key: data.key }, 'Marked received');
       case 'gen': { const r = await this.call('dispute.genDoc', { id, doc: data.doc }, res => `Draft ready · ${res.sections} section${res.sections === 1 ? '' : 's'} from stored records${res.missing ? ` · ${res.missing} marked Evidence missing` : ''}`); return r; }
       case 'review': return this.call('dispute.reviewDoc', { id, doc: data.doc }, 'Reviewed. The review is withdrawn if the text changes.');
       case 'edit': this.setState({ editing: `${data.doc}:${data.sec}` }); return setTimeout(() => document.getElementById(`df-dc-${id}-${data.doc}-${data.sec}`.replace(/[^a-z0-9]+/gi, '-'))?.focus(), 30);
@@ -106,7 +118,7 @@ register('DenialCase', class extends Screen {
     this.dialog({ title: mode === 'denial' ? 'Accept the denial' : 'Log the decision', body: text, confirm: 'Log it', tone: mode === 'denial' ? 'danger' : 'primary', returnFocus: el, onSubmit: async () => {
       const res = await this.call('dispute.choose', { id: d.id, path: 'accept', plan }, mode === 'denial' ? `${r.id} closed · denial accepted` : `Logged on ${r.id}: ${u.offered} units accepted · a task asks a person to enter them in Lauris`);
       if (!res) return false;
-      if (mode === 'use_up') go('EarlyDischarge.dc.html', { id: r.id }); else this.go({ section: 'decision' });
+      if (mode === 'use_up') go('EarlyDischarge.dc.html', { id: r.id }); else this.go({ section: 'said' });
     } });
   }
   p2pRequest(el) {
@@ -145,7 +157,7 @@ register('DenialCase', class extends Screen {
         const res = await this.call('dispute.resolve', { id: d.id, outcome, units: outcome === 'approved' ? (units || r.units_requested) : units, doc_ref: doc_ref || undefined, notes, reason }, rs => {
           const rr = M.byId(this.s.requests, r.id); return `Outcome logged · ${r.id} is now ${M.STAGE_LABEL[rr.stage] || rr.stage}${rr.stage === 'active' ? ` · ${rr.units_awarded} units recorded; a task asks a person to enter them in Lauris` : ''}`; });
         if (!res) return false;
-        this.go({ section: 'decision' });
+        this.go({ section: 'said' });
       } });
   }
   recordDocFlow(el) {

@@ -1,428 +1,152 @@
 {
- "runId": "2026-11-12T00-16-46Z",
- "commit": "6dc6a66",
+ "runId": "2026-11-12T00-20-05Z",
+ "commit": "67edb1c",
  "release": false,
  "releaseReady": false,
  "env": {
   "node": "v22.22.0",
   "time": "15:30",
   "preset": "live",
-  "workers": 3,
+  "workers": 1,
   "repeat": 1,
-  "basePort": 5700
+  "basePort": 5500
  },
  "summary": {
-  "pass": 3,
+  "pass": 1,
   "fail": 0,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 61513,
+  "durationMs": 23558,
   "tests": {
-   "pass": 69,
+   "pass": 21,
    "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "dashboard",
+   "name": "flo",
    "tags": [],
    "instance": 0,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 35175,
+   "durationMs": 23457,
    "counts": {
-    "pass": 16,
+    "pass": 21,
     "fail": 0,
     "skip": 0
    },
    "tests": [
     {
      "status": "PASS",
-     "title": "fail closed: no actor, no patients; a portal actor has none either",
+     "title": "fail closed: no actor, a guardian and a school user get no answers; FLO exists for the four staff roles only",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "scope by role: direct support own caseload, supervisor the staff they manage, clinician and administrator everyone",
+     "title": "counts equal the selectors the screens use: notes behind, notes in review, units flagged, patients, per role",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "units: the flag is the rules-table threshold (75% used) and nothing else; 0 left is out",
+     "title": "scope: direct support only hears about their own patients; every table row is a patient on the role's own roster",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "filters: attention chips, search by Lauris number, units flagged, staff, due overdue; counts match the rows",
+     "title": "role limits: direct support has no denials and no intake forms; administrator is told note text is hidden by design",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "sorting: default is attention (red first); patient, units and staff sorts are stable and reversible",
+     "title": "clinical text is never read or quoted: notes, diagnoses and medications are refused for every role, and no answer contains text from the clinician's full record",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "direct support: one h1, no paragraphs, only own patients, items under the patient with a verb, units bar with the flag, no console errors",
+     "title": "an unsupported question gets an honest limit and starters to try, never a guess; an empty question gets the help answer",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "expand and collapse: per-row chevron, Expand all / Collapse all, the choice lands in the address",
+     "title": "every answer names its source, and a rule answer carries the rule's own source category",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "supervisor: roster for their staff, Staff filter, chips filter the table, search by Lauris number, a patient opens the chart",
+     "title": "stage meanings: every stage the app has a plain meaning, and the answer is the meaning and nothing else",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "filter state survives a reload and Clear filters resets it; an empty result says so with a way out",
+     "title": "the Dashboard legend is read from the Dashboard's own icon map, so it cannot drift",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "clinician: all patients, Responsible column, authorization chip with the unit bar, sort by Patient, items open their screen",
+     "title": "links go only to screens the role may open",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "administrator: statuses and dates only, no write or review verbs, no note text, items open the chart when the role cannot open the target",
+     "title": "read-only: asking anything never changes the state it is given",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "two-person confirmations: after the administrator proposes a designation the clinician sees the strip with a Review button; the proposer does not, and no strip when nothing waits",
+     "title": "khale: FLO opens on every platform page the role can open (2), focus lands in the input, Escape closes it, no console errors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "phone width: no horizontal scroll, patients become cards, buttons are 44 px",
+     "title": "cdiaz: FLO opens on every platform page the role can open (5), focus lands in the input, Escape closes it, no console errors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the old My Work, Do next and Staff dashboard routes land on the Dashboard; the review sections land on Documentation",
+     "title": "jperez: FLO opens on every platform page the role can open (7), focus lands in the input, Escape closes it, no console errors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "feedback Nov 12: no date or time and no \"N of M\" above the table; rows per page 10, 25, 50, 100 at the bottom, kept in the address",
+     "title": "dowens: FLO opens on every platform page the role can open (6), focus lands in the input, Escape closes it, no console errors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the rail is dark navy with a teal active item, the top bar carries FLO and the bell on every platform page, and a note waiting for review gives no date",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-12T00-16-46Z"
-  },
-  {
-   "name": "documentation",
-   "tags": [],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 37537,
-   "counts": {
-    "pass": 16,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "scope per role: supervisor = the staff they manage and their sites, clinician and administrator = every patient; every row is a patient in scope",
+     "title": "asking in the drawer: Enter sends, the answer has a summary, a table, links and a source line; a follow-up chip asks again; history survives closing and reopening; New chat clears",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "statuses: Open = behind + due + in progress + needs review + sent back; the on-time share counts filed notes only; types come from the documents",
+     "title": "a link in an answer opens its screen and closes the drawer",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the administrator's state carries no note text; the supervisor and clinician may",
+     "title": "read-only in the browser: asking questions (including \"do this\" requests) leaves /api/state exactly as it was",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the server refuses what the screen hides: administrator and direct support cannot review; nobody reviews their own note",
+     "title": "direct support in the browser: own caseload only, denials answered as not part of the role",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "supervisor: one h1, Open is the default, the table has Patient to Action, the status chips carry counts, nothing outside the scope",
+     "title": "administrator in the browser: units and status answered, note text refused, nothing from a note on the page",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "filters: status chip, document type, search, group; each persists in the URL and survives a reload; Clear filters returns to Open",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "sorting by Due and Status; the pager (rows per page 10, 25, 50, 100) replaces the count and Show more; header stays",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "review drawer: ?id= opens it on load; approve end to end (status changes in the table, audit event, toast); the decided note leaves Needs review",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "return with a note: the note is required, the drawer stays open on the error; then the note goes back (status Sent back, audit event, reviewer named)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "\"That didn't happen\" needs a note too and flags the note (sent back, flagged in the audit trail)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "old links land here: ReviewQueue, My Work review and team, and a note deep link opens the drawer",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "By staff: one row per staffer in scope; a row opens the Documents tab for that person; approval mode changes through staff.reviewMode",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "clinician: every patient, Review on notes waiting, no review on their own notes, forms marked as sample data",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "administrator: statuses and dates, no Review button, no note text in the page or in any response, the drawer link does nothing",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "direct support has no Documentation: the standard notice, no table, no data request for it",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "phone width: no sideways scroll for the supervisor (both tabs), the clinician and the administrator; touch targets 44 px",
+     "title": "phone width (390 px): the drawer fits, the input and Send are reachable, tables scroll inside the answer, no sideways page scroll",
      "note": ""
     }
    ],
-   "runId": "2026-11-12T00-16-46Z"
-  },
-  {
-   "name": "ui-kit",
-   "tags": [
-    "ui"
-   ],
-   "instance": 2,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 61320,
-   "counts": {
-    "pass": 37,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "token pairs: every text pair 4.5:1, every UI pair 3:1 (computed in the page from tokens.css)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "type floor and brand: DM Sans, paper background, 12 px smallest kit size, teal primary",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "status vocabulary: every stage and dispute status resolves; chips carry text and an icon (never colour alone)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "maturity chips: Working is hidden until the presenter overlay is on; Simulated, Pilot and Future always show",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "modal: role=dialog, aria-labelledby, focus trap both ways, Escape, scrim click, focus return",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "drawer: same contract as the modal",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "popover: Escape closes it and focus returns to the control",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "confirm resolves true on Confirm and false on Cancel; the toast has role=status (alert for errors)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the old modal(html, onMount) helper is now an accessible dialog (screens keep working)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "filter chips: aria-pressed, state in the URL query, survives a reload, Clear",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "search keeps focus while typing and filters rows",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "queue table: aria-sort, sort toggles, real links, ArrowDown moves between rows, Enter opens",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "queue table: sticky header, empty, loading and error states",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "evidence chip opens a popover with the quote and closes on Escape",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "timeline: an event opens a drawer with What, When, Who, Document, Source, Next action",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "draft review: edit text survives repaints; no bulk accept; Restore previous appears after a save",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a store change (SSE) while someone is typing does not wipe the field; the repaint waits for blur",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "skip link is the first tab stop and moves focus to the main landmark",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "landmarks: <html lang>, a labelled nav, exactly one main, real links in the rail",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "focus moves to main on a route change and the route is announced",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the old demo bar is gone from the product viewport",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail: dark navy (the Nov 8 look), 232 px wide, collapses to icons at 1024; counts only where meaningful",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail by role follows the permission table (supervisor, clinician, admin, direct support)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: hidden by default in Presentation, Ctrl+Shift+P toggles, label PRESENTER, mode always visible, above the viewport",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: ?present=1 opens it; ?mode=explore docks it open (no hide control) and is stored in psyflo_mode",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: role switcher changes the signed-in role without a page reload",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: scenario selector calls demo.scenario, signs in as the scenario role and opens its route",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: simulation controls (receive a reply, advance a day) live in the dock",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: notes drawer \"How the data gets in\" with maturity chips, focus returns to Notes",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: All screens picker is role-aware and searchable",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "UiKit is presenter-only: without the dock it says so; with ?present=1 it shows the gallery",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "prefers-reduced-motion: overlay animation is switched off",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no console errors on the gallery, the stubs and the shell routes",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail foot stays reachable at 1024 px: Sign out and Help as named controls, \"Demo data · nothing is real\" visible",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail foot stays reachable at 700 px: Sign out and Help as named controls, \"Demo data · nothing is real\" visible",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the wordmark on the navy rail is the reverse logo (white, teal, marigold), not the full-colour one",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "framed Lauris routes: a slim top bar with \"Back to Psyflo\", the route title as the h1 and no developer text",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-12T00-16-46Z"
+   "runId": "2026-11-12T00-20-05Z"
   }
  ],
  "manual": [
