@@ -29,7 +29,7 @@
 .ui-iconbtn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--r-2);border:1px solid transparent;background:transparent;color:var(--ink-900);cursor:pointer}
 .ui-iconbtn:hover{background:var(--sand-100)}
 .ui-linkbtn{border:0;background:none;padding:0;font:600 var(--fs-13) var(--font);color:var(--teal-700);text-decoration:underline;cursor:pointer}
-.ui-infobtn{display:inline-flex;align-items:center;gap:4px;border:0;background:none;padding:2px;color:var(--teal-700);cursor:pointer;border-radius:var(--r-1);font:600 var(--fs-13) var(--font)}
+.ui-infobtn{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:24px;min-height:24px;border:0;background:none;padding:2px;color:var(--teal-700);cursor:pointer;border-radius:var(--r-1);font:600 var(--fs-13) var(--font)}
 .ui-input,.ui-select,.ui-textarea{font:var(--fs-14)/var(--lh-14) var(--font);color:var(--ink-900);background:var(--surface-0);border:1px solid var(--control-500);border-radius:var(--r-2);padding:0 12px;min-height:var(--h-control);min-width:0;max-width:100%}
 .ui-textarea{padding:10px 12px;min-height:84px;width:100%;resize:vertical}
 .ui-select{padding-right:8px}

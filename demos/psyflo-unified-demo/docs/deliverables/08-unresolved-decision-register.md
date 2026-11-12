@@ -49,6 +49,13 @@ Every row is open: no answer has been received from Harvest, DMAS, a payer or co
 | UD-037 | Where intake, CNA, treatment plan and quarterly status come from | engineering; Harvest director | technical | `documents` seed, labelled sample data; notes come from the extension's Process Form report | Documentation; Patient chart |
 | UD-038 | The unit warning threshold | site supervisors; Harvest director | operational | `units.warn_used_pct` = 75, Unverified demo assumption, editable in Settings | Unit bar on Dashboard, Authorizations, Patient chart |
 | UD-039 | Dashboard scope for a site supervisor | Harvest director; site supervisors | operational | The staff they manage plus unassigned patients at their sites; Authorizations stays organisation-wide | Dashboard; Authorizations |
+| UD-040 | Payer opening hours for the simulated "Call payer" step | Harvest director; DMAS/payer | operational | `seed/extra/payer-hours.json`, every row Unverified demo assumption, no phone numbers stored; a closed line cannot be called | Denial Intelligence, Call payer |
+| UD-041 | Voice agent: build it for real, or keep the person on the phone | Harvest director; compliance counsel; engineering | regulatory | Simulated and person-initiated; it never dials, the payer's side of the script is a labelled placeholder, nothing is saved until the clinician records what the payer said; clinician only | Denial Intelligence, Call payer · voice agent |
+| UD-042 | Name of the assistant: FLO or Flow | Harvest director; PsyFlo product | operational | FLO (the earlier rename); `FLO_NAME` is one constant | Top bar, FLO drawer |
+| UD-043 | Flags on an authorization: who sees the note, and the reasons | Harvest director; site supervisors | operational | One open flag per request, reason from a short list plus an optional 140-character note; the note is shown to clinicians and the author only, administrators and supervisors see reason, who and when; direct support does not see flags | Authorizations list and case, bell |
+| UD-044 | "Update status" on a denial: free choice or derived from the stage | Harvest director; clinical lead | operational | Derived: the menu offers only the recorded steps that fit the stage; nobody types a status | Denial Intelligence, case header |
+| UD-045 | Who gets "Open in Lauris" on a note | Harvest director; engineering | technical | Everyone who holds the extension capability (direct support, supervisor, clinician); the administrator does not, because the Lauris panel is not an administrator tool | Documentation, Patient chart |
+| UD-046 | Presenter ribbon and the "Demo data" chip on the hosted demo | PsyFlo product | operational | Ribbon hidden until Ctrl+Shift+P; the rail chip "Demo data · nothing is real" stays | Hosted demo shell |
 
 ## Decisions
 
@@ -324,6 +331,55 @@ Every row is open: no answer has been received from Harvest, DMAS, a payer or co
 - **Evidence.** Supervisor feedback asks for the roster they are responsible for.
 - **Demo meanwhile.** The staff they manage (reviewer or shared site) plus unassigned patients at their sites. Authorizations stays organisation-wide for supervisors, as before.
 - **Impact.** One function (`clientsInScope`) changes if Harvest assigns supervisors to patients directly.
+
+### UD-040 · Payer opening hours for the simulated "Call payer" step
+
+- **Why it matters.** A call placed to a closed line wastes a clinician's time and a deadline day. The hours must come from the payer, not from the demo.
+- **Evidence.** None yet. The artifact's earlier demo showed hours per payer; no payer manual in the evidence set states them.
+- **Demo meanwhile.** Invented hours labelled Unverified demo assumption (Anthem Mon–Fri 8 am–6 pm, Sentara Mon–Fri 8 am–3 pm, so the story day shows one open and one closed line). Closed means the call cannot start, on the screen and on the server (`payer_closed`, 409). No phone number is stored.
+- **Impact.** Replace the seed file with the payers' published hours and their source.
+
+### UD-041 · Voice agent: build it for real, or keep the person on the phone
+
+- **Why it matters.** An automated call to a payer carries recording consent, identity and accuracy risk. The review marked it Future.
+- **Evidence.** The product owner's Nov 12 walkthrough asks for the artifact's "Call payer · voice agent" step; the unified contract says a person initiates every key step.
+- **Demo meanwhile.** Built as Simulated (`agents.voice`): a clinician starts it, it never dials, it writes nothing for the payer, and a call is saved only when the clinician types what the payer said and presses Save. A call is never a payer decision and never moves the request.
+- **Impact.** A real agent needs counsel's answer on consent and recording, a telephony vendor and a human takeover path.
+
+### UD-042 · Name of the assistant: FLO or Flow
+
+- **Why it matters.** The product owner dictated "Flow"; an earlier round renamed Flow to FLO on purpose and the artifact uses FLO.
+- **Evidence.** Nov 12 dictation says "Flow" (dictation may have dropped the capital letters); the artifact and the earlier rename say FLO.
+- **Demo meanwhile.** FLO, with a sparkle icon at the top of every platform page. One constant (`FLO_NAME` in `web/js/shared/flo-engine.js`) changes the name everywhere.
+- **Impact.** One-line edit plus a test string.
+
+### UD-043 · Flags on an authorization
+
+- **Why it matters.** A flag note is free text and may hold clinical detail; "administrator sees status, never clinical text" is a standing rule.
+- **Evidence.** Nov 12 feedback asks for flags, a separate notification system and flags on the deadline column.
+- **Demo meanwhile.** See the row above. Raising and clearing a flag are audit events. The bell lists flags, payer items, deadlines, units and notes per role; read state is per person; nothing is emailed, texted or pushed.
+- **Impact.** One line in the flag projection widens the note to supervisors and administrators.
+
+### UD-044 · "Update status" on a denial
+
+- **Why it matters.** A typed status can disagree with the recorded steps and the audit trail.
+- **Evidence.** The artifact's menu edits the status freely; the unified demo derives status from the request stage.
+- **Demo meanwhile.** Derived. The menu lists accept, peer-to-peer, reconsideration, appeal, record outcome, change owner and mark for review, as the stage allows.
+- **Impact.** A free editor would need a reason field and an audit rule for every override.
+
+### UD-045 · Who gets "Open in Lauris" on a note
+
+- **Why it matters.** All documentation is edited in Lauris; the Psyflo extension only enhances and saves notes to the platform.
+- **Evidence.** Nov 12 feedback: from Open chart and any note there should be an option to open it in Lauris.
+- **Demo meanwhile.** Shown to roles that hold the extension capability. It opens the mock Lauris at the consumer's note (a mock; no real EHR is reached).
+- **Impact.** One permission cell if the administrator should get the link too.
+
+### UD-046 · Presenter ribbon and the "Demo data" chip
+
+- **Why it matters.** The product owner finds the ribbon a distraction; the chip is the honest signal that nothing is real.
+- **Evidence.** Nov 12 feedback asks to remove the "Present presentation product on hosted data reset below" strip.
+- **Demo meanwhile.** The ribbon is hidden until Ctrl+Shift+P. The rail chip "Demo data · nothing is real" stays; say if it should go too.
+- **Impact.** A one-line change in the shell.
 
 ## Rule coverage
 

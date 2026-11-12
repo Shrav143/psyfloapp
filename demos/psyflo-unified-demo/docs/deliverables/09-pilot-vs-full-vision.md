@@ -44,7 +44,7 @@ Levels are the registered entries; an area has no level of its own.
 | Incident, quarterly, compliance | `ExtIncident`, `ExtQuarterly`, `compliance.incident` Future | Working previews, mock state portal | Mock state portal | Not in the pilot | State-portal clock, licensure binder, credential tracking |
 | Settings, roles, rules | `Settings`, `Users`, `settings.roles` Working; `settings.library` Pilot (preview) | Sessions, matrix, two-person designations, rules editor with audit, unit bands | Demo-grade identity | Supports all waves; library W1 (`02b` item 9) | Library authored by Harvest's documentation trainer; real identity provider |
 | Presenter and demo controls | `dock.presenter`, `UiKit`, `WhereThingsLive`, `Login` Working | Scenarios, roles, reset presets, clock, Maturity overlay | Not a product feature | Not applicable | Not applicable |
-| Agents and automation | `agents.voice`, `agents.flo`, `send.agent`, `denial.p2pAutomation`, `fax.inbound` Future | Not built | Not applicable | Not in the pilot | Only if technically and operationally approved; ruled out for the pilot |
+| Agents and automation | `send.agent`, `denial.p2pAutomation`, `fax.inbound` Future; `agents.voice` and `agents.flo` Simulated (Nov 12) | Voice agent and FLO built as person-initiated, read-only simulations | Not applicable | Not in the pilot | Only if technically and operationally approved; ruled out for the pilot |
 
 ## 2. Every route
 
@@ -149,8 +149,8 @@ Roles list who may open the route by a standing grant (DS direct support, Sup si
 | `school.portal` | Working | Referral submit and status; short update. | Attachments by name only. | W1 |
 | `settings.roles` | Working | Matrix enforced on the server; two-person designations. | Demo-grade identity. | W1 |
 | `settings.library` | Pilot (preview) | Seed list and an admin-only add action; no Library tab found (see registry gaps). | n/a | W1 (needs Harvest trainer) |
-| `agents.voice` | Future | Not built. | n/a | Not in the pilot |
-| `agents.flo` | Future | Not built. | n/a | Not in the pilot |
+| `agents.voice` | Simulated | Person-initiated; never dials; hours are demo data. | n/a | Not in the pilot |
+| `agents.flo` | Simulated | Rule-based assistant over the records the role can already see; read-only. | n/a | Not in the pilot |
 | `compliance.incident` | Future | Incident Scribe and mock state portal. | Mock state portal. | Not in the pilot |
 | `dock.presenter` | Working | Ribbon with scenarios, role switcher, reset and preset, clock, maturity overlay, notes drawer. | None. | Presenter only |
 
