@@ -39,4 +39,4 @@ The ask: make Settings like the Apollo or Attio workflow builders: pick rules, a
 
 ## Tests
 
-See `docs/deliverables/07-test-results.md` for the run at the end of this round.
+53 of 53 suites pass on the final complete run (1,725 tests, 1 skipped), including the full control-by-control audit sweep (about 70 minutes on its own); see `docs/deliverables/07-test-results.md`. Not yet done: showing the Dashboard, Authorizations, Denial Intelligence and the workflow map to the staff who asked for them.

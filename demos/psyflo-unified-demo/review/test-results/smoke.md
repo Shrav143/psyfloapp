@@ -1,9 +1,50 @@
 # smoke · PASS
 
-Run 2026-11-12T17-31-55Z · 19433 ms · instance 0 · exit 0
+Run 2026-11-12T20-05-25Z · 58942 ms · instance 1 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
+| PASS | jperez · 1 WhereThingsLive |  |
+| PASS | jperez · 2 DoNext |  |
+| PASS | jperez · 6 Referrals |  |
+| PASS | jperez · 7 Referral |  |
+| PASS | jperez · 9 Eligibility |  |
+| PASS | jperez · 13 ExtHome |  |
+| PASS | jperez · 14 ExtScreening |  |
+| PASS | jperez · 15 ExtCNA |  |
+| PASS | jperez · 16 ExtISP |  |
+| PASS | jperez · 17 ExtSRA |  |
+| PASS | jperez · 18 ExtSignOff |  |
+| PASS | jperez · 19 Submission |  |
+| PASS | jperez · 20 MobileApp |  |
+| PASS | jperez · 21 MobileDictate |  |
+| PASS | jperez · 22 MobileAssess |  |
+| PASS | jperez · 23 ExtDPN |  |
+| PASS | jperez · 24 ExtWeekly |  |
+| PASS | jperez · 25 ExtMonthly |  |
+| PASS | jperez · 26 ExtIncident |  |
+| PASS | jperez · 27 ReviewQueue |  |
+| PASS | jperez · 28 StaffDashboard |  |
+| PASS | jperez · 29 Authorizations |  |
+| PASS | jperez · 32 ExtQuarterly |  |
+| PASS | jperez · 33 ExtCase |  |
+| PASS | jperez · 34 InfoRequest |  |
+| PASS | jperez · 35 Partials |  |
+| PASS | jperez · 36 EarlyDischarge |  |
+| PASS | jperez · 37 ExtDischarge |  |
+| PASS | jperez · 38 PeerBrief |  |
+| PASS | jperez · 40 PayerPlaybook |  |
+| PASS | jperez · 42 Analytics |  |
+| PASS | jperez · 51 MyWork |  |
+| PASS | jperez · 52 Authorization |  |
+| PASS | jperez · 53 DenialIntelligence |  |
+| PASS | jperez · 54 DenialCase |  |
+| PASS | jperez · 57 Dashboard |  |
+| PASS | jperez · 58 Documentation |  |
+| PASS | jperez · 59 Patient |  |
+| PASS | jperez · Dashboard ?view=documents |  |
+| PASS | jperez · Dashboard ?view=documents&status=pending_review |  |
+| PASS | jperez · Dashboard ?view=staff |  |
 | PASS | dowens · 1 WhereThingsLive |  |
 | PASS | dowens · 2 DoNext |  |
 | PASS | dowens · 28 StaffDashboard |  |
@@ -23,6 +64,39 @@ Run 2026-11-12T17-31-55Z · 19433 ms · instance 0 · exit 0
 | PASS | dowens · Dashboard ?view=documents |  |
 | PASS | dowens · Dashboard ?view=documents&status=pending_review |  |
 | PASS | dowens · Dashboard ?view=staff |  |
+| PASS | cdiaz · 1 WhereThingsLive |  |
+| PASS | cdiaz · 2 DoNext |  |
+| PASS | cdiaz · 13 ExtHome |  |
+| PASS | cdiaz · 27 ReviewQueue |  |
+| PASS | cdiaz · 28 StaffDashboard |  |
+| PASS | cdiaz · 29 Authorizations |  |
+| PASS | cdiaz · 36 EarlyDischarge |  |
+| PASS | cdiaz · 42 Analytics |  |
+| PASS | cdiaz · 51 MyWork |  |
+| PASS | cdiaz · 52 Authorization |  |
+| PASS | cdiaz · 57 Dashboard |  |
+| PASS | cdiaz · 58 Documentation |  |
+| PASS | cdiaz · 59 Patient |  |
+| PASS | cdiaz · Dashboard ?view=documents |  |
+| PASS | cdiaz · Dashboard ?view=documents&status=pending_review |  |
+| PASS | cdiaz · Dashboard ?view=staff |  |
+| PASS | khale · 1 WhereThingsLive |  |
+| PASS | khale · 2 DoNext |  |
+| PASS | khale · 13 ExtHome |  |
+| PASS | khale · 20 MobileApp |  |
+| PASS | khale · 21 MobileDictate |  |
+| PASS | khale · 22 MobileAssess |  |
+| PASS | khale · 23 ExtDPN |  |
+| PASS | khale · 24 ExtWeekly |  |
+| PASS | khale · 25 ExtMonthly |  |
+| PASS | khale · 26 ExtIncident |  |
+| PASS | khale · 28 StaffDashboard |  |
+| PASS | khale · 51 MyWork |  |
+| PASS | khale · 57 Dashboard |  |
+| PASS | khale · 59 Patient |  |
+| PASS | khale · Dashboard ?view=documents |  |
+| PASS | khale · Dashboard ?view=documents&status=pending_review |  |
+| PASS | khale · Dashboard ?view=staff |  |
 | PASS | signed out · 0 Login |  |
 | PASS | signed out · 1 WhereThingsLive |  |
 | PASS | signed out · 3 SchoolPortal |  |

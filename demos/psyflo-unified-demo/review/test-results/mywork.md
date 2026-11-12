@@ -1,6 +1,6 @@
 # mywork · PASS
 
-Run 2026-11-12T02-59-17Z · 30788 ms · instance 2 · exit 0
+Run 2026-11-12T20-05-25Z · 35209 ms · instance 2 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -14,7 +14,7 @@ Run 2026-11-12T02-59-17Z · 30788 ms · instance 2 · exit 0
 | PASS | the server refuses what the screen hides: admin and direct support cannot review a note; a reviewer cannot review their own |  |
 | PASS | clinician lands on To do: top three with verbs, Show all expands, tabs carry counts, one h1, no console errors |  |
 | PASS | supervisor lands on Review: approve a note, return one with a required note, approval mode in Team |  |
-| PASS | legacy: ?legacy=1 keeps the old Team deep link; without it My Work, StaffDashboard, ReviewQueue and DoNext land on Dashboard, Documentation or Referrals |  |
+| PASS | legacy: ?legacy=1 keeps the old Team deep link; without it My Work, StaffDashboard, ReviewQueue and DoNext land on the Dashboard (its Patients, Documents or Staff view) or Referrals |  |
 | PASS | administrator: Operations and Team, "Clinical text hidden for your role", no note text, review is denied with the reason |  |
 | PASS | direct support: My day only, one progress line, Write note goes to the form; works at phone width without sideways scroll |  |
 | PASS | a row whose screen the role may not open says why (a disabled button), never a dead link |  |

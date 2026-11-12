@@ -1,6 +1,6 @@
-# audit · FAIL
+# audit · PASS
 
-Run 2026-11-12T18-48-11Z · 4246383 ms · instance 1 · exit 1
+Run 2026-11-12T20-05-25Z · 4375850 ms · instance 3 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -42,13 +42,13 @@ Run 2026-11-12T18-48-11Z · 4246383 ms · instance 1 · exit 1
 | PASS | P19.3 audit · clinician · ExtQuarterly |  |
 | PASS | P19.3 audit · clinician · ExtCase |  |
 | PASS | P19.3 audit · clinician · ExtDischarge |  |
-| FAIL | P19.3 audit · clinician · Analytics?section=outcomes&dataset=case | 67 controls (+19 in sections), 1 findings: DISABLED-UNEXPLAINED "Assessment scores" |
+| PASS | P19.3 audit · clinician · Analytics?section=outcomes&dataset=case |  |
 | PASS | P19.3 audit · clinician · Analytics?section=outcomes&dataset=illustrative |  |
 | PASS | P19.3 audit · clinician · Analytics?section=payer&dataset=case |  |
 | PASS | P19.3 audit · clinician · Analytics?section=payer&panel=guidance |  |
 | PASS | P19.3 audit · clinician · Analytics?section=population&dataset=illustrative |  |
 | PASS | P19.3 audit · clinician · Authorization?id=R-0411 |  |
-| FAIL | P19.3 audit · clinician · Authorization?id=R-0402 | 48 controls, 1 findings: TOAST-UNEXPLAINED "Add" (Write what happened.) |
+| PASS | P19.3 audit · clinician · Authorization?id=R-0402 |  |
 | PASS | P19.3 audit · clinician · Authorization?id=R-0399 |  |
 | PASS | P19.3 audit · clinician · Authorization?id=R-0391 |  |
 | PASS | P19.3 audit · clinician · Authorization?id=R-0388 |  |
@@ -69,14 +69,14 @@ Run 2026-11-12T18-48-11Z · 4246383 ms · instance 1 · exit 1
 | PASS | P19.3 audit · clinician · Dashboard?view=documents&status=pending_review |  |
 | PASS | P19.3 audit · clinician · Dashboard?view=staff |  |
 | PASS | P19.3 audit · clinician · Patient?id=MR |  |
-| FAIL | P19.3 audit · clinician · Patient?id=TW | 13 controls, 2 findings: POPUP "Open in Lauris: T.W., Intake form (opens Lauris in a new tab)" (BROKEN http://localhost:7711/consumers/4492/sessio); POPUP "Open in Lauris: T.W., CNA (opens Lauris in a new tab)" (BROKEN http://localhost:7711/consumers/4492/sessio) |
+| PASS | P19.3 audit · clinician · Patient?id=TW |  |
 | PASS | P19.3 audit · clinician · Patient?id=KT |  |
 | PASS | P19.3 audit · admin · Authorizations |  |
-| FAIL | P19.3 audit · admin · Analytics?section=outcomes | 47 controls (+0 in sections), 1 findings: DISABLED-UNEXPLAINED "Assessment scores" |
+| PASS | P19.3 audit · admin · Analytics?section=outcomes |  |
 | PASS | P19.3 audit · admin · Analytics?section=payer |  |
 | PASS | P19.3 audit · admin · Analytics?section=population&dataset=illustrative |  |
 | PASS | P19.3 audit · admin · Authorization?id=R-0411 |  |
-| FAIL | P19.3 audit · admin · Authorization?id=R-0402 | 44 controls, 1 findings: TOAST-UNEXPLAINED "Add" (Write what happened.) |
+| PASS | P19.3 audit · admin · Authorization?id=R-0402 |  |
 | PASS | P19.3 audit · admin · DenialIntelligence |  |
 | PASS | P19.3 audit · admin · DenialCase?id=R-0402&section=decision |  |
 | PASS | P19.3 audit · admin · Settings |  |
@@ -102,10 +102,10 @@ Run 2026-11-12T18-48-11Z · 4246383 ms · instance 1 · exit 1
 | PASS | P19.3 audit · clinician@tw-sent · Authorizations |  |
 | PASS | P19.3 audit · clinician@tw-sent · Referral?id=REF-118 |  |
 | PASS | P19.3 audit · supervisor@tw-signed · Authorization?id=R-0416&section=submission |  |
-| FAIL | P19.3 audit · clinician@analytics-case · Analytics?section=outcomes&dataset=case | 75 controls (+19 in sections), 1 findings: DISABLED-UNEXPLAINED "Assessment scores" |
+| PASS | P19.3 audit · clinician@analytics-case · Analytics?section=outcomes&dataset=case |  |
 | PASS | P19.3 audit · clinician@analytics-case · Analytics?section=payer&dataset=case |  |
 | PASS | P19.3 audit · clinician@analytics-case · Analytics?section=population&dataset=case |  |
-| FAIL | P19.3 audit · admin@analytics-case · Analytics?section=outcomes&dataset=case | 55 controls (+0 in sections), 1 findings: DISABLED-UNEXPLAINED "Assessment scores" |
+| PASS | P19.3 audit · admin@analytics-case · Analytics?section=outcomes&dataset=case |  |
 | PASS | P19.3 audit · direct_support@mr-daily · Dashboard |  |
 | PASS | P19.3 audit · clinician@canvas · Dashboard |  |
 | PASS | P19.3 audit · clinician@canvas · Dashboard?view=documents |  |
@@ -156,47 +156,3 @@ Run 2026-11-12T18-48-11Z · 4246383 ms · instance 1 · exit 1
 | PASS | P19.3 audit · panel jperez · forms to approve (signed) (400) |  |
 | PASS | P19.3 audit · panel offers no Process Form, Get Signature or Send (person-only actions) |  |
 | PASS | P19.3 audit · the sweep covered what it claims (counts per role, no unreachable targets) |  |
-
-## Output (tail)
-
-```
-PASS P19.3 audit · panel jperez · record (400)
-  7 controls (+1 in sections), 0 findings
-PASS P19.3 audit · panel khale · daily note (400)
-  7 controls (+1 in sections), 0 findings
-PASS P19.3 audit · panel jperez · daily note (clinician) (400)
-  7 controls (+1 in sections), 0 findings
-PASS P19.3 audit · panel jperez · weekly (400)
-  7 controls (+1 in sections), 0 findings
-PASS P19.3 audit · panel jperez · monthly (400)
-  5 controls, 0 findings
-PASS P19.3 audit · panel jperez · incident (400)
-  11 controls (+5 in sections), 0 findings
-PASS P19.3 audit · panel jperez · quarterly (400)
-  11 controls (+0 in sections), 0 findings
-PASS P19.3 audit · panel jperez · continued stay (400)
-  5 controls (+0 in sections), 0 findings
-PASS P19.3 audit · panel jperez · discharge (400)
-  7 controls, 0 findings
-PASS P19.3 audit · panel jperez · forms to approve (400)
-  3 controls, 0 findings
-PASS P19.3 audit · panel khale · time tracker (400)
-  12 controls (+6 in sections), 0 findings
-PASS P19.3 audit · panel jperez · authorizations (400)
-  1 controls, 0 findings
-PASS P19.3 audit · panel khale · screening (direct support: not offered) (400)
-  12 controls (+5 in sections), 0 findings
-PASS P19.3 audit · panel jperez · T.W. screening (400)
-  9 controls (+1 in sections), 0 findings
-PASS P19.3 audit · panel jperez · T.W. CNA (400)
-  12 controls (+6 in sections), 0 findings
-PASS P19.3 audit · panel jperez · T.W. ISP (400)
-  4 controls (+0 in sections), 0 findings
-PASS P19.3 audit · panel jperez · T.W. initial SRA (400)
-  8 controls, 0 findings
-PASS P19.3 audit · panel jperez · forms to approve (signed) (400)
-PASS P19.3 audit · panel offers no Process Form, Get Signature or Send (person-only actions)
-  controls swept: 4701 on 205 targets · NAVIGATED 1880 · DOM 1171 · DETAIL 855 · CLOSE 421 · POPUP 98 · DISABLED-EXPLAINED 89 · NO-EFFECT-ALLOWED 60 · STATE 46 · SKIPPED 31 · SCROLL 21 · TOAST-ONLY 7 · VANISHED 5 · FILE-CHOOSER 5 · DISABLED-UNEXPLAINED 4 · TYPED 4 · TOAST-UNEXPLAINED 2 · DOWNLOAD 1 · FOCUS-ONLY 1
-PASS P19.3 audit · the sweep covered what it claims (counts per role, no unreachable targets)
-RESULT audit pass=145 fail=7 skip=0
-```

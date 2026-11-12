@@ -86,10 +86,10 @@ Every functioning feature of the two original demos (191 rows from the Nov 8 mas
 | M-024 | Weekly guardian call (n24) | Extension › Scribe | MOVED | route /ExtWeekly as jperez · suite panels PASS, smoke PASS | lands on #/ExtWeekly?client=MR |
 | M-025 | Monthly collateral (n25) | Extension › Scribe | MOVED | route /ExtMonthly as jperez · suite panels PASS, smoke PASS | lands on #/ExtMonthly?client=MR |
 | M-026 | Incident report (n26) | Extension › Additional actions | MOVED | route /ExtIncident as jperez · suite panels PASS, smoke PASS | lands on #/ExtIncident |
-| M-027 | Supervisor review queue (n27) | Documentation › Needs review | MOVED | route /ReviewQueue as cdiaz · suite mywork PASS | lands on #/Documentation?status=pending_review |
-| M-028 | Staff dashboard (n28) | Dashboard (staff filter) · Documentation › By staff | MOVED | route /StaffDashboard as cdiaz · suite mywork PASS | lands on #/Dashboard |
-| M-029 | Authorizations (n29) | Authorizations (queue) | MOVED | route /Authorizations as jperez · suite authorizations PASS, flowC PASS | lands on #/Authorizations |
-| M-030 | Parent survey (n31) | Family Portal | MOVED | route /ParentSurvey as guardian · suite family PASS, flowD PASS | lands on #/ParentSurvey |
+| M-027 | Supervisor review queue (n27) | Documentation › Needs review | MOVED | route /ReviewQueue as cdiaz · suite mywork PASS | lands on #/Dashboard?view=documents&status=pending_review |
+| M-028 | Staff dashboard (n28) | Dashboard (staff filter) · Documentation › By staff | MOVED | suite mywork PASS | proved by the suite(s) only |
+| M-029 | Authorizations (n29) | Authorizations (queue) | MOVED | suite authorizations PASS, flowC PASS | proved by the suite(s) only |
+| M-030 | Parent survey (n31) | Family Portal | MOVED | suite family PASS, flowD PASS | proved by the suite(s) only |
 | M-031 | Quarterly report (n32) | Extension › Clinical documents | MOVED | route /ExtQuarterly as jperez · suite panels PASS, smoke PASS | lands on #/ExtQuarterly?client=MR |
 | M-032 | Continued stay (n33) | Authorizations › evidence; Extension › Scan & Enhance | MOVED | route /ExtCase as jperez · route /Authorization as jperez · suite panels PASS, smoke PASS | lands on #/ExtCase?client=MR; lands on #/Authorization?id=R-0411&section=evidence |
 | M-033 | Information request (n34) | Denial Intelligence › action | MOVED | route /InfoRequest as jperez · suite denials PASS, denials-ui PASS, rules PASS | lands on #/DenialCase?id=R-0408&section=action&action=info |
