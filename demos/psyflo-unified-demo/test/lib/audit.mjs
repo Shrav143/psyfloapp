@@ -37,6 +37,8 @@ export function enumerate(o) {
   // a plain hint icon (ui.hint button: class, type and a label, nothing wired) only shows its definition; ui-kit proves that and a11y proves its name, so the sweep does not click each of the hundreds on a screen (that took the audit past an hour)
   const plainHint = e => e.tagName === 'BUTTON' && e.classList.contains('ui-hint__b') && [...e.attributes].every(x => ['class', 'type', 'aria-label'].includes(x.name));
   for (let i = els.length - 1; i >= 0; i--) if (plainHint(els[i])) els.splice(i, 1);
+  // "Open in Lauris" appears once per outstanding item on a Dashboard (dozens a screen) and every click opens a popup of the whole mock Lauris plus its panel: the first two prove the behaviour on each screen, dashboard.mjs proves the path of every kind, so the sweep does not open them all
+  let lauris = 0; for (let i = 0; i < els.length; i++) { const e = els[i]; if (e.tagName === 'A' && /^Open in Lauris/i.test(e.getAttribute('aria-label') || '') && ++lauris > 2) { els.splice(i, 1); i--; } }
   const visible = el => {
     if (el.closest('[inert],[hidden]')) return false;
     const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false;
