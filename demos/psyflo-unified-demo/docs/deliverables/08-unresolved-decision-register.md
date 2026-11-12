@@ -56,6 +56,13 @@ Every row is open: no answer has been received from Harvest, DMAS, a payer or co
 | UD-044 | "Update status" on a denial: free choice or derived from the stage | Harvest director; clinical lead | operational | Derived: the menu offers only the recorded steps that fit the stage; nobody types a status | Denial Intelligence, case header |
 | UD-045 | Who gets "Open in Lauris" on a note | Harvest director; engineering | technical | Everyone who holds the extension capability (direct support, supervisor, clinician); the administrator does not, because the Lauris panel is not an administrator tool | Documentation, Patient chart |
 | UD-046 | Presenter ribbon and the "Demo data" chip on the hosted demo | PsyFlo product | operational | Ribbon hidden until Ctrl+Shift+P; the rail chip "Demo data · nothing is real" stays | Hosted demo shell |
+| UD-047 | Documentation as a view of the Dashboard (Patients, Documents, Staff) | Harvest director; site supervisors | operational | One rail item, Dashboard, with a Patients \| Documents \| Staff switch; the Documents and Staff views need the existing documentation capability (supervisor, clinician, administrator status only); direct support has Patients only | Dashboard |
+| UD-048 | Where "Open in Lauris" lands for each kind of item | Harvest director; engineering | technical | Notes, CNA, intake (`screening`), plan, quarterly, discharge open their Lauris form with the Psyflo panel beside it; "Rejected in Lauris" opens the right form, not the exact rejected session; a filed note with no Lauris session id, and assessments, open the consumer's Active File | Dashboard, patient chart |
+| UD-049 | What a workflow may do | Harvest director; compliance counsel | regulatory | Only Notify, Suggest a flag and Add a task (bell items for people); sending, calling, filing, signing and texting stay with a person and are shown locked in the palette | Settings, Workflows |
+| UD-050 | Whether workflows should be able to change records on their own | Harvest director; compliance counsel; engineering | regulatory | No: effects are computed from the demo data and shown, never written; "Nothing is sent, called or filed on its own" is locked into every workflow | Settings, Workflows |
+| UD-051 | Who may change a workflow, and the second-person guardrail | Harvest director; compliance counsel | operational | Administrator only; a workflow with the "second person must agree" guardrail keeps a change pending until a different administrator or clinician confirms | Settings, Workflows; Dashboard confirmations |
+| UD-052 | The sign-in default | PsyFlo product | operational | One dropdown of people grouped by role, starting on the signed-in person or the first person; no password; nothing signs in until Sign in is pressed | Login |
+| UD-053 | What stays visible text when icons carry definitions | Harvest director; PsyFlo product | operational | Names, Lauris #, dates, status chips, maturity chips, refusal reasons and warnings stay visible; source and verification chips, secondary lines and counts become icons with the definition on hover and focus | Dashboard, Authorizations, Denial Intelligence |
 
 ## Decisions
 
@@ -380,6 +387,55 @@ Every row is open: no answer has been received from Harvest, DMAS, a payer or co
 - **Evidence.** Nov 12 feedback asks to remove the "Present presentation product on hosted data reset below" strip.
 - **Demo meanwhile.** The ribbon is hidden until Ctrl+Shift+P. The rail chip "Demo data · nothing is real" stays; say if it should go too.
 - **Impact.** A one-line change in the shell.
+
+### UD-047 · Documentation as a view of the Dashboard
+
+- **Why it matters.** The product owner asked whether the Documentation tab duplicates the Dashboard. The Dashboard's expanded items are the same outstanding notes and forms; Documentation added a flat list across patients, completed documents, the review drawer and an on-time figure.
+- **Evidence.** Nov 12 walkthrough: "combine them into one and just call it Dashboard".
+- **Demo meanwhile.** One Dashboard with a Patients | Documents | Staff switch (`?view=`). Old Documentation, ReviewQueue and My Work links redirect there with their filters. The Staff view holds the approval-mode controls the old By-staff tab had.
+- **Impact.** If only Patients and Documents are wanted, fold Staff under Documents (small change).
+
+### UD-048 · Where "Open in Lauris" lands
+
+- **Why it matters.** All documentation is edited in Lauris; a link that lands on the wrong page costs a click and a doubt.
+- **Evidence.** Nov 12: every action on a note, CNA, guardian call or intake form should open the Lauris note where it was written, with the extension beside it.
+- **Demo meanwhile.** See the row above. The mock Lauris shows the Psyflo panel beside every consumer session page. Psyflo rejected rows carry no Lauris session id, only form words.
+- **Impact.** When the Lauris bridge reports session ids for rejected and filed notes, the links can go to the exact page.
+
+### UD-049 · What a workflow may do
+
+- **Why it matters.** A visual workflow builder invites "if this, send that". Payer contact, filing and signing carry legal and billing risk and need a person.
+- **Evidence.** Nov 12 request for custom workflows with rules and guardrails; the unified contract says a person initiates every key step.
+- **Demo meanwhile.** Three actions, all inside Psyflo and all seen by a person (a bell item, a suggested flag, a reminder task). The palette shows the five steps that stay with a person locked, with the reason.
+- **Impact.** Adding an outward action later needs counsel's answer and a person-confirm guardrail by default.
+
+### UD-050 · Whether workflows change records on their own
+
+- **Why it matters.** A workflow that writes to a record is an automation nobody pressed.
+- **Evidence.** Same as UD-049.
+- **Demo meanwhile.** No. Effects are computed from the demo data (`engine.run`, `workflowItems`) and shown; a test run changes nothing; enabling a workflow adds bell items only. The "nothing is sent, called or filed on its own" guardrail is locked into every workflow and cannot be removed.
+- **Impact.** A stored effect would need an audit event per run and an undo.
+
+### UD-051 · Who may change a workflow, and the second-person guardrail
+
+- **Why it matters.** A workflow decides who is told what. A wrong edit hides a deadline.
+- **Evidence.** The request asks for guardrails; the demo already uses two-person confirmation for designations and role raises.
+- **Demo meanwhile.** Only the administrator edits (admin.settings), with an audit event per save and a version history. A workflow with the "A second person must agree" guardrail keeps a change pending until a different administrator or clinician approves or declines; the clinician confirms from the Dashboard confirmations list.
+- **Impact.** Making the second person the default for every workflow is one seed change.
+
+### UD-052 · The sign-in default
+
+- **Why it matters.** The old sign-in showed four large role cards; the owner wants one dropdown.
+- **Evidence.** Nov 12: "a dropdown, not four big boxes; it does not need to occupy an entire page".
+- **Demo meanwhile.** One small card with one dropdown grouped by role. Demo-grade identity: no password, the server still enforces roles.
+- **Impact.** A real identity provider replaces the dropdown; the role groups map to its roles.
+
+### UD-053 · What stays visible text when icons carry definitions
+
+- **Why it matters.** Hover-only text hides things a person must read to act, and is not reachable by touch.
+- **Evidence.** Nov 12: "rather than a bunch of text, add icons; on hover show the definition".
+- **Demo meanwhile.** Names, Lauris #, dates, status chips, maturity chips, refusal reasons and warnings stay visible. Source and verification chips, secondary lines and counts are icons whose definition shows on hover and on keyboard focus (and is the accessible name), through `ui.hint`.
+- **Impact.** Touch users get the definition from the accessible name only; a tap-to-show bubble is a possible later change.
 
 ## Rule coverage
 
