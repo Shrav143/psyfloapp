@@ -1,5 +1,5 @@
 id,feature,destination,status,evidence,notes
-M-001,Sign in (n0),Login (kept); role switching moves to presenter toolbar,NOT-VERIFIED,"route /Login as anonymous · suite roles PASS, settings PASS",hash #/Login;  text missing: /Direct support|Clinician/
+M-001,Sign in (n0),Login (kept); role switching moves to presenter toolbar,MOVED,"route /Login as anonymous · suite roles PASS, settings PASS",lands on #/Login
 M-002,Where things live (n1),Presenter drawer,MOVED,"route /WhereThingsLive as jperez · suite ui-kit PASS, fixtures PASS",lands on #/WhereThingsLive?full=1
 M-003,Do next (n2),Dashboard (patient roster),MOVED,route /DoNext as jperez · suite mywork PASS,lands on #/Dashboard
 M-004,School portal home (n3),School Portal,MOVED,route /SchoolPortal as school · suite school PASS,lands on #/SchoolPortal

@@ -34,6 +34,9 @@ export function enumerate(o) {
   const SEL = 'a[href],button,input:not([type=hidden]),select,textarea,summary,[role=button],[role=link],[role=tab],[role=menuitem],[role=menuitemradio],[role=menuitemcheckbox],[role=switch],[role=checkbox],[role=radio],[role=option],[onclick],[data-onclick],tr[tabindex="0"],[data-ui-open]';
   const seen = new Set(); const els = [];
   for (const r of roots) { if (r.matches(SEL) && !seen.has(r)) { seen.add(r); els.push(r); } for (const e of r.querySelectorAll(SEL)) if (!seen.has(e)) { seen.add(e); els.push(e); } }
+  // a plain hint icon (ui.hint button: class, type and a label, nothing wired) only shows its definition; ui-kit proves that and a11y proves its name, so the sweep does not click each of the hundreds on a screen (that took the audit past an hour)
+  const plainHint = e => e.tagName === 'BUTTON' && e.classList.contains('ui-hint__b') && [...e.attributes].every(x => ['class', 'type', 'aria-label'].includes(x.name));
+  for (let i = els.length - 1; i >= 0; i--) if (plainHint(els[i])) els.splice(i, 1);
   const visible = el => {
     if (el.closest('[inert],[hidden]')) return false;
     const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false;
