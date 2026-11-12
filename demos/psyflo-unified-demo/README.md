@@ -30,7 +30,7 @@ The demo clock starts at Thu Oct 29, 3:30 pm. One clock drives Psyflo and the mo
 
 ## Sign in
 
-The first screen is **Sign in**: four role cards, then **Family portal** and **School counselor**. Sign-in is demo-grade: there is no password and no identity provider, but the server enforces the permission table on every call and projects `/api/state` by role.
+The first screen is **Sign in**: one small card with one dropdown of people grouped by role, then quiet links to the **Family portal** and **School counselor**. Sign-in is demo-grade: there is no password and no identity provider, but the server enforces the permission table on every call and projects `/api/state` by role.
 
 | Role | Person (synthetic) | Id | Lands on |
 |---|---|---|---|
@@ -41,7 +41,7 @@ The first screen is **Sign in**: four role cards, then **Family portal** and **S
 | Guardian | T.W.'s guardian | token `tw-demo` | family checklist |
 | School counselor | R. Bell | `rbell` | school portal |
 
-The rail shows only what the role may open. Direct support gets the Dashboard (their own patients). Supervisors and clinicians also get Documentation and Authorizations; administrators see statuses only. `docs/deliverables/06-demo-walkthrough-guide.md` has the full table.
+The rail shows only what the role may open. Direct support gets the Dashboard (their own patients). Supervisors and clinicians also get Authorizations (and the Documents and Staff views inside the Dashboard); administrators see statuses only. `docs/deliverables/06-demo-walkthrough-guide.md` has the full table.
 
 ## Presenter dock and modes
 
@@ -73,7 +73,7 @@ Other fixtures: `base-live`, `base-canvas`, `tw-link-submitted`, `tw-eligible`, 
 
 | Surface | Where | What it is |
 |---|---|---|
-| Platform | `http://localhost:4000` | Rail (patient-first): **Dashboard** (the roster; the logo opens it), **Documentation** (notes, intake forms, CNAs), **Authorizations**, **Denial Intelligence**, **Analytics**, then **Referrals** and **Settings**. A patient opens to a chart: Documentation first, the Authorization as one section. Case shell, denial workspace, pilot scorecard, three analytics sections, Settings (People, Roles, Units, Rules, Audit, Family link, Presenter) |
+| Platform | `http://localhost:4000` | Rail (patient-first): **Dashboard** (the roster, with Patients, Documents and Staff views; every item's icon opens the Lauris note or form with the Psyflo panel beside it; the logo opens it), **Authorizations**, **Denial Intelligence**, **Analytics**, then **Referrals** and **Settings** (a workflow map: drag blocks, link them, add rules and guardrails; People, Roles, Units, Family link, Audit and Presenter sit under More settings). A patient opens to a chart: Documentation first, the Authorization as one section. Case shell, denial workspace, pilot scorecard, three analytics sections, Settings (People, Roles, Units, Rules, Audit, Family link, Presenter) |
 | Lauris extension | mock Lauris on 4001, panel at 400 px | Two buttons: **Scribe** and **Scan & Enhance** (clinicians and designated supervisors). Three-way draft review, evidence review (read-only), authorization path |
 | Phone | `#/MobileApp` at 390 px | My students, Current activity, Say what happened, assessments |
 | Family | `/f/<token>`, `/parent/<token>/<Screen>` | Checklist home, one task per screen, English and Español, signature mode per document |
