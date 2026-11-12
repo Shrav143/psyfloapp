@@ -43,7 +43,7 @@ const PANEL = (no, form, user, re) => async () => { const c = await b.newContext
 const P = {};   // id -> array of probes
 const add = (ids, ...probes) => { for (const id of [].concat(ids)) (P[id] = P[id] || []).push(...probes); };
 // ---- master screens (n0-n50) and where they went ----
-add('M-001', R('/Login', null, { text: /Direct support|Clinician/ }));
+add('M-001', R('/Login', null, { text: /Who are you\?/ }));
 add('M-002', R('/WhereThingsLive?full=1', 'jperez', { text: /Lauris|bridge/i }));
 add('M-003', R('/DoNext', 'jperez', { hashRe: /Dashboard|MyWork|DoNext/ }));
 add('M-004', R('/SchoolPortal', 'school', { text: /Refer a student|Referrals from/ })); add('M-005', R('/ReferralForm', 'school', { text: /Referral form/ })); add('M-006', R('/ReferralSent', 'school', { minLen: 20 }));

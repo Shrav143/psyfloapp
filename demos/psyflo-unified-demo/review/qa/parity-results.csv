@@ -276,7 +276,7 @@ V-083,Build script,Drop,DROPPED-WITH-REASON,suite ui-kit PASS,v3 build or in-bro
 V-084,S1 DSS creates a progress note,Spec Scenario 1 (master flow B),MOVED,"route /MobileApp as khale · code: scenario s1 · suite ui-kit PASS, fixtures PASS",lands on #/MobileApp; seed/extra/scenarios.json
 V-085,S2 DSS tracks interventions,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
 V-086,S3 Clinician enhances a progress note,Enhance Mode A,MOVED,"action enhance.scan registered with a capability entry · suite ui-kit PASS, fixtures PASS",
-V-087,S4 Clinician enhances an SRA,Spec Scenario 3,NOT-VERIFIED,"route /Authorization as jperez · suite ui-kit PASS, fixtures PASS",hash #/Authorization?id=R-0416;  text missing: /Next step/
+V-087,S4 Clinician enhances an SRA,Spec Scenario 3,MOVED,"route /Authorization as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorization?id=R-0416
 V-088,S5 Admin tracks authorizations,Authorizations demo,MOVED,"route /Authorizations as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorizations
 V-089,S6 Clinician manages a denial,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence
 V-090,S7 Clinician prepares peer-to-peer,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence

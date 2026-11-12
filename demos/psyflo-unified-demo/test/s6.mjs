@@ -63,7 +63,7 @@ async function run(mode) {
       const href = await ad.locator('a[href^="#/DenialIntelligence?payer=sentara"]').first().getAttribute('href'); assert.ok(href, 'a Sentara row link');
       await ad.locator('a[href^="#/DenialIntelligence?payer=sentara"]').first().click(); await ad.waitForSelector('.ui-qt__row'); await ad.waitForTimeout(400);
       const rows = await ad.$$eval('.ui-qt__row', rs => rs.map(r => r.innerText.replace(/\s+/g, ' '))); assert.ok(rows.length >= 1 && rows.every(r => /Sentara/.test(r)), 'only Sentara cases: ' + rows.length);
-      assert.match(await mainText(ad), /Status view · no clinical text/, 'the administrator\'s view of the case queue carries no clinical text');
+      assert.eq(await ad.locator('.ui-lockhint .ui-hint__b[aria-label="Status view · no clinical text"]').count(), 1, 'the administrator\'s view of the case queue carries no clinical text: the status-view line is a lock icon named so');
     });
     await F.step('4 patient population, then the Illustrative cohort: a separate dataset with its own banner, never summed with the case-backed figures; groups under 5 are "Fewer than 5" in both', async () => {
       await ad.goto(BASE + '/#/Analytics?section=population'); await ad.waitForSelector('.a-tile__b'); await ad.waitForTimeout(500);

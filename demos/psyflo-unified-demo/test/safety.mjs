@@ -200,13 +200,13 @@ await T.test('IIU-11 the mock Lauris warns or refuses a daily note when no units
 // =============================================================================================================== 9 · expired authorizations
 await reset('canvas');
 await T.test('EXA-02 the renewal due date follows the rule (end date minus 14 business days), not the end date itself', async () => {
-  const s = await state('jperez'); const u = await uiText('jperez', '/Dashboard?q=M.R.&open=all'); await u.page.waitForTimeout(300); u.text = (await u.page.locator('main').innerText()).replace(/\s+/g, ' '); const m = u.text.match(/Renew by (\w{3} \d+)/); await u.ctx.close();
+  const s = await state('jperez'); const u = await uiText('jperez', '/Dashboard?q=M.R.&open=all'); await u.page.waitForTimeout(300); u.text = (await u.page.locator('main').evaluate(el => el.textContent)).replace(/\s+/g, ' '); const m = u.text.match(/Renew by (\w{3} \d+)/);   // the renewal date is the definition of the item's icon: read the hover text too await u.ctx.close();
   const end = s.clients.find(c => c.id === 'MR').authorization.end; assert.eq(end, '2026-11-13');
   const lead = s.rules.find(r => r.key === 'continued_stay.lead_business_days').value; const d = new Date('2026-11-13T00:00Z'); let n = lead; while (n > 0) { d.setUTCDate(d.getUTCDate() - 1); if (![0, 6].includes(d.getUTCDay())) n--; }
   const want = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }); const got = m && (m[1] || m[2]); assert.ok(got === want, `the renewal is "Renew by ${got}" but the rule (${lead} business days before Nov 13) gives ${want}`);
 });
 await T.test('EXA-03 an exhausted authorization (T.N.) says service continues unpaid or that no units are left, with a date and an owner', async () => {
-  const u = await uiText('jperez', '/Dashboard?q=T.N.&open=all'); await u.page.waitForTimeout(300); const t = (await u.page.locator('main').innerText()).replace(/\s+/g, ' '); await u.ctx.close(); assert.match(t, /Units used up/); assert.match(t, /65 of 65 units used/); assert.match(t, /0 left of 65/);
+  const u = await uiText('jperez', '/Dashboard?q=T.N.&open=all'); await u.page.waitForTimeout(300); const t = (await u.page.locator('main').evaluate(el => el.textContent)).replace(/\s+/g, ' '); await u.ctx.close(); assert.match(t, /Units used up/); assert.match(t, /65 of 65 units used/);   // the item title is visible; its detail is in the hover text assert.match(t, /0 left of 65/);
   const c = await uiText('jperez', '/DenialCase?id=R-0388&section=action&action=p2p'); assert.match(c.text, /Owner: J\. Perez/); assert.match(c.text, /Dec 9/); await c.ctx.close();
 });
 await T.test('EXA-05 an eligibility re-check that is due appears on the patient row of the Dashboard once the recheck interval has passed', async () => {

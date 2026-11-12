@@ -31,6 +31,7 @@ const META = {
 };
 // QA2 (scenario, parity and safety suites): appended entries only
 Object.assign(META, { s1: { tags: ['scenario', 'realtime'], timeout: 400 }, s2: { tags: ['scenario', 'realtime'], timeout: 600 }, s3: { tags: ['scenario', 'realtime'], timeout: 600 }, s4: { tags: ['scenario'], timeout: 400 }, s5: { tags: ['scenario', 'realtime'], timeout: 600 }, s6: { tags: ['scenario'], timeout: 400 }, parity: { tags: ['parity'], timeout: 900 }, safety: { tags: ['safety', 'realtime'], timeout: 600 } });
+Object.assign(META, { hosted: { tags: ['hosted'], timeout: 900 } });   // the single-file build runs every flow twice (direct and sandboxed); it outgrew the 300 s default
 const files = fs.readdirSync(TEST).filter(f => f.endsWith('.mjs') && !['run-all.mjs', 'preflight.mjs'].includes(f) && f !== 'draft.test.mjs');
 let suites = [{ name: 'unit', ...META.unit }, ...files.map(f => ({ name: f.replace(/\.mjs$/, ''), file: 'test/' + f, ...(META[f.replace(/\.mjs$/, '')] || {}) }))];
 if (opt.only.length) suites = suites.filter(s => opt.only.includes(s.name));
