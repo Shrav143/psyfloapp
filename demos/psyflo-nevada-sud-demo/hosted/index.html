@@ -1877,7 +1877,7 @@ kbd,.k{font:inherit;font-size:11px;border:1px solid #3C4756;border-radius:5px;pa
       case "p2p_awaiting":
         return `Call held. Waiting for ${payerFirst(s, r.payer)}'s decision; log it when it arrives.`;
       case "denied":
-        return /provider|type|specialty|eligible/i.test(r.denial_reason || "") ? `Reason: "${r.denial_reason}." The reviewer read the SUAM provider type as SUD-only. Reconsideration letter drafted; a person signs and sends it.` : `Reason: "${r.denial_reason || "not given"}." Reconsideration letter drafted from the chart; a person signs and sends it.`;
+        return /provider|type|specialty|eligible/i.test(r.denial_reason || "") ? `Reason: "${r.denial_reason}." The reviewer read the SUD agency provider type as SUD-only. Reconsideration letter drafted; a person signs and sends it.` : `Reason: "${r.denial_reason || "not given"}." Reconsideration letter drafted from the chart; a person signs and sends it.`;
       case "appeal_sent":
         return "Reconsideration signed by a clinician and sent. Waiting for the plan.";
       case "early_discharge":
@@ -2399,7 +2399,7 @@ ${me.title || "Clinical director"} · Community Counseling Center of Southern Ne
     if (f.includes("plan_delay") && c.proof) out.push(`<span class="chip g" title="${esc3(c.proof)}">Plan's own delay — proof of timely filing on file</span>`);
     else if (f.includes("plan_delay")) out.push(`<span class="chip g">Plan's own delay</span>`);
     if (f.includes("not_credentialed")) out.push(`<span class="chip r">Rendering NPI not yet enrolled with this plan</span>`);
-    if (f.includes("provider_type")) out.push(`<span class="chip n">Provider-type misread (SUAM)</span>`);
+    if (f.includes("provider_type")) out.push(`<span class="chip n">Provider-type misread (SUD agency)</span>`);
     return raw(out.join(""));
   }
   function status(s, c) {
@@ -2622,7 +2622,7 @@ ${me.title || "Clinical director"} · Community Counseling Center of Southern Ne
       <p style="margin:0 0 8px">${esc3(initials(s, c.client))} · DOS ${esc3(fmtDate(c.dos))} · ${esc3(PLAN2[c.payer])} · <b>${esc3(money(c.amount))}</b></p>
       <p style="color:#525B66;font-size:13px;margin:0 0 10px">This moves the claim to bad debt in the worklist. It stays in the history and can be found under Recovered · written off.${c.proof ? " Proof of timely filing is on file; a reconsideration may still recover it." : ""}</p>
       <label style="display:block;font-weight:600;font-size:13px;margin-bottom:4px" for="woR">Reason (optional)</label>
-      <input id="woR" style="width:100%;min-height:40px;border:1px solid #D9D4CC;border-radius:8px;padding:0 10px;font:inherit" value="${esc3(c.carc === "CO-96" ? "plan does not cover UDS" : c.carc === "CO-197" ? "no backdating · day before PA decision" : "")}">
+      <input id="woR" style="width:100%;min-height:40px;border:1px solid #D9D4CC;border-radius:8px;padding:0 10px;font:inherit" value="${esc3(c.carc === "CO-96" ? "drug testing not covered (dimension 5 monitoring)" : c.carc === "CO-197" ? "no level-of-care authorization · day before the ASAM decision" : "")}">
       <div style="display:flex;gap:8px;margin-top:14px"><button class="mbtn p" data-go>Write off ${esc3(money(c.amount))}</button><button class="mbtn" data-close>Cancel</button></div>`,
             (box, close) => box.querySelector("[data-go]").onclick = async () => {
               const reason = box.querySelector("#woR").value.trim();
@@ -2668,12 +2668,12 @@ ${me.title || "Clinical director"} · Community Counseling Center of Southern Ne
         "CO-16": "Claim/service lacks information or has submission/billing error(s)",
         "CO-18": "Exact duplicate claim/service",
         "CO-29": "The time limit for filing has expired",
-        "CO-50": "Not deemed a medical necessity by the payer",
-        "CO-96": "Non-covered charge(s)",
-        "CO-170": "Payment denied when performed/billed by this type of provider",
+        "CO-50": "Not medically necessary: the payer does not accept the ASAM dimension rationale for this level of care",
+        "CO-96": "Non-covered: drug testing that tracks ASAM dimension 5 relapse risk",
+        "CO-170": "Billed under a provider type the plan does not cover for this ASAM service",
         "CO-185": "The rendering provider is not eligible to perform the service billed",
-        "CO-197": "Precertification/authorization/notification absent",
-        "CO-198": "Precertification/authorization exceeded"
+        "CO-197": "Level-of-care authorization absent: the service started before the plan decided the ASAM level",
+        "CO-198": "Level-of-care authorization exceeded: units past the approved ASAM level and block"
       };
     }
   });
@@ -6264,7 +6264,7 @@ Este permiso dura el año escolar o hasta que yo lo pare por escrito o en este p
         { reason: '"Abstinent, no longer meets medical necessity" (Level 2.1 continued stay)', count: 9, check: "Draft argues D5 relapse risk without the IOP structure, with attendance and UDS dates, D4 and D6" },
         { reason: "Next IOP request arrived after the day it covers (no backdating)", count: 6, check: "Molina: next request drafted at session 3; initials sent before the first IOP day" },
         { reason: "Level 1 PA missing before session 24 (HPN)", count: 5, check: "HPN Level 1 rows keep a PA on file from session 1" },
-        { reason: "Provider type not eligible for a mental-health code (SUAM read as SUD-only)", count: 4, check: "Letter cites the Medicaid enrollment for mental-health services and the clinician's own credentialing" },
+        { reason: "Provider type not eligible for a dimension 3 mental-health code (SUD agency read as SUD-only)", count: 4, check: "Letter cites the Medicaid enrollment for mental-health services and the clinician's own credentialing" },
         { reason: "Level 2.1 initial without a UDS result from the assessment (SilverSummit)", count: 3, check: "Packet blocked until the UDS result is attached" },
         { reason: "ASAM dimension ratings missing from page 1 (CareSource form)", count: 2, check: "Ratings filled on page 1 from the assessment" }
       ];
@@ -10711,7 +10711,7 @@ ${xrefStart}
     ],
     "payer_notes": {
       "humana": "Says claims were never received · keep every 277CA acceptance",
-      "anthem": "New reviewers deny MH codes for the SUAM provider type",
+      "anthem": "New reviewers deny dimension 3 mental-health codes for the SUD agency provider type",
       "sentara": "5 sessions at a time · a gap day denies as auth exceeded",
       "aetna": "Corrected claims must carry frequency code 7 and the original claim number",
       "uhc": "Started requiring PA inside the 24 Level 1 sessions · paid one week, denied the next",
@@ -10798,9 +10798,9 @@ ${xrefStart}
     {
       "id": "CLM-24302", "client": "KT", "dos": "2026-10-02", "payer": "anthem", "codes": ["H0001 × 1"], "amount": 165, "rendering": "jperez",
       "status": "denied", "carc": "CO-16", "rarc": "M76", "denied_on": "2026-10-23", "submitted_first": "2026-10-06",
-      "reason": "Claim lacks information or has billing errors · missing/incomplete/invalid diagnosis.",
-      "plain": "The assessment line points to a second diagnosis, but only one diagnosis went on the claim. Anthem cannot match the line to a diagnosis, so it stops.",
-      "fix": "Corrected claim (frequency code 7, original claim number) with the line pointing to F10.20.",
+      "reason": "Claim lacks information · the diagnosis the ASAM assessment points to is missing from the claim.",
+      "plain": "The ASAM assessment's second service line points to alcohol use disorder (F10.20), but only one diagnosis went on the claim. Anthem cannot match the line to a diagnosis, so it stops.",
+      "fix": "Corrected claim (frequency code 7, original claim number) with the service line pointing to F10.20, as the ASAM assessment records it.",
       "packet": { "kind": "corrected", "title": "Corrected claim · diagnosis pointer", "items": ["Frequency code 7 + original claim number", "Line 1 points to F10.20"] },
       "flags": [],
       "history": [
@@ -10812,8 +10812,8 @@ ${xrefStart}
     {
       "id": "CLM-24310", "client": "EC", "dos": "2026-10-01", "payer": "anthem", "codes": ["90837 × 1"], "amount": 128, "rendering": "slane",
       "status": "denied", "carc": "CO-170", "rarc": "N95", "denied_on": "2026-10-22", "submitted_first": "2026-10-05",
-      "reason": "Payment is denied when performed/billed by this type of provider.",
-      "plain": "A new Anthem reviewer read \\"Substance Use Agency Model\\" and decided the agency cannot bill mental-health therapy. CCC of SN is enrolled for both SUD and mental health; S. Lane is an LCPC credentialed with Anthem since Aug 19.",
+      "reason": "Denied: the agency billed dimension 3 (emotional, behavioral or cognitive) therapy under a provider type the plan does not accept.",
+      "plain": "A new Anthem reviewer read \\"Substance Use Agency Model\\" and decided the agency cannot bill dimension 3 therapy under its SUD enrollment. CCC of SN is enrolled for both SUD and mental health; S. Lane is an LCPC credentialed with Anthem since Aug 19.",
       "fix": "Reconsideration letter citing the agency's enrollment (PT 17 / 215) for SUD and mental health and S. Lane's Anthem credentialing. Psyflo drafted it from the last two times this was overturned.",
       "packet": { "kind": "appeal", "title": "Reconsideration letter · provider type", "href": "AppealLetter.dc.html?id=R-0384", "items": ["Letter citing PT 17 / 215 enrollment for SUD and MH", "S. Lane · Anthem credentialing letter · Aug 19", "Two earlier overturned denials (Jun, Aug)"] },
       "flags": ["provider_type"],
@@ -10826,8 +10826,8 @@ ${xrefStart}
     {
       "id": "CLM-24328", "client": "EC", "dos": "2026-10-08", "payer": "anthem", "codes": ["90837 × 1"], "amount": 128, "rendering": "slane",
       "status": "denied", "carc": "CO-170", "rarc": "N95", "denied_on": "2026-10-27", "submitted_first": "2026-10-12",
-      "reason": "Payment is denied when performed/billed by this type of provider.",
-      "plain": "Same reviewer, same reason as CLM-24310 a week earlier. One letter can cover both dates.",
+      "reason": "Denied: the agency billed dimension 3 (emotional, behavioral or cognitive) therapy under a provider type the plan does not accept.",
+      "plain": "Same reviewer, same dimension 3 reason as CLM-24310 a week earlier. One letter can cover both dates.",
       "fix": "Add this date to the same reconsideration letter as CLM-24310.",
       "packet": { "kind": "appeal", "title": "Same letter as CLM-24310", "href": "AppealLetter.dc.html?id=R-0384", "items": ["Covered by the CLM-24310 letter"] },
       "flags": ["provider_type"],
@@ -10840,8 +10840,8 @@ ${xrefStart}
     {
       "id": "CLM-24296", "client": "LB", "dos": "2026-10-21", "payer": "sentara", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
       "status": "denied", "carc": "CO-198", "denied_on": "2026-10-27", "submitted_first": "2026-10-22",
-      "reason": "Precertification/authorization exceeded.",
-      "plain": "Molina authorizes 5 IOP days at a time. Day 6 (Oct 21) fell between the end of the first 5 and Molina's decision on the next 5, which came Oct 23. The next request was faxed Oct 16, right after day 3.",
+      "reason": "Precertification/authorization exceeded · units past the approved Level 2.1 block.",
+      "plain": "Molina authorizes 5 IOP days at a time, each based on an ASAM reassessment. Day 6 (Oct 21) fell between the end of the first 5 and Molina's decision on the next 5, which came Oct 23. The next request was faxed Oct 16, right after day 3.",
       "fix": "Reconsideration with the Oct 16 Sfax receipt: the request was in before day 5, and the gap is Molina's decision time.",
       "packet": { "kind": "reconsideration", "title": "Reconsideration · request was on time", "items": ["Sfax delivery receipt · Oct 16 · ref F-2266", "Molina approval for days 6–10 · Oct 23", "Group note for Oct 21 (3 h, signed)"] },
       "flags": ["plan_delay", "auth"], "proof": "Sfax F-2266 Oct 16",
@@ -10856,7 +10856,7 @@ ${xrefStart}
     {
       "id": "CLM-24271", "client": "ES", "dos": "2026-09-24", "payer": "humana", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
       "status": "denied", "carc": "CO-197", "denied_on": "2026-10-19", "submitted_first": "2026-09-28",
-      "reason": "Precertification/authorization/notification absent.",
+      "reason": "Authorization absent · Level 2.1 IOP began before the ASAM level-of-care decision.",
       "plain": "The client came to IOP on Sep 24 while the Level 2.1 request was still with SilverSummit. They approved it Sep 26, effective Sep 26. Level 2.1 is never backdated, so this day cannot be paid by the plan.",
       "fix": "Not recoverable from SilverSummit. Check whether the client qualifies for SAPTA block-grant funding for that day; if not, write it off. Psyflo now flags IOP days on the roster that fall before a PA decision.",
       "packet": { "kind": "none", "title": "No packet · not recoverable from the plan", "items": ["Check SAPTA grant eligibility for Sep 24"] },
@@ -10871,8 +10871,8 @@ ${xrefStart}
     {
       "id": "CLM-24288", "client": "PS", "dos": "2026-10-07", "payer": "anthem", "codes": ["H0048 × 1"], "amount": 14, "rendering": "khale",
       "status": "denied", "carc": "CO-96", "rarc": "N130", "denied_on": "2026-10-24", "submitted_first": "2026-10-09",
-      "reason": "Non-covered charge(s) · consult plan benefit documents.",
-      "plain": "Anthem does not pay for the urine drug screen. None of the Medicaid plans do, even the ones that now require the result.",
+      "reason": "Non-covered: the plan does not pay for drug testing that tracks dimension 5 relapse risk.",
+      "plain": "Anthem does not pay for the urine drug screen (H0048) that tracks dimension 5 relapse risk. None of the Medicaid plans do, even the ones that now require the result.",
       "fix": "Write it off and stop sending H0048 to Medicaid plans. Psyflo drops H0048 from claims and lists it for the SAPTA grant report instead.",
       "packet": { "kind": "none", "title": "No packet · plans do not pay for UDS", "items": [] },
       "flags": [],
@@ -10899,7 +10899,7 @@ ${xrefStart}
     {
       "id": "CLM-24322", "client": "SB", "dos": "2026-10-20", "payer": "uhc", "codes": ["H0004 × 4"], "amount": 80, "rendering": "khale",
       "status": "denied", "carc": "CO-197", "denied_on": "2026-10-28", "submitted_first": "2026-10-21",
-      "reason": "Precertification/authorization/notification absent.",
+      "reason": "Authorization absent · Level 1 outpatient session 20, with no level-of-care authorization on file.",
       "plain": "HPN paid the same code, same counselor, same client a week earlier (Oct 13, session 19) and denied this one (session 20) for no authorization. Level 1 has no PA for the first 24 sessions under the Medicaid rule; HPN has stopped following it without telling anyone.",
       "fix": "Reconsideration citing the paid claim CLM-24291 and the 24-session Level 1 rule. Psyflo also drafted the HPN PA for sessions 21 onward (paste into the HPN portal) so the next ones do not deny.",
       "packet": { "kind": "reconsideration", "title": "Reconsideration · inconsistent decision", "items": ["835 · CLM-24291 paid Oct 22 (same code, clinician, client)", "Session count: 20 of 24", "Nevada Medicaid Level 1 24-session rule (MSM Ch. 400)"] },
@@ -10929,7 +10929,7 @@ ${xrefStart}
     {
       "id": "CLM-24340", "client": "JO", "dos": "2026-10-16", "payer": "aetna", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
       "status": "denied", "carc": "CO-50", "denied_on": "2026-10-28", "submitted_first": "2026-10-19",
-      "reason": "Non-covered: not deemed a medical necessity by the payer.",
+      "reason": "Not medically necessary: the payer does not accept the ASAM dimension ratings for Level 2.1 on this day.",
       "plain": "CareSource's claims reviewer decided this Level 2.1 day was not medically necessary, although the day sits inside an approved authorization. Their PA team wants the ASAM dimension ratings on page 1; the claims team does too.",
       "fix": "Reconsideration with the authorization number and the ASAM ratings on page 1 (D1–D6), then the group note for the day.",
       "packet": { "kind": "reconsideration", "title": "Reconsideration · inside an approved auth", "items": ["Authorization CS-55120 · Level 2.1 · covers Oct 16", "ASAM ratings D1–D6 on page 1", "Group note for Oct 16 (3 h, signed)"] },
@@ -11165,7 +11165,7 @@ ${xrefStart}
       "submit": "Availity",
       "level1": "24 sessions without PA, then PA",
       "level21": "PA from the assessment",
-      "watch": "Information requests inside 24 h · new reviewer denies MH codes for SUAM"
+      "watch": "Information requests inside 24 h · new reviewer denies dimension 3 mental-health codes for the SUD agency"
     },
     "sentara": {
       "form": "Molina PA form",
@@ -11256,28 +11256,28 @@ ${xrefStart}
         "fix": "PA drafted at intake"
       },
       {
-        "reason": "Abstinent in treatment · no longer meets criteria",
+        "reason": "Dimension 5 not argued · payer reads abstinence as no longer needing Level 2.1",
         "n": 9,
         "plans": "Molina · Anthem",
         "amount": 21600,
         "fix": "D5 draft + peer-to-peer"
       },
       {
-        "reason": "IOP medical necessity not established over standard outpatient",
+        "reason": "Level 2.1 not supported by the ASAM dimension ratings over Level 1",
         "n": 12,
         "plans": "Molina · Anthem",
         "amount": 18400,
         "fix": "ASAM dimensions D1–D6 argued up front"
       },
       {
-        "reason": "Partial approval · units reduced without clinical rationale",
+        "reason": "Partial approval · units cut without an ASAM rationale",
         "n": 11,
         "plans": "Molina · CareSource",
         "amount": 14300,
         "fix": "flag and appeal before the filing window closes"
       },
       {
-        "reason": "Co-occurring disorder not documented as requiring IOP level",
+        "reason": "Dimension 3 co-occurring disorder not documented for the level of care",
         "n": 6,
         "plans": "Anthem · SilverSummit",
         "amount": 9800,
@@ -11291,7 +11291,7 @@ ${xrefStart}
         "fix": "request 72 hours before the units run out"
       },
       {
-        "reason": "Provider type not eligible (MH code, SUAM)",
+        "reason": "Provider type not eligible for a dimension 3 mental-health code (SUD agency)",
         "n": 7,
         "plans": "Anthem",
         "amount": 3150,
@@ -16133,6 +16133,7 @@ a.chip{text-decoration:none}a.chip:hover{text-decoration:underline}
     <header style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:12px 28px;border-bottom:1px solid #E6E1D9;background:#fff">
       <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#525B66;font-weight:600">As of <span style="color:#151B24">{{asOf}}</span></div>
       <span class="chip n">NV Medicaid FFS + 5 MCOs</span>
+      <span class="chip n">Read against ASAM criteria · dimensions 1–6 and level of care</span>
       <span class="chip n" title="Demo assumption: 180 days from date of service for every plan. Confirm per contract.">Timely filing · 180 days from DOS · confirm per contract</span>
       <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
         <sc-if value="{{isAdmin}}"><span class="chip y" title="Only admins see this. Remits cannot arrive during a demo.">Demo only</span><a class="btn o s" href="#demoPay">Demo: payer pays</a></sc-if>
@@ -16143,7 +16144,7 @@ a.chip{text-decoration:none}a.chip:hover{text-decoration:underline}
       <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px">
         <div>
           <h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-.01em">Denial Intelligence</h1>
-          <div class="sub" style="font-size:13px;margin-top:4px">Read from the 835 remits and 277CA reports you already download. Each denial comes with what it means for that plan, the filing clock and the packet to send. A person presses every button.</div>
+          <div class="sub" style="font-size:13px;margin-top:4px">Read from the 835 remits and 277CA reports you already download. Each clinical denial is read against the ASAM criteria: the six dimensions and the level of care. Each one comes with what it means for that plan, the filing clock and the packet to send. A person presses every button.</div>
         </div>
         <a class="btn o" href="PayerPlaybook.dc.html" style="margin-left:auto">What changed, plan by plan</a>
       </div>
@@ -16172,8 +16173,8 @@ a.chip{text-decoration:none}a.chip:hover{text-decoration:underline}
         <button class="{{tAll}}" onClick="{{pickAll}}">All open <b>{{nAll}}</b></button>
         <button class="{{tTimely}}" onClick="{{pickTimely}}" title="Unpaid with 30 days or less of the 180-day filing window left, or denied for timely filing">Timely filing at risk <b>{{nTimely}}</b></button>
         <button class="{{tPaid}}" onClick="{{pickPaid}}" title="Same code, same clinician, same client paid one week and denied the next">Paid-then-denied <b>{{nPaid}}</b></button>
-        <button class="{{tPtype}}" onClick="{{pickPtype}}" title="Provider type (SUAM misread) or rendering clinician not credentialed with the plan">Provider type <b>{{nPtype}}</b></button>
-        <button class="{{tAuth}}" onClick="{{pickAuth}}" title="Authorization absent or exceeded">Auth missing <b>{{nAuth}}</b></button>
+        <button class="{{tPtype}}" onClick="{{pickPtype}}" title="A SUD agency billed a dimension 3 service under a provider type the plan does not accept, or the rendering clinician is not credentialed">Provider type <b>{{nPtype}}</b></button>
+        <button class="{{tAuth}}" onClick="{{pickAuth}}" title="Level-of-care authorization absent or exceeded">Level-of-care auth missing <b>{{nAuth}}</b></button>
         <button class="{{tClosed}}" onClick="{{pickClosed}}">Recovered · written off <b>{{nClosed}}</b></button>
       </div>
 

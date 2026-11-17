@@ -1,4 +1,4 @@
-// 53 · Denial Intelligence — the denial worklist over state.claims: what each denial means for that plan,
+// 53 · Denial Intelligence — the denial worklist over state.claims, read against the ASAM criteria (six dimensions and the level of care): what each denial means for that plan,
 // the 180-day timely-filing clock (demo assumption · confirm per contract), the packet to send, and the
 // buttons a person presses (claim.resubmit / claim.reconsider / claim.writeoff; admin "Demo: payer pays").
 import { register, Screen, M, raw, esc, modal, toast, session } from '../app.js';
@@ -40,7 +40,7 @@ function flagHtml(s, c) {
   if (f.includes('plan_delay') && c.proof) out.push(`<span class="chip g" title="${esc(c.proof)}">Plan's own delay — proof of timely filing on file</span>`);
   else if (f.includes('plan_delay')) out.push(`<span class="chip g">Plan's own delay</span>`);
   if (f.includes('not_credentialed')) out.push(`<span class="chip r">Rendering NPI not yet enrolled with this plan</span>`);
-  if (f.includes('provider_type')) out.push(`<span class="chip n">Provider-type misread (SUAM)</span>`);
+  if (f.includes('provider_type')) out.push(`<span class="chip n">Provider-type misread (SUD agency)</span>`);
   return raw(out.join(''));
 }
 
@@ -199,7 +199,7 @@ register('Claims', class extends Screen {
       <p style="margin:0 0 8px">${esc(initials(s, c.client))} · DOS ${esc(fmtDate(c.dos))} · ${esc(PLAN[c.payer])} · <b>${esc(money(c.amount))}</b></p>
       <p style="color:#525B66;font-size:13px;margin:0 0 10px">This moves the claim to bad debt in the worklist. It stays in the history and can be found under Recovered · written off.${c.proof ? ' Proof of timely filing is on file; a reconsideration may still recover it.' : ''}</p>
       <label style="display:block;font-weight:600;font-size:13px;margin-bottom:4px" for="woR">Reason (optional)</label>
-      <input id="woR" style="width:100%;min-height:40px;border:1px solid #D9D4CC;border-radius:8px;padding:0 10px;font:inherit" value="${esc(c.carc === 'CO-96' ? 'plan does not cover UDS' : c.carc === 'CO-197' ? 'no backdating · day before PA decision' : '')}">
+      <input id="woR" style="width:100%;min-height:40px;border:1px solid #D9D4CC;border-radius:8px;padding:0 10px;font:inherit" value="${esc(c.carc === 'CO-96' ? 'drug testing not covered (dimension 5 monitoring)' : c.carc === 'CO-197' ? 'no level-of-care authorization · day before the ASAM decision' : '')}">
       <div style="display:flex;gap:8px;margin-top:14px"><button class="mbtn p" data-go>Write off ${esc(money(c.amount))}</button><button class="mbtn" data-close>Cancel</button></div>`,
       (box, close) => box.querySelector('[data-go]').onclick = async () => {
         const reason = box.querySelector('#woR').value.trim();
@@ -238,10 +238,10 @@ export const CARC = {
   'CO-16': 'Claim/service lacks information or has submission/billing error(s)',
   'CO-18': 'Exact duplicate claim/service',
   'CO-29': 'The time limit for filing has expired',
-  'CO-50': 'Not deemed a medical necessity by the payer',
-  'CO-96': 'Non-covered charge(s)',
-  'CO-170': 'Payment denied when performed/billed by this type of provider',
+  'CO-50': 'Not medically necessary: the payer does not accept the ASAM dimension rationale for this level of care',
+  'CO-96': 'Non-covered: drug testing that tracks ASAM dimension 5 relapse risk',
+  'CO-170': 'Billed under a provider type the plan does not cover for this ASAM service',
   'CO-185': 'The rendering provider is not eligible to perform the service billed',
-  'CO-197': 'Precertification/authorization/notification absent',
-  'CO-198': 'Precertification/authorization exceeded'
+  'CO-197': 'Level-of-care authorization absent: the service started before the plan decided the ASAM level',
+  'CO-198': 'Level-of-care authorization exceeded: units past the approved ASAM level and block'
 };

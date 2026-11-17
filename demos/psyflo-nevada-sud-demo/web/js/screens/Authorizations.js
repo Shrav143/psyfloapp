@@ -159,7 +159,7 @@ function nextAction(s, r) {
     case 'peer_to_peer_booked': { if (r.p2p_at && r.p2p_at.slice(0, 10) < s.today) return 'Call date has passed. Log the outcome (awaiting decision is fine).'; return 'Call notes by ASAM dimension are ready (D5 relapse risk, D4, D6, attendance and negative UDS dates).'; }
     case 'p2p_awaiting': return `Call held. Waiting for ${payerFirst(s, r.payer)}'s decision; log it when it arrives.`;
     case 'denied': return /provider|type|specialty|eligible/i.test(r.denial_reason || '')
-      ? `Reason: "${r.denial_reason}." The reviewer read the SUAM provider type as SUD-only. Reconsideration letter drafted; a person signs and sends it.`
+      ? `Reason: "${r.denial_reason}." The reviewer read the SUD agency provider type as SUD-only. Reconsideration letter drafted; a person signs and sends it.`
       : `Reason: "${r.denial_reason || 'not given'}." Reconsideration letter drafted from the chart; a person signs and sends it.`;
     case 'appeal_sent': return 'Reconsideration signed by a clinician and sent. Waiting for the plan.';
     case 'early_discharge': return r.step_down ? `Last IOP day ${M.fmtDate(r.step_down.last_iop)} · first Level 1 session ${M.fmtDate(r.step_down.first_l1)} · new Level 1 initial ${M.fmtDate(r.step_down.send)}`

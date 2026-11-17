@@ -77,6 +77,7 @@ a.chip{text-decoration:none}a.chip:hover{text-decoration:underline}
     <header style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:12px 28px;border-bottom:1px solid #E6E1D9;background:#fff">
       <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#525B66;font-weight:600">As of <span style="color:#151B24">{{asOf}}</span></div>
       <span class="chip n">NV Medicaid FFS + 5 MCOs</span>
+      <span class="chip n">Read against ASAM criteria · dimensions 1–6 and level of care</span>
       <span class="chip n" title="Demo assumption: 180 days from date of service for every plan. Confirm per contract.">Timely filing · 180 days from DOS · confirm per contract</span>
       <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
         <sc-if value="{{isAdmin}}"><span class="chip y" title="Only admins see this. Remits cannot arrive during a demo.">Demo only</span><a class="btn o s" href="#demoPay">Demo: payer pays</a></sc-if>
@@ -87,7 +88,7 @@ a.chip{text-decoration:none}a.chip:hover{text-decoration:underline}
       <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px">
         <div>
           <h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-.01em">Denial Intelligence</h1>
-          <div class="sub" style="font-size:13px;margin-top:4px">Read from the 835 remits and 277CA reports you already download. Each denial comes with what it means for that plan, the filing clock and the packet to send. A person presses every button.</div>
+          <div class="sub" style="font-size:13px;margin-top:4px">Read from the 835 remits and 277CA reports you already download. Each clinical denial is read against the ASAM criteria: the six dimensions and the level of care. Each one comes with what it means for that plan, the filing clock and the packet to send. A person presses every button.</div>
         </div>
         <a class="btn o" href="PayerPlaybook.dc.html" style="margin-left:auto">What changed, plan by plan</a>
       </div>
@@ -116,8 +117,8 @@ a.chip{text-decoration:none}a.chip:hover{text-decoration:underline}
         <button class="{{tAll}}" onClick="{{pickAll}}">All open <b>{{nAll}}</b></button>
         <button class="{{tTimely}}" onClick="{{pickTimely}}" title="Unpaid with 30 days or less of the 180-day filing window left, or denied for timely filing">Timely filing at risk <b>{{nTimely}}</b></button>
         <button class="{{tPaid}}" onClick="{{pickPaid}}" title="Same code, same clinician, same client paid one week and denied the next">Paid-then-denied <b>{{nPaid}}</b></button>
-        <button class="{{tPtype}}" onClick="{{pickPtype}}" title="Provider type (SUAM misread) or rendering clinician not credentialed with the plan">Provider type <b>{{nPtype}}</b></button>
-        <button class="{{tAuth}}" onClick="{{pickAuth}}" title="Authorization absent or exceeded">Auth missing <b>{{nAuth}}</b></button>
+        <button class="{{tPtype}}" onClick="{{pickPtype}}" title="A SUD agency billed a dimension 3 service under a provider type the plan does not accept, or the rendering clinician is not credentialed">Provider type <b>{{nPtype}}</b></button>
+        <button class="{{tAuth}}" onClick="{{pickAuth}}" title="Level-of-care authorization absent or exceeded">Level-of-care auth missing <b>{{nAuth}}</b></button>
         <button class="{{tClosed}}" onClick="{{pickClosed}}">Recovered · written off <b>{{nClosed}}</b></button>
       </div>
 

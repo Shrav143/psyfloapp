@@ -81,7 +81,7 @@
       "submit": "Availity",
       "level1": "24 sessions without PA, then PA",
       "level21": "PA from the assessment",
-      "watch": "Information requests inside 24 h · new reviewer denies MH codes for SUAM"
+      "watch": "Information requests inside 24 h · new reviewer denies dimension 3 mental-health codes for the SUD agency"
     },
     "sentara": {
       "form": "Molina PA form",
@@ -172,28 +172,28 @@
         "fix": "PA drafted at intake"
       },
       {
-        "reason": "Abstinent in treatment · no longer meets criteria",
+        "reason": "Dimension 5 not argued · payer reads abstinence as no longer needing Level 2.1",
         "n": 9,
         "plans": "Molina · Anthem",
         "amount": 21600,
         "fix": "D5 draft + peer-to-peer"
       },
       {
-        "reason": "IOP medical necessity not established over standard outpatient",
+        "reason": "Level 2.1 not supported by the ASAM dimension ratings over Level 1",
         "n": 12,
         "plans": "Molina · Anthem",
         "amount": 18400,
         "fix": "ASAM dimensions D1–D6 argued up front"
       },
       {
-        "reason": "Partial approval · units reduced without clinical rationale",
+        "reason": "Partial approval · units cut without an ASAM rationale",
         "n": 11,
         "plans": "Molina · CareSource",
         "amount": 14300,
         "fix": "flag and appeal before the filing window closes"
       },
       {
-        "reason": "Co-occurring disorder not documented as requiring IOP level",
+        "reason": "Dimension 3 co-occurring disorder not documented for the level of care",
         "n": 6,
         "plans": "Anthem · SilverSummit",
         "amount": 9800,
@@ -207,7 +207,7 @@
         "fix": "request 72 hours before the units run out"
       },
       {
-        "reason": "Provider type not eligible (MH code, SUAM)",
+        "reason": "Provider type not eligible for a dimension 3 mental-health code (SUD agency)",
         "n": 7,
         "plans": "Anthem",
         "amount": 3150,

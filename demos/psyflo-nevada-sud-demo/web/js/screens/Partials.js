@@ -17,7 +17,7 @@ const REASONS = [
   { reason: '"Abstinent, no longer meets medical necessity" (Level 2.1 continued stay)', count: 9, check: 'Draft argues D5 relapse risk without the IOP structure, with attendance and UDS dates, D4 and D6' },
   { reason: 'Next IOP request arrived after the day it covers (no backdating)', count: 6, check: 'Molina: next request drafted at session 3; initials sent before the first IOP day' },
   { reason: 'Level 1 PA missing before session 24 (HPN)', count: 5, check: 'HPN Level 1 rows keep a PA on file from session 1' },
-  { reason: 'Provider type not eligible for a mental-health code (SUAM read as SUD-only)', count: 4, check: "Letter cites the Medicaid enrollment for mental-health services and the clinician's own credentialing" },
+  { reason: 'Provider type not eligible for a dimension 3 mental-health code (SUD agency read as SUD-only)', count: 4, check: "Letter cites the Medicaid enrollment for mental-health services and the clinician's own credentialing" },
   { reason: 'Level 2.1 initial without a UDS result from the assessment (SilverSummit)', count: 3, check: 'Packet blocked until the UDS result is attached' },
   { reason: 'ASAM dimension ratings missing from page 1 (CareSource form)', count: 2, check: 'Ratings filled on page 1 from the assessment' }
 ];

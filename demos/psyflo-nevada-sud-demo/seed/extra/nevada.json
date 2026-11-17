@@ -20,7 +20,7 @@
     ],
     "payer_notes": {
       "humana": "Says claims were never received · keep every 277CA acceptance",
-      "anthem": "New reviewers deny MH codes for the SUAM provider type",
+      "anthem": "New reviewers deny dimension 3 mental-health codes for the SUD agency provider type",
       "sentara": "5 sessions at a time · a gap day denies as auth exceeded",
       "aetna": "Corrected claims must carry frequency code 7 and the original claim number",
       "uhc": "Started requiring PA inside the 24 Level 1 sessions · paid one week, denied the next",
@@ -107,9 +107,9 @@
     {
       "id": "CLM-24302", "client": "KT", "dos": "2026-10-02", "payer": "anthem", "codes": ["H0001 × 1"], "amount": 165, "rendering": "jperez",
       "status": "denied", "carc": "CO-16", "rarc": "M76", "denied_on": "2026-10-23", "submitted_first": "2026-10-06",
-      "reason": "Claim lacks information or has billing errors · missing/incomplete/invalid diagnosis.",
-      "plain": "The assessment line points to a second diagnosis, but only one diagnosis went on the claim. Anthem cannot match the line to a diagnosis, so it stops.",
-      "fix": "Corrected claim (frequency code 7, original claim number) with the line pointing to F10.20.",
+      "reason": "Claim lacks information · the diagnosis the ASAM assessment points to is missing from the claim.",
+      "plain": "The ASAM assessment's second service line points to alcohol use disorder (F10.20), but only one diagnosis went on the claim. Anthem cannot match the line to a diagnosis, so it stops.",
+      "fix": "Corrected claim (frequency code 7, original claim number) with the service line pointing to F10.20, as the ASAM assessment records it.",
       "packet": { "kind": "corrected", "title": "Corrected claim · diagnosis pointer", "items": ["Frequency code 7 + original claim number", "Line 1 points to F10.20"] },
       "flags": [],
       "history": [
@@ -121,8 +121,8 @@
     {
       "id": "CLM-24310", "client": "EC", "dos": "2026-10-01", "payer": "anthem", "codes": ["90837 × 1"], "amount": 128, "rendering": "slane",
       "status": "denied", "carc": "CO-170", "rarc": "N95", "denied_on": "2026-10-22", "submitted_first": "2026-10-05",
-      "reason": "Payment is denied when performed/billed by this type of provider.",
-      "plain": "A new Anthem reviewer read \"Substance Use Agency Model\" and decided the agency cannot bill mental-health therapy. CCC of SN is enrolled for both SUD and mental health; S. Lane is an LCPC credentialed with Anthem since Aug 19.",
+      "reason": "Denied: the agency billed dimension 3 (emotional, behavioral or cognitive) therapy under a provider type the plan does not accept.",
+      "plain": "A new Anthem reviewer read \"Substance Use Agency Model\" and decided the agency cannot bill dimension 3 therapy under its SUD enrollment. CCC of SN is enrolled for both SUD and mental health; S. Lane is an LCPC credentialed with Anthem since Aug 19.",
       "fix": "Reconsideration letter citing the agency's enrollment (PT 17 / 215) for SUD and mental health and S. Lane's Anthem credentialing. Psyflo drafted it from the last two times this was overturned.",
       "packet": { "kind": "appeal", "title": "Reconsideration letter · provider type", "href": "AppealLetter.dc.html?id=R-0384", "items": ["Letter citing PT 17 / 215 enrollment for SUD and MH", "S. Lane · Anthem credentialing letter · Aug 19", "Two earlier overturned denials (Jun, Aug)"] },
       "flags": ["provider_type"],
@@ -135,8 +135,8 @@
     {
       "id": "CLM-24328", "client": "EC", "dos": "2026-10-08", "payer": "anthem", "codes": ["90837 × 1"], "amount": 128, "rendering": "slane",
       "status": "denied", "carc": "CO-170", "rarc": "N95", "denied_on": "2026-10-27", "submitted_first": "2026-10-12",
-      "reason": "Payment is denied when performed/billed by this type of provider.",
-      "plain": "Same reviewer, same reason as CLM-24310 a week earlier. One letter can cover both dates.",
+      "reason": "Denied: the agency billed dimension 3 (emotional, behavioral or cognitive) therapy under a provider type the plan does not accept.",
+      "plain": "Same reviewer, same dimension 3 reason as CLM-24310 a week earlier. One letter can cover both dates.",
       "fix": "Add this date to the same reconsideration letter as CLM-24310.",
       "packet": { "kind": "appeal", "title": "Same letter as CLM-24310", "href": "AppealLetter.dc.html?id=R-0384", "items": ["Covered by the CLM-24310 letter"] },
       "flags": ["provider_type"],
@@ -149,8 +149,8 @@
     {
       "id": "CLM-24296", "client": "LB", "dos": "2026-10-21", "payer": "sentara", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
       "status": "denied", "carc": "CO-198", "denied_on": "2026-10-27", "submitted_first": "2026-10-22",
-      "reason": "Precertification/authorization exceeded.",
-      "plain": "Molina authorizes 5 IOP days at a time. Day 6 (Oct 21) fell between the end of the first 5 and Molina's decision on the next 5, which came Oct 23. The next request was faxed Oct 16, right after day 3.",
+      "reason": "Precertification/authorization exceeded · units past the approved Level 2.1 block.",
+      "plain": "Molina authorizes 5 IOP days at a time, each based on an ASAM reassessment. Day 6 (Oct 21) fell between the end of the first 5 and Molina's decision on the next 5, which came Oct 23. The next request was faxed Oct 16, right after day 3.",
       "fix": "Reconsideration with the Oct 16 Sfax receipt: the request was in before day 5, and the gap is Molina's decision time.",
       "packet": { "kind": "reconsideration", "title": "Reconsideration · request was on time", "items": ["Sfax delivery receipt · Oct 16 · ref F-2266", "Molina approval for days 6–10 · Oct 23", "Group note for Oct 21 (3 h, signed)"] },
       "flags": ["plan_delay", "auth"], "proof": "Sfax F-2266 Oct 16",
@@ -165,7 +165,7 @@
     {
       "id": "CLM-24271", "client": "ES", "dos": "2026-09-24", "payer": "humana", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
       "status": "denied", "carc": "CO-197", "denied_on": "2026-10-19", "submitted_first": "2026-09-28",
-      "reason": "Precertification/authorization/notification absent.",
+      "reason": "Authorization absent · Level 2.1 IOP began before the ASAM level-of-care decision.",
       "plain": "The client came to IOP on Sep 24 while the Level 2.1 request was still with SilverSummit. They approved it Sep 26, effective Sep 26. Level 2.1 is never backdated, so this day cannot be paid by the plan.",
       "fix": "Not recoverable from SilverSummit. Check whether the client qualifies for SAPTA block-grant funding for that day; if not, write it off. Psyflo now flags IOP days on the roster that fall before a PA decision.",
       "packet": { "kind": "none", "title": "No packet · not recoverable from the plan", "items": ["Check SAPTA grant eligibility for Sep 24"] },
@@ -180,8 +180,8 @@
     {
       "id": "CLM-24288", "client": "PS", "dos": "2026-10-07", "payer": "anthem", "codes": ["H0048 × 1"], "amount": 14, "rendering": "khale",
       "status": "denied", "carc": "CO-96", "rarc": "N130", "denied_on": "2026-10-24", "submitted_first": "2026-10-09",
-      "reason": "Non-covered charge(s) · consult plan benefit documents.",
-      "plain": "Anthem does not pay for the urine drug screen. None of the Medicaid plans do, even the ones that now require the result.",
+      "reason": "Non-covered: the plan does not pay for drug testing that tracks dimension 5 relapse risk.",
+      "plain": "Anthem does not pay for the urine drug screen (H0048) that tracks dimension 5 relapse risk. None of the Medicaid plans do, even the ones that now require the result.",
       "fix": "Write it off and stop sending H0048 to Medicaid plans. Psyflo drops H0048 from claims and lists it for the SAPTA grant report instead.",
       "packet": { "kind": "none", "title": "No packet · plans do not pay for UDS", "items": [] },
       "flags": [],
@@ -208,7 +208,7 @@
     {
       "id": "CLM-24322", "client": "SB", "dos": "2026-10-20", "payer": "uhc", "codes": ["H0004 × 4"], "amount": 80, "rendering": "khale",
       "status": "denied", "carc": "CO-197", "denied_on": "2026-10-28", "submitted_first": "2026-10-21",
-      "reason": "Precertification/authorization/notification absent.",
+      "reason": "Authorization absent · Level 1 outpatient session 20, with no level-of-care authorization on file.",
       "plain": "HPN paid the same code, same counselor, same client a week earlier (Oct 13, session 19) and denied this one (session 20) for no authorization. Level 1 has no PA for the first 24 sessions under the Medicaid rule; HPN has stopped following it without telling anyone.",
       "fix": "Reconsideration citing the paid claim CLM-24291 and the 24-session Level 1 rule. Psyflo also drafted the HPN PA for sessions 21 onward (paste into the HPN portal) so the next ones do not deny.",
       "packet": { "kind": "reconsideration", "title": "Reconsideration · inconsistent decision", "items": ["835 · CLM-24291 paid Oct 22 (same code, clinician, client)", "Session count: 20 of 24", "Nevada Medicaid Level 1 24-session rule (MSM Ch. 400)"] },
@@ -238,7 +238,7 @@
     {
       "id": "CLM-24340", "client": "JO", "dos": "2026-10-16", "payer": "aetna", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
       "status": "denied", "carc": "CO-50", "denied_on": "2026-10-28", "submitted_first": "2026-10-19",
-      "reason": "Non-covered: not deemed a medical necessity by the payer.",
+      "reason": "Not medically necessary: the payer does not accept the ASAM dimension ratings for Level 2.1 on this day.",
       "plain": "CareSource's claims reviewer decided this Level 2.1 day was not medically necessary, although the day sits inside an approved authorization. Their PA team wants the ASAM dimension ratings on page 1; the claims team does too.",
       "fix": "Reconsideration with the authorization number and the ASAM ratings on page 1 (D1–D6), then the group note for the day.",
       "packet": { "kind": "reconsideration", "title": "Reconsideration · inside an approved auth", "items": ["Authorization CS-55120 · Level 2.1 · covers Oct 16", "ASAM ratings D1–D6 on page 1", "Group note for Oct 16 (3 h, signed)"] },
