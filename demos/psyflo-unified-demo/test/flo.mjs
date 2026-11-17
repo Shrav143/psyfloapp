@@ -140,7 +140,7 @@ try {
   }
   await T.test('asking in the drawer: Enter sends, the answer has a summary, a table, links and a source line; a follow-up chip asks again; history survives closing and reopening; New chat clears', async () => {
     const p = await open('jperez', '/#/Dashboard'); await openFlo(p);
-    assert.match(await p.locator('[data-flo-scope]').innerText(), /All patients · 19/); assert.ok((await p.locator('.flo-empty [data-flo="q"]').count()) >= 6, 'starter questions');
+    assert.match(await p.locator('[data-flo-scope]').innerText(), /All patients · 20/); assert.ok((await p.locator('.flo-empty [data-flo="q"]').count()) >= 6, 'starter questions');
     await p.locator('.flo-empty [data-flo="q"]', { hasText: 'Who is behind on notes?' }).click(); await p.waitForSelector('.flo-m--f');
     const a = p.locator('.flo-m--f').first(); assert.match(await a.locator('.flo-sum').innerText(), /notes? (is|are) behind/); assert.ok(await a.locator('table.flo-t').count(), 'a table'); assert.ok(await a.locator('.flo-ln a').count(), 'a link'); assert.match(await a.locator('.flo-src').innerText(), /source/i); assert.ok(await a.locator('.flo-fu button').count(), 'follow-ups');
     await ask(p, 'Which authorizations are running low?'); assert.ok(await p.locator('.flo-bars').count(), 'bars for units'); assert.match(await p.locator('.flo-m--f').nth(1).locator('.flo-src').innerText(), /75/);

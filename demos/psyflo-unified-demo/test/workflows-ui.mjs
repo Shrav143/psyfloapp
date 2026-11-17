@@ -84,7 +84,7 @@ try {
     // the old Rules tab: the same link opens the library, filtered the same way
     await p.goto(BASE + '/#/Settings?tab=rules&q=follow-up&cat=HARVEST-REPORTED'); await p.waitForSelector('#wm-pal [data-g="rules"][open]');
     assert.eq(await p.inputValue('#wm-rq'), 'follow-up'); assert.eq(await p.inputValue('#wm-rcat'), 'HARVEST-REPORTED'); assert.eq(await p.locator('.wm-pl--rules li').count(), 1);
-    await p.fill('#wm-rq', ''); await p.selectOption('#wm-rcat', ''); await p.waitForTimeout(250); assert.ok(await p.locator('.wm-pl--rules li').count() >= 70, 'all 73 rules are in the library: ' + await p.locator('.wm-pl--rules li').count());
+    await p.fill('#wm-rq', ''); await p.selectOption('#wm-rcat', ''); await p.waitForTimeout(250); assert.ok(await p.locator('.wm-pl--rules li').count() >= 70, 'all 70 rules are in the library: ' + await p.locator('.wm-pl--rules li').count());
     await p.fill('#wm-rq', 'zzzz-nothing'); await p.waitForTimeout(250); assert.match(await p.locator('.wm-lib').innerText(), /No rule matches/);
     assert.deepEq(fatal(p), [], 'console errors'); await done();
   });
@@ -100,7 +100,7 @@ try {
     for (const l of ['Send by fax', 'Call the payer', 'File an appeal', 'Sign in Lauris', 'Text the family']) assert.ok(locked.some(t => t.includes(l)), l);
     assert.eq(await p.locator('#wm-pal [data-g="locked"] [data-wm]').count(), 0, 'nothing locked can be added');
     await p.locator('#wm-pal [data-g="locked"] .ui-hint__b').first().scrollIntoViewIfNeeded(); await p.waitForTimeout(250); await p.hover('#wm-pal [data-g="locked"] .ui-hint__b >> nth=0'); await p.waitForTimeout(200); assert.match(await p.locator('#wm-pal [data-g="locked"] .ui-hint__t[data-on]').innerText(), /A person does this step\. Psyflo does not send, call, file or sign on its own/);
-    await p.click('#wm-pal details[data-g="rules"] summary'); assert.eq(await p.locator('#wm-pal .wm-pl--rules li').count(), 73);
+    await p.click('#wm-pal details[data-g="rules"] summary'); assert.eq(await p.locator('#wm-pal .wm-pl--rules li').count(), 70);
     assert.eq(await p.locator('#wm-pal .wm-pl--rules li').first().locator('.wm-v').count(), 1, 'a verification icon on each rule');
     await p.screenshot({ path: SHOTS + '/r5-palette-1440.png' }); assert.deepEq(fatal(p), [], 'console errors'); await done();
   });

@@ -303,12 +303,12 @@ try {
   await T.test('feedback Nov 12: no date or time and no "N of M" above the table; rows per page 10, 25, 50, 100 at the bottom, kept in the address', async () => {
     const p = await open('jperez', '/#/Dashboard');
     const head = await p.locator('.d-head').innerText(); assert.noMatch(head, /\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\b|\d{1,2}:\d{2}\s*(am|pm)/i, 'no date or time in the header: ' + head);
-    assert.eq(await p.locator('.ui-fcount b.ui-num').count(), 0, 'no "19 of 19 patients" count at the top');
+    assert.eq(await p.locator('.ui-fcount b.ui-num').count(), 0, 'no "20 of 20 patients" count at the top');
     assert.deepEq(await p.locator('select[data-ui-pgsize] option').allTextContents(), ['10', '25', '50', '100']);
-    assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 1–19 of 19 patients/); assert.eq(await p.locator('tr.d-row').count(), 19, 'the default page (25) holds all 19');
+    assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 1–20 of 20 patients/); assert.eq(await p.locator('tr.d-row').count(), 20, 'the default page (25) holds all 20');
     await p.selectOption('select[data-ui-pgsize]', '10'); await p.waitForTimeout(300);
-    assert.eq(await p.locator('tr.d-row').count(), 10); assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 1–10 of 19/); assert.match(await p.evaluate(() => location.hash), /size=10/);
-    await p.click('[data-ui-pgnext]'); await p.waitForTimeout(300); assert.eq(await p.locator('tr.d-row').count(), 9); assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 11–19 of 19/);
+    assert.eq(await p.locator('tr.d-row').count(), 10); assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 1–10 of 20/); assert.match(await p.evaluate(() => location.hash), /size=10/);
+    await p.click('[data-ui-pgnext]'); await p.waitForTimeout(300); assert.eq(await p.locator('tr.d-row').count(), 10); assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 11–20 of 20/);
     await p.click('.ui-fchip >> text=Behind'); await p.waitForTimeout(300); assert.match(await p.locator('.ui-pager__range').innerText(), /^Showing 1–\d+ of \d+ patients/, 'a filter goes back to page 1');
     const q = await open('jperez', '/#/Dashboard?size=50'); assert.eq(await q.locator('select[data-ui-pgsize]').inputValue(), '50', 'the size survives a reload'); await done();
   });

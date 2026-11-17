@@ -182,7 +182,7 @@
       "count": 2,
       "dims": [],
       "level": true,
-      "check": "Date of the latest ASAM assessment against the reassessment rule (asam.reassess_days); an overdue reassessment, or one indicated by an incident since the last assessment, is flagged before the request goes out."
+      "check": "Date of the latest ASAM assessment against the reassessment rule (30 days in the demo rules table); an overdue reassessment, or one indicated by an incident since the last assessment, is flagged before the request goes out."
     },
     {
       "reason": "\"No documented use in the last 30 days\"",

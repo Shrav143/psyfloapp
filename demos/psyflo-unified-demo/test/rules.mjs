@@ -23,7 +23,9 @@ await T.test('the register is covered: R-001..R-054 each appear in at least one 
   const s = await state('dowens'); const have = new Set(s.rules.flatMap(r => String(r.register || '').split(/[ ,]+/)));
   const want = [...register.matchAll(/^\| (R-\d{3}) \|/gm)].map(m => m[1]);
   assert.eq(want.length, 54);
-  assert.deepEq(want.filter(x => !have.has(x)), []);
+  // R-030, R-031 and R-054 were the day-treatment three-criteria admission rules; for IOP they are replaced by the ASAM rows (R-055: asam.level_limits, asam.reassess_days)
+  const RETIRED = ['R-030', 'R-031', 'R-054'];
+  assert.deepEq(want.filter(x => !have.has(x) && !RETIRED.includes(x)), []); assert.ok(have.has('R-055'), 'the ASAM rules are registered');
 });
 await T.test('unit bands: official 120/180/300 by default; the 60-minute rule is only an alternate value', async () => {
   const s = await state('jperez');
@@ -33,11 +35,11 @@ await T.test('unit bands: official 120/180/300 by default; the 60-minute rule is
 });
 await T.test('the named rules exist with the right category: plan due, decision clock, additional info, continued stay, notes, discharge, signature modes, eligibility, group size', async () => {
   const s = await state('jperez'); const cat = (k, c) => assert.eq(rule(s, k).category, c, k);
-  cat('isp.due_hours_harvest', 'HARVEST-REPORTED'); cat('isp.due_days_official', 'OFFICIAL-VERIFIED');
+  cat('isp.due_hours_harvest', 'HARVEST-REPORTED'); cat('isp.due_days_official', 'UNVERIFIED-DEMO-ASSUMPTION');
   cat('decision.followup_day', 'HARVEST-REPORTED'); cat('decision.overdue_after_days', 'HARVEST-REPORTED'); cat('decision.public_standard_days', 'UNVERIFIED-DEMO-ASSUMPTION');
   assert.eq(rule(s, 'info_request.hours').value, 24); cat('continued_stay.lead_business_days', 'UNVERIFIED-DEMO-ASSUMPTION');
   assert.eq(rule(s, 'notes.daily_due_hours').value, 24); cat('notes.daily_due_hours', 'HARVEST-REPORTED');
-  assert.eq(rule(s, 'discharge.lapse_days').value, 31); cat('discharge.lapse_days', 'OFFICIAL-VERIFIED');
+  assert.eq(rule(s, 'discharge.lapse_days').value, 31); cat('discharge.lapse_days', 'UNVERIFIED-DEMO-ASSUMPTION');
   assert.ok(rule(s, 'asam.reassess_days').value && rule(s, 'asam.level_limits').value && rule(s, 'eligibility.recheck_days').unit);
   for (const d of ['consent', 'release', 'enrollment', 'quarterly', 'appeal']) assert.ok(['remote_allowed', 'in_person_required', 'pending_validation'].includes(signatureMode(s, d)), d);
   assert.eq(rule(s, 'analytics.min_group_size').value, 5);

@@ -75,7 +75,7 @@ await T.test('EXA-04 appeal window: computed from the notice date (60 days, unve
 });
 await T.test('deadlines return the date, the source and the verification label from the rules table', async () => {
   const s = await state('jperez');
-  const d = deadline(s, 'isp.due_days_official', '2026-10-21'); assert.eq(d.date, '2026-11-20'); assert.eq(d.category, 'OFFICIAL-VERIFIED'); assert.match(d.source, /Chapter IV/);
+  const d = deadline(s, 'isp.due_days_official', '2026-10-21'); assert.eq(d.date, '2026-11-20'); assert.eq(d.category, 'UNVERIFIED-DEMO-ASSUMPTION', 'carried over from day treatment, not verified for IOP'); assert.match(d.source, /CMHRS manual/);
   const h = deadline(s, 'isp.due_hours_harvest', '2026-10-21T10:00'); assert.eq(h.date, '2026-10-22T10:00'); assert.eq(h.verification, 'Harvest-reported');
   const b = deadline(s, 'continued_stay.lead_business_days', '2026-11-13', { value: -14 }); assert.ok(b.date < '2026-11-13');
   assert.ok(M.STAGE_LABEL.needs_approval === 'Pending clinical approval');
