@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Same activity, two individuals, two notes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+body{margin:0;background:#E9E6E0;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45}
+*{box-sizing:border-box}
+a{color:#217A78}
+.wrap{padding:26px 30px 30px}
+.eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#217A78;font-weight:700}
+h1{font-size:27px;line-height:1.18;margin:7px 0 6px;font-weight:700}
+.sub{font-size:14.5px;color:#525B66;max-width:860px;margin:0 0 20px}
+.src{background:#151B24;color:#fff;border-radius:12px;padding:14px 18px;display:flex;gap:18px;align-items:center;margin-bottom:18px}
+.src .lab{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8FA0AE;font-weight:700;white-space:nowrap}
+.src .said{font-size:15px;color:#F0EDE7;font-style:italic}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:#fff;border:1px solid #D9D4CB;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.chd{padding:12px 16px;border-bottom:1px solid #EDE9E2;display:flex;align-items:baseline;gap:9px;background:#F8F6F2}
+.who{font-weight:700;font-size:16px}
+.meta{font-size:12px;color:#6B7480;margin-left:auto;text-align:right;line-height:1.35}
+.plan{padding:11px 16px;background:#F4F7F7;border-bottom:1px solid #E3EFEE;font-size:12.5px;color:#2B5250}
+.plan b{color:#17403F}
+.note{padding:15px 16px;font-size:13.6px;line-height:1.62;flex:1}
+.note .k{font-weight:700;color:#8A5A12;font-size:11px;letter-spacing:.06em}
+.note mark{background:#FDF3DC;color:inherit;padding:0 2px;border-radius:2px}
+.foot{border-top:1px solid #EDE9E2;padding:10px 16px;display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:600}
+.chip.g{background:#E3EFEE;color:#17403F}
+.chip.y{background:#FCEFD0;color:#6F4A05}
+.why{margin-top:20px;background:#fff;border:1px solid #D9D4CB;border-radius:12px;padding:16px 18px}
+.why h2{font-size:14px;margin:0 0 10px;letter-spacing:.02em}
+.why ul{margin:0;padding-left:17px}
+.why li{font-size:13.4px;margin-bottom:5px;color:#333B45}
+.why li b{color:#151B24}
+.offer{margin-top:16px;background:#151B24;color:#fff;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:18px}
+.offer .big{font-size:16.5px;font-weight:700;line-height:1.35}
+.offer .small{font-size:13px;color:#B9C4CD;max-width:430px}
+.note-foot{margin-top:14px;font-size:11.5px;color:#7A838D}
+</style>
+</helmet>
+
+<div class="wrap">
+  <div class="eyebrow">The quality question</div>
+  <h1>Same activity. Two individuals. Two different notes.</h1>
+  <p class="sub">Both were in the same eight-hour community habilitation block, with the same staff, doing the same build. Psyflo drafts each note against that person's own plan, so the notes do not converge.</p>
+
+  <div class="src">
+    <div class="lab">One staff member<br>said once</div>
+    <div class="said">&ldquo;Spent the day with the group up in Rockland building porch furniture. M. got frustrated twice but stayed with it and asked another kid for help. J. kept wandering off, came back each time I went and got him.&rdquo;</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="chd"><span class="who">M.R.</span><span class="chip g">Com Hab</span><span class="meta">Plan goal 1 &middot; task persistence<br>Objective 1.2 &middot; unprompted help-seeking</span></div>
+      <div class="plan"><b>From M.R.'s plan:</b> build tolerance for multi-step tasks; seek help without a prompt, four times in a quarter.</div>
+      <div class="note">
+        Worked with M.R. in a group community habilitation block (8&nbsp;h) on <mark>task persistence and cooperative problem-solving</mark>.
+        <span class="k">METHOD</span> staff structured a multi-step construction task with assigned roles, visual sequencing and scheduled breaks.
+        M.R. held an assigned role through <mark>three of four build stages</mark>, tolerated two corrections without leaving the task, and <mark>asked a peer for help once without a prompt</mark> &mdash; the second unprompted request this month, against an objective of four. Two breaks were taken at staff prompt when frustration rose.
+        <span class="k">GOAL&nbsp;1</span> task persistence. <span class="k">OBJECTIVE&nbsp;1.2</span> unprompted help-seeking.
+      </div>
+      <div class="foot"><span class="chip g">method: approved list</span><span class="chip g">count: 2nd of 4</span><span class="chip y">staff timer: 8 h</span></div>
+    </div>
+
+    <div class="card">
+      <div class="chd"><span class="who">J.T.</span><span class="chip g">Com Hab</span><span class="meta">Plan goal 2 &middot; safety awareness<br>Objective 2.1 &middot; remaining in a defined area</span></div>
+      <div class="plan"><b>From J.T.'s plan:</b> remain within a defined work area with no more than two redirections across a session.</div>
+      <div class="note">
+        Worked with J.T. in a group community habilitation block (8&nbsp;h) on <mark>safety awareness and remaining within a defined work area</mark>.
+        <span class="k">METHOD</span> staff used perimeter cues, a named work zone and planned movement breaks during a multi-step construction task.
+        J.T. <mark>left the work area four times</mark> and returned with a staff escort each time; no independent return was observed. Redirections exceeded the plan threshold of two, which staff logged for the next plan review. J.T. remained engaged in the task between redirections.
+        <span class="k">GOAL&nbsp;2</span> safety awareness. <span class="k">OBJECTIVE&nbsp;2.1</span> remaining in a defined area.
+      </div>
+      <div class="foot"><span class="chip g">method: approved list</span><span class="chip y">4 redirections &middot; above threshold</span><span class="chip y">flagged for plan review</span></div>
+    </div>
+  </div>
+
+  <div class="why">
+    <h2>Why they differ</h2>
+    <ul>
+      <li><b>Different plans, different notes.</b> Psyflo drafts against the individual's own goals and objectives. The activity is shared; the plan is not.</li>
+      <li><b>Counts, not adjectives.</b> Three of four stages. Four redirections. Second of four. A reviewer can check a count against the rest of the chart.</li>
+      <li><b>It records failure too.</b> J.T.'s note says the threshold was exceeded and no independent return was observed. A note that only ever reports progress is the one that reads as generated.</li>
+      <li><b>Your clinician signs every note.</b> Nothing reaches the record without a person reading it first.</li>
+    </ul>
+  </div>
+
+  <div class="offer">
+    <div class="big">In the pilot, we put 20 notes side by side<br>and you tell us whether they read as 20 different people.</div>
+    <div class="small">You pick the twenty. If they read the same, the pilot has failed its own test and your deposit comes back.</div>
+  </div>
+
+  <div class="note-foot">Illustrative example &middot; not real clients &middot; all data synthetic</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

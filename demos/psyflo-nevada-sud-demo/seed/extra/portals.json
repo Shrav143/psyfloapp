@@ -1,0 +1,29 @@
+{
+  "_about": "Extra synthetic seed for the referral-partner updates, client signing tasks, assessments and the reconsideration letter. Merged over seed.json. All numbers are 702-555-01xx demo numbers. The family, school and phone screens are hidden in the Nevada build.",
+  "org": { "phone": "702-555-0120", "phone_hours": "Mon–Fri, 7:30 am – 6 pm", "fax": "702-555-0121" },
+  "shares": [
+    { "id": "sh-seed-mr", "client": "MR", "by": "rbell", "text": "Status hearing Oct 22 · judge moved Maria to phase 2; all October check-ins kept, no sanctions. Next hearing Nov 12.", "at": "2026-10-29T09:52" },
+    { "id": "sh-seed-dw", "client": "DW", "by": "okafor", "text": "Office visit Oct 28 · Darnell reported for his P&P check-in on time; breath test negative. Asked whether IOP is approved yet.", "at": "2026-10-29T08:41" }
+  ],
+  "enrollment_packet": ["Intake information", "Client rights and responsibilities", "Privacy notice · 42 CFR Part 2", "Insurance and sliding fee scale", "Emergency contact", "Consent for treatment", "Release of information · referral partner"],
+  "portal_tasks": [
+    { "id": "pt-tw-release", "client": "TW", "form": "Release of information · drug court", "why": "So CCC of SN can send Travis's attendance and UDS results to the Clark County drug court (42 CFR Part 2 consent)", "status": "waiting", "at": "2026-10-19T19:25" }
+  ],
+  "assessments_due": [
+    { "client": "AG", "staff": "khale", "instrument": "BAM", "kind": "bam", "due": "2026-10-30", "about": "Brief Addiction Monitor · 17 questions · about 5 minutes · monthly" },
+    { "client": "ES", "staff": "khale", "instrument": "PHQ-9", "kind": "phq9", "due": "2026-10-30", "about": "9 questions · about 3 minutes · every 30 days" }
+  ],
+  "assessment_history": [
+    { "client": "MR", "staff": "khale", "instrument": "PHQ-9", "date": "2026-10-14", "score": 11, "prev": 14 },
+    { "client": "DP", "staff": "khale", "instrument": "GAD-7", "date": "2026-10-09", "score": 6, "prev": 9 },
+    { "client": "CB", "staff": "khale", "instrument": "BAM · days of use (past 30)", "date": "2026-10-02", "score": 3 }
+  ],
+  "appeal_drafts": {
+    "R-0384": {
+      "en": "Community Counseling Center of Southern Nevada requests reconsideration of Anthem's October 22 denial of 90837 for Eric C. The denial reason, \"provider type not eligible for 90837\", reads our Nevada Medicaid enrollment as substance-use only. CCC of SN is enrolled as Provider Type 17, Specialty 215 (demo assumption · confirm) and delivers both substance use and mental health services; the rendering clinician, S. Lane, LCPC, is individually credentialed with Anthem under her own NPI. Eric has a co-occurring diagnosis (F33.1 with F10.20) documented in the ASAM assessment (Dimension 3). Please reverse the denial and approve the 12 sessions requested.",
+      "es": "Community Counseling Center of Southern Nevada solicita la reconsideración de la negación de Anthem del 22 de octubre del código 90837 para Eric C. El motivo, \"tipo de proveedor no elegible para 90837\", interpreta nuestra inscripción en Nevada Medicaid como solo de uso de sustancias. CCC of SN está inscrita como Provider Type 17, Specialty 215 (supuesto de demostración · confirmar) y ofrece servicios de uso de sustancias y de salud mental; la clínica que presta el servicio, S. Lane, LCPC, está acreditada con Anthem con su propio NPI. Eric tiene un diagnóstico concurrente (F33.1 con F10.20) documentado en la evaluación ASAM (Dimensión 3). Solicitamos revertir la negación y aprobar las 12 sesiones.",
+      "attached": "Denial letter · the request · ASAM assessment (D3) · Nevada Medicaid enrollment letter · S. Lane's Anthem credentialing approval",
+      "attached_es": "Carta de negación · la solicitud · evaluación ASAM (D3) · carta de inscripción de Nevada Medicaid · aprobación de acreditación de S. Lane con Anthem"
+    }
+  }
+}

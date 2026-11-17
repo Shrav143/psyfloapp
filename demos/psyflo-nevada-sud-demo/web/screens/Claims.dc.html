@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo — Claims &amp; denials</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}
+.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}
+.nav.on .n{background:rgba(255,255,255,.22)}
+body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45}
+a{color:#217A78}a:hover{color:#15605E}
+*{box-sizing:border-box}
+.card{background:#fff;border:1px solid #E6E1D9;border-radius:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:8px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;border:1px solid transparent;white-space:nowrap}
+.btn.p{background:#217A78;color:#fff}.btn.p:hover{background:#15605E;color:#fff}
+.btn.o{background:#fff;color:#151B24;border-color:#D9D4CC}.btn.o:hover{background:#F3F0EA;color:#151B24}
+.btn.s{min-height:34px;padding:0 12px;font-size:13px}
+.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap;max-width:100%}
+.chip.r{background:#FBE9E4;color:#8A2E1C}.chip.y{background:#FCEFD0;color:#6F4A05}.chip.g{background:#DDF1EF;color:#15605E}.chip.n{background:#EEEBE5;color:#3E4652}.chip.b{background:#151B24;color:#fff}
+a.chip{text-decoration:none}a.chip:hover{text-decoration:underline}
+.tab{border:1px solid #D9D4CC;background:#fff;border-radius:8px;padding:0 14px;min-height:44px;font:inherit;font-weight:500;cursor:pointer;color:#151B24;display:inline-flex;align-items:center;gap:8px}
+.tab.on{background:#151B24;color:#fff;border-color:#151B24}
+.tab b{font-weight:600}
+.kpi{flex:1 1 180px;min-width:0;background:#fff;border:1px solid #E6E1D9;border-radius:12px;padding:14px 16px}
+.kpi .l{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600}
+.kpi b{display:block;font-size:30px;font-weight:600;line-height:1.1;margin-top:6px}
+.kpi span{display:block;font-size:12px;color:#525B66;margin-top:4px}
+.th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600}
+.hdr,.cr{display:grid;grid-template-columns:180px 150px minmax(0,1.5fr) 140px minmax(0,1fr) 92px;gap:12px;align-items:start;padding:12px 20px}
+.hdr>div,.cr>div{min-width:0}
+.hdr{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600;border-bottom:1px solid #E6E1D9}
+.cr{border-top:1px solid #EFEBE4;font-size:13px}
+.cr:hover{background:#FBFAF7}
+.cr.open{background:#FBFAF7}
+.cr .id{font-weight:600;color:#151B24}
+.sub{color:#525B66;font-size:12px;margin-top:2px}
+.flags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.flags .chip{white-space:normal}
+.hbtn{background:none;border:0;padding:0;margin-top:4px;font:inherit;font-size:12px;font-weight:600;color:#217A78;cursor:pointer;min-height:24px}
+.hbtn:hover{text-decoration:underline}
+.det{grid-column:1/-1;background:#F8F6F2;border-radius:10px;padding:14px 16px;margin-top:4px;display:flex;flex-wrap:wrap;gap:20px}
+.det>div{min-width:0}
+.step{display:flex;gap:12px;align-items:flex-start;padding:7px 0;border-top:1px solid #E6E1D9;font-size:13px}
+.step .dt{flex:0 0 64px;color:#525B66;font-weight:600}
+.pk{background:#fff;border:1px solid #E6E1D9;border-radius:10px;padding:12px 14px}
+.pk ul{margin:6px 0 0;padding-left:18px;font-size:13px}
+.pk li{margin:2px 0}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.pay{flex:1 1 170px;min-width:0;padding:12px 14px;border-left:1px solid #EFEBE4}
+.pay:first-child{border-left:0}
+.ar{display:grid;grid-template-columns:110px minmax(0,1fr) 80px;gap:10px;align-items:center;padding:7px 0;border-top:1px solid #EFEBE4;font-size:13px}
+.ar .bar{height:10px;border-radius:3px;background:#EEEBE5;overflow:hidden}
+.ar .bar i{display:block;height:100%;background:#217A78}
+.ar .bar i.o{background:#B9541F}
+.mo{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.mo .bars{display:flex;align-items:flex-end;height:110px}
+.mo .bars i{display:block;width:18px;border-radius:3px 3px 0 0;background:#C9D1D6}
+.mo .bars i.t{background:#B9541F}
+.mo small{font-size:11px;color:#525B66}
+</style>
+</helmet>
+
+<div style="display:flex;flex-wrap:wrap;min-height:1400px;width:100%">
+  <aside style="flex:0 0 240px;background:#151B24;color:#fff;display:flex;flex-direction:column;padding:22px 16px 18px">
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8E99A6;padding:0 8px">CCC of SN · SUD / ASAM</div>
+  </aside>
+
+  <main style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column">
+    <header style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:12px 28px;border-bottom:1px solid #E6E1D9;background:#fff">
+      <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#525B66;font-weight:600">As of <span style="color:#151B24">{{asOf}}</span></div>
+      <span class="chip n">NV Medicaid FFS + 5 MCOs</span>
+      <span class="chip n" title="Demo assumption: 180 days from date of service for every plan. Confirm per contract.">Timely filing · 180 days from DOS · confirm per contract</span>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <sc-if value="{{isAdmin}}"><span class="chip y" title="Only admins see this. Remits cannot arrive during a demo.">Demo only</span><a class="btn o s" href="#demoPay">Demo: payer pays</a></sc-if>
+      </div>
+    </header>
+
+    <div style="padding:26px 28px 32px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px">
+        <div>
+          <h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-.01em">Claims &amp; denials</h1>
+          <div class="sub" style="font-size:13px;margin-top:4px">Read from the 835 remits and 277CA reports you already download. Each denial comes with what it means for that plan, the filing clock and the packet to send. A person presses every button.</div>
+        </div>
+        <a class="btn o" href="PayerPlaybook.dc.html" style="margin-left:auto">What changed, plan by plan</a>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:12px">
+        <div class="kpi"><div class="l">Open denials</div><b>{{kOpen}}</b><span>{{kOpenSub}}</span></div>
+        <div class="kpi" style="border-color:#E8B9AC"><div class="l">Timely filing · next 30 days</div><b style="color:#8A2E1C">{{kRisk}}</b><span>{{kRiskSub}}</span></div>
+        <div class="kpi"><div class="l">Recovered this month</div><b>{{kRec}}</b><span>{{kRecSub}}</span></div>
+        <div class="kpi"><div class="l">Written off as bad debt · 12 mo</div><b>{{kWo}}</b><span>{{kWoSub}}</span></div>
+        <div class="kpi"><div class="l">AR over 90 days</div><b>{{kAr}}</b><span>{{arSource}}</span></div>
+      </div>
+
+      <section class="card" style="padding:4px 0">
+        <div style="display:flex;flex-wrap:wrap">
+          <sc-for list="{{payers}}" as="p">
+            <div class="pay">
+              <div style="display:flex;gap:6px;align-items:baseline;flex-wrap:wrap"><b style="font-size:13px">{{p.name}}</b><span class="sub" style="margin:0">{{p.open}}</span></div>
+              <div class="flags">{{p.reasons}}</div>
+              <div class="sub" style="margin-top:6px">{{p.note}}</div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <div style="display:flex;flex-wrap:wrap;gap:8px" role="group" aria-label="Worklist filter">
+        <button class="{{tAll}}" onClick="{{pickAll}}">All open <b>{{nAll}}</b></button>
+        <button class="{{tTimely}}" onClick="{{pickTimely}}" title="Unpaid with 30 days or less of the 180-day filing window left, or denied for timely filing">Timely filing at risk <b>{{nTimely}}</b></button>
+        <button class="{{tPaid}}" onClick="{{pickPaid}}" title="Same code, same clinician, same client paid one week and denied the next">Paid-then-denied <b>{{nPaid}}</b></button>
+        <button class="{{tPtype}}" onClick="{{pickPtype}}" title="Provider type (SUAM misread) or rendering clinician not credentialed with the plan">Provider type <b>{{nPtype}}</b></button>
+        <button class="{{tAuth}}" onClick="{{pickAuth}}" title="Authorization absent or exceeded">Auth missing <b>{{nAuth}}</b></button>
+        <button class="{{tClosed}}" onClick="{{pickClosed}}">Recovered · written off <b>{{nClosed}}</b></button>
+      </div>
+
+      <section class="card">
+        <div style="min-width:0">
+          <div class="hdr"><div>Claim · client · DOS</div><div>Plan · billed</div><div>Denial · what it means for this plan</div><div>Filing clock</div><div>Status · flags</div><div></div></div>
+          <sc-for list="{{rows}}" as="r">
+            <div class="{{r.cls}}">
+              <div><div class="id">{{r.id}}</div><div class="sub">{{r.client}} · DOS {{r.dos}}</div><div class="sub">{{r.rendering}}</div></div>
+              <div><div style="font-weight:500">{{r.plan}}</div><div class="sub">{{r.codes}}</div><div style="font-weight:600;margin-top:2px">{{r.amount}}</div></div>
+              <div><span class="{{r.codeCls}}">{{r.code}}</span><div style="margin-top:4px">{{r.short}}</div></div>
+              <div><span class="{{r.clockCls}}" style="white-space:normal">{{r.clock}}</span><div class="sub">{{r.clockSub}}</div></div>
+              <div><span class="{{r.stCls}}" style="white-space:normal">{{r.st}}</span><div class="flags">{{r.flags}}</div></div>
+              <div style="text-align:right"><button class="{{r.btnCls}}" aria-expanded="{{r.open}}" onClick="{{r.toggle}}">{{r.btn}}</button></div>
+              <sc-if value="{{r.open}}"><div class="det">
+                <div style="flex:1 1 280px">
+                  <div class="th" style="margin-bottom:2px">What happened, in order</div>
+                  <sc-for list="{{r.history}}" as="e"><div class="step" style="{{e.st}}"><div class="dt">{{e.dt}}</div><div>{{e.html}}</div></div></sc-for>
+                </div>
+                <div style="flex:1 1 300px;display:flex;flex-direction:column;gap:10px">
+                  <div><div class="th">Why it was denied</div><div style="margin-top:4px;font-size:13px"><span class="{{r.codeCls}}">{{r.code}}</span> <span style="color:#525B66">{{r.reason}}</span></div></div>
+                  <div><div class="th">In plain English · {{r.plan}}</div><div style="margin-top:4px;font-size:13px">{{r.plain}}</div></div>
+                  <sc-if value="{{r.hasPair}}"><div style="font-size:13px;border-left:3px solid #F0B44C;padding-left:10px">{{r.pair}}</div></sc-if>
+                  <div><div class="th">What Psyflo recommends</div><div style="margin-top:4px;font-size:13px">{{r.fix}}</div></div>
+                </div>
+                <div style="flex:1 1 280px">
+                  <div class="pk">
+                    <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><b style="font-size:13px">{{r.pkTitle}}</b><span class="{{r.pkCls}}">{{r.pkChip}}</span></div>
+                    <sc-if value="{{r.hasItems}}"><ul><sc-for list="{{r.pkItems}}" as="it"><li>{{it}}</li></sc-for></ul></sc-if>
+                    <sc-if value="{{r.pkHref}}"><div style="margin-top:8px;font-size:13px"><a href="{{r.pkHref}}">{{r.pkLink}}</a></div></sc-if>
+                  </div>
+                  <sc-if value="{{r.canAct}}"><div class="acts">
+                    <button class="{{r.bResub}}" onClick="{{r.resubmit}}">Mark corrected &amp; resubmitted</button>
+                    <button class="{{r.bRecon}}" onClick="{{r.reconsider}}">Send reconsideration</button>
+                    <button class="btn o s" onClick="{{r.writeoff}}">Write off</button>
+                  </div></sc-if>
+                  <sc-if value="{{r.waiting}}"><div class="acts" style="align-items:center"><span style="font-size:13px;color:#525B66">{{r.waitText}}</span><sc-if value="{{isAdmin}}"><button class="btn o s" onClick="{{r.pay}}">Demo: payer pays</button></sc-if><button class="btn o s" onClick="{{r.writeoff}}">Write off</button></div></sc-if>
+                  <sc-if value="{{r.closedText}}"><div class="acts" style="font-size:13px;color:#525B66">{{r.closedText}}</div></sc-if>
+                </div>
+              </div></sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{noRows}}"><div class="cr"><div style="grid-column:1/-1;color:#525B66">{{emptyText}}</div></div></sc-if>
+        </div>
+      </section>
+
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+        <section class="card" style="flex:1 1 420px;min-width:0;padding:16px 20px">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline"><h2 style="margin:0;font-size:16px;font-weight:600">Accounts receivable by age</h2><span class="sub" style="margin:0">{{arSource}}</span></div>
+          <div style="margin-top:10px">
+            <sc-for list="{{ar}}" as="a"><div class="ar"><div>{{a.label}}</div><div class="bar"><i class="{{a.cls}}" style="{{a.w}}"></i></div><div style="text-align:right;font-weight:600">{{a.amt}}</div></div></sc-for>
+          </div>
+          <div class="sub" style="margin-top:8px">Over 90 days: <b style="color:#151B24">{{kAr}}</b>. Past 180 days only a reconsideration with proof of timely filing gets paid.</div>
+        </section>
+        <section class="card" style="flex:1 1 420px;min-width:0;padding:16px 20px">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline"><h2 style="margin:0;font-size:16px;font-weight:600">Written off as bad debt · by month</h2><span class="sub" style="margin:0">{{woNote}}</span></div>
+          <div style="display:flex;gap:6px;align-items:flex-end;margin-top:14px">
+            <sc-for list="{{months}}" as="m"><div class="mo" title="{{m.t}}"><div class="bars"><i style="{{m.h}}"></i></div><small>{{m.l}}</small></div></sc-for>
+          </div>
+          <div class="sub" style="margin-top:8px">{{arSource}}</div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+</body>
+</html>

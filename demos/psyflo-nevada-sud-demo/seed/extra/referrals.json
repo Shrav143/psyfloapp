@@ -1,0 +1,433 @@
+{
+ "_about": "Referrals group (Referrals list, Referral review, Eligibility, Do next). History referrals (history:true) are the rest of this year so the per-site table on Referrals counts from the list (31 this year). Sources: Clark County drug court, Nevada P&P, self-referral, hospital ED (UMC), HIV clinic partners. Plus today's screening calls, this week's reminders and the intake-question settings. The family link is hidden in the Nevada build: clients are adults and are called directly.",
+ "referrals": [
+  {
+   "id": "REF-115",
+   "client": "Z.E., 29",
+   "school": "LC-ES3",
+   "source": "self",
+   "source_label": "Self-referral",
+   "received": "2026-10-02",
+   "stage": "screening_booked",
+   "history": true,
+   "next": "Mon Nov 2, 10:00 am · ASAM assessment · J. Perez",
+   "screening": {
+    "who": "jperez",
+    "when": "2026-11-02T10:00"
+   }
+  },
+  {
+   "id": "REF-114",
+   "client": "P.H., 42",
+   "school": "CC-HS1",
+   "source": "pp",
+   "source_label": "Nevada P&P",
+   "received": "2026-10-01",
+   "stage": "declined",
+   "history": true,
+   "next": "Client declined services · P&P told",
+   "closed": "2026-10-10"
+  },
+  {
+   "id": "REF-113",
+   "client": "Q.S., 35",
+   "school": "CC-ES2",
+   "source": "self",
+   "source_label": "Self-referral",
+   "received": "2026-09-30",
+   "stage": "declined",
+   "history": true,
+   "next": "Moved out of state",
+   "closed": "2026-10-09"
+  },
+  {
+   "id": "REF-112",
+   "client": "H.C., 53",
+   "school": "CC-ES1",
+   "source": "hospital_ed",
+   "source_label": "Hospital ED (UMC)",
+   "received": "2026-09-28",
+   "stage": "declined",
+   "history": true,
+   "next": "Chose a residential (Level 3.5) program elsewhere",
+   "closed": "2026-10-07"
+  },
+  {
+   "id": "REF-111",
+   "client": "U.N., 30",
+   "school": "CC-MS1",
+   "source": "drug_court",
+   "source_label": "Clark County drug court",
+   "received": "2026-09-24",
+   "stage": "in_intake",
+   "history": true,
+   "next": "Intake Oct 27 · ASAM assessment in Client Record"
+  },
+  {
+   "id": "REF-110",
+   "client": "R.T., 46",
+   "school": "LC-MS2",
+   "source": "self",
+   "source_label": "Self-referral",
+   "received": "2026-09-21",
+   "stage": "declined",
+   "history": true,
+   "next": "No-show to two assessment times",
+   "closed": "2026-09-30"
+  },
+  {
+   "id": "REF-109",
+   "client": "O.R., 27",
+   "school": "CC-ES1",
+   "source": "hospital_ed",
+   "source_label": "Hospital ED (UMC)",
+   "received": "2026-09-14",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-10-12",
+   "next": "Started Level 2.1 IOP Oct 12"
+  },
+  {
+   "id": "REF-108",
+   "client": "A.F., 39",
+   "school": "CC-MS1",
+   "source": "drug_court",
+   "source_label": "Clark County drug court",
+   "received": "2026-09-08",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-10-03",
+   "next": "Started Level 2.1 IOP Oct 3"
+  },
+  {
+   "id": "REF-107",
+   "client": "F.J., 51",
+   "school": "CC-HS1",
+   "source": "pp",
+   "source_label": "Nevada P&P",
+   "received": "2026-09-02",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-10-02",
+   "next": "Started Level 2.1 IOP Oct 2"
+  },
+  {
+   "id": "REF-106",
+   "client": "V.M., 44",
+   "school": "CC-HS1",
+   "source": "pp",
+   "source_label": "Nevada P&P",
+   "received": "2026-05-18",
+   "stage": "grant_program",
+   "history": true,
+   "next": "Routed May 21 · SAPTA grant · no Medicaid"
+  },
+  {
+   "id": "REF-105",
+   "client": "I.D., 33",
+   "school": "CC-ES1",
+   "source": "hiv_clinic",
+   "source_label": "HIV clinic partner",
+   "received": "2026-05-11",
+   "stage": "grant_program",
+   "history": true,
+   "next": "Routed May 14 · Ryan White Part A · Medicaid lapsed"
+  },
+  {
+   "id": "REF-104",
+   "client": "C.N., 58",
+   "school": "LC-MS2",
+   "source": "hiv_clinic",
+   "source_label": "HIV clinic partner",
+   "received": "2026-05-04",
+   "stage": "grant_program",
+   "history": true,
+   "next": "Routed May 7 · Ryan White Part C · no Medicaid"
+  },
+  {
+   "id": "REF-103",
+   "client": "B.M., 25",
+   "school": "CC-ES1",
+   "source": "self",
+   "source_label": "Self-referral",
+   "received": "2026-04-27",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-05-20",
+   "next": "Started Level 2.1 IOP May 20"
+  },
+  {
+   "id": "REF-102",
+   "client": "D.S., 48",
+   "school": "LC-ES3",
+   "source": "hiv_clinic",
+   "source_label": "HIV clinic partner",
+   "received": "2026-04-20",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-05-12",
+   "next": "Started Level 1 outpatient May 12"
+  },
+  {
+   "id": "REF-101",
+   "client": "W.K., 37",
+   "school": "CC-HS1",
+   "source": "pp",
+   "source_label": "Nevada P&P",
+   "received": "2026-04-13",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-05-08",
+   "next": "Started Level 2.1 IOP May 8"
+  },
+  {
+   "id": "REF-100",
+   "client": "Y.L., 61",
+   "school": "CC-ES2",
+   "source": "self",
+   "source_label": "Self-referral",
+   "received": "2026-03-30",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-04-21",
+   "next": "Started Level 1 outpatient Apr 21"
+  },
+  {
+   "id": "REF-099",
+   "client": "L.P., 32",
+   "school": "CC-ES1",
+   "source": "hospital_ed",
+   "source_label": "Hospital ED (UMC)",
+   "received": "2026-03-23",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-04-13",
+   "next": "Started Level 2.1 IOP Apr 13"
+  },
+  {
+   "id": "REF-098",
+   "client": "K.L., 40",
+   "school": "CC-MS1",
+   "source": "drug_court",
+   "source_label": "Clark County drug court",
+   "received": "2026-03-16",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-04-04",
+   "next": "Started Level 2.1 IOP Apr 4"
+  },
+  {
+   "id": "REF-097",
+   "client": "G.A., 55",
+   "school": "CC-HS1",
+   "source": "pp",
+   "source_label": "Nevada P&P",
+   "received": "2026-03-02",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-03-25",
+   "next": "Started Level 2.1 IOP Mar 25"
+  },
+  {
+   "id": "REF-096",
+   "client": "S.D., 28",
+   "school": "LC-ES3",
+   "source": "self",
+   "source_label": "Self-referral",
+   "received": "2026-02-23",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-03-13",
+   "next": "Started Level 1 outpatient Mar 13"
+  },
+  {
+   "id": "REF-095",
+   "client": "N.G., 34",
+   "school": "CC-ES1",
+   "source": "hiv_clinic",
+   "source_label": "HIV clinic partner",
+   "received": "2026-02-17",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-03-08",
+   "next": "Started Level 2.1 IOP Mar 8"
+  },
+  {
+   "id": "REF-094",
+   "client": "M.B., 43",
+   "school": "CC-MS1",
+   "source": "drug_court",
+   "source_label": "Clark County drug court",
+   "received": "2026-02-09",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-02-26",
+   "next": "Started Level 2.1 IOP Feb 26"
+  },
+  {
+   "id": "REF-093",
+   "client": "T.B., 50",
+   "school": "CC-HS1",
+   "source": "pp",
+   "source_label": "Nevada P&P",
+   "received": "2026-01-26",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-02-15",
+   "next": "Started Level 2.1 IOP Feb 15"
+  },
+  {
+   "id": "REF-092",
+   "client": "E.W., 23",
+   "school": "CC-ES2",
+   "source": "hospital_ed",
+   "source_label": "Hospital ED (UMC)",
+   "received": "2026-01-20",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-02-04",
+   "next": "Started Level 1 outpatient Feb 4"
+  },
+  {
+   "id": "REF-091",
+   "client": "J.H., 37",
+   "school": "LC-MS2",
+   "source": "self",
+   "source_label": "Self-referral",
+   "received": "2026-01-12",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-01-24",
+   "next": "Started Level 2.1 IOP Jan 24"
+  }
+ ],
+ "screenings": [
+  {
+   "referral": "REF-121",
+   "client": "A.R., 31",
+   "who": "jperez",
+   "when": "2026-10-29T14:00",
+   "status": "booked"
+  },
+  {
+   "referral": "REF-115",
+   "client": "Z.E., 29",
+   "who": "jperez",
+   "when": "2026-11-02T10:00",
+   "status": "booked"
+  }
+ ],
+ "reminders": [
+  {
+   "id": "rem-mr-weekly",
+   "for": "jperez",
+   "kind": "weekly_call",
+   "record": "MR",
+   "due": "2026-10-30",
+   "text": "Weekly individual session · M.R. · document in Client Record",
+   "href": "ExtCase.dc.html?client=MR",
+   "btn": "Open in Client Record"
+  },
+  {
+   "id": "rem-dw-session3",
+   "for": "jperez",
+   "kind": "molina_next_request",
+   "record": "R-0402",
+   "due": "2026-11-05",
+   "text": "D.W. · Molina 5-session auth · next request goes in after session 3 (Psyflo drafts it)",
+   "href": "Partials.dc.html?id=R-0402",
+   "btn": "Open"
+  },
+  {
+   "id": "rem-tn-p2p",
+   "for": "jperez",
+   "kind": "meeting",
+   "record": "R-0388",
+   "due": "2026-11-03",
+   "text": "Peer-to-peer prep · T.N. · Molina medical director Nov 4, 2:00 pm",
+   "href": "PeerBrief.dc.html?id=R-0388",
+   "btn": "Call notes"
+  }
+ ],
+ "settings": {
+  "family_link": {
+   "questions": [
+    {
+     "key": "guardian",
+     "label": "Client name and preferred name",
+     "ask": true,
+     "required": true,
+     "goes": "Screening · assessment header"
+    },
+    {
+     "key": "phone",
+     "label": "Best phone number",
+     "ask": true,
+     "required": true,
+     "goes": "Screening · assessment header"
+    },
+    {
+     "key": "insurance",
+     "label": "Nevada Medicaid ID or plan card",
+     "sub": "Runs the EVS eligibility check",
+     "ask": true,
+     "required": true,
+     "goes": "Eligibility check · screening",
+     "locked": true
+    },
+    {
+     "key": "dob",
+     "label": "Date of birth",
+     "ask": true,
+     "required": false,
+     "goes": "Eligibility check"
+    },
+    {
+     "key": "consent",
+     "label": "Consent to be called (42 CFR Part 2 notice)",
+     "ask": true,
+     "required": true,
+     "goes": "Psyflo only"
+    },
+    {
+     "key": "best_time",
+     "label": "Best time to call",
+     "ask": true,
+     "required": false,
+     "goes": "Psyflo only"
+    },
+    {
+     "key": "transport",
+     "label": "Can you get to an in-person assessment?",
+     "sub": "Flags clients who need a bus pass or a ride",
+     "ask": true,
+     "required": false,
+     "goes": "Psyflo only · screening note"
+    },
+    {
+     "key": "language",
+     "label": "Preferred language",
+     "ask": true,
+     "required": false,
+     "goes": "Screening · assessment header"
+    },
+    {
+     "key": "address",
+     "label": "Home address or shelter",
+     "ask": false,
+     "required": false,
+     "goes": "Screening (if on)"
+    },
+    {
+     "key": "household",
+     "label": "Who else lives in the home (recovery environment)",
+     "ask": false,
+     "required": false,
+     "goes": "ASAM assessment D6 (if on)"
+    }
+   ],
+   "message": "Hi, this is Community Counseling Center of Southern Nevada. [Referral source] asked us to reach out about treatment. Could you answer a few quick questions so we can call you? [link] · Reply STOP to opt out.",
+   "expires_days": 7
+  }
+ }
+}

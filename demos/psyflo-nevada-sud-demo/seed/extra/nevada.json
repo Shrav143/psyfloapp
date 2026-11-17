@@ -1,0 +1,393 @@
+{
+  "_about": "Claims & denials + Credentialing (Nevada SUD build). Synthetic data only; dollar amounts are demo numbers. Timely filing is 180 days from DOS for every plan in the demo (confirm per contract).",
+  "claims_summary": {
+    "source": "demo numbers · from the 835 remits you already download",
+    "filing_days": 180,
+    "recovered_month_base": { "amount": 11240, "count": 38, "note": "reconsiderations and corrected claims paid since Oct 1 (before this worklist)" },
+    "written_off_12mo": { "amount": 63850, "timely": 47200, "note": "Nov 2025 – Oct 2026 · 74% of it timely filing" },
+    "writeoff_by_month": [
+      { "m": "Nov", "amount": 3900 }, { "m": "Dec", "amount": 6100 }, { "m": "Jan", "amount": 4200 }, { "m": "Feb", "amount": 7400 },
+      { "m": "Mar", "amount": 5600 }, { "m": "Apr", "amount": 8300 }, { "m": "May", "amount": 6900 }, { "m": "Jun", "amount": 5200 },
+      { "m": "Jul", "amount": 4800 }, { "m": "Aug", "amount": 4100 }, { "m": "Sep", "amount": 3950 }, { "m": "Oct", "amount": 3400 }
+    ],
+    "ar_over_90": 198400,
+    "ar_buckets": [
+      { "label": "0–30 days", "amount": 84200 },
+      { "label": "31–60 days", "amount": 51900 },
+      { "label": "61–90 days", "amount": 33600 },
+      { "label": "91–180 days", "amount": 121300 },
+      { "label": "Over 180 days", "amount": 77100 }
+    ],
+    "payer_notes": {
+      "humana": "Says claims were never received · keep every 277CA acceptance",
+      "anthem": "New reviewers deny MH codes for the SUAM provider type",
+      "sentara": "5 sessions at a time · a gap day denies as auth exceeded",
+      "aetna": "Corrected claims must carry frequency code 7 and the original claim number",
+      "uhc": "Started requiring PA inside the 24 Level 1 sessions · paid one week, denied the next",
+      "ffs": "Front-end rejects (277CA) come back the same day · work them that day"
+    }
+  },
+  "claims": [
+    {
+      "id": "CLM-24187", "client": "LV", "dos": "2026-05-07", "payer": "humana", "codes": ["H0004 × 4"], "amount": 80, "rendering": "khale",
+      "status": "denied", "carc": "CO-29", "denied_on": "2026-10-20", "submitted_first": "2026-05-12",
+      "reason": "The time limit for filing has expired.",
+      "plain": "SilverSummit says the claim came in too late. It did not: the clearinghouse accepted it on May 12, five days after the session. SilverSummit told us in July it had no record of it, so we sent it again on Sep 30, and that copy is what they denied as late.",
+      "fix": "Send a reconsideration with proof of timely filing: the May 12 acceptance report (277CA) and the Jul 15 call reference. Do it inside the 180 days to be safe.",
+      "packet": { "kind": "reconsideration", "title": "Reconsideration · proof of timely filing", "items": ["Cover letter citing the original submission date", "277CA acceptance · May 12 · batch 0512-07", "Call reference SS-7731 · Jul 15 (no record of claim)", "Copy of the Sep 30 resubmission"] },
+      "flags": ["plan_delay"], "proof": "277CA acceptance May 12 · call ref SS-7731",
+      "history": [
+        { "at": "2026-05-07", "what": "Session · H0004 individual, 60 min · K. Hale" },
+        { "at": "2026-05-12", "what": "Submitted to SilverSummit · accepted by the clearinghouse (277CA) · receipt saved" },
+        { "at": "2026-07-15", "what": "Called SilverSummit: no record of the claim · ref SS-7731" },
+        { "at": "2026-09-30", "what": "Resubmitted (second copy)" },
+        { "at": "2026-10-20", "what": "835 remit: denied CO-29 timely filing" }
+      ]
+    },
+    {
+      "id": "CLM-24203", "client": "JT", "dos": "2026-05-14", "payer": "humana", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
+      "status": "denied", "carc": "CO-29", "denied_on": "2026-10-22", "submitted_first": "2026-05-19",
+      "reason": "The time limit for filing has expired.",
+      "plain": "SilverSummit pended this IOP day for a records review in June, received the records on Jun 4, then sat on it for four months and denied it as late. The delay is theirs.",
+      "fix": "Reconsideration with the May 19 acceptance and the Jun 4 Sfax receipt for the records they asked for.",
+      "packet": { "kind": "reconsideration", "title": "Reconsideration · plan's own delay", "items": ["Cover letter: claim filed day 5, pended by the plan", "277CA acceptance · May 19", "Sfax delivery receipt · records sent Jun 4 · ref F-1877", "Group note for May 14 (3 h, signed)"] },
+      "flags": ["plan_delay"], "proof": "277CA acceptance May 19 · Sfax F-1877 Jun 4",
+      "history": [
+        { "at": "2026-05-14", "what": "IOP day · 3 h group · K. Hale" },
+        { "at": "2026-05-19", "what": "Submitted · accepted (277CA) · receipt saved" },
+        { "at": "2026-06-02", "what": "Pended by SilverSummit: medical records requested" },
+        { "at": "2026-06-04", "what": "Records faxed through Sfax · ref F-1877 · delivered" },
+        { "at": "2026-10-22", "what": "835 remit: denied CO-29 timely filing" }
+      ]
+    },
+    {
+      "id": "CLM-24219", "client": "DP", "dos": "2026-05-21", "payer": "ffs", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
+      "status": "at_risk", "carc": null, "submitted_first": "2026-05-26",
+      "reason": "Front-end reject (277CA): subscriber ID invalid. Never accepted, never adjudicated.",
+      "plain": "This one is ours. The claim bounced at the front door on May 26 because two digits of the Medicaid ID were swapped. Nobody resubmitted it, so Nevada Medicaid has never seen it. The 180 days still run from the date of service.",
+      "fix": "Correct the Medicaid ID (EVS shows the right one) and resubmit today as a new claim. Psyflo now puts every front-end reject on this list the day it comes back.",
+      "packet": { "kind": "corrected", "title": "Corrected claim · Medicaid ID fixed", "items": ["Medicaid ID corrected from the EVS check", "Same lines: H0015 × 3, May 21"] },
+      "flags": [],
+      "history": [
+        { "at": "2026-05-21", "what": "IOP day · 3 h group · K. Hale" },
+        { "at": "2026-05-26", "what": "Submitted · rejected at the front end (277CA): subscriber ID invalid" },
+        { "at": "2026-10-28", "what": "Found by Psyflo in the 277CA reports · not yet worked" }
+      ]
+    },
+    {
+      "id": "CLM-24236", "client": "AG", "dos": "2026-05-28", "payer": "sentara", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
+      "status": "at_risk", "carc": null, "submitted_first": "2026-06-02",
+      "reason": "Accepted Jun 2 · no payment and no denial in 149 days (portal: \"in process\").",
+      "plain": "Molina accepted the claim on Jun 2 and has not paid or denied it. If it is still open when day 180 passes, the usual pattern is a timely-filing denial.",
+      "fix": "Call Molina provider services and ask for it to be processed; log the call reference. Keep the Jun 2 acceptance ready for a reconsideration if they deny it late.",
+      "packet": { "kind": "reconsideration", "title": "Claim status follow-up · proof of timely filing ready", "items": ["277CA acceptance · Jun 2", "Portal screenshot · status \"in process\" · Oct 28"] },
+      "flags": ["plan_delay"], "proof": "277CA acceptance Jun 2",
+      "history": [
+        { "at": "2026-05-28", "what": "IOP day · 3 h group · K. Hale" },
+        { "at": "2026-06-02", "what": "Submitted · accepted (277CA) · receipt saved" },
+        { "at": "2026-10-28", "what": "Molina portal: \"in process\" · no remit yet" }
+      ]
+    },
+    {
+      "id": "CLM-24251", "client": "CB", "dos": "2026-04-23", "payer": "anthem", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
+      "status": "denied", "carc": "CO-29", "denied_on": "2026-10-15", "submitted_first": "2026-04-27",
+      "reason": "The time limit for filing has expired.",
+      "plain": "Anthem paid this in May, took the money back in August during an eligibility review, then reprocessed it and denied it as late. The original claim was filed four days after the session.",
+      "fix": "Reconsideration with the Apr 27 Availity confirmation and the August recoupment notice. Past day 180 is fine here because the original filing was on time.",
+      "packet": { "kind": "reconsideration", "title": "Reconsideration · plan-initiated reprocess", "items": ["Availity submission confirmation · Apr 27", "835 · paid May 19", "Recoupment notice · Aug 14", "Eligibility (EVS) for Apr 23 · active"] },
+      "flags": ["plan_delay"], "proof": "Availity confirmation Apr 27 · paid May 19",
+      "history": [
+        { "at": "2026-04-23", "what": "IOP day · 3 h group · K. Hale" },
+        { "at": "2026-04-27", "what": "Submitted through Availity · confirmation saved" },
+        { "at": "2026-05-19", "what": "Paid · $186" },
+        { "at": "2026-08-14", "what": "Recouped by Anthem · retro eligibility review" },
+        { "at": "2026-10-15", "what": "Reprocessed by Anthem · denied CO-29 timely filing" }
+      ]
+    },
+    {
+      "id": "CLM-24302", "client": "KT", "dos": "2026-10-02", "payer": "anthem", "codes": ["H0001 × 1"], "amount": 165, "rendering": "jperez",
+      "status": "denied", "carc": "CO-16", "rarc": "M76", "denied_on": "2026-10-23", "submitted_first": "2026-10-06",
+      "reason": "Claim lacks information or has billing errors · missing/incomplete/invalid diagnosis.",
+      "plain": "The assessment line points to a second diagnosis, but only one diagnosis went on the claim. Anthem cannot match the line to a diagnosis, so it stops.",
+      "fix": "Corrected claim (frequency code 7, original claim number) with the line pointing to F10.20.",
+      "packet": { "kind": "corrected", "title": "Corrected claim · diagnosis pointer", "items": ["Frequency code 7 + original claim number", "Line 1 points to F10.20"] },
+      "flags": [],
+      "history": [
+        { "at": "2026-10-02", "what": "ASAM assessment · H0001 · J. Perez" },
+        { "at": "2026-10-06", "what": "Submitted through Availity · confirmation saved" },
+        { "at": "2026-10-23", "what": "835 remit: denied CO-16 / M76" }
+      ]
+    },
+    {
+      "id": "CLM-24310", "client": "EC", "dos": "2026-10-01", "payer": "anthem", "codes": ["90837 × 1"], "amount": 128, "rendering": "slane",
+      "status": "denied", "carc": "CO-170", "rarc": "N95", "denied_on": "2026-10-22", "submitted_first": "2026-10-05",
+      "reason": "Payment is denied when performed/billed by this type of provider.",
+      "plain": "A new Anthem reviewer read \"Substance Use Agency Model\" and decided the agency cannot bill mental-health therapy. CCC of SN is enrolled for both SUD and mental health; S. Lane is an LCPC credentialed with Anthem since Aug 19.",
+      "fix": "Reconsideration letter citing the agency's enrollment (PT 17 / 215) for SUD and mental health and S. Lane's Anthem credentialing. Psyflo drafted it from the last two times this was overturned.",
+      "packet": { "kind": "appeal", "title": "Reconsideration letter · provider type", "href": "AppealLetter.dc.html?id=R-0384", "items": ["Letter citing PT 17 / 215 enrollment for SUD and MH", "S. Lane · Anthem credentialing letter · Aug 19", "Two earlier overturned denials (Jun, Aug)"] },
+      "flags": ["provider_type"],
+      "history": [
+        { "at": "2026-10-01", "what": "Therapy · 90837 · S. Lane, LCPC" },
+        { "at": "2026-10-05", "what": "Submitted through Availity · confirmation saved" },
+        { "at": "2026-10-22", "what": "835 remit: denied CO-170 / N95 (provider type)" }
+      ]
+    },
+    {
+      "id": "CLM-24328", "client": "EC", "dos": "2026-10-08", "payer": "anthem", "codes": ["90837 × 1"], "amount": 128, "rendering": "slane",
+      "status": "denied", "carc": "CO-170", "rarc": "N95", "denied_on": "2026-10-27", "submitted_first": "2026-10-12",
+      "reason": "Payment is denied when performed/billed by this type of provider.",
+      "plain": "Same reviewer, same reason as CLM-24310 a week earlier. One letter can cover both dates.",
+      "fix": "Add this date to the same reconsideration letter as CLM-24310.",
+      "packet": { "kind": "appeal", "title": "Same letter as CLM-24310", "href": "AppealLetter.dc.html?id=R-0384", "items": ["Covered by the CLM-24310 letter"] },
+      "flags": ["provider_type"],
+      "history": [
+        { "at": "2026-10-08", "what": "Therapy · 90837 · S. Lane, LCPC" },
+        { "at": "2026-10-12", "what": "Submitted through Availity · confirmation saved" },
+        { "at": "2026-10-27", "what": "835 remit: denied CO-170 / N95 (provider type)" }
+      ]
+    },
+    {
+      "id": "CLM-24296", "client": "LB", "dos": "2026-10-21", "payer": "sentara", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
+      "status": "denied", "carc": "CO-198", "denied_on": "2026-10-27", "submitted_first": "2026-10-22",
+      "reason": "Precertification/authorization exceeded.",
+      "plain": "Molina authorizes 5 IOP days at a time. Day 6 (Oct 21) fell between the end of the first 5 and Molina's decision on the next 5, which came Oct 23. The next request was faxed Oct 16, right after day 3.",
+      "fix": "Reconsideration with the Oct 16 Sfax receipt: the request was in before day 5, and the gap is Molina's decision time.",
+      "packet": { "kind": "reconsideration", "title": "Reconsideration · request was on time", "items": ["Sfax delivery receipt · Oct 16 · ref F-2266", "Molina approval for days 6–10 · Oct 23", "Group note for Oct 21 (3 h, signed)"] },
+      "flags": ["plan_delay", "auth"], "proof": "Sfax F-2266 Oct 16",
+      "history": [
+        { "at": "2026-10-12", "what": "Molina auth: 5 IOP days (Oct 12 – Oct 20)" },
+        { "at": "2026-10-16", "what": "Day 3 · next 5-day request faxed through Sfax · ref F-2266 · delivered" },
+        { "at": "2026-10-21", "what": "IOP day 6 · 3 h group · K. Hale" },
+        { "at": "2026-10-23", "what": "Molina approved days 6–10, effective Oct 23" },
+        { "at": "2026-10-27", "what": "835 remit: denied CO-198 auth exceeded" }
+      ]
+    },
+    {
+      "id": "CLM-24271", "client": "ES", "dos": "2026-09-24", "payer": "humana", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
+      "status": "denied", "carc": "CO-197", "denied_on": "2026-10-19", "submitted_first": "2026-09-28",
+      "reason": "Precertification/authorization/notification absent.",
+      "plain": "The client came to IOP on Sep 24 while the Level 2.1 request was still with SilverSummit. They approved it Sep 26, effective Sep 26. Level 2.1 is never backdated, so this day cannot be paid by the plan.",
+      "fix": "Not recoverable from SilverSummit. Check whether the client qualifies for SAPTA block-grant funding for that day; if not, write it off. Psyflo now flags IOP days on the roster that fall before a PA decision.",
+      "packet": { "kind": "none", "title": "No packet · not recoverable from the plan", "items": ["Check SAPTA grant eligibility for Sep 24"] },
+      "flags": ["auth"],
+      "history": [
+        { "at": "2026-09-22", "what": "Level 2.1 initial PA faxed to SilverSummit · ref F-2214" },
+        { "at": "2026-09-24", "what": "IOP day attended before the decision · 3 h group · K. Hale" },
+        { "at": "2026-09-26", "what": "SilverSummit approved Level 2.1 · effective Sep 26" },
+        { "at": "2026-10-19", "what": "835 remit: denied CO-197 auth absent" }
+      ]
+    },
+    {
+      "id": "CLM-24288", "client": "PS", "dos": "2026-10-07", "payer": "anthem", "codes": ["H0048 × 1"], "amount": 14, "rendering": "khale",
+      "status": "denied", "carc": "CO-96", "rarc": "N130", "denied_on": "2026-10-24", "submitted_first": "2026-10-09",
+      "reason": "Non-covered charge(s) · consult plan benefit documents.",
+      "plain": "Anthem does not pay for the urine drug screen. None of the Medicaid plans do, even the ones that now require the result.",
+      "fix": "Write it off and stop sending H0048 to Medicaid plans. Psyflo drops H0048 from claims and lists it for the SAPTA grant report instead.",
+      "packet": { "kind": "none", "title": "No packet · plans do not pay for UDS", "items": [] },
+      "flags": [],
+      "history": [
+        { "at": "2026-10-07", "what": "Urine drug screen at the IOP day · H0048" },
+        { "at": "2026-10-09", "what": "Submitted through Availity" },
+        { "at": "2026-10-24", "what": "835 remit: denied CO-96 / N130" }
+      ]
+    },
+    {
+      "id": "CLM-24315", "client": "AM", "dos": "2026-10-14", "payer": "uhc", "codes": ["H0005 × 4"], "amount": 72, "rendering": "rowens",
+      "status": "denied", "carc": "CO-185", "rarc": "N290", "denied_on": "2026-10-26", "submitted_first": "2026-10-16",
+      "reason": "The rendering provider is not eligible to perform the service billed · rendering provider identifier invalid.",
+      "plain": "R. Owens (new hire, CADC-I) is not on HPN's provider roster yet. Since the provider-type change every clinician bills under their own NPI, so HPN has nothing to match.",
+      "fix": "Hold. HPN credentialing for R. Owens waits on the Nevada Medicaid letter. When HPN approves, ask for an effective date that covers Oct 14 and rebill (confirm; most plans do not backdate). Until then Psyflo keeps R. Owens's HPN sessions off claims.",
+      "packet": { "kind": "none", "title": "Waiting on credentialing", "href": "", "items": ["R. Owens · HPN · waiting on the Medicaid letter"] },
+      "flags": ["not_credentialed"],
+      "history": [
+        { "at": "2026-10-14", "what": "Level 1 group · H0005 · R. Owens, CADC-I" },
+        { "at": "2026-10-16", "what": "Submitted in the HPN portal" },
+        { "at": "2026-10-26", "what": "835 remit: denied CO-185 / N290" }
+      ]
+    },
+    {
+      "id": "CLM-24322", "client": "SB", "dos": "2026-10-20", "payer": "uhc", "codes": ["H0004 × 4"], "amount": 80, "rendering": "khale",
+      "status": "denied", "carc": "CO-197", "denied_on": "2026-10-28", "submitted_first": "2026-10-21",
+      "reason": "Precertification/authorization/notification absent.",
+      "plain": "HPN paid the same code, same counselor, same client a week earlier (Oct 13, session 19) and denied this one (session 20) for no authorization. Level 1 has no PA for the first 24 sessions under the Medicaid rule; HPN has stopped following it without telling anyone.",
+      "fix": "Reconsideration citing the paid claim CLM-24291 and the 24-session Level 1 rule. Psyflo also drafted the HPN PA for sessions 21 onward (paste into the HPN portal) so the next ones do not deny.",
+      "packet": { "kind": "reconsideration", "title": "Reconsideration · inconsistent decision", "items": ["835 · CLM-24291 paid Oct 22 (same code, clinician, client)", "Session count: 20 of 24", "Nevada Medicaid Level 1 24-session rule (MSM Ch. 400)"] },
+      "flags": ["paid_then_denied", "auth"],
+      "paired": { "claim": "CLM-24291", "dos": "2026-10-13", "paid": "2026-10-22", "amount": 80 },
+      "history": [
+        { "at": "2026-10-13", "what": "Session 19 · H0004 · K. Hale → paid Oct 22 (CLM-24291)" },
+        { "at": "2026-10-20", "what": "Session 20 · H0004 · K. Hale" },
+        { "at": "2026-10-21", "what": "Submitted in the HPN portal" },
+        { "at": "2026-10-28", "what": "835 remit: denied CO-197 auth absent" }
+      ]
+    },
+    {
+      "id": "CLM-24337", "client": "PG", "dos": "2026-10-15", "payer": "aetna", "codes": ["H0004 × 4"], "amount": 80, "rendering": "khale",
+      "status": "denied", "carc": "CO-18", "denied_on": "2026-10-28", "submitted_first": "2026-10-19",
+      "reason": "Exact duplicate claim/service.",
+      "plain": "We fixed a typo and sent the claim again, but as a brand-new claim. CareSource sees two claims for the same session and denies the second.",
+      "fix": "Send it as a replacement: frequency code 7 with the original claim number.",
+      "packet": { "kind": "corrected", "title": "Replacement claim · frequency code 7", "items": ["Frequency code 7", "Original claim number from the first 835"] },
+      "flags": [],
+      "history": [
+        { "at": "2026-10-15", "what": "Session · H0004 · K. Hale" },
+        { "at": "2026-10-19", "what": "Submitted, then re-sent after a fix as a new claim" },
+        { "at": "2026-10-28", "what": "835 remit: denied CO-18 duplicate" }
+      ]
+    },
+    {
+      "id": "CLM-24340", "client": "JO", "dos": "2026-10-16", "payer": "aetna", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
+      "status": "denied", "carc": "CO-50", "denied_on": "2026-10-28", "submitted_first": "2026-10-19",
+      "reason": "Non-covered: not deemed a medical necessity by the payer.",
+      "plain": "CareSource's claims reviewer decided this Level 2.1 day was not medically necessary, although the day sits inside an approved authorization. Their PA team wants the ASAM dimension ratings on page 1; the claims team does too.",
+      "fix": "Reconsideration with the authorization number and the ASAM ratings on page 1 (D1–D6), then the group note for the day.",
+      "packet": { "kind": "reconsideration", "title": "Reconsideration · inside an approved auth", "items": ["Authorization CS-55120 · Level 2.1 · covers Oct 16", "ASAM ratings D1–D6 on page 1", "Group note for Oct 16 (3 h, signed)"] },
+      "flags": [],
+      "history": [
+        { "at": "2026-10-16", "what": "IOP day · 3 h group · K. Hale" },
+        { "at": "2026-10-19", "what": "Submitted · accepted" },
+        { "at": "2026-10-28", "what": "835 remit: denied CO-50 medical necessity" }
+      ]
+    },
+    {
+      "id": "CLM-24199", "client": "RD", "dos": "2026-05-12", "payer": "ffs", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
+      "status": "resubmitted", "carc": "CO-16", "rarc": "MA130", "denied_on": "2026-10-14", "submitted_first": "2026-05-15", "resubmitted_at": "2026-10-27",
+      "reason": "Claim lacks information · incomplete or invalid information.",
+      "plain": "The place-of-service code was missing on the IOP line. Corrected and sent again on Oct 27.",
+      "fix": "Corrected claim sent. Watch for the remit; 10 days of filing time left.",
+      "packet": { "kind": "corrected", "title": "Corrected claim · sent Oct 27", "items": ["Place of service 11 added"] },
+      "flags": [],
+      "history": [
+        { "at": "2026-05-12", "what": "IOP day · 3 h group · K. Hale" },
+        { "at": "2026-05-15", "what": "Submitted · accepted (277CA)" },
+        { "at": "2026-10-14", "what": "835 remit: denied CO-16 / MA130" },
+        { "at": "2026-10-27", "what": "Corrected claim resubmitted · D. Owens" }
+      ]
+    },
+    {
+      "id": "CLM-24168", "client": "NK", "dos": "2026-04-28", "payer": "anthem", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
+      "status": "reconsideration", "carc": "CO-29", "denied_on": "2026-10-09", "submitted_first": "2026-05-01", "reconsideration_at": "2026-10-21",
+      "reason": "The time limit for filing has expired.",
+      "plain": "Filed three days after the session; Anthem pended it and denied it late. Reconsideration with the Availity confirmation went in Oct 21.",
+      "fix": "Waiting on Anthem (reconsiderations usually answer in 30–45 days).",
+      "packet": { "kind": "reconsideration", "title": "Reconsideration · sent Oct 21", "items": ["Availity confirmation · May 1"] },
+      "flags": ["plan_delay"], "proof": "Availity confirmation May 1",
+      "history": [
+        { "at": "2026-04-28", "what": "IOP day · 3 h group · K. Hale" },
+        { "at": "2026-05-01", "what": "Submitted through Availity · confirmation saved" },
+        { "at": "2026-10-09", "what": "835 remit: denied CO-29 timely filing" },
+        { "at": "2026-10-21", "what": "Reconsideration uploaded in Availity with proof of timely filing · D. Owens" }
+      ]
+    },
+    {
+      "id": "CLM-24144", "client": "MR", "dos": "2026-04-21", "payer": "anthem", "codes": ["H0015 × 3"], "amount": 186, "rendering": "khale",
+      "status": "recovered", "carc": "CO-29", "denied_on": "2026-09-18", "submitted_first": "2026-04-24", "reconsideration_at": "2026-09-25", "paid_at": "2026-10-24", "paid_amount": 186,
+      "reason": "The time limit for filing has expired.",
+      "plain": "Overturned on reconsideration with the Apr 24 Availity confirmation.",
+      "fix": "Paid Oct 24.",
+      "packet": { "kind": "reconsideration", "title": "Reconsideration · overturned", "items": ["Availity confirmation · Apr 24"] },
+      "flags": ["plan_delay"], "proof": "Availity confirmation Apr 24",
+      "history": [
+        { "at": "2026-04-24", "what": "Submitted through Availity · confirmation saved" },
+        { "at": "2026-09-18", "what": "835 remit: denied CO-29 timely filing" },
+        { "at": "2026-09-25", "what": "Reconsideration with proof of timely filing · D. Owens" },
+        { "at": "2026-10-24", "what": "835 remit: paid $186" }
+      ]
+    }
+  ],
+  "credentialing_plans": {
+    "order": ["ffs", "anthem", "aetna", "uhc", "sentara", "humana"],
+    "names": { "ffs": "Nevada Medicaid", "anthem": "Anthem", "aetna": "CareSource", "uhc": "HPN", "sentara": "Molina", "humana": "SilverSummit" },
+    "typical": {
+      "ffs": "2–3 weeks typical · longest so far 6 months",
+      "anthem": "~6 weeks · the fastest MCO",
+      "aetna": "2–3 months",
+      "uhc": "2–4 months · often asks follow-up questions",
+      "sentara": "3–4 months · reps change often",
+      "humana": "~2 months"
+    },
+    "source": "per the clinic · confirm"
+  },
+  "credentialing": [
+    {
+      "staff": "jperez", "npi": "1386749201", "license": { "type": "LCADC", "expires": "2027-11-30" },
+      "held_sessions": 0, "held_amount": 0,
+      "plans": {
+        "ffs": { "status": "credentialed", "date": "2025-03-04" },
+        "anthem": { "status": "credentialed", "date": "2025-04-22", "recred_due": "2027-01-15" },
+        "aetna": { "status": "credentialed", "date": "2025-06-10" },
+        "uhc": { "status": "credentialed", "date": "2025-07-01" },
+        "sentara": { "status": "credentialed", "date": "2025-07-29" },
+        "humana": { "status": "credentialed", "date": "2025-06-17" }
+      }
+    },
+    {
+      "staff": "cdiaz", "npi": "1295837460", "license": { "type": "LCSW", "expires": "2026-12-31" },
+      "held_sessions": 0, "held_amount": 0,
+      "plans": {
+        "ffs": { "status": "credentialed", "date": "2025-03-11" },
+        "anthem": { "status": "credentialed", "date": "2025-04-29" },
+        "aetna": { "status": "credentialed", "date": "2025-06-24" },
+        "uhc": { "status": "credentialed", "date": "2025-08-05" },
+        "sentara": { "status": "credentialed", "date": "2025-08-19" },
+        "humana": { "status": "credentialed", "date": "2025-06-17", "recred_due": "2026-12-10" }
+      }
+    },
+    {
+      "staff": "khale", "npi": "1508863927", "license": { "type": "CADC", "expires": "2027-06-30" },
+      "held_sessions": 0, "held_amount": 0,
+      "plans": {
+        "ffs": { "status": "credentialed", "date": "2025-03-18" },
+        "anthem": { "status": "credentialed", "date": "2025-05-06" },
+        "aetna": { "status": "credentialed", "date": "2025-07-15" },
+        "uhc": { "status": "credentialed", "date": "2025-08-12" },
+        "sentara": { "status": "credentialed", "date": "2025-09-02", "recred_due": "2026-11-30" },
+        "humana": { "status": "credentialed", "date": "2025-07-08" }
+      }
+    },
+    {
+      "staff": "rowens", "npi": "1720094418", "license": { "type": "CADC-I", "expires": "2027-09-30", "note": "intern certificate · supervised by C. Diaz" },
+      "hired": "2026-09-08", "held_sessions": 14, "held_amount": 2388,
+      "checklist": [
+        { "step": "NPI (Type 1, individual)", "done": "2026-09-10" },
+        { "step": "CAQH profile completed and attested", "done": "2026-09-19" },
+        { "step": "Supervision agreement on file (CADC-I)", "done": "2026-09-08" },
+        { "step": "Nevada Medicaid enrollment, linked to the agency (PT 17 / 215)", "status": "submitted Oct 2" },
+        { "step": "MCO packets ×5, each with the Medicaid approval letter", "status": "waiting on the Medicaid letter" },
+        { "step": "Add as rendering provider per plan in the EHR billing setup", "status": "after each approval" }
+      ],
+      "plans": {
+        "ffs": { "status": "submitted", "date": "2026-10-02", "blocking": "Nevada Medicaid enrollment in review. Every MCO packet needs its approval letter.", "next_followup": "2026-10-30", "held_sessions": 4, "held_amount": 744, "followups": [{ "at": "2026-10-21", "by": "lortiz", "note": "Called provider enrollment · in review, nothing missing" }] },
+        "anthem": { "status": "waiting_medicaid", "blocking": "Packet assembled and CAQH attested; needs the Medicaid approval letter.", "held_sessions": 3, "held_amount": 558 },
+        "aetna": { "status": "waiting_medicaid", "blocking": "Needs the Medicaid approval letter for CareSource's packet.", "held_sessions": 0, "held_amount": 0 },
+        "uhc": { "status": "waiting_medicaid", "blocking": "Needs the Medicaid approval letter. One session was billed by mistake and denied (CLM-24315).", "held_sessions": 2, "held_amount": 156 },
+        "sentara": { "status": "waiting_medicaid", "blocking": "Needs the Medicaid approval letter for Molina's packet.", "held_sessions": 2, "held_amount": 372 },
+        "humana": { "status": "waiting_medicaid", "blocking": "Needs the Medicaid approval letter for SilverSummit's packet.", "held_sessions": 3, "held_amount": 558 }
+      }
+    },
+    {
+      "staff": "slane", "npi": "1639271055", "license": { "type": "LCPC", "expires": "2027-03-31" },
+      "held_sessions": 12, "held_amount": 1536,
+      "plans": {
+        "ffs": { "status": "credentialed", "date": "2026-06-24" },
+        "anthem": { "status": "credentialed", "date": "2026-08-19" },
+        "aetna": { "status": "packet_sent", "date": "2026-10-01", "blocking": "In CareSource's queue. Nothing asked yet.", "next_followup": "2026-11-05", "held_sessions": 2, "held_amount": 256 },
+        "uhc": { "status": "info_requested", "date": "2026-09-18", "info_at": "2026-10-24", "blocking": "HPN asked us to explain a 7-month gap in work history (Mar – Sep 2024). Reply due Nov 7.", "next_followup": "2026-10-31", "held_sessions": 6, "held_amount": 768, "followups": [{ "at": "2026-10-24", "by": "lortiz", "note": "HPN letter received · work history gap question" }] },
+        "sentara": { "status": "packet_sent", "date": "2026-08-06", "blocking": "No answer. Molina's rep changed in September; the packet was re-sent to the new rep on Oct 3.", "next_followup": "2026-10-30", "held_sessions": 4, "held_amount": 512, "followups": [{ "at": "2026-09-15", "by": "lortiz", "note": "Rep no longer at Molina · new rep assigned" }, { "at": "2026-10-03", "by": "lortiz", "note": "Packet re-sent to the new rep" }] },
+        "humana": { "status": "credentialed", "date": "2026-10-09" }
+      }
+    },
+    {
+      "staff": "jreyes", "npi": "1912450386", "license": { "type": "PRSS", "expires": "2027-02-28" },
+      "held_sessions": 3, "held_amount": 165,
+      "plans": {
+        "ffs": { "status": "credentialed", "date": "2025-11-04" },
+        "anthem": { "status": "credentialed", "date": "2025-12-16" },
+        "aetna": { "status": "credentialed", "date": "2026-02-10" },
+        "uhc": { "status": "packet_ready", "blocking": "Medicaid letter on file and the packet is assembled. A person uploads it in the HPN portal.", "held_sessions": 3, "held_amount": 165 },
+        "sentara": { "status": "credentialed", "date": "2026-03-03" },
+        "humana": { "status": "credentialed", "date": "2026-01-20" }
+      }
+    }
+  ]
+}

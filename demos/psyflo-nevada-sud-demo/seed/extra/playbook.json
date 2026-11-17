@@ -1,0 +1,265 @@
+{
+  "_about": "Payer playbook 'what changed' feed, per-plan cards and the Analytics demo numbers for the Community Counseling Center of Southern Nevada (Nevada, adult SUD / ASAM) demo. Synthetic. Payer ids are the internal ones (humana = SilverSummit, anthem = Anthem, sentara = Molina, aetna = CareSource, uhc = HPN, ffs = Nevada Medicaid FFS).",
+  "policy_changes": [
+    {
+      "id": "PC-06",
+      "payer": "anthem",
+      "detected": "2026-10-27",
+      "from": "2 denials since Oct 20 · same reviewer initials",
+      "change": "A new Anthem reviewer is denying mental-health therapy codes (90834, 90837) because the agency's provider type reads Substance Use Agency Model (SUAM).",
+      "effect": "S. Lane's (LCPC) therapy sessions for E.C. denied as 'provider type not eligible'. The agency is enrolled for both SUD and mental health.",
+      "action": "Psyflo drafts the reconsideration citing the Nevada Medicaid enrollment (PT 17 / Specialty 215 · confirm), attaches the enrollment letter, and puts one line about the enrollment at the top of every Anthem mental-health request.",
+      "status": "watching",
+      "record": "R-0384"
+    },
+    {
+      "id": "PC-05",
+      "payer": "sentara",
+      "detected": "2026-10-24",
+      "from": "3 continued-stay denials since Sep 29",
+      "change": "Molina denies Level 2.1 continued stay as 'no longer meets medical necessity' when the client has been abstinent inside the IOP.",
+      "effect": "Clients are stepped down before step-down criteria are met; T.N.'s denial goes to a peer-to-peer with the plan medical director.",
+      "action": "Psyflo's Molina continued-stay draft leads with Dimension 5: relapse risk stays high without the Level 2.1 structure, with dated UDS results, D4 and D6 status, and why step-down criteria are not met yet. Peer-to-peer notes are prepared from the same facts.",
+      "status": "active rule",
+      "record": "R-0388"
+    },
+    {
+      "id": "PC-04",
+      "payer": "humana",
+      "detected": "2026-10-21",
+      "from": "3 denials since Sep 22",
+      "change": "SilverSummit denies Level 2.1 initial requests that do not include urine drug screen results from the assessment. It is not on SilverSummit's PA form, and SilverSummit does not pay for the test (H0048 / 80305).",
+      "effect": "3 initial requests denied and resubmitted; IOP days between denial and approval cannot be billed (no backdating).",
+      "action": "Psyflo blocks the SilverSummit Level 2.1 packet until a UDS result dated at the assessment is attached, and lists it on the cover sheet.",
+      "status": "active rule",
+      "record": "R-0399"
+    },
+    {
+      "id": "PC-03",
+      "payer": "aetna",
+      "detected": "2026-10-15",
+      "from": "1 information request + 1 reply from the UM nurse, Oct 14",
+      "change": "CareSource wants the six ASAM dimension ratings on page 1 of its own PA form, not only in the attached assessment.",
+      "effect": "Requests with the ratings only in the attachment get an information request and lose 2–4 days.",
+      "action": "Psyflo fills the D1–D6 ratings on page 1 of the CareSource form from the ASAM assessment before it goes for signature.",
+      "status": "active rule",
+      "record": "R-0391"
+    },
+    {
+      "id": "PC-02",
+      "payer": "uhc",
+      "detected": "2026-10-08",
+      "from": "2 claim denials + provider rep reply, Oct 7",
+      "change": "Health Plan of Nevada is requiring prior authorization for Level 1 outpatient before session 24. It is not applying the Nevada Medicaid 24-session no-PA rule.",
+      "effect": "Level 1 sessions billed without an auth were denied 'no authorization on file'.",
+      "action": "Psyflo flags HPN Level 1 clients at intake and drafts the PA before the first session; denied sessions go to Claims & denials for reconsideration.",
+      "status": "active rule · confirm with HPN",
+      "record": "R-0395"
+    },
+    {
+      "id": "PC-01",
+      "payer": "sentara",
+      "detected": "2026-09-30",
+      "from": "4 decisions since Sep 8 authorized 5 sessions on 72-unit asks",
+      "change": "Molina authorizes Level 2.1 IOP 5 sessions at a time instead of the full request.",
+      "effect": "At 3 days a week, 5 sessions last under two weeks; a request that goes in late leaves IOP days unbillable.",
+      "action": "Psyflo auto-drafts the next Molina request at session 3 and puts it on Do next for the clinician to sign, so it is in before session 5.",
+      "status": "active rule",
+      "record": "R-0402"
+    }
+  ],
+  "plan_notes": {
+    "humana": {
+      "form": "SilverSummit PA form + EHR printout",
+      "submit": "Fax · keep the delivery receipt",
+      "level1": "24 sessions without PA, then PA",
+      "level21": "PA from the assessment · UDS result required (not on the form)",
+      "watch": "Fax receipts go missing: check receipt at day 5"
+    },
+    "anthem": {
+      "form": "Availity upload · EHR printout",
+      "submit": "Availity",
+      "level1": "24 sessions without PA, then PA",
+      "level21": "PA from the assessment",
+      "watch": "Information requests inside 24 h · new reviewer denies MH codes for SUAM"
+    },
+    "sentara": {
+      "form": "Molina PA form",
+      "submit": "Fax",
+      "level1": "24 sessions without PA, then PA",
+      "level21": "PA from the assessment · authorizes 5 sessions at a time",
+      "watch": "Next request after session 3 · denies continued stay when abstinent"
+    },
+    "aetna": {
+      "form": "CareSource's own PA form · ASAM ratings on page 1",
+      "submit": "Fax",
+      "level1": "24 sessions without PA, then PA",
+      "level21": "PA from the assessment",
+      "watch": "Information request if ratings are only in the attachment"
+    },
+    "uhc": {
+      "form": "Text pasted in the HPN provider portal",
+      "submit": "HPN provider portal",
+      "level1": "PA before session 24 (not following the 24-session rule)",
+      "level21": "PA from the assessment",
+      "watch": "Paste limits per box · keep the portal confirmation"
+    },
+    "ffs": {
+      "form": "Nevada Medicaid PA form · EHR printout",
+      "submit": "Nevada Medicaid provider portal",
+      "level1": "No PA for the first 24 sessions, then PA",
+      "level21": "PA from the assessment · no backdating",
+      "watch": "Slowest decisions · timely filing 180 days (confirm)"
+    }
+  },
+  "analytics_nv": {
+    "period": "12 months to Oct 2026",
+    "label": "Demo numbers · shaped like CCC of SN's EHR export, not real",
+    "levels": {
+      "all": {
+        "denied": 0.116,
+        "hours_month": 118,
+        "writeoffs": 86400
+      },
+      "l21": {
+        "denied": 0.119,
+        "hours_month": 84,
+        "writeoffs": 61200
+      },
+      "l1": {
+        "denied": 0.112,
+        "hours_month": 34,
+        "writeoffs": 25200
+      }
+    },
+    "flag_months": [
+      "Sep",
+      "Oct"
+    ],
+    "payers": {
+      "humana": {
+        "denied": 0.16
+      },
+      "anthem": {
+        "denied": 0.12
+      },
+      "sentara": {
+        "denied": 0.09
+      },
+      "aetna": {
+        "denied": 0.11
+      },
+      "uhc": {
+        "denied": 0.14
+      },
+      "ffs": {
+        "denied": 0.05
+      }
+    },
+    "denials": [
+      {
+        "reason": "Timely filing (past 180 days)",
+        "n": 31,
+        "plans": "All plans",
+        "amount": 38700,
+        "fix": "proof of timely submission"
+      },
+      {
+        "reason": "No auth on file · Level 1 before session 24",
+        "n": 14,
+        "plans": "HPN",
+        "amount": 2940,
+        "fix": "PA drafted at intake"
+      },
+      {
+        "reason": "Abstinent in treatment · no longer meets criteria",
+        "n": 9,
+        "plans": "Molina · Anthem",
+        "amount": 21600,
+        "fix": "D5 draft + peer-to-peer"
+      },
+      {
+        "reason": "IOP medical necessity not established over standard outpatient",
+        "n": 12,
+        "plans": "Molina · Anthem",
+        "amount": 18400,
+        "fix": "ASAM dimensions D1–D6 argued up front"
+      },
+      {
+        "reason": "Partial approval · units reduced without clinical rationale",
+        "n": 11,
+        "plans": "Molina · CareSource",
+        "amount": 14300,
+        "fix": "flag and appeal before the filing window closes"
+      },
+      {
+        "reason": "Co-occurring disorder not documented as requiring IOP level",
+        "n": 6,
+        "plans": "Anthem · SilverSummit",
+        "amount": 9800,
+        "fix": "D3 narrative drafted with PHQ-9, GAD-7 and PCL-5"
+      },
+      {
+        "reason": "Recertification submitted past filing window",
+        "n": 5,
+        "plans": "HPN · CareSource",
+        "amount": 7200,
+        "fix": "request 72 hours before the units run out"
+      },
+      {
+        "reason": "Provider type not eligible (MH code, SUAM)",
+        "n": 7,
+        "plans": "Anthem",
+        "amount": 3150,
+        "fix": "reconsideration"
+      },
+      {
+        "reason": "Information not received in time",
+        "n": 6,
+        "plans": "CareSource · SilverSummit",
+        "amount": 5400,
+        "fix": "reply clock on Do next"
+      },
+      {
+        "reason": "Paid last week, denied this week (same code)",
+        "n": 5,
+        "plans": "Molina · HPN",
+        "amount": 1125,
+        "fix": "reconsideration"
+      },
+      {
+        "reason": "No UDS from the assessment (Level 2.1 initial)",
+        "n": 3,
+        "plans": "SilverSummit",
+        "amount": 4860,
+        "fix": "packet blocked until attached"
+      }
+    ],
+    "writeoffs_by_quarter": [
+      [
+        "Jan–Mar",
+        18200
+      ],
+      [
+        "Apr–Jun",
+        21900
+      ],
+      [
+        "Jul–Sep",
+        24600
+      ],
+      [
+        "Oct",
+        21700
+      ]
+    ],
+    "ar_still_owed": 204000,
+    "stepdowns": {
+      "total": 58,
+      "planned": 40,
+      "forced": 18,
+      "readmitted": 9
+    },
+    "_note": "Headline PA numbers come from analytics_baseline and payers (seed); this block adds what the seed does not carry: denial rates per plan, workload hours, write-offs, denials by reason, step-down split."
+  }
+}

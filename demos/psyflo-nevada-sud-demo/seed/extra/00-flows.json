@@ -1,0 +1,20 @@
+{
+  "_about": "Extra synthetic seed used by the live flows. Merged over seed.json (arrays appended, objects merged). school_numbers keeps its key for older code: for T.W. it holds the Clark County drug court numbers sent with the referral.",
+  "timers": {
+    "khale": { "client": "MR", "started": "2026-10-29T11:40",
+      "blocks": [["08:50", "09:00", "Check-in, breath screen and UDS collection"], ["09:00", "10:00", "Process group · check-in and weekend review"], ["10:00", "10:10", "Break"], ["10:10", "11:00", "Relapse prevention skills (CBT-RP)"], ["11:00", "11:50", "Seeking Safety · grounding"], ["11:50", "12:00", "Recovery plan check and wrap-up", "unconfirmed"]] }
+  },
+  "school_numbers": {
+    "TW": { "reported": "2026-10-13", "by": "rbell", "source": "Clark County drug court case summary (sent with the referral)",
+      "missed_checkins_60d": 3, "positive_uds_60d": 4, "sanctions_6mo": 1, "jail_days_6mo": 2, "detox_admissions_2y": 2,
+      "positive_uds_dates": ["2026-09-15", "2026-09-29", "2026-10-06", "2026-10-09"],
+      "missed_checkin_dates": ["2026-09-22", "2026-10-02", "2026-10-08"],
+      "incident_dates": ["2026-09-15", "2026-09-22", "2026-09-29", "2026-10-02", "2026-10-06", "2026-10-08", "2026-10-09"] }
+  },
+  "notes": [
+    { "id": "n-jt-1029", "client": "JT", "staff": "khale", "type": "daily", "label": "IOP group note", "date": "2026-10-29", "units": 3, "processed_at": "2026-10-29T12:21", "review": "approved" },
+    { "id": "n-dp-1029", "client": "DP", "staff": "khale", "type": "daily", "label": "IOP group note", "date": "2026-10-29", "units": 3, "processed_at": "2026-10-29T12:24", "review": "approved" },
+    { "id": "n-ag-1029", "client": "AG", "staff": "khale", "type": "daily", "label": "IOP group note", "date": "2026-10-29", "units": 3, "processed_at": "2026-10-29T12:26", "review": "approved" },
+    { "id": "n-cb-1029", "client": "CB", "staff": "khale", "type": "daily", "label": "IOP group note", "date": "2026-10-29", "units": 2, "processed_at": "2026-10-29T12:29", "review": "approved" }
+  ]
+}
