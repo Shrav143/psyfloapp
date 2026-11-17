@@ -1,4 +1,4 @@
-// 53 · Claims & denials — the denial worklist over state.claims: what each denial means for that plan,
+// 53 · Denial Intelligence — the denial worklist over state.claims: what each denial means for that plan,
 // the 180-day timely-filing clock (demo assumption · confirm per contract), the packet to send, and the
 // buttons a person presses (claim.resubmit / claim.reconsider / claim.writeoff; admin "Demo: payer pays").
 import { register, Screen, M, raw, esc, modal, toast, session } from '../app.js';

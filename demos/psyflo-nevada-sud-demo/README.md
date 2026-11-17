@@ -32,7 +32,7 @@ Open http://localhost:4000. It is a normal sign-in page (work email and password
 | --- | --- | --- | --- |
 | Direct support staff | Kayla Hale, CADC (`khale`) | Dashboard (notes behind, due next, goals) | Dashboard · Clients · Documentation (Group Notes, Weekly Sessions, Collateral Contacts, Incident Reports) |
 | Clinician | Jordan Perez, LCADC (`jperez`) · signs requests | Dashboard (today's worklist) | Dashboard, Documentation Status · Clients, Referrals, Eligibility · Assessments & Plans · Utilization Review (Authorizations, Continued Stay, Discharge Summaries) |
-| Administrator | Dana Owens (`dowens`) | Authorizations | Utilization Review · Billing (Claims & Denials, Payer Rules) · Reports · Client Record · Administration (Users & Permissions) |
+| Administrator | Dana Owens (`dowens`) | Authorizations | Utilization Review · Billing (Denial Intelligence, Payer Rules) · Reports · Client Record · Administration (Users & Permissions) |
 
 There are three roles, no supervisor or credentialing role. The sidebar uses the words the EHR uses (Clients, Group Notes, Forms to Approve, Authorizations, Reports); items that live in the EHR open the mock Client Record with the Psyflo panel beside it. Press **/** anywhere to search clients, referrals and authorizations. The product view has no demo bar: **Ctrl+Shift+P** opens the presenter panel (reset, jump to any screen, "How it fits", "How the data gets in", the demo-only "receive a plan reply" / "payer pays" / "advance the clock" actions on the screens that have them).
 
@@ -45,7 +45,7 @@ There are no dropdown menus in the Psyflo screens: filters, roles and pickers ar
 | Front door | Referrals (drug court, Nevada P&P, self, hospital ED, HIV clinic; by program) · Referral review (the ASAM dimensions the referral already shows) · Nevada Medicaid eligibility (a person reads EVS and records the MCO or FFS; no Medicaid → Ryan White / SAPTA grant, no PA) |
 | In the EHR (extension) | Intake screening · ASAM assessment (six dimensions) · Treatment plan · PA request · Continued stay · Sign-off |
 | Authorizations | Authorizations · Sent · Information request · Partial approvals & denials · Step-down 2.1 → 1 · Peer-to-peer notes · Reconsideration / appeal letter |
-| New for Nevada | **Claims & Denials** (denial worklist, timely-filing countdowns, plain-English denial codes, "paid last week, denied this week", AR aging, write-off trend, reconsideration packets with proof of timely filing) · **Case Tracker** (inside Authorizations: every authorization with units approved, used and remaining, when it expires and a status such as Recertification due, Current, Awaiting approval or Appeal in progress) |
+| New for Nevada | **Denial Intelligence** (denial worklist, timely-filing countdowns, plain-English denial codes, "paid last week, denied this week", AR aging, write-off trend, reconsideration packets with proof of timely filing) · **Case Tracker** (inside Authorizations: every authorization with units approved, used and remaining, when it expires and a status such as Recertification due, Current, Awaiting approval or Appeal in progress) |
 | Learning | **Payer playbook · what changed** (plan rules Psyflo noticed in denials and replies, and what it now does differently) · Analytics (approval / partial / denial per plan, decision days, auth workload, denials by reason, timely-filing write-offs, step-downs; demo numbers) |
 | Admin | Users & Permissions |
 
@@ -61,7 +61,7 @@ Reset to **Live flows** first. The mock EHR and the app can sit side by side; ev
 
 **Flow C · draft → sign → send → track a PA.** After Flow A: treatment plan → Psyflo drafts R-0416, the Level 2.1 initial PA for **72 units of H0015 (9 a week × 8 weeks)** in SilverSummit's format, with the UDS result attached (the packet is blocked without it). *Process Form* → *Forms to Approve* → the clinician signs → *Send* (fax stub: reference + delivery receipt in ~3 s, kept as proof of timely submission). Authorizations shows it submitted with its decision clock; as an admin use *Demo: receive a reply* to show an approval, a 5-session partial (Molina), an information request or a denial.
 
-**Then show** Do next (Jordan's day: sign T.W.'s PA, M.R.'s continued-stay draft arguing D5, K.T.'s information request due today, D.W.'s next Molina 5-session request after session 3, T.N.'s peer-to-peer, E.C.'s reconsideration), Claims & denials, Payer Rules "What changed" feeds.
+**Then show** Do next (Jordan's day: sign T.W.'s PA, M.R.'s continued-stay draft arguing D5, K.T.'s information request due today, D.W.'s next Molina 5-session request after session 3, T.N.'s peer-to-peer, E.C.'s reconsideration), Denial Intelligence, Payer Rules "What changed" feeds.
 
 ## Real vs stubbed
 

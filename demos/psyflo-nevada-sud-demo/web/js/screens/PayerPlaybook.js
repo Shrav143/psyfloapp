@@ -34,7 +34,7 @@ register('PayerPlaybook', class extends Screen {
       return {
         detected: M.fmtDate(c.detected), plan: SHORT[c.payer] || M.payerShort(s, c.payer), from: c.from, change: c.change, effect: c.effect, action: c.action,
         status: c.status, cls: statusCls(c.status),
-        href: q ? M.requestHref(q) : 'Claims.dc.html', link: q ? 'Open ' + q.id + ' →' : 'Claims & denials →'
+        href: q ? M.requestHref(q) : 'Claims.dc.html', link: q ? 'Open ' + q.id + ' →' : 'Denial Intelligence →'
       };
     });
     const oldest = feed.length ? feed[feed.length - 1].detected : s.today;

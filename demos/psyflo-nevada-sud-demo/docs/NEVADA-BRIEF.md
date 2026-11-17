@@ -127,7 +127,7 @@ Timely filing in the demo: **180 days from date of service** for Nevada Medicaid
 
 ## New screens (built separately)
 
-- **Claims & denials** (`Claims`): denial worklist with timely-filing countdowns, payer-specific denial-code decoder in plain English, "paid last week, denied this week" flags, AR aging and the bad-debt write-off trend, one-click reconsideration packets with proof of timely filing.
+- **Denial Intelligence** (`Claims`): denial worklist with timely-filing countdowns, payer-specific denial-code decoder in plain English, "paid last week, denied this week" flags, AR aging and the bad-debt write-off trend, one-click reconsideration packets with proof of timely filing.
 - **Credentialing** (`Credentialing`): per clinician NPI × Nevada Medicaid → 5 MCOs grid, days waiting, what is blocking (Medicaid letter, info request), sessions seen that cannot be billed yet.
 
 ## Rules that stay

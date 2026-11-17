@@ -136,7 +136,7 @@ function navFor(role) {
   ];
   return [
     ['Utilization Review', [P('Authorizations', 'Authorizations', 'Authorizations'), P('Referrals', 'Referrals', 'Referrals'), P('Eligibility', 'Eligibility')]],
-    ['Billing', [P('Claims', 'Claims & Denials', 'Claims'), P('PayerPlaybook', 'Payer Rules')]],
+    ['Billing', [P('Claims', 'Denial Intelligence', 'Claims'), P('PayerPlaybook', 'Payer Rules')]],
     ['Reports', [P('Analytics', 'Reports'), P('StaffDashboard', 'Documentation Status')]],
     ['Client Record', [E('Clients', '/consumers', 'Clients')]],
     ['Administration', [P('Users', 'Users & Permissions')]]

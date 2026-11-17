@@ -222,7 +222,7 @@ function homeView() {
     <div class="row" style="margin-top:10px"><div style="flex:1">${clients.length ? chips('pickStudent', 'Client', clients.map(x => [x.no, esc(x.initials)]), sel) : '<span class="small muted">No SUD clients on this page</span>'}</div>
     ${running ? '<button class="btn r" data-act="timerStop">Stop</button>' : `<button class="btn p" data-act="timerStart" ${sel ? '' : 'disabled'}>Start</button>`}</div></div>` : ''}
   ${lvl === 4 ? `<div class="tile"><div style="font-weight:600;font-size:15px">Open Psyflo</div><div class="list" style="display:flex;flex-direction:column;gap:6px;margin-top:6px">
-    <a class="btn o" data-act="openApp" data-href="#/Claims"><span>Claims &amp; Denials · timely filing</span><span class="chip r">work these first</span></a>
+    <a class="btn o" data-act="openApp" data-href="#/Claims"><span>Denial Intelligence · timely filing</span><span class="chip r">work these first</span></a>
     <a class="btn o" data-act="openApp" data-href="#/Authorizations"><span>Authorizations · where every request stands</span><span class="chip y">${s.requests.filter(r => ['info_requested', 'partial_decide', 'overdue', 'signed', 'denied'].includes(r.stage)).length} need action</span></a>
     <a class="btn o" data-act="openApp" data-href="#/PayerPlaybook"><span>Payer Rules · what changed</span><span class="chip n">learned from denials</span></a>
     <a class="btn o" data-act="openApp" data-href="#/Referrals"><span>Referrals · drug court, P&amp;P, self</span><span class="chip y">${s.referrals.filter(r => r.stage === 'needs_screening').length} waiting</span></a></div></div>

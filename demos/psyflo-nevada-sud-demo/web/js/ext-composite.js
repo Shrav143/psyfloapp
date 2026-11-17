@@ -4,6 +4,7 @@
 // MV3 side-panel extension installed.
 import { DCLogic, esc } from './runtime.js';
 import { api } from './api.js';
+import { homeFor } from './registry.js';
 
 const T = (id) => (api.state.clients.find(c => c.id === id) || {});
 const no = (id, fallback) => T(id).lauris_no || T(id).harvest_no || fallback;
@@ -38,9 +39,9 @@ export class ExtComposite extends DCLogic {
 .xbar a{color:#15605E;font-weight:600}.xbar .u{flex:1;min-width:200px;background:#fff;border:1px solid #D9D4CC;border-radius:999px;padding:5px 12px;font-size:12px;color:#525B66;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .xframe{display:block;width:100%;height:calc(100vh - 41px);border:0;background:#F2F3F5}`; }
   prepare() {
-    return `<div style="display:flex;min-height:100vh;align-items:flex-start;background:#F8F6F2"><!--SIDEBAR--><div style="flex:1;min-width:0"><div class="xbar"><span class="u">Client Record · {{what}}</span><a href="{{direct}}" target="_blank" rel="noopener">Open in its own tab ↗</a></div>
-<iframe class="xframe" title="Client Record with the Psyflo panel" src="{{url}}" allow="microphone"></iframe></div></div>`;
+    return `<div class="xbar"><a href="{{home}}">← Back to Psyflo</a><span style="flex:1"></span><a href="{{direct}}" target="_blank" rel="noopener">Open in its own tab ↗</a></div>
+<iframe class="xframe" title="Client Record with the Psyflo panel" src="{{url}}" allow="microphone"></iframe>`;
   }
-  renderVals() { if (!this._t) this._t = laurisHref(this.meta?.id || 'ExtHome', this.params); return this._t; }
+  renderVals() { if (!this._t) { const t = laurisHref(this.meta?.id || 'ExtHome', this.params); let role = 'clinician'; try { const u = api.state.staff.find(x => x.id === localStorage.getItem('psyflo_user')); if (u) role = u.role; } catch { } this._t = { ...t, home: '#/' + homeFor(role) }; } return this._t; }
   onStore() { /* keep the frame; the panel inside updates itself */ }
 }

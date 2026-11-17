@@ -9,7 +9,7 @@ const CHIP = { clinician: 'chip g', admin: 'chip n', supervisor: 'chip n', direc
 const LV = { direct_support: 1, supervisor: 2, clinician: 3, admin: 4 };
 const ROLE_TITLES = ['Direct support staff', 'Clinician', 'Administrator', 'Counselor', 'Clinical supervisor', 'Billing & admin'];
 const SHORT = { direct_support: 'Direct support', clinician: 'Clinician', admin: 'Administrator' };
-const NAV = [['StaffDashboard', 'Dashboard'], ['DoNext', 'Dashboard'], ['ExtHome', 'Clients'], ['Referrals', 'Referrals'], ['Eligibility', 'Eligibility'], ['Authorizations', 'Authorizations'], ['Claims', 'Claims & Denials'], ['PayerPlaybook', 'Payer Rules'], ['Analytics', 'Reports'], ['Users', 'Users & Permissions']];
+const NAV = [['StaffDashboard', 'Dashboard'], ['DoNext', 'Dashboard'], ['ExtHome', 'Clients'], ['Referrals', 'Referrals'], ['Eligibility', 'Eligibility'], ['Authorizations', 'Authorizations'], ['Claims', 'Denial Intelligence'], ['PayerPlaybook', 'Payer Rules'], ['Analytics', 'Reports'], ['Users', 'Users & Permissions']];
 
 register('Users', class extends Screen {
   sites(s, u) {

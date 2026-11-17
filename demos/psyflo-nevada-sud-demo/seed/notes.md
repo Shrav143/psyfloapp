@@ -286,9 +286,9 @@ Flows: "what changed" is surfaced from patterns: SilverSummit's unannounced UDS-
 
 Populates: the request checklist and the drafting rules for each plan.
 
-## 53 · Claims & denials · timely filing (`Claims.dc.html`)
+## 53 · Denial Intelligence · timely filing (`Claims.dc.html`)
 
-HOW THE DATA GETS IN · Claims & denials
+HOW THE DATA GETS IN · Denial Intelligence
 
 Captured: nothing new to type. Denials and payments are read from the 835 remittance files and EOBs the biller already downloads from each plan's portal (Nevada Medicaid, Anthem, CareSource, HPN, Molina, SilverSummit), plus the claim acceptance reports (277CA) that prove when a claim was first filed. Demo numbers.
 

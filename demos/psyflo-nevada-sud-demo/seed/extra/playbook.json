@@ -52,7 +52,7 @@
       "from": "2 claim denials + provider rep reply, Oct 7",
       "change": "Health Plan of Nevada is requiring prior authorization for Level 1 outpatient before session 24. It is not applying the Nevada Medicaid 24-session no-PA rule.",
       "effect": "Level 1 sessions billed without an auth were denied 'no authorization on file'.",
-      "action": "Psyflo flags HPN Level 1 clients at intake and drafts the PA before the first session; denied sessions go to Claims & denials for reconsideration.",
+      "action": "Psyflo flags HPN Level 1 clients at intake and drafts the PA before the first session; denied sessions go to Denial Intelligence for reconsideration.",
       "status": "active rule · confirm with HPN",
       "record": "R-0395"
     },

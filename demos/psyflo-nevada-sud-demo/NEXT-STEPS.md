@@ -13,7 +13,7 @@ This demo retargets Psyflo to the Nevada adult substance-use clinic from the dis
 
 ## What to show, in their priority order
 
-1. **Work the denials** — Claims & denials: timely-filing countdowns per claim, denial codes in plain English, "paid last week, denied this week", the write-off trend, a reconsideration packet with proof of timely submission. E.C.'s Anthem denial ("provider type not eligible for 90837") → the reconsideration letter citing the SUAM enrollment.
+1. **Work the denials** — Denial Intelligence: timely-filing countdowns per claim, denial codes in plain English, "paid last week, denied this week", the write-off trend, a reconsideration packet with proof of timely submission. E.C.'s Anthem denial ("provider type not eligible for 90837") → the reconsideration letter citing the SUAM enrollment.
 2. **Prior authorizations** — Flow C (T.W.: 72 units H0015, SilverSummit, UDS attached, sign → send → track); Do next for the clinician; Molina's 5-session renewals drafted at session 3; M.R.'s continued stay arguing D5 against "abstinent in treatment"; T.N.'s peer-to-peer notes.
 3. **Credentialing** — each clinician's NPI × Nevada Medicaid × each MCO, days waiting, what is blocking, sessions that cannot be billed yet.
 4. **Payer playbook · what changed** — the plan rule changes Psyflo picked up from denials (SilverSummit UDS, Molina 5 sessions, HPN 24-session rule, Anthem SUAM reviewer, CareSource page-1 ratings, Molina abstinent denials) and what Psyflo now does about each.
@@ -23,7 +23,7 @@ This demo retargets Psyflo to the Nevada adult substance-use clinic from the dis
 ## Live vs stubbed (say it plainly)
 
 - Live in the demo: Flow A (intake screening / ASAM fills the EHR form), Flow C (draft → sign → send → track a PA), referral review, EVS eligibility recording, grant routing, Do next, Users & roles.
-- Seeded: Claims & denials, Credentialing, Payer playbook feed, Analytics numbers (labelled demo numbers).
+- Seeded: Denial Intelligence, Credentialing, Payer playbook feed, Analytics numbers (labelled demo numbers).
 - Stubs: fax, SMS, email, the payer portals and EVS (a person reads the lookup and records it). The EHR is a mock ("Client Record"), not theirs.
 - Rules that never bend: a person signs, a person presses Send, nothing auto-submits; no EHR integration needed to start.
 

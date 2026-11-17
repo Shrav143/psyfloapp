@@ -46,7 +46,7 @@ export const SCREENS = [
   { n: 38, id: 'PeerBrief', surface: 'app', min: 3, title: 'Peer-to-peer call notes' },
   { n: 39, id: 'AppealLetter', surface: 'app', min: 3, title: 'Reconsideration / appeal letter' },
   { n: 40, id: 'PayerPlaybook', surface: 'app', min: 3, title: 'Payer Rules' },
-  { n: 53, id: 'Claims', surface: 'app', min: 3, title: 'Claims & Denials' },
+  { n: 53, id: 'Claims', surface: 'app', min: 3, title: 'Denial Intelligence' },
   { n: 42, id: 'Analytics', surface: 'app', min: 3, title: 'Analytics' },
   { n: 43, id: 'Users', surface: 'app', min: 4, title: 'Users & Permissions' },
   { n: 46, id: 'ParentEnroll', surface: 'parent', min: 0, title: 'Enrollment packet (phone)', hidden: true },
