@@ -61,6 +61,9 @@ export const CHECKS = {
   }
 };
 
+// Harvest's seven substance use interventions (the same list as seed.json interventions and the ISP drop-downs of server/lauris/forms.js)
+export const INTERVENTION_LIST = ['SUD 1.1 Motivational interviewing', 'SUD 1.2 Relapse prevention skills', 'SUD 1.3 Cognitive behavioral skills for substance use', 'SUD 1.4 Drug and alcohol refusal skills', 'SUD 1.5 Contingency management', 'SUD 2.1 Family session', 'SUD 2.2 Recovery support planning'];
+
 export const UNDATED = 'undated';
 const isoDay = d => { const m = String(d || '').match(/^\d{4}-\d{2}-\d{2}/); return m ? m[0] : null; };
 const src = (n, kind, label, date, extra = {}) => { const d = isoDay(date); return { n, kind, label, date: d || UNDATED, date_label: d ? fmtDate(d) : 'Evidence missing — date unknown', ...extra }; };
@@ -92,7 +95,7 @@ export function yearLabel(text, today) {
 // Facts heard on the call. Each fact: test(text, raw, lines) → value or null. `text` is the transcript so far (lower case), `raw` the same with its case,
 // `lines` the turns without the speaker label. Nothing is stated that the call did not say; a fact that was not heard is absent, never guessed.
 const has = (t, re) => re.test(t);
-const NUM = { a: 1, an: 1, one: 1, once: 1, two: 2, twice: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
+const NUM = { a: 1, an: 1, one: 1, once: 1, couple: 2, two: 2, twice: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
 const nz = w => { const k = String(w == null ? '' : w).toLowerCase(); return NUM[k] != null ? NUM[k] : /^\d+(\.\d+)?$/.test(k) ? +k : null; };
 const ORD = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth', 'twentieth', 'twenty-first', 'twenty-second', 'twenty-third', 'twenty-fourth', 'twenty-fifth', 'twenty-sixth', 'twenty-seventh', 'twenty-eighth', 'twenty-ninth', 'thirtieth', 'thirty-first'];
 const ordinal = n => { const j = n % 10, k = n % 100; return n + (j === 1 && k !== 11 ? 'st' : j === 2 && k !== 12 ? 'nd' : j === 3 && k !== 13 ? 'rd' : 'th'); };
@@ -155,7 +158,7 @@ export function lastUseDate(raw, today) {
 const lastText = (raw, today) => lastUseDate(raw, today).text;
 
 const substFacts = (key, lines) => {
-  const s = segment(lines, key, key === 'c' ? 9 : 3); if (!s) return {};
+  const s = segment(lines, key, key === 'c' ? 9 : 5); if (!s) return {};
   const o = {};
   const none = key === 'a' ? /\bno (alcohol|drinking)\b|haven'?t seen (him|her) drink|doesn'?t drink|never drinks/.test(s) : false;
   if (none) { o[key + '_none'] = 'None reported'; return o; }
@@ -185,7 +188,7 @@ export const SCREENING_FACTS = {
     if (/irritab/.test(s)) yes.push('irritable'); if (/(don'?t|doesn'?t|can'?t|trouble|not) sleep|trouble sleeping|insomnia/.test(s.replace(/trouble sleeping\?/, ''))) yes.push('not sleeping');
     if (/\bno (shaking|tremor|seizure)/.test(s)) no.push('shaking'); if (/\bno (throwing up|vomiting|nausea)/.test(s)) no.push('vomiting'); if (/\bno seizure/.test(s)) no.push('seizures');
     const dur = s.match(/\bfor (a few days|a couple of days|\d+ days|a week)\b/);
-    if (!yes.length && !no.length) return null;
+    if (!yes.length && !no.length) return /^no\b/.test((L[i + 1] || '').toLowerCase()) ? 'No withdrawal symptoms reported when asked' : null;
     return `${yes.length ? cap(yes.join(' and ')) + (dur ? ' ' + dur[0] : '') + ' when stopping' : 'No withdrawal symptoms described'}${no.length ? '; no ' + no.join(' or ') : ''}`;
   },
   prior_provider: (t, raw) => {
@@ -207,9 +210,12 @@ export const SCREENING_FACTS = {
     const i = L.findIndex(x => /anyone (else )?(in the home|at home|in the house)|anybody (else )?(in the home|at home|in the house)|(in the home|at home|in the house).*(drink|use|smoke)/i.test(x)); if (i < 0) return null;
     const s = L.slice(i, i + 2).join(' ').toLowerCase();
     if (/\b(no one|nobody)\b.{0,30}(drinks|uses|smokes)|\bno\b.{0,20}(i don'?t drink|nothing in the house)|i don'?t drink|nothing in the house/.test(s) && !/(brother|sister|cousin|stepfather|father|mother|uncle|dad|mom|stepmother).{0,40}(drinks|smokes|uses|vapes)/.test(s)) return `No one in the home uses${/nothing in the house/.test(s) ? '; none is kept in the house' : ''}`;
-    const p = s.match(/\b(older |younger )?(brother|sister|cousin|stepfather|father|mother|uncle|dad|mom|stepmother)\b.{0,40}\b(drinks|smokes|uses|vapes)\b(?: (?:weed|cannabis|marijuana|alcohol))?/); return p ? cap(`${p[1] || ''}${p[2]} ${p[3]} in the home`.replace(/\bmom\b/, 'mother').replace(/\bdad\b/, 'father')) : null;
+    // someone in the home who uses, and alcohol or drugs kept in the home (locked or not): each only when said
+    const bits = []; const p = s.match(/\b(older |younger )?(brother|sister|cousin|stepfather|father|mother|uncle|aunt|dad|mom|stepmother|wife|husband|grandmother|grandfather)\b.{0,40}\b(drinks|smokes|uses|vapes)\b/); if (p) bits.push(cap(`${p[1] || ''}${p[2]} ${p[3]}`.replace(/\bmom\b/, 'mother').replace(/\bdad\b/, 'father')));
+    const k = s.match(/\b(?:keep|keeps|kept|has|have)\b[^.]{0,20}\b(beer|alcohol|liquor|wine|vodka|weed|cannabis|pills)\b/); if (k) bits.push(`${cap(k[1])} is kept in the home${/\bunlocked\b|not locked|out in the open/.test(s) ? ' and is unlocked' : /\blocked\b/.test(s) ? ' and is locked' : ''}`);
+    return bits.length ? bits.map((b, j) => j ? low(b) : b).join('; ') : null;
   },
-  peers_use: (t, raw, L) => { const i = L.findIndex(x => /(friends?|buddies|peers).{0,50}(smoke|use|vape|drink)/i.test(x)); if (i < 0) return null; const s = L[i].toLowerCase(); const m = s.match(/\b(two|three|four|some|a few|several|his|her) (?:of (?:his|her) )?(friends|buddies|peers)\b[^.]{0,40}\b(smoke|use|vape|drink)s?\b(?: (every day|daily|on weekends))?/); if (!m) return null; return `${cap(m[1] === 'his' || m[1] === 'her' ? 'friends' : m[1] + ' ' + m[2])} who use${/every day|daily/.test(s) ? ' every day' : ''}${/after class|after practice|after work/.test(s) ? '; with them ' + s.match(/after (class|practice|work)/)[0] : ''}`; },
+  peers_use: (t, raw, L) => { const i = L.findIndex(x => /(friends?|buddies|peers).{0,50}(smoke|use|vape|drink)/i.test(x)); if (i < 0) return null; const s = L[i].toLowerCase(); const m = s.match(/\b(two|three|four|some|a few|several|his|her) (?:of (?:his|her) )?(friends|buddies|peers)\b[^.]{0,40}\b(smoke|use|vape|drink)s?\b(?: (every day|daily|on weekends))?/); if (!m) return null; return `${cap(m[1] === 'his' || m[1] === 'her' ? 'friends' : m[1] + ' ' + m[2])} who use${/every day|daily/.test(s) ? ' every day' : ''}${/after class|after practice|after work/.test(s) ? ', with them ' + s.match(/after (class|practice|work)/)[0] : ''}`; },
   medical: t => {
     if (!has(t, /(medicines?|medications?|meds)\b/) && !has(t, /medical (problems?|conditions?)/)) return null;
     const conds = ['asthma', 'diabetes', 'epilepsy', 'adhd', 'anemia', 'hepatitis'].filter(c => has(t, new RegExp('\\b' + c + '\\b'))); const meds = ['inhaler', 'insulin', 'adderall', 'ritalin', 'concerta', 'iron', 'sertraline'].filter(c => has(t, new RegExp('\\b' + c + '\\b')));
@@ -315,12 +321,12 @@ export function draftScreening({ transcript, today, guardianPhone = '', referral
   const nar = [];
   if (f.family) nar.push(`Screening call with the ${low(f.family)}.`);
   for (const r of rows.filter(x => x.used)) nar.push(`${r.name.split(' (')[0]}: ${[r.freq && low(r.freq), r.amt && low(r.amt), r.route && low(r.route), r.last && 'last use ' + r.last].filter(Boolean).join(', ')}.`);
-  if (rows.some(r => r.used) && (rows[1].none || rows[3].none)) nar.push(`${[rows[1].none && 'alcohol', rows[3].none && 'other substances'].filter(Boolean).map(cap).join(' and ')}: none reported.`);
+  if (rows.some(r => r.used) && (rows[1].none || rows[3].none)) nar.push(`${cap([rows[1].none && 'alcohol', rows[3].none && 'other substances'].filter(Boolean).join(' and '))}: none reported.`);
   if (qr.length) nar.push(`${qr.join('. ')}.`);
   if (f.withdrawal) nar.push(`Withdrawal history: ${low(f.withdrawal)}.`);
   if (f.prior_provider && f.prior_outcome) nar.push(`Prior treatment: ${priorText}.`);
   if (f.current_service) nar.push(`${f.current_service}.`);
-  if (f.home_use) nar.push(`${f.home_use}${f.peers_use ? '; ' + low(f.peers_use) : ''}.`); else if (f.peers_use) nar.push(`${f.peers_use}.`);
+  if (f.home_use) nar.push(`${f.home_use}.`); if (f.peers_use) nar.push(`${f.peers_use}.`);
   if (f.medical) nar.push(`${f.medical}.`);
   if (f.mood) nar.push(`Mood: ${low(f.mood)}.`);
   if (f.safety === 'N') nar.push(`Suicidal thoughts asked directly; ${familyWord(f)} says no.`);
@@ -332,6 +338,7 @@ export function draftScreening({ transcript, today, guardianPhone = '', referral
   const checks = [
     { rule: 'Substances: frequency, amount and last use', ...CHECKS.substances(rows) },
     { rule: 'Counts, never percentages', ...CHECKS.counts(allText) },
+    { rule: 'No "observed", "monitored" or "watched"', ...CHECKS.noObserved(allText) },
     { rule: 'Dates within 30 days, or labelled with a year', ...CHECKS.recent(allText, today || '2000-01-01', { evidence: !!today }) },
     { rule: 'Prior treatment carries provider, dates and outcome', ...(priorRows.length ? CHECKS.priorOutcome(priorRows) : { pass: false, detail: 'No prior treatment with an outcome yet — ask: "Did it help? When did it end and why?"' }) },
     { rule: 'A current check-in stays under current services, not the treatment that failed', pass: !(f.current_service && priorText && priorText.includes(f.current_service)), detail: f.current_service ? 'Listed apart from the prior treatment' : 'No current service heard' },
@@ -354,9 +361,13 @@ export function enhanceDictation({ text, client, goals = [], interventions = [],
   const tidy = raw ? raw.charAt(0).toUpperCase() + raw.slice(1).replace(/\s+/g, ' ').replace(/([^.!?])$/, '$1.') : '';
   const narrative = tidy; const phone = tidy;
   // craving rating and screen result, only as the staffer said them
-  const cm = t.match(/\bcravings?\b[^.,;]{0,30}?\b(\d{1,2})\b(?:\s*(?:of|out of|\/)\s*10)?/); const craving = cm && +cm[1] <= 10 ? +cm[1] : null;
+  // "craving 3 of 10", or "craving was a 5 before and a 2 after" (the rating after is the one that counts; both are kept)
+  const cb = t.match(/\bcravings?\b[^.,;]{0,25}?\b(\d{1,2})\b(?:\s*(?:of|out of|\/)\s*10)?\s*(?:before|going in|at the start|at first)[^.,;]{0,25}?\b(\d{1,2})\b(?:\s*(?:of|out of|\/)\s*10)?\s*(?:after|leaving|at the end|by the end)/);
+  const cm = cb || t.match(/\bcravings?\b[^.,;]{0,30}?\b(\d{1,2})\b(?:\s*(?:of|out of|\/)\s*10)?/);
+  const craving = cb ? (+cb[1] <= 10 && +cb[2] <= 10 ? +cb[2] : null) : cm && +cm[1] <= 10 ? +cm[1] : null; const cravingBefore = cb && craving != null ? +cb[1] : null;
   const sm = t.match(/\b(?:(?:urine|uds|drug|breath|alcohol|saliva)\s+)?(?:screen|uds|test)\b[^.,;]{0,25}?\b(negative|positive|clean|refused)\b/) || t.match(/\b(negative|positive)\b[^.,;]{0,15}\b(?:screen|uds|urine)\b/); const screen = sm ? (sm[1] === 'clean' ? 'negative' : sm[1]) : null;
-  const mentionsUse = /\b(used|drank|drinking|high|lapse|relapse|slipped|got drunk|smoked|vaped|took)\b/.test(t) && !/\b(refusal|refuse|resist)\w*\b.{0,30}\b(use|drink)/.test(t) && !/\b(no use|didn'?t use|did not use|hasn'?t used)\b/.test(t);
+  const tu = t.replace(/relapse prevention/g, '');   // a skill name, not a relapse
+  const mentionsUse = /\b(used|drank|drinking|high|lapse|relapse|slipped|got drunk|smoked|vaped|took)\b/.test(tu) && !/\b(refusal|refuse|resist)\w*\b.{0,30}\b(use|drink)/.test(tu) && !/\b(no use|didn'?t use|did not use|hasn'?t used)\b/.test(tu);
   if (raw) {
     // the staffer named an objective: use it (never choose one for them)
     const om = t.match(/\b(?:objective|obj\.?|goal)\s*(\d)\b/);
@@ -370,7 +381,7 @@ export function enhanceDictation({ text, client, goals = [], interventions = [],
     const said = t.match(/(\d+)\s*(min|minutes)\b/);
     if (said) chips.push({ text: `${said[1]} min`, from: 'you said it' });
     else questions.push({ q: 'How long was it?' });
-    if (craving != null) chips.push({ text: `craving ${craving} of 10`, from: 'you said it' }); else questions.push({ q: `What was ${ini}'s craving rating today (0 to 10)?` });
+    if (craving != null) chips.push({ text: cravingBefore != null ? `craving ${cravingBefore} before, ${craving} after (0 to 10)` : `craving ${craving} of 10`, from: 'you said it' }); else questions.push({ q: `What was ${ini}'s craving rating today (0 to 10)?` });
     if (screen) chips.push({ text: `screen ${screen}`, from: 'you said it' });
     if (mentionsUse) questions.push({ q: `You mention use or a lapse. What did you do about it with ${ini} (who was told, what changed in the plan)?`, flag: 'use' });
     chips.push({ text: 'your words', from: 'from what you said' });
@@ -386,14 +397,18 @@ export function enhanceDictation({ text, client, goals = [], interventions = [],
     { rule: 'Intervention on the ISP list, with why it was used', pass: ivs.length > 0, detail: ivs.length ? ivs.join(', ') : 'Not stated: say what you did' },
     { rule: 'Linked to an ISP objective; progress as a count, not a percentage', pass: objective != null && CHECKS.counts(all).pass, detail: objective != null ? '' : 'Not stated: pick the objective' },
     { rule: 'Duration or a count present (minutes, "3 of 5")', pass: /\d+\s?(min|minutes)/.test(all) || /\d+ of \d+/.test(all), detail: 'Not stated: how long, how often' },
-    { rule: 'Craving rating (0 to 10) stated; a screen result when one was done', pass: craving != null, detail: craving != null ? `craving ${craving} of 10${screen ? ', screen ' + screen : ''}` : 'Not stated: the craving rating, 0 to 10' },
+    { rule: 'Craving rating (0 to 10) stated; a screen result when one was done', pass: craving != null, detail: craving != null ? `craving ${cravingBefore != null ? cravingBefore + ' before, ' + craving + ' after' : craving + ' of 10'}${screen ? ', screen ' + screen : ''}` : 'Not stated: the craving rating, 0 to 10' },
     { rule: 'No "observed"', pass: flagged.length === 0, fixed: '', detail: flagged.length ? `"${flagged.join('", "')}" — say what you did (not changed for you)` : '' },
     { rule: 'Language varies from your last notes', pass: repeated.length === 0, detail: repeated.length ? `Repeated from a recent note: "${repeated[0].slice(0, 60)}…"` : '' }
   ];
-  return { spoken: raw, phone, narrative, chips, checks, objective, interventions: ivs, craving, screen, mood: '', progress: '', fixed, questions, flagged, repeated };
+  return { spoken: raw, phone, narrative, chips, checks, objective, interventions: ivs, craving, cravingBefore, screen, mood: '', progress: '', fixed, questions, flagged, repeated };
 }
 
 // ---------------------------------------------------------------- the ASAM request, dimension by dimension
+// the level a request asks for: the one it carries (asam_level), else the one its service line means. A request made by Psyflo for the day program
+// (service line 'tdt', billed as an IOP day) asks for Level 2.1 even before anyone typed a level on it.
+export const levelOfRequest = r => requestLevel(r) || (r && (r.service_line === 'tdt' || /H2016|H0015|H0005/.test(String(r.service || ''))) ? '2.1' : null);
+
 // asamSources(state, clientId) -> what the draft functions take besides the call and the record: the latest assessment, the one before, the rules table.
 export const asamSources = (s, clientId) => ({ asam: latestAssessment(s, clientId), asamPrev: priorAssessment(s, clientId), rules: (s && s.rules) || [] });
 
@@ -410,14 +425,14 @@ export const DIM_BOX = [
 // what the call said that bears on each dimension (only what was said; the label of the call's day is the call's own date)
 function callLines(f, rows, when, today) {
   if (!f || !Object.keys(f).length) return [[], [], [], [], [], []];
-  const used = rows.filter(r => r.used); const at = when ? `At the screening call (${dl(when, today)})` : 'At the screening call';
+  const used = rows.filter(r => r.used); const at = when ? `Screening call ${dl(when, today)},` : 'Screening call,';
   const fam = familyWord(f);
   const d1 = [...used.filter(r => r.last).map(r => `${lc(r.name)} last used ${r.last}`), f.withdrawal ? `withdrawal history: ${low(f.withdrawal)}` : ''].filter(Boolean);
   const d3 = [f.mood ? `mood: ${low(f.mood)}` : '', f.safety === 'N' ? `suicidal thoughts denied when asked directly (${fam})` : f.safety === 'Y' ? 'a concern about suicidal thoughts was reported' : ''].filter(Boolean);
   const d5 = [...used.filter(r => r.freq || r.amt).map(r => `${lc(r.name)} ${[r.freq && low(r.freq), r.amt && low(r.amt), r.route && low(r.route)].filter(Boolean).join(', ')}`), f.quit ? low(f.quit) : '', f.prior_provider && f.prior_outcome ? `prior treatment: ${f.prior_provider}, ${f.prior_dates || 'dates not given'}, ${f.prior_outcome}` : ''].filter(Boolean);
   const d6 = [f.home_use ? low(f.home_use) : '', f.peers_use ? low(f.peers_use) : '', f.intake_time ? `schedule: ${low(f.intake_time)}` : ''].filter(Boolean);
-  const mk = (bits, lead) => bits.length ? [`${lead || at} ${fam} reported: ${bits.join('; ')}.`] : [];
-  return [mk(d1), f.medical ? [`${at} ${fam} reported: ${low(f.medical)}.`] : [], mk(d3), f.readiness ? [`${at} ${fam} reported: ${low(f.readiness)}.`] : [], mk(d5), mk(d6)];
+  const mk = bits => bits.length ? [`${at} ${fam}: ${bits.join('; ')}.`] : [];
+  return [mk(d1), f.medical ? [`${at} ${fam}: ${low(f.medical)}.`] : [], mk(d3), f.readiness ? [`${at} ${fam}: ${low(f.readiness)}.`] : [], mk(d5), mk(d6)];
 }
 
 // last use on record, read from the dimension notes of an assessment ("No alcohol since Sept 27", "Last cannabis use Oct 14"): { iso, text } or null
@@ -449,7 +464,7 @@ export function stepDown(a, today) {
 //   request          the request being drafted (its asam_level is the level asked for)
 //   n                the source numbers of this draft: { call, partner, a, prev }
 export function asamBoxes({ a, prev, facts = null, callWhen = null, partner = null, request = null, today, rules = [], mode = 'initial', n = {} }) {
-  const S = { rules }; const level = request ? requestLevel(request) : null; const lcheck = levelCheck(a, level); const due = dueState(S, a, level, today);
+  const S = { rules }; const level = request ? levelOfRequest(request) : null; const lcheck = levelCheck(a, level); const due = dueState(S, a, level, today);
   const ch = a && prev ? change(prev, a) : null; const rows = substanceRows(facts || {}, callWhen && isoDay(callWhen) || today);
   const calls = callLines(facts, rows, callWhen, today);
   const aDate = a ? dl(a.date, today) : ''; const pDate = prev ? dl(prev.date, today) : '';
@@ -488,7 +503,7 @@ export function asamBoxes({ a, prev, facts = null, callWhen = null, partner = nu
     else {
       const rr = rule(S, 'asam.reassess_days', level); const clock = due.state === 'none' ? '' : `Next reassessment due ${dl(due.dueDate, today)} (${due.limit} days between assessments${rr.missing ? ', demo default' : ', rule asam.reassess_days'}${due.state === 'overdue' ? `; ${-due.left} ${-due.left === 1 ? 'day' : 'days'} overdue` : ''}).`;
       const chg = prev ? `Change since the ${pDate} assessment: ${changeText(ch)}.` : 'No earlier assessment is on file to compare.';
-      const plan = sd ? `Step-down plan on the assessment: "${sd.plan}"${sd.criteria.length ? ` Today: ${sd.criteria.map(c => `${c.text}: ${c.now_text} (${c.met === true ? 'met' : c.met === false ? 'not met' : 'cannot be checked'})`).join('; ')}.` : ''}` : 'No step-down plan is recorded on the assessment: the clinician writes it.';
+      const plan = sd ? `Step-down plan on the assessment: "${yearLabel(sd.plan, today)}"${sd.criteria.length ? ` Today: ${sd.criteria.map(c => `${c.text}: ${c.now_text} (${c.met === true ? 'met' : c.met === false ? 'not met' : 'cannot be checked'})`).join('; ')}.` : ''}` : 'No step-down plan is recorded on the assessment: the clinician writes it.';
       planBox = { label: 'Reassessment and step-down plan', value: `Reassessed ${aDate} (${a.id}). ${clock} ${chg} ${plan}`.replace(/\s+/g, ' ').trim(), src: [n.a, ...(prev ? [n.prev] : [])].filter(Boolean), short: 'Reassessment and step-down plan' };
     }
   }
@@ -513,18 +528,17 @@ export function draftInitialSRA({ client, screening, referral, school, today, is
     src(2, 'call', 'Screening call', screening?.when),
     src(3, 'school', 'Referral partner portal · counts from the counselor', school?.reported),
     src(4, 'plan', 'ISP 2.0 (in Lauris)', isp.date),
-    src(5, 'assess', 'ASAM Multidimensional Assessment', asam ? asam.date : cna?.date),
-    src(6, 'assess', 'Earlier ASAM assessment', asamPrev ? asamPrev.date : null)
+    src(5, 'assess', 'ASAM Multidimensional Assessment', asam ? asam.date : cna?.date)
   ];
   // The ratings come from the stored ASAM assessment, the call's words from the screening and the counts from the referral partner:
   // every number, count and word is one somebody gave. A dimension with no evidence says "Evidence missing — verify …" (05b ICE-04).
-  const A = asamBoxes({ a: asam, prev: asamPrev, facts: f, callWhen: screening?.when, partner: school, request, today, rules, mode: 'initial', n: { call: 2, partner: 3, a: 5, prev: 6 } });
+  const A = asamBoxes({ a: asam, prev: asamPrev, facts: f, callWhen: screening?.when, partner: school, request, today, rules, mode: 'initial', n: { call: 2, partner: 3, a: 5 } });
   // current services and barriers: only what the call said (no promise of future contact, no invented risk times)
   const coord = f.current_service ? `Current services in place: ${low(f.current_service)}. Not a prior treatment that failed.` : '';
   const barriers = f.intake_time ? `${cap(f.intake_time)}.` : '';
   // the request dates, units and hours come from the request record (one source); never typed into the draft by hand
   const dates = request && request.dates ? `${fmtUS(request.dates.split(' to ')[0])} – ${fmtUS(request.dates.split(' to ')[1] || request.dates.split(' to ')[0])} · ${request.units_requested} units` : '';
-  const stepLine = asam && asam.plan ? `Step-down criteria as written on the ${dl(asam.date, today)} assessment: "${asam.plan}"` : '';
+  const stepLine = asam && asam.plan ? `Step-down criteria as written on the ${dl(asam.date, today)} assessment: "${yearLabel(asam.plan, today)}"` : '';
   const boxes = [
     { label: 'Request dates / units / hours', value: dates || 'Evidence missing — verify the request dates and units (no request record yet).', src: [4], short: 'Request dates · units · hours' },
     ...A.dims, A.level,
@@ -539,6 +553,7 @@ export function draftInitialSRA({ client, screening, referral, school, today, is
     ...A.checks.slice(0, 3),
     { rule: 'Counts, never percentages', ...CHECKS.counts(text), detail: CHECKS.counts(text).pass ? 'Every count is "3 of 5," never a percentage' : CHECKS.counts(text).detail },
     { rule: 'Dates', ...CHECKS.recent(text, today), detail: CHECKS.recent(text, today).pass ? 'Every date is within 30 days or carries a year' : CHECKS.recent(text, today).detail },
+    { rule: 'No "observed", "monitored" or "watched"', ...CHECKS.noObserved(text) },
     { rule: 'Prior treatment', pass: priorOk, detail: priorOk ? 'Provider, dates and outcome are filled' : 'Prior treatment outcome missing — blocked until it is asked' },
     { rule: 'Current services', pass: !/school counsel|check-in/i.test(f.prior_provider || ''), detail: 'Under care coordination, not prior treatment that failed' },
     A.checks[3],
@@ -605,18 +620,18 @@ export function draftSeeded(form, ctx = {}) {
       const heard = rows.filter(r => r.used).map(r => lc(r.name) + (r.freq ? ' ' + low(r.freq) : ''));
       const rt = n => a && ratingOf(a, n) != null ? ` (Dimension ${n}, rated ${ratingOf(a, n)} on ${dl(a.date, today)})` : ` (Dimension ${n})`;
       const S = [src(1, 'intake', 'ASAM assessment', a ? a.date : tl.intake || today), src(2, 'call', 'Plan meeting with family member and client', tl.isp || today), src(3, 'list', "Harvest's intervention list", ctx.interventionsDate || today)];
+      const list = ctx.interventions && ctx.interventions.length ? ctx.interventions.map(i => `${i.code} ${i.name}`) : INTERVENTION_LIST;
+      const ivBoxes = [['SUD 1.2 Relapse prevention skills', 'SUD 1.5 Contingency management'], ['SUD 1.1 Motivational interviewing', 'SUD 1.3 Cognitive behavioral skills for substance use'], ['SUD 2.1 Family session', 'SUD 2.2 Recovery support planning']]; const ivs = ivBoxes.flat();
+      const goals = [`${ini} will have 4 of 5 weekly urine drug screens negative${rt(5)}.`, `${ini} will attend 4 of 5 scheduled groups each week${rt(4)}.`, `${ini} will identify and use two recovery supports${rt(6)}.`]; const goalText = goals.join(' ');
       return result([
         { label: 'Start / end', value: start ? `${fmtUS(start)} – ${fmtUS(end)}` : MISSING('the plan dates'), src: [2] },
         { label: 'Prescribed frequency', value: '3× / week', src: [1] },
         { label: 'Presenting issue', value: heard.length ? `${cap(heard.join(', '))}. Copied from the screening call.` : MISSING('the presenting issue (no screening on record)'), src: [1] },
         { label: 'Strengths', value: f.strengths ? f.strengths + '.' : MISSING('strengths (not on record)'), src: [1] },
-        { label: 'Goal 1 · Objective', value: `${ini} will have 4 of 5 weekly urine drug screens negative${rt(5)}.`, src: [2, 1] },
-        { label: 'Goal 1 · Intervention 1', value: 'SUD 1.2 Relapse prevention skills', src: [3] }, { label: 'Goal 1 · Intervention 2', value: 'SUD 1.5 Contingency management', src: [3] }, { label: 'Goal 1 · Est. completion', value: '3 months', src: [3] },
-        { label: 'Goal 2 · Objective', value: `${ini} will attend 4 of 5 scheduled groups each week${rt(4)}.`, src: [2, 1] },
-        { label: 'Goal 2 · Intervention 1', value: 'SUD 1.1 Motivational interviewing', src: [3] }, { label: 'Goal 2 · Intervention 2', value: 'SUD 1.3 Cognitive behavioral skills for substance use', src: [3] }, { label: 'Goal 2 · Est. completion', value: '3 months', src: [3] },
-        { label: 'Goal 3 · Objective', value: `${ini} will identify and use two recovery supports${rt(6)}.`, src: [2, 1] },
-        { label: 'Goal 3 · Intervention 1', value: 'SUD 2.1 Family session', src: [3] }, { label: 'Goal 3 · Intervention 2', value: 'SUD 2.2 Recovery support planning', src: [3] }, { label: 'Goal 3 · Est. completion', value: '3 months', src: [3] }
-      ], S, [{ rule: 'Every goal counts, never a percentage', pass: true, detail: '4 of 5 · 4 of 5 · two supports' }, { rule: 'Interventions from Harvest\'s list', pass: true, detail: '' }, { rule: 'Each goal names an ASAM dimension', pass: true, detail: 'Dimensions 5, 4 and 6' }]);
+        ...[0, 1, 2].flatMap(g => [
+          { label: `Goal ${g + 1} · Objective`, value: goals[g], src: [2, 1] },
+          { label: `Goal ${g + 1} · Intervention 1`, value: ivBoxes[g][0], src: [3] }, { label: `Goal ${g + 1} · Intervention 2`, value: ivBoxes[g][1], src: [3] }, { label: `Goal ${g + 1} · Est. completion`, value: '3 months', src: [3] }])
+      ], S, [{ rule: 'Every goal counts, never a percentage', ...CHECKS.counts(goalText), detail: CHECKS.counts(goalText).pass ? '4 of 5 · 4 of 5 · two supports' : CHECKS.counts(goalText).detail }, { rule: 'Interventions from Harvest\'s list', pass: ivs.every(v => list.includes(v)), detail: ivs.every(v => list.includes(v)) ? `${ivs.length} of ${ivs.length} are on the list` : ivs.filter(v => !list.includes(v)).join(', ') + ' is not on the list' }, { rule: 'Each goal names an ASAM dimension', pass: /Dimension 5/.test(goalText) && /Dimension 4/.test(goalText) && /Dimension 6/.test(goalText), detail: 'Dimensions 5, 4 and 6' }]);
     },
     weekly: () => result([
       { label: 'Duration', value: wk?.duration_min ? `${wk.duration_min} min` : MISSING('the length of the call'), src: [1] },
@@ -645,6 +660,7 @@ export function draftSeeded(form, ctx = {}) {
         { label: 'Location', value: 'Home (reported by the family member)', src: [1] },
         { label: 'Level', value: 'Level 2 · emergency department visit', src: [1] },
         { label: 'Staff present', value: 'None · phone report', src: [1] },
+        { label: 'Substances involved', value: 'Alcohol and cannabis (as reported by the family member)', src: [1] },
         { label: 'What happened', value: 'The family member called the site supervisor at 2:40 pm: D.W. was taken to the emergency department this afternoon after alcohol and cannabis use at home. No Harvest staff present. Safety plan on file dated Oct 3.', src: [1, 2] },
         { label: 'Actions taken', value: 'Site supervisor notified clinical director 2:55 pm. Clinician to update the safety plan after the visit. Family member release confirmed.', src: [1], note: stale || undefined }
       ], [src(1, 'call', 'Family member\'s call to the site supervisor', when), src(2, 'chart', 'Safety plan', client.safety_plan_date || '2026-10-03')], [{ rule: 'Facts only, with times', pass: true, detail: '' }, { rule: 'CPS and injury left to the staffer', pass: true, detail: 'Yes/No boxes are yours' }, ...(a ? [{ rule: 'ASAM reassessment after an incident', pass: !stale, detail: stale || `Assessed ${dl(a.date, today)}, after the visit` }] : [])]);
@@ -705,10 +721,26 @@ export function draftSeeded(form, ctx = {}) {
     }
   };
   // seeded canned drafts (not computed from stored notes) are labelled so the panel can show the chip "Illustrative sample"
-  const COMPUTED = ['quarterly', 'sra-continued', 'discharge'];
+  const COMPUTED = ['quarterly', 'sra-continued', 'discharge', 'cna'];
   const out = (D[form] || (() => result([], [], [])))();
   if (!COMPUTED.includes(form) && D[form]) { out.illustrative = true; out.sample = 'Illustrative sample'; }
   return out;
+}
+
+// asamContinued / withAsam: the continued-stay builder in shared/enhance.js counts the stored notes; these add what it does not hold, the six dimension
+// boxes, the level-of-care box and the reassessment and step-down box, from the stored assessments (source numbers 5 and 6 are the assessments).
+export function asamContinued(s, clientId, { request = null, today } = {}) {
+  const { asam, asamPrev, rules } = asamSources(s, clientId);
+  const A = asamBoxes({ a: asam, prev: asamPrev, request, today, rules, mode: 'continued', n: { a: 5, prev: 6 } });
+  return { boxes: [...A.dims, A.level, A.plan], sources: [src(5, 'assess', asam && asam.kind === 'reassessment' ? 'ASAM reassessment' : 'ASAM assessment', asam ? asam.date : null), src(6, 'assess', 'Earlier ASAM assessment', asamPrev ? asamPrev.date : null)],
+    checks: [...A.checks.slice(0, 3), A.checks[3]], blank: A.blank, level: A.lcheck, due: A.due, stepDown: A.stepDown, change: A.change };
+}
+export function withAsam(cs, add) {
+  if (!cs || !add || (cs.boxes || []).some(b => /^Dimension 1/.test(b.label))) return cs;   // already there: nothing is added twice
+  const i = cs.boxes.findIndex(b => b.label === 'Progress toward goals');
+  const boxes = [...cs.boxes.slice(0, i + 1), ...add.boxes, ...cs.boxes.slice(i + 1)];
+  const sources = [...cs.sources, ...add.sources.filter(x => !cs.sources.some(y => y.n === x.n))];
+  return { ...cs, boxes, sources, checks: [...cs.checks, ...add.checks], blank: [...add.blank, ...cs.blank], level: add.level, due: add.due, stepDown: add.stepDown, change: add.change };
 }
 
 export function draft(formType, sources = {}) {

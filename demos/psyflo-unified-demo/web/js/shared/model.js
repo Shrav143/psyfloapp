@@ -11,7 +11,7 @@ export const school = (s, id) => byId(s.schools, id) || { id, name: id };
 export const staffShort = (s, id) => { const p = staff(s, id); return p.name.replace(/^(\w)\w+ (\w)/, '$1. $2'); };
 export const payerShort = (s, id) => ({ humana: 'Humana', anthem: 'Anthem HealthKeepers', sentara: 'Sentara', aetna: 'Aetna', uhc: 'UnitedHealthcare', ffs: 'Medicaid FFS' }[id] || payer(s, id).name);
 
-// "T.W., 12" — clients may be ids or free text on referrals/requests ("A.L., 6")
+// "T.W., 16" — clients may be ids or free text on referrals/requests ("A.L., 15")
 export function clientLabel(s, id, withAge = true) {
   const c = byId(s.clients, id);
   if (!c) return id;

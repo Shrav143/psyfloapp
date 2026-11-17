@@ -10,7 +10,7 @@
 //   deadline  a deadline due soon or overdue that is not a payer item: reauth due, appeal window, send-by limit
 //   units     75% of the units are used (rules table, units.warn_used_pct) or none are left
 //   asam      level of care: ASAM reassessment overdue or due soon, request level not supported by the ratings (over) or below them (under), an incident
-//             since the last assessment (group 'Level of care'; ratings-based items only for clinicians and supervisors)
+//             since the last assessment (group 'Level of care'; clinicians, supervisors and administrators; the ratings-based items only for clinicians and supervisors)
 //   note      direct support only: a note sent back, a note behind
 //   workflow  the enabled workflows (Settings > Workflows, shared/workflows/engine.js workflowItems): the effects meant for the person's role
 //             (a notice, a suggested flag, a task for a person), after the guardrails. Group 'Workflows'; source = { workflow, name, node, action }
@@ -70,7 +70,7 @@ export function notificationsFor(s, actor) {
   }
 
   // level of care (ASAM): a reassessment overdue or due soon, a request level the ratings do not support (over) or sit above (under), an incident since the last
-  // assessment. Computed from the stored assessments (sel/asam-view.js): a role gets only what its access allows, direct support its own caseload, no clinical text.
+  // assessment. Computed from the stored assessments (sel/asam-view.js): a role gets only what its access allows and no clinical text; direct support gets none (units and notes only).
   for (const n of asamNotifications(s, actor, { canAuth })) add(n);
 
   // direct support: notes sent back and notes behind, for their own patients

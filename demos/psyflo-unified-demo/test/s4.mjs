@@ -93,12 +93,12 @@ async function run(mode) {
     await F.step('6 household context is OFF by default (a person must include it); "Use it in the continued-stay request", Review statements: a statement with no stored evidence has no Accept; counts in the text equal the rows', async () => {
       await P.getByRole('button', { name: /Use it in the continued-stay request/ }).click(); await lp.waitForTimeout(800);
       const home = (await panelFrame(lp).locator('#panel').innerText()).replace(/\s+/g, ' '); assert.match(home, /Household context\s*Not included/);
-      await P.getByRole('button', { name: /Review \d statements/ }).click(); await P.locator('.ui-dr__item.px-open').getByText(/Evidence missing/).first().waitFor();
+      await P.getByRole('button', { name: /Review \d+ statements/ }).click(); await P.locator('.ui-dr__item.px-open').getByText(/Evidence missing/).first().waitFor();
       assert.ok(await P.locator('.ui-dr__item.px-open').getByRole('button', { name: 'Accept' }).count() === 0, 'a box with no stored evidence has no Accept');
       await P.locator('.ui-dr__item.px-open').getByRole('button', { name: 'Reject' }).click();
       await P.getByRole('button', { name: /Accept the \d+ with sources/ }).click(); await P.getByRole('button', { name: 'Approve and fill' }).click(); await P.getByText(/boxes? typed into the form/).first().waitFor({ timeout: 20000 });
       const s = await state('jperez'); const per = s.evidence_periods.filter(p => p.client === 'MR').at(-1); const idx = evidenceIndex(s, 'MR', { from: per.from, to: per.to || s.today }); const v = await formValues(lp);
-      assert.match(v['Progress toward goals'], new RegExp('^' + idx.counts.daily + ' daily notes stored for this period')); assert.match(v['Family involvement'], new RegExp('^' + idx.counts.weekly + ' weekly guardian calls in the period'));
+      assert.match(v['Progress toward goals'], new RegExp('^' + idx.counts.daily + ' daily notes stored for this period')); assert.match(v['Family involvement'], new RegExp('^' + idx.counts.weekly + ' weekly family-member contacts in the period'));
       assert.eq(v['Request'], '', 'the unevidenced box was rejected, not typed'); assert.noMatch(Object.values(v).join(' '), /household/i, 'household context stays out until a person includes it');
       assert.ok(await yellow(lp) >= 2, 'typed yellow, for the clinician to review'); await shot(lp, `s4-${mode}-6-filled`);
       L.typed = { progress: v['Progress toward goals'].slice(0, 45), family: v['Family involvement'].slice(0, 45) };

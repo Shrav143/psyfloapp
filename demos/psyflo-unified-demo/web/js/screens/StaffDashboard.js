@@ -9,6 +9,7 @@ import { register, Screen, M } from '../app.js';
 import { isSchoolDay, hoursBetween } from '../shared/dates.js';
 import { repeatedParagraphs } from './ReviewQueue.js';
 import { today as clockToday } from '../shared/clock.js';
+import { clientReading } from '../shared/sel/asam-view.js';
 
 const LV = { direct_support: 1, supervisor: 2, clinician: 3, admin: 4 };
 const and = a => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
@@ -169,6 +170,8 @@ register('StaffDashboard', class extends Screen {
     }
     for (const c of moMissing) open.push({ title: `Monthly collateral · ${lbl(c)}'s ${(d.collateral_who || {})[c.id] || 'collateral contact'}`, text: `due ${M.fmtDate(monthEnd)}; release on file.`, href: 'ExtMonthly.dc.html?client=' + c.id, link: 'Open in Lauris' });
     for (const a of due) open.push({ title: `${a.instrument} · ${M.clientLabel(s, a.client, false)}`, text: a.note || 'due this week.', href: 'MobileAssess.dc.html?client=' + a.client, link: 'Ask on the phone' });
+    // ASAM: a reassessment due or overdue on this caseload, with the level tag (a date and a level; no ratings, no clinical text)
+    for (const c of kids) { const rd = clientReading(s, this.me, c.id); if (rd.overdue || rd.soon) open.push({ title: `ASAM reassessment · ${lbl(c)}`, text: `${rd.dueWhy}${rd.levelTag ? ' · ' + rd.levelTag : ''}.`, href: `Patient?id=${c.id}&section=asam`, link: 'Open the chart' }); }
     for (const r of rejected) open.push({ title: `Rejected in Lauris · ${r.form} ${M.fmtDate(r.date)}, ${M.clientLabel(s, r.client, false)}`, text: `reviewer note: ${r.why}`, href: r.href, link: 'Fix it' });
     for (const n of s.notes.filter(n => n.staff === sid && ['returned', 'flagged'].includes(n.review))) {
       open.push({ title: `${n.review === 'flagged' ? "Flagged \"didn't happen\"" : 'Returned'} by ${(n.reviewed_by ? M.staffShort(s, n.reviewed_by) : 'a reviewer')} · ${M.clientLabel(s, n.client, false)} ${M.fmtDate(n.date)}`, text: n.review_comment ? `"${n.review_comment}"` : 'see the review note.', href: 'ExtDPN.dc.html?client=' + n.client, link: 'Fix it in Lauris' });
@@ -209,7 +212,7 @@ register('StaffDashboard', class extends Screen {
       const reason = st.review_reason || (st.credential === 'QMHP-T' ? 'new hire' : 'on review');
       rows.push({
         name: M.staffShort(s, st.id), href: 'StaffDashboard.dc.html?staff=' + st.id,
-        sub: `${students} student${students === 1 ? '' : 's'}${st.credential === 'QMHP-T' ? ' · QMHP-T' : ''}`,
+        sub: `${students} student${students === 1 ? '' : 's'}${st.credential === 'QMHP-T' ? ' · QMHP-T' : ''}${(() => { const n = s.clients.filter(c => c.staff === st.id && c.stage !== 'discharged').filter(c => { const rd = clientReading(s, this.me, c.id); return rd.overdue || rd.soon; }).length; return n ? ` · ${n} ASAM reassessment${n === 1 ? '' : 's'} due` : ''; })()}`,
         behindTxt: lines.length ? lines.map(l => `${l.head} · ${l.who}`).join('; ') : (nt.total ? 'nothing behind' : 'no caseload in Psyflo yet'),
         behindBad: !!lines.length,
         daily: students ? `${done} of ${students}` : '—', dailyBad: false,

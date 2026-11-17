@@ -1,6 +1,6 @@
 // Documents and Staff: the second and third views of the Dashboard (R4: the Documentation tab became part of the Dashboard, one nav item).
 // The site supervisor's job, across patients, whether or not there is an authorization: daily progress notes, weekly and monthly notes, intake
-// forms, CNAs, plans. Who is behind, what waits for a review, what was filed late, and the review itself (approve, return with a note, "that
+// forms, ASAM assessments, plans. Who is behind, what waits for a review, what was filed late, and the review itself (approve, return with a note, "that
 // didn't happen") in a drawer. The Dashboard (Dashboard.js) owns the page, the switch and the Patients view; this file is the other two views
 // and the review drawer, which the Patients view opens too (the Review icon on a note waiting for a reviewer).
 // Data: web/js/shared/sel/roster.js (documentRows) and sel/mywork.js (teamView, pendingFor). Nothing here is computed from a default user:
@@ -15,6 +15,8 @@ import { documentRows, normalizeDocs, laurisNotePath, laurisKey, docLabel } from
 import { teamView, pendingFor } from '../shared/sel/mywork.js';
 import { laurisLink } from '../shared/lauris-link.js';
 import { reviewModel } from './MyWorkViews.js';
+import { noteDimensions } from '../shared/enhance.js';
+import { dimOf } from '../shared/asam.js';
 
 const TONE = { r: 'danger', y: 'warning', g: 'success', n: 'neutral' };
 const ICON = { r: 'alert', y: 'clock', g: 'check', n: 'dot' };
@@ -140,7 +142,9 @@ export class DocumentsView {
     const canText = can(a, 'notes.view'); const c = reviewModel(s, n, { text: canText });
     const who = M.staffShort(s, n.staff); const label = M.clientLabel(s, n.client, false);
     const chips = ui.chip(c.goal, { tone: /^No goal/.test(c.goal) ? 'danger' : 'info', size: 'sm' }) + ui.chip(c.time.replace(/ · \d+ h \d+ m tracked/, ''), { tone: 'neutral', size: 'sm' });   // units only: the demo has no time tracking
-    let body = `<div class="doc-rv"><div class="doc-rv__who">${esc(c.staffLine)}</div><div class="doc-rv__chips">${chips}</div>`;
+    // the ASAM dimensions this note addresses, read from its own words and interventions (noteDimensions); never shown to a role that cannot read the text
+    const dimChips = canText ? noteDimensions(n, (M.client(s, n.client) || {}).goals).map(k => ui.chip(`D${k} · ${dimOf(k).label}`, { tone: 'info', size: 'sm', title: `Dimension ${k} · ${dimOf(k).name}` })).join('') : '';
+    let body = `<div class="doc-rv"><div class="doc-rv__who">${esc(c.staffLine)}</div><div class="doc-rv__chips">${chips}${dimChips}</div>`;
     if (!canText) body += `<div class="doc-hidden">${ui.hint('lock', 'Clinical text hidden for your role', { tone: 'n' })}</div>`;
     else body += `<div class="doc-rv__cmp"><section><h3>${esc(c.wroteLabel)}</h3><div class="doc-rv__txt">${c.wrote ? esc(c.wrote) : '<span class="doc-muted">Nothing typed or dictated: the note was written in Lauris directly.</span>'}</div></section><section><h3>Psyflo added ${ui.chip('Marked', { tone: 'success', size: 'sm' })}</h3><div class="doc-rv__txt">${c.hasEnhanced ? c.enhanced : '<span class="doc-muted">Not enhanced. Nothing was added; the checks run on what the staffer wrote.</span>'}</div></section></div><div class="doc-rv__checks" aria-label="Checks">${c.checks}</div>`;
     if (canText && c.repeat) body += `<div class="doc-rv__pat">${ui.icon('flag', 14)}<span>Same words in ${c.repeat.count} of ${esc(c.repeat.name)}'s last ${c.repeat.of} notes (${esc(c.repeat.dates)})</span></div>`;

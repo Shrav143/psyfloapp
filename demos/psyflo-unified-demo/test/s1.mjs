@@ -9,7 +9,7 @@ import { session } from './lib/index.mjs';
 const T = suite('s1');
 const { chromium } = playwright();
 const b = await chromium.launch();
-const SAID = 'played basketball with M.R. after he got upset in math, he cooled down after and went back to class';
+const SAID = 'ran the refusal skills role play with M.R. in group, he practiced saying no to a drink at a party twice, craving was a 5 before and a 2 after';
 const done = s => { const mine = s.clients.filter(c => c.staff === 'khale'); const ok = new Set(s.notes.filter(n => n.staff === 'khale' && n.type === 'daily' && n.date === s.today).map(n => n.client)); return `${mine.filter(c => ok.has(c.id)).length} of ${mine.length}`; };
 const ledgers = {};
 
@@ -40,10 +40,10 @@ async function run(mode) {
       await shot(ph, `s1-${mode}-1-phone`);
     });
     await F.step('2 say what happened, review the draft, save: the dictation WAITS in Psyflo (with the Harvest #), nothing reaches Lauris, the phone says Waiting for Lauris', async () => {
-      if (mode === 'scenario') { await ph.goto(BASE + '/?present=1#/MobileDictate?client=MR'); await ph.waitForTimeout(1200); await ph.locator('a[href="#example"]').click(); await ph.waitForTimeout(500); assert.match(await ph.locator('#spoken').inputValue(), /^played basketball with M\.R\. after he got upset in math/, 'the presenter example is loaded'); }
+      if (mode === 'scenario') { await ph.goto(BASE + '/?present=1#/MobileDictate?client=MR'); await ph.waitForTimeout(1200); await ph.locator('a[href="#example"]').click(); await ph.waitForTimeout(500); assert.match(await ph.locator('#spoken').inputValue(), /^ran the refusal skills role play with M\.R\. in group/, 'the presenter example is loaded'); }
       else { await ph.getByRole('link', { name: 'Type' }).click(); await ph.waitForTimeout(700); await ph.locator('#spoken').fill(SAID); await ph.locator('#spoken').blur(); await ph.waitForTimeout(400); }
       await ph.getByRole('link', { name: 'Looks right' }).click(); await ph.waitForTimeout(300);
-      assert.match(await rootText(ph), /Save to M\.R\. \(grade 2, Campbell ES-1\)\?/);
+      assert.match(await rootText(ph), /Save to M\.R\. \(grade 10, Campbell IOP\)\?/);
       await ph.getByRole('link', { name: 'Save to M.R.' }).click();
       const s = await waitState(x => x.dictations.some(d => d.client === 'MR' && d.status === 'waiting'), { as: 'khale', what: 'the dictation to wait' });
       const d = s.dictations.find(x => x.client === 'MR' && x.status === 'waiting'); assert.eq(d.harvest_no, 3310); assert.eq(d.spoken.toLowerCase(), SAID.toLowerCase(), 'the staffer\'s own words, unchanged');
@@ -58,7 +58,7 @@ async function run(mode) {
     await lp.goto(`${LAURIS}/login?as=khale&next=${encodeURIComponent('/consumers/3310/session/dpn')}`);
     await F.step('3 Lauris daily note + panel: "Dictation dropped in"; the boxes are typed yellow and NOT saved (no session in Lauris, only the panel.filled event in Psyflo)', async () => {
       await panel(lp).getByText('Dictation dropped in').waitFor({ timeout: 20000 });
-      const v = await formValues(lp); assert.eq(v['Narrative'].replace(/\s+/g, ' ').trim().slice(0, 40), 'Played basketball with M.R. after he got');
+      const v = await formValues(lp); assert.eq(v['Narrative'].replace(/\s+/g, ' ').trim().slice(0, 40), 'Ran the refusal skills role play with M.');
       assert.ok(await yellow(lp) >= 1, 'yellow boxes typed'); assert.eq(v['Units'], '', 'units are for the person to type in Lauris'); assert.eq(v['Direct time'], '', 'direct time is for the person to type in Lauris');
       const l = await lsnap(); assert.eq(l.sessions.length, L.l0.sessions.length, 'typed is not saved: Lauris holds no new session'); assert.eq(lcons(l, 3310).auth.available, 27);
       const s = await state('jperez'); assert.ok(evs(s, /panel|typed|filled|Dictation/i, 'MR').length > evs(L.s0, /panel|typed|filled|Dictation/i, 'MR').length || s.fills.length > L.s0.fills.length, 'the fill is recorded in Psyflo');
@@ -69,7 +69,7 @@ async function run(mode) {
       const t = (await panelFrame(lp).locator('#panel').innerText()).replace(/\s+/g, ' ');
       assert.match(t, /SAID INTO THE PHONE/i); assert.match(t, new RegExp('“' + SAID.slice(0, 30), 'i')); assert.match(t, /Nothing was added/); assert.match(t, /Which ISP objective did this address\?/); assert.match(t, /What did you do/);
       assert.match(t, /2 of 5 pass/); assert.match(t, /Daily notes today \(K\. Hale\): 4 of 6/);
-      assert.ok(!/basketball.{0,80}(minutes|recess|5 minutes)/i.test(t.replace(SAID, '')), 'no invented time or event');
+      assert.ok(!/refusal skills.{0,80}(minutes|recess|5 minutes)/i.test(t.replace(SAID, '')), 'no invented time or event');
     });
     await F.step('5 the person types the direct time and the units in Lauris, then Process Form (a person\'s click): the note, the units, the dictation, 3+ audit events, in BOTH stores', async () => {
       await lp.getByLabel('Direct time', { exact: true }).fill('3 h 40 min'); await lp.getByLabel('Units', { exact: true }).fill('2');
@@ -77,7 +77,7 @@ async function run(mode) {
       const id = (lp.url().match(/processed=(\d+)/) || [])[1]; assert.ok(id);
       const s = await waitState(x => x.notes.some(n => n.session === id), { what: 'the note from the observed event' }); L.sess = id;
       const n = s.notes.find(x => x.session === id); assert.eq(n.client, 'MR'); assert.eq(n.type, 'daily'); assert.eq(n.staff, 'khale'); assert.eq(n.consumer, 3310); assert.eq(n.units, 2, 'the 2 units the person typed in Lauris'); assert.eq(n.date, s.today);
-      assert.match(n.fields.Narrative, /^Played basketball with M\.R\./); assert.eq(n.fields['Units'], '2', 'the units are the person\'s own entry');
+      assert.match(n.fields.Narrative, /^Ran the refusal skills role play with M\.R\./); assert.eq(n.fields['Units'], '2', 'the units are the person\'s own entry');
       assert.eq(cli(s, 'MR').authorization.used, 85, 'tracker 83 -> 85'); assert.eq(s.dictations.find(d => d.id === L.dictId).status, 'used');
       const ee = s.events.filter(e => e.record === 'MR' || e.record === id).slice(L.s0.events.filter(e => e.record === 'MR' || e.record === id).length);
       assert.ok(ee.length >= 2 && ee.some(e => e.actor_kind === 'bridge' && /processed/i.test(e.what) && /khale|K\. Hale/.test(e.who + e.what)), 'audit trail from the bridge event: ' + JSON.stringify(ee.map(e => [e.who, e.actor_kind, e.what])));
@@ -122,8 +122,8 @@ async function run(mode) {
       assert.eq(a.notes.den, a0.notes.den + 1, 'one more required note'); assert.eq(a.notes.num, a0.notes.num + 1, 'and it is on time');
       const p = await openAs(b, 'dowens'); pages.push(p); await p.goto(BASE + '/#/Analytics'); await p.waitForSelector('.a-tile__b');
       const dom = await pilotDom(p); assert.eq(dom.notes.headline, a.notes.headline, 'screen = selector'); assert.eq(a.notes.headline, `${a0.notes.num + 1} of ${a0.notes.den + 1}`);
-      const body = await p.content(); assert.ok(!body.includes('basketball'), 'admin never receives the note text');
-      assert.ok(!JSON.stringify(s.notes.find(n => n.session === L.sess) || {}).includes('basketball'), 'not in the admin projection either');
+      const body = await p.content(); assert.ok(!body.includes('refusal skills'), 'admin never receives the note text');
+      assert.ok(!JSON.stringify(s.notes.find(n => n.session === L.sess) || {}).includes('refusal skills'), 'not in the admin projection either');
       L.pilot = { notes: a.notes.headline };
       await shot(p, `s1-${mode}-9-analytics`);
     });

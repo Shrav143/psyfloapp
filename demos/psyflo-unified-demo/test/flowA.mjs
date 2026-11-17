@@ -42,18 +42,19 @@ try {
     await panel().getByLabel(/Guardian agreed/).check();                       // a recording never starts without a recorded consent
     await panel().getByText('Agreed · start recording').click();
     await panel().getByText('Before you hang up').waitFor();
-    await p.waitForTimeout(10500);
-    assert.eq(await panel().locator('.cr.done').count(), 6, 'six prompts done');
+    await p.waitForTimeout(12500);
+    assert.eq(await panel().locator('.cr.done').count(), 9, 'nine prompts done: the six ASAM dimensions, prior treatment, suicidal thoughts asked, schedule and transport');
     await panel().getByText('Stop and draft the boxes').click();
     await panel().getByText(/Fill the \d+ boxes/).click();
-    await p.waitForFunction(() => /Piedmont/.test([...document.querySelectorAll('#lauris-form textarea')].map(t => t.value).join(' ')), null, { timeout: 30000 });
+    await p.waitForFunction(() => /Screening call with the grandmother/.test([...document.querySelectorAll('#lauris-form textarea')].map(t => t.value).join(' ')), null, { timeout: 30000 });
     await p.waitForTimeout(800);
     await p.screenshot({ path: SHOTS + '/flowA-3-drafted.png' });
     const vals = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll('#lauris-form label[for]')].map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
-    const prior = vals['Prior / current services (provider · dates · outcome)'];
-    assert.match(prior, /Piedmont Counseling, Mar–Jun/); assert.noMatch(prior, /School counseling weekly since Sep 2025/, 'nothing the call did not say');
+    const prior = vals['Prior treatment (provider · dates · outcome)'];
+    assert.match(prior, /Blue Ridge Pediatrics \(Dr\. Alvarez\), Jun .*2 visits; no change in use/); assert.noMatch(prior, /Weekly check-in/, 'the current check-in is listed apart from the prior treatment');
+    assert.match(vals['Cannabis — Last use'] || await p.locator('[aria-label="Cannabis — Last use"]').inputValue(), /^Oct 14/, 'the last use is a date worked out from the call');
     assert.ok((vals['Narrative summary'] || '').length > 100);
-    await p.fill('#lauris-form textarea >> nth=1', vals['School coordination to date'] + ' (edited by J. Perez)');
+    await p.fill('#lauris-form textarea >> nth=1', vals['Current services to date'] + ' (edited by J. Perez)');
   });
   await T.test('Process Form is a person\'s click; Psyflo learns it from the observed page event', async () => {
     await p.getByRole('button', { name: 'Process Form' }).click();
@@ -63,14 +64,15 @@ try {
     assert.eq(s.screenings.find(x => x.client === 'TW')?.status, 'done'); assert.eq(s.referrals.find(r => r.id === 'REF-118').stage, 'in_intake');
     assert.ok(s.events.some(e => e.record === 'REF-118' && /Screening processed/.test(e.what) && e.actor_kind === 'bridge'), 'recorded from the bridge event');
   });
-  await T.test('the intake (CNA) opens with the screening answers carried forward', async () => {
-    await panel().getByText('Open the intake (CNA)').click();
+  await T.test('the ASAM assessment opens with the screening answers carried forward', async () => {
+    await panel().getByText('Open the ASAM assessment').click();
     await p.waitForURL(/session\/cna/);
     await panel().getByText('copied from screening').first().waitFor();
     await panel().getByText(/^Fill \d+ boxes/).click();
     await p.waitForTimeout(4000);
     const cna = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll('#lauris-form label[for]')].map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
-    assert.match(cna['Prior services (provider · dates · outcome)'], /Piedmont/);
+    assert.match(cna['Prior treatment (provider · dates · outcome)'], /Blue Ridge Pediatrics/);
+    assert.match(cna['Dimension 5 — relapse, continued use, or continued problem potential'], /Cannabis daily for about 8 months/i); assert.eq(cna['Dimension 5 · rating (0 to 4)'], '', 'the rating is the clinician\'s: never typed');
   });
   await T.test('no console errors in the page or the panel', async () => { assert.deepEq(errs, [], errs.join(' | ')); });
 } finally { await b.close(); }

@@ -46,7 +46,6 @@ export function currentRequest(s, clientId) {
 export function clientLevel(s, clientId) {
   const r = currentRequest(s, clientId); const a = latestAssessment(s, clientId);
   if (r && requestLevel(r)) return { level: requestLevel(r), source: 'request', request: r };
-  if (a && a.request_level && r) return { level: String(a.request_level), source: 'request', request: r };
   if (a && a.request_level) return { level: String(a.request_level), source: 'request', request: r };
   if (a && a.level_recommended) return { level: String(a.level_recommended), source: 'assessment', request: r };
   return { level: null, source: null, request: r };
@@ -70,7 +69,7 @@ export function reassessWhy(d, a) {
   if (d.state === 'soon') return `Reassessment due ${fmtDate(d.dueDate)}${d.left === 0 ? ' (today)' : ` in ${plural(d.left, 'day')}`} · ${last} (${rl})`;
   return `Reassess by ${fmtDate(d.dueDate)} · ${last} (${rl})`;
 }
-export const reassessmentLabel = d => (!d || d.state === 'none' ? 'Not assessed' : d.state === 'overdue' ? `Reassessment ${-d.left}d overdue` : d.state === 'soon' ? `Reassess by ${fmtDate(d.dueDate)}` : `Reassess by ${fmtDate(d.dueDate)}`);
+export const reassessmentLabel = d => (!d || d.state === 'none' ? 'Not assessed' : d.state === 'overdue' ? `Reassessment ${-d.left}d overdue` : `Reassess by ${fmtDate(d.dueDate)}`);
 
 // ---------------------------------------------------------------------------------------------------------------- one reading
 // o: { request } use this request's level; { level } use this level
@@ -155,7 +154,7 @@ const sevOfFlag = f => (f.tone === 'danger' ? 'r' : f.tone === 'warning' ? 'y' :
 // Ids carry the record and the state that raised them, so a new situation is unread again. A role gets only what its access allows.
 export function asamNotifications(s, actor, o = {}) {
   const out = []; if (!s || !actor) return out;
-  const acc = asamAccess(actor); if (!acc.level) return out;
+  const acc = asamAccess(actor); if (!acc.level || actor.role === 'direct_support') return out;   // direct support: units and notes only (the bell's role rule); their reassessment state is on the roster
   const today = clockToday(s); const canAuth = !!o.canAuth;
   const seen = new Set();
   const to = (clientId, r) => (r && canAuth ? `Authorization.dc.html?id=${r.id}&section=level` : `Patient?id=${clientId}&section=asam`);
@@ -163,7 +162,6 @@ export function asamNotifications(s, actor, o = {}) {
   for (const clientId of clients) {
     const a = latestAssessment(s, clientId); if (!a) continue;
     const c = M.byId(s.clients, clientId);
-    if (actor.role === 'direct_support' && (!c || c.staff !== actor.id)) continue;
     const lbl = M.clientLabel(s, clientId, false);
     const reqs = (s.requests || []).filter(r => r.client === clientId && r.stage !== 'closed');
     const main = currentRequest(s, clientId); const rd = clientReading(s, actor, clientId, main ? { request: main } : {});

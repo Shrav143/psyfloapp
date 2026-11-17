@@ -6,7 +6,8 @@
 // Household context is "Not included" until a person opts in. Counts come from stored notes (evidenceIndex); a missing fact prints "Evidence missing".
 import { esc } from '../../js/runtime.js';
 import { fmtDate, daysBetween, addBusinessDays } from '../../js/shared/dates.js';
-import { draftSeeded, draftInitialSRA, screeningFacts } from '../../js/shared/draft.js';
+import { draftSeeded, draftInitialSRA, screeningFacts, asamSources, asamContinued, withAsam } from '../../js/shared/draft.js';
+import { CHECK_LABEL, dueText } from '../../js/shared/asam.js';
 import { buildContinuedStay, evidenceIndex, periodPresets, isMissingText } from '../../js/shared/enhance.js';
 import { rule } from '../../js/shared/rules.js';
 import { recFor, reviewBlock } from '../lib/review.js';
@@ -23,7 +24,7 @@ function planHTML(ctx, c) {
   const { banner, boxRow, accordion, checksBlock, SAMPLE_CHIP } = ctx.parts; const s = ctx.S();
   if (c.id !== 'TW') return banner('n', `<b>No plan draft for ${esc(c.initials)} in this demo.</b> Psyflo drafts the plan from the intake and the plan meeting; the worked example is T.W.`);
   const screening = s.screenings.find(x => x.client === c.id && (x.facts || x.transcript));
-  const d = draftSeeded('isp', { client: c, screening, today: ctx.M.today(s) });
+  const d = draftSeeded('isp', { client: c, screening, today: ctx.M.today(s), ...asamSources(s, c.id) });
   const filled = new Set(ctx.pg.filled || []);
   return `<div class="tile t"><div class="row w"><h2 style="flex:1">Treatment plan · ${esc(c.initials)}</h2>${SAMPLE_CHIP()}</div>
       <div class="small" style="margin:4px 0 8px">Goals and interventions from Harvest's list. Check every box in Lauris before Process Form.</div>
@@ -46,7 +47,15 @@ function sraData(ctx, c) {
   const s = ctx.S(); const sc = s.screenings.find(x => x.client === c.id && (x.facts || x.transcript));
   const facts = sc?.facts || (sc?.transcript ? screeningFacts(sc.transcript) : null); if (!facts) return null;
   const r = s.referrals.find(x => x.id === c.referral);
-  return draftInitialSRA({ client: c, screening: { facts, when: sc.when }, referral: r, school: (s.school_numbers || {})[c.id], today: ctx.M.today(s), isp: { date: c.timeline?.isp }, cna: { date: c.timeline?.intake }, request: s.requests.find(q => q.client === c.id && q.type === 'initial' && q.stage !== 'closed') });
+  return draftInitialSRA({ client: c, screening: { facts, when: sc.when }, referral: r, school: (s.school_numbers || {})[c.id], today: ctx.M.today(s), isp: { date: c.timeline?.isp }, cna: { date: c.timeline?.intake }, request: s.requests.find(q => q.client === c.id && q.type === 'initial' && q.stage !== 'closed'), ...asamSources(s, c.id) });
+}
+// the level-of-care reading (shared/asam.js levelCheck, dueState) at the top of a request: what the ratings suggest for the level asked, and the reassessment clock with its rule chip.
+// "Suggested", never "determined": the ratings and the level recommendation are the clinician's.
+function levelBanner(ctx, d) {
+  const lc = d && d.level; if (!lc) return '';
+  const tone = { match: '', over: 'y', under: 'y', none: 'n' }[lc.state];
+  const due = d.due; const clock = due && due.state !== 'none' ? ` · ${esc(dueText(due))} ${ctx.ui.sourceChip(due.rule)}` : '';
+  return ctx.parts.banner(tone, `<b>Level of care · ${esc(CHECK_LABEL[lc.state])}</b> · ${esc(lc.headline)}${lc.state === 'over' || lc.state === 'under' ? '. The reason is yours: it is left blank for you.' : ''}${clock}`);
 }
 function requestHTML(ctx, c) {
   const { banner, accordion, checksBlock } = ctx.parts; const s = ctx.S(); const st = ctx.st;
@@ -57,6 +66,7 @@ function requestHTML(ctx, c) {
   if (req && !['draft_ready', 'needs_approval', 'awaiting_signature'].includes(req.stage)) h += banner('n', `${esc(req.id)} is ${esc(ctx.M.STAGE_LABEL[req.stage].toLowerCase())}. This form was already processed.`);
   const rec = recFor(ctx, c, 'sra-initial');
   const sc = s.screenings.find(x => x.client === c.id);
+  h += levelBanner(ctx, d);
   h += `<div class="tile t"><h2>Draft ready · ${esc(c.initials)}</h2><div class="small" style="margin-top:4px">From the screening (${fmtDate(sc?.when)}), the intake${c.timeline?.intake ? ' (' + fmtDate(c.timeline.intake) + ')' : ''}, the plan${c.timeline?.isp ? ' (' + fmtDate(c.timeline.isp) + ')' : ''} and the referral.${req ? ' Tracked as ' + esc(req.id) + '.' : ''}</div></div>`;
   if (!rec) {
     h += `<button class="btn p blk" data-act="sraDraft">Review ${d.boxes.length} statements</button>`;
@@ -78,15 +88,18 @@ function periodFor(ctx, c) {
   if (saved) return { from: saved.from, to: saved.to, preset: saved.preset };
   const p = periodPresets(s, c, today)[0]; return { from: p.from, to: p.to, preset: p.id };
 }
+// the continued-stay builder counts the stored notes; the dimension boxes, the level of care and the step-down plan come from the stored assessments
+const continuedFor = (ctx, c, per, req, household) => { const s = ctx.S(); return withAsam(buildContinuedStay(s, c.id, per, { household, request: req }), asamContinued(s, c.id, { request: req, today: ctx.M.today(s) })); };
 function continuedHTML(ctx, c) {
   const { banner, accordion, checksBlock, boxRow } = ctx.parts; const s = ctx.S(); const st = ctx.st; const today = ctx.M.today(s);
   const req = s.requests.find(r => r.client === c.id && r.type === 'continued_stay' && r.stage !== 'closed');
   const per = periodFor(ctx, c); const presets = periodPresets(s, c, today);
-  const cs = buildContinuedStay(s, c.id, per, { household: !!st.household, request: req });
+  const cs = continuedFor(ctx, c, per, req, !!st.household);
   const idx = cs.index; const rec = recFor(ctx, c, 'sra-continued');
   let h = `<div class="row"><label class="lab" for="cs-per">Period</label><select id="cs-per" class="tog" style="flex:1" data-ch="period">${presets.map(p => `<option value="${p.id}"${p.id === per.preset ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</select></div>
     <div class="cnts" role="group" aria-label="Evidence counts">${['daily:Daily notes', 'weekly:Weekly calls', 'monthly:Monthly collateral'].map(x => { const [k, l] = x.split(':'); return `<button class="cnt" data-act="openRows" data-k="${k}"><span class="small muted">${l}</span><b>${cs.counts[k]}</b></button>`; }).join('')}</div>
     <div class="hint">${fmtDate(per.from)} – ${fmtDate(per.to)}${req ? ' · ' + esc(req.id) : ''} · ${cs.counts.excluded} excluded · ${cs.counts.sensitive} sensitive. <a href="#" data-act="openEvidence">Open the evidence</a></div>`;
+  h += levelBanner(ctx, cs);
   h += unitsBanner(ctx, c);
   // household context: Not included until a person opts in
   const hh = idx.rows.filter(r => r.household && !r.excluded);
@@ -183,9 +196,9 @@ function html(ctx) {
 
 const acts = {
   goNav(el, ctx) { return ctx.nav(el.dataset.href); },
-  ispFill: async (el, ctx) => { const c = ctx.client(); const s = ctx.S(); const d = draftSeeded('isp', { client: c, screening: s.screenings.find(x => x.client === c.id), today: ctx.M.today(s) }); await ctx.fill(d.boxes, { form: 'isp', client: c, sources: d.sources }); ctx.draw(); },
+  ispFill: async (el, ctx) => { const c = ctx.client(); const s = ctx.S(); const d = draftSeeded('isp', { client: c, screening: s.screenings.find(x => x.client === c.id), today: ctx.M.today(s), ...asamSources(s, c.id) }); await ctx.fill(d.boxes, { form: 'isp', client: c, sources: d.sources }); ctx.draw(); },
   ispOne(el, ctx) { ctx.st.one = 0; ctx.draw(); }, ispOneClose(el, ctx) { ctx.st.one = null; ctx.draw(); },
-  ispOneType: async (el, ctx) => { const c = ctx.client(); const s = ctx.S(); const d = draftSeeded('isp', { client: c, screening: s.screenings.find(x => x.client === c.id), today: ctx.M.today(s) }); await ctx.fill([d.boxes[ctx.st.one]], { form: 'isp', client: c, sources: d.sources }); ctx.st.one++; ctx.draw(); },
+  ispOneType: async (el, ctx) => { const c = ctx.client(); const s = ctx.S(); const d = draftSeeded('isp', { client: c, screening: s.screenings.find(x => x.client === c.id), today: ctx.M.today(s), ...asamSources(s, c.id) }); await ctx.fill([d.boxes[ctx.st.one]], { form: 'isp', client: c, sources: d.sources }); ctx.st.one++; ctx.draw(); },
   ispOneSkip(el, ctx) { ctx.st.one++; ctx.draw(); },
   ispSign: async (el, ctx) => { const c = ctx.client(); el.disabled = true; await ctx.do('portalTask.create', { client: c.id, form: 'Treatment plan', why: 'Guardian signature on the treatment plan' }); ctx.flash('Treatment plan sent to the parent portal · pending until the guardian signs.'); },
   sraDraft: async (el, ctx) => {
@@ -195,7 +208,7 @@ const acts = {
   },
   csDraft: async (el, ctx) => {
     const c = ctx.client(); const s = ctx.S(); const st = ctx.st; const req = s.requests.find(r => r.client === c.id && r.type === 'continued_stay' && r.stage !== 'closed');
-    const cs = buildContinuedStay(s, c.id, periodFor(ctx, c), { household: !!st.household, request: req });
+    const cs = continuedFor(ctx, c, periodFor(ctx, c), req, !!st.household);
     const inc = cs.index.rows.filter(r => !r.excluded);
     const refs = { notes: inc.filter(r => r.kind === 'daily').map(r => r.ref), weekly: inc.filter(r => r.kind === 'weekly').map(r => r.ref), monthly: inc.filter(r => r.kind === 'monthly').map(r => r.ref) };
     const items = itemsFromDraft(ctx, { boxes: cs.boxes, sources: cs.sources.map(x => ({ ...x, kind: x.kind === 'call' ? 'notes' : x.kind })) }, c, { staff: staffInputs(ctx, cs), refs, request: req });

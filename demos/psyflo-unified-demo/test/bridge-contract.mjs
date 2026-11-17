@@ -22,7 +22,7 @@ await T.test('session form: #lauris-form data-form|session|consumer, #session-fo
   has(h, /<form method="post" id="lauris-form" data-form="dpn" data-consumer="3310" data-session="">/); has(h, /id="session-form-title">Daily Progress Note/);
   has(h, /<label for="f9">Narrative<\/label><textarea class="in" id="f9"/); has(h, /name="action" value="save"/); has(h, /id="process-form"/);
   assert.ok((h.match(/<label for="f\d+"/g) || []).length >= 8, 'boxes are found by label[for]');
-  const t = (await lget('/consumers/3310/session/screening', 'jperez')).text; has(t, /aria-label="Physical aggression toward peers — Frequency"/, 'table cells are found by aria-label');
+  const t = (await lget('/consumers/3310/session/screening', 'jperez')).text; has(t, /aria-label="Cannabis — Frequency"/, 'table cells are found by aria-label');
 });
 await T.test('PRG redirects and the flash: ?processed= ?saved= ?signed= ?rejected= ?created= with #lauris-flash[data-event|session|form|consumer]', async () => {
   const sv = await lpost('/consumers/3315/session/dpn', 'jperez', { action: 'save', f9: 'x' }); assert.match(sv.loc, /\/consumers\/3315\/session\/dpn\?id=\d+&saved=\d+/);

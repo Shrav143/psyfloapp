@@ -108,7 +108,7 @@ Lauris has its own module and file (`lauris/store.js`, `lauris.json`); Psyflo ne
 | R-0411 M.R., 7 | 4471 | `MR` · R-0411 | **3310** | Match; **number conflict.** 27 of 110 left = master 83 used; both end Nov 13. |
 | R-0408 K.T., 9 | 4466 | `KT` · R-0408 | **4480** | Match; number conflict. Both: Anthem, info asked Oct 28 5:40 pm, 24 h. |
 | R-0402 D.W. | 4458, **age 14** | `DW` · R-0402 | **4102**, **age 15** | Match; conflicts: age; offer **120 (v3) vs 110 (master, BRIEF.md)**; v3 auth 90/18 left to Nov 6 vs master 110 from Oct 29. Use master (the 120 plausibly echoes the September offer in `payer_history`). |
-| R-0399 A.L., 6 | 4455 | free-text `"A.L., 6"` · R-0399 | none (no client row) | Match on request (Humana, due Oct 26). Master needs a client stub; fax ref F-2280 vs F-2291. |
+| R-0399 A.L., 15 | 4455 | free-text `"A.L., 15"` · R-0399 | none (no client row) | Match on request (Humana, due Oct 26). Master needs a client stub; fax ref F-2280 vs F-2291. |
 | R-0391 J.O., 14 | 4449 | `JO` · R-0391 | **4400** | Match (F-2287 in both). **Status conflict:** v3 partial 110 offered Oct 29; master `submitted`, due Oct 30. |
 | R-0388 T.N., 8 | 4441 | `TN` · R-0388 | **3402** | Match (65 awarded, p2p Dec 9). Conflict: 9 units left to Nov 20 (v3) vs 0, exhausted Nov 24 (master); v3 puts T.N. on K. Hale's caseload. |
 | R-0384 E.C., 5 | 4437 | `EC` · R-0384 | **4471 (v3's M.R.)** | Match (denied Oct 22, 90 units). Appeal window: v3 Dec 21 (53 d) vs master 51 d. |

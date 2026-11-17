@@ -3,7 +3,7 @@
 // state portal within the configured hours (a Harvest-reported rule); the person opens the portal and files it.
 import { esc } from '../../js/runtime.js';
 import { fmtDate, fmtTime } from '../../js/shared/dates.js';
-import { draftSeeded } from '../../js/shared/draft.js';
+import { draftSeeded, asamSources } from '../../js/shared/draft.js';
 import { rule } from '../../js/shared/rules.js';
 import { tidySentence } from '../../js/shared/enhance.js';
 import { recFor, reviewBlock } from '../lib/review.js';
@@ -11,9 +11,9 @@ import { recFor, reviewBlock } from '../lib/review.js';
 const KEY = c => `incident:said:${c.id}`;
 const guide = text => ({ items: [
   { key: 'what', title: 'What happened', done: text.trim().length > 25, ask: 'What happened, in order?' },
-  { key: 'where', title: 'Where', done: /\b(recess|lunch|hallway|classroom|gym|cafeteria|bus|playground|home|library|bathroom|office|outside|field)\b/i.test(text), ask: 'Where did it happen?' },
-  { key: 'who', title: 'Who was involved or present', done: /\b(peer|student|teacher|staff|counselor|aide|principal|nurse|classmate|grandmother|parent|guardian|boy|girl|kid)\b/i.test(text), ask: 'Who was involved or present?' },
-  { key: 'did', title: 'What you did', done: /\b(separated|walked|called|notified|moved|stayed|spoke|talked|escorted|redirected|calmed|reported|informed|removed|held|blocked)\b/i.test(text), ask: 'What did you do?' }
+  { key: 'where', title: 'Where', done: /\b(home|house|party|car|parking lot|park|street|bathroom|bedroom|site|group room|lobby|bus|gym|field|outside|hospital|emergency department|ED|friend's|apartment)\b/i.test(text), ask: 'Where did it happen?' },
+  { key: 'who', title: 'Who was involved or present', done: /\b(peer|friend|staff|counselor|facilitator|nurse|paramedic|brother|sister|cousin|mother|father|grandmother|grandfather|aunt|uncle|family member|boy|girl|kid)\b/i.test(text), ask: 'Who was involved or present?' },
+  { key: 'did', title: 'What you did', done: /\b(called|notified|drove|took|brought|stayed|spoke|talked|escorted|checked|reported|informed|removed|gave|administered|sent|stayed with|911|naloxone|narcan)\b/i.test(text), ask: 'What did you do?' }
 ] });
 function guideHTML(ctx, g) {
   const open = g.items.filter(i => !i.done); const done = g.items.filter(i => i.done);
@@ -59,7 +59,7 @@ const acts = {
     await ctx.do('scribe.draft', { client: c.id, form: 'incident', input: { kind: 'typed', text }, items, session: ctx.page.form && ctx.page.form.session || null });
   },
   sample: async (el, ctx) => {
-    const c = ctx.client(); const s = ctx.S(); const d = draftSeeded('incident', { client: c, notes: [], today: ctx.M.today(s) });
+    const c = ctx.client(); const s = ctx.S(); const d = draftSeeded('incident', { client: c, notes: [], today: ctx.M.today(s), ...asamSources(s, c.id) });
     await ctx.fill(d.boxes, { form: 'incident', client: c, sources: d.sources });
   },
   portal: async (el, ctx) => {

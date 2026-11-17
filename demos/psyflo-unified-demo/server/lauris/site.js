@@ -279,7 +279,7 @@ ${list.map(c => `<tr data-consumer="${c.no}" data-program="${esc(c.program)}"><t
     const sel = (id, label, opts) => `<div><label for="${id}">${label}</label><select class="in" id="${id}" name="${id}">${opts.map(o => `<option>${esc(o)}</option>`).join('')}</select></div>`;
     const inp = (id, label) => `<div><label for="${id}">${label}</label><input class="in" id="${id}" name="${id}"></div>`;
     return page('New Consumer', 'consumers', `<h2>New Consumer</h2><form method="post" class="card" id="lauris-form" data-form="new-consumer">
-<div class="grid">${inp('initials', 'Name')}${inp('dob', 'Date of birth')}${sel('locality', 'Locality', ['', 'Lynchburg City', 'Campbell County'])}${sel('school', 'School', ['', 'Lynchburg City · MS-2', 'Lynchburg City · ES-3', 'Campbell County · ES-1', 'Campbell County · ES-2', 'Campbell County · MS-1', 'Campbell County · HS-1'])}
+<div class="grid">${inp('initials', 'Name')}${inp('dob', 'Date of birth')}${sel('locality', 'Locality', ['', 'Lynchburg City', 'Campbell County'])}${sel('school', 'School', ['', 'Lynchburg City · Main IOP', 'Lynchburg City · East IOP', 'Campbell County · IOP', 'Campbell County · West IOP', 'Campbell County · North IOP', 'Campbell County · South IOP'])}
 ${sel('program', 'Program', ['TDT', 'Outpatient', 'SEBS'])}${inp('staff', 'Assigned staff')}${inp('clinician', 'Clinician')}</div>
 <button class="lb pri" type="submit">Save Consumer</button> <a class="lb" href="/consumers">Cancel</a></form>`);
   }

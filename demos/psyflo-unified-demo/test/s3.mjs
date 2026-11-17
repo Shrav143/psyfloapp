@@ -1,6 +1,6 @@
 // Scenario S3 · initial authorization (R-0416, T.W.), end to end (review/06 b, S3; prompt Part 14.2):
-//   ISP (panel, 3 goals) -> initial request draft in the panel (7 statements, each with its source; criterion 3 and trauma-informed care left blank)
-//   -> edit criterion 1 -> Approve and fill -> a person presses Process Form (Pending clinical approval) -> the approver approves in the platform
+//   ISP (panel, 3 goals) -> initial request draft in the panel (11 statements: six ASAM dimensions and the level of care, each with its source; the reason for the level and the rationale left blank)
+//   -> edit Dimension 5 -> Approve and fill -> a person presses Process Form (Pending clinical approval) -> the approver approves in the platform
 //   -> a person presses Get Signature in Lauris (the signer is read from the Lauris event) -> a person presses Send (simulated Sfax stub)
 //   -> receipt, decision clock, queue row, timeline, Analytics "Sends with receipts". Each step is asserted in the Psyflo store, the mock Lauris
 //   store, the Authorizations queue and the case. Runs from demo.scenario s3 (canvas minus its tail), the fixture tw-isp-ready and a fresh reset.
@@ -49,32 +49,32 @@ async function run(mode) {
     });
 
     // ---------------------------------------------------------------- 2-4 panel: statements, edit, fill
-    await F.step('2 the SRA panel: 7 statements, every one with its sources (referral, screening call, school portal, ISP); criterion 3 and trauma-informed care are left for the clinician, never drafted', async () => {
+    await F.step('2 the SRA panel: 11 statements (six ASAM dimensions, level of care), every one with its sources (referral, screening call, partner portal, ISP, ASAM assessment); the clinician\'s rationale is left for the clinician, never drafted', async () => {
       await lp.goto(`${LAURIS}/login?as=jperez&next=${encodeURIComponent(`/consumers/${no}/session/sra-initial`)}`); await lp.waitForTimeout(2000);
       const home = (await panelFrame(lp).locator('#panel').innerText()).replace(/\s+/g, ' ');
-      assert.match(home, /Draft ready · T\.W\./); assert.match(home, /Tracked as R-0416/); assert.match(home, /Left for you · 2/); assert.match(home, /Checks\s*7 of 7 pass/);
-      await panel(lp).getByText(/Review 7 statements/).click(); await panel(lp).locator('.ui-dr__item').first().waitFor();
-      assert.eq(await panel(lp).locator('.ui-dr__item').count(), 7);
+      assert.match(home, /Draft ready · T\.W\./); assert.match(home, /Tracked as R-0416/); assert.match(home, /Left for you · 1/); assert.match(home, /Level of care · Ratings support/); assert.match(home, /Checks\s*10 of 10 pass/);
+      await panel(lp).getByText(/Review 11 statements/).click(); await panel(lp).locator('.ui-dr__item').first().waitFor();
+      assert.eq(await panel(lp).locator('.ui-dr__item').count(), 11);
       const items = await panelFrame(lp).evaluate(() => [...document.querySelectorAll('.ui-dr__item')].map(li => ({ label: li.querySelector('.ui-dr__il').textContent.trim(), sources: [...li.querySelectorAll('.ui-dr__src button, .ui-dr__src [data-ui-ev]')].map(x => x.textContent.trim()), missing: /Evidence missing/.test(li.innerText), text: li.querySelector('[data-col=psyflo]').innerText })));
       for (const i of items) assert.ok(i.sources.length > 0 || i.missing, `${i.label}: a statement has sources or says "Evidence missing"`);
-      assert.ok(items.every(i => i.sources.length > 0), 'all seven statements carry sources: ' + JSON.stringify(items.map(i => [i.label, i.sources.length])));
-      assert.ok(!items.some(i => /criterion 3|trauma/i.test(i.label)), 'criterion 3 and trauma-informed care are not drafted');
+      assert.ok(items.every(i => i.sources.length > 0), 'all eleven statements carry sources: ' + JSON.stringify(items.map(i => [i.label, i.sources.length])));
+      assert.ok(!items.some(i => /rationale|criterion|trauma/i.test(i.label)), 'the clinician\'s rationale is not drafted'); assert.eq(items.filter(i => /^Dimension \d/.test(i.label)).length, 6, 'one statement per ASAM dimension');
       const srcs = items.flatMap(i => i.sources); assert.ok(srcs.some(x => /Referral form/.test(x)) && srcs.some(x => /Screening call/.test(x)) && srcs.some(x => /ISP/.test(x)), 'sources: ' + srcs.slice(0, 8).join(' | '));
       L.items = items.length; await shot(lp, `s3-${mode}-2-panel`);
     });
-    await F.step('3 edit criterion 1: the person\'s words replace the draft (Clinician edited, Restore previous appears); the draft is Psyflo\'s, nothing is in Lauris yet', async () => {
-      const it = panel(lp).locator('.ui-dr__item', { hasText: 'criterion 1' }); if (!(await it.getByRole('button', { name: 'Edit' }).isVisible())) await it.locator('.ui-dr__ih').click(); await it.getByRole('button', { name: 'Edit' }).click();
+    await F.step('3 edit Dimension 5: the person\'s words replace the draft (Clinician edited, Restore previous appears); the draft is Psyflo\'s, nothing is in Lauris yet', async () => {
+      const it = panel(lp).locator('.ui-dr__item', { hasText: 'Dimension 5' }); if (!(await it.getByRole('button', { name: 'Edit' }).isVisible())) await it.locator('.ui-dr__ih').click(); await it.getByRole('button', { name: 'Edit' }).click();
       const ta = it.locator('textarea'); const old = await ta.inputValue(); assert.ok(old.length > 20, 'the draft text is in the editor');
-      await ta.fill(old + ' (clinician note: confirmed with the guardian on the call.)'); await it.getByRole('button', { name: 'Save wording' }).click(); await lp.waitForTimeout(800);
+      await ta.fill(old + ' (clinician note: confirmed with the family member on the call.)'); await it.getByRole('button', { name: 'Save wording' }).click(); await lp.waitForTimeout(800);
       assert.match(await it.getAttribute('class'), /--edited/, 'the statement is marked Clinician edited'); await it.locator('.ui-dr__ih').click(); await lp.waitForTimeout(300); assert.ok(await it.getByRole('button', { name: 'Restore previous' }).count() === 1, 'Restore previous appears after a save');
-      assert.match(await it.innerText(), /clinician note: confirmed with the guardian/); assert.eq((await lsnap()).sessions.filter(x => x.no === no && x.form === 'sra-initial').length, L.l0.sessions.filter(x => x.no === no && x.form === 'sra-initial').length, 'no SRA session saved in Lauris');
+      assert.match(await it.innerText(), /clinician note: confirmed with the family member/); assert.eq((await lsnap()).sessions.filter(x => x.no === no && x.form === 'sra-initial').length, L.l0.sessions.filter(x => x.no === no && x.form === 'sra-initial').length, 'no SRA session saved in Lauris');
       L.edited = true;
     });
-    await F.step('4 Accept the statements with sources, Approve and fill: the boxes are typed yellow (not saved); criterion 3 and trauma-informed care stay blank; the version is recorded by Psyflo', async () => {
+    await F.step('4 Accept the statements with sources, Approve and fill: the boxes are typed yellow (not saved); the reason for the level stays blank; the version is recorded by Psyflo', async () => {
       await panel(lp).getByRole('button', { name: /Accept the \d+ with sources/ }).click(); await panel(lp).getByRole('button', { name: 'Approve and fill' }).click();
       await panel(lp).getByText(/boxes typed into the form/).first().waitFor({ timeout: 30000 });
-      const v = await formValues(lp); assert.ok(!v['Section I · criterion 3 — recognise danger to self or others'], 'criterion 3 blank'); assert.ok(!v['Section III · trauma-informed care'], 'trauma-informed care blank');
-      assert.match(v['Section I · criterion 1 — interpersonal relationships'], /confirmed with the guardian/, 'the clinician\'s edit is what is typed');
+      const v = await formValues(lp); assert.ok(!v['Reason for the requested level'], 'the reason for the level is blank');
+      assert.match(v['Dimension 5 — relapse, continued use, or continued problem potential'], /confirmed with the family member/, 'the clinician\'s edit is what is typed');
       assert.noMatch(Object.values(v).join(' '), /Harvest will coordinate/, 'no promise written for the clinician');
       const s = await state('jperez'); assert.ok(s.doc_versions.some(d => d.client === 'TW' || /sra/i.test(d.form || d.key || '')), 'a saved version / draft record exists in Psyflo'); assert.eq(req(s, R).stage, 'draft_ready', 'filling does not move the request');
       await shot(lp, `s3-${mode}-4-filled`);

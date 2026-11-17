@@ -6,14 +6,14 @@
 //   Saved / rejected lists and the payer portal pages
 import { esc } from '../../js/runtime.js';
 import { fmtDate, fmtTime } from '../../js/shared/dates.js';
-import { draftSeeded } from '../../js/shared/draft.js';
+import { draftSeeded, asamSources } from '../../js/shared/draft.js';
 import { recFor, reviewBlock } from '../lib/review.js';
 import { itemsFromDraft, staffInputs } from '../lib/items.js';
 
 const FORMS = { quarterly: 'Quarterly report', discharge: 'Discharge summary' };
 function draftFor(ctx, c, form) {
   const s = ctx.S();
-  return draftSeeded(form, { client: c, notes: s.notes.filter(n => n.client === c.id), samples: [], today: ctx.M.today(s), range: 'whole', plan: s.plans.find(p => p.client === c.id) });
+  return draftSeeded(form, { client: c, notes: s.notes.filter(n => n.client === c.id), samples: [], today: ctx.M.today(s), range: 'whole', plan: s.plans.find(p => p.client === c.id), ...asamSources(s, c.id) });
 }
 const refsOf = (ctx, c) => { const n = ctx.S().notes.filter(x => x.client === c.id); const by = t => n.filter(x => x.type === t).map(x => x.id); return { notes: by('daily'), weekly: by('weekly_guardian'), monthly: by('monthly_collateral') }; };
 

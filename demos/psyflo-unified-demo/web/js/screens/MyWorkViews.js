@@ -5,6 +5,7 @@ import { esc } from '../runtime.js';
 import { CHECKS } from '../shared/draft.js';
 import { textOf, plainText, plural, sectionLabel, approvalLabel, repeatedParagraphs } from '../shared/sel/mywork.js';
 import * as M from '../shared/model.js';
+import { rosterCell } from './asam-ui.js';
 
 const tone = t => t || 'neutral';
 // every source chip carries its date: the day it was verified, or "Not verified" (ui.sourceChip itself only puts the date in its tooltip)
@@ -64,6 +65,13 @@ export function dayHtml(v, st, o = {}) {
   h += `<details class="mw-acc"><summary>This month</summary><dl class="ui-dl">${v.quality.map(([l, x]) => `<div class="ui-dl__r"><dt>${esc(l)}</dt><dd>${esc(x)}</dd></div>`).join('')}</dl>${v.hours ? `<p class="mw-none">Daily notes count as on time within ${v.hours} h of the session ${withDate(o.rule24)}</p>` : ''}</details>`;
   if (v.goals.length) h += `<details class="mw-acc"><summary>Goals ${countChip(v.goals.length)}</summary><ul class="mw-goals">${v.goals.map(g => `<li>${ui.progress({ label: g.t, value: g.pct, max: 100, text: g.d })}</li>`).join('')}</ul><p class="mw-none">${ui.datasetChip('harvest_export')}</p></details>`;
   return h;
+}
+// The caseload of the person whose day it is, with each patient's ASAM level of care and reassessment state (the ratings strip only for roles that hold the ratings).
+// rows: [{ id, label, reading }] from shared/sel/asam-view.js clientReading; the reading says what this role may see.
+export function caseloadHtml(rows, o = {}) {
+  if (!rows.length) return '';
+  const li = r => `<li class="mw-case"><a class="mw-case__n" href="#/Patient?id=${encodeURIComponent(r.id)}&section=asam">${esc(r.label)}</a>${rosterCell(r.reading)}</li>`;
+  return `<section class="mw-group" aria-label="Level of care"><h2 class="mw-h2">Level of care ${countChip(rows.length)}<span class="mw-h2__s">${esc(o.sub || 'ASAM level and reassessment, patient by patient')}</span></h2><ul class="mw-list mw-caseload" role="list">${rows.map(li).join('')}</ul></section>`;
 }
 function nextButton(it, o) {
   const r = o.resolve(it);

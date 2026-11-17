@@ -25,9 +25,9 @@
   const lc = s => norm(s).toLowerCase();
 
   const FORM_TITLES = {
-    'admission screening': 'screening', 'comprehensive needs assessment': 'cna', 'individual service plan': 'isp',
-    'daily progress note': 'dpn', 'weekly guardian': 'weekly', 'monthly collateral': 'collateral', 'quarterly report': 'quarterly',
-    'incident report': 'incident', 'initial service authorization request': 'sra-initial', 'cmhrs continued stay': 'sra-continued', 'discharge summary': 'discharge'
+    'admission screening': 'screening', 'asam multidimensional assessment': 'cna', 'individual treatment plan': 'isp',
+    'daily progress note': 'dpn', 'weekly family contact': 'weekly', 'monthly collateral': 'collateral', 'quarterly report': 'quarterly',
+    'incident report': 'incident', 'initial service authorization request': 'sra-initial', 'continued stay request': 'sra-continued', 'discharge summary': 'discharge'
   };
   const formFromTitle = t => { t = lc(t); for (const k in FORM_TITLES) if (t.includes(k)) return FORM_TITLES[k]; return null; };
 
@@ -57,7 +57,7 @@
     const hdr = document.querySelector('.hdr');
     if (hdr) {
       const t = norm(hdr.textContent);
-      p.consumer = { no: (t.match(/Harvest #\s*(\d+)/) || [])[1], initials: norm(hdr.querySelector('.nm') && hdr.querySelector('.nm').textContent), program: (t.match(/Program:\s*([A-Za-z]+)/) || [])[1] || '', units: norm(hdr.querySelector('.units') && hdr.querySelector('.units').textContent), sub: norm(hdr.querySelector('.sub') && hdr.querySelector('.sub').textContent) };
+      p.consumer = { no: (t.match(/Harvest #\s*(\d+)/) || [])[1], initials: norm(hdr.querySelector('.nm') && hdr.querySelector('.nm').textContent), program: (t.match(/Program:\s*([A-Za-z\/]+)/) || [])[1] || '', units: norm(hdr.querySelector('.units') && hdr.querySelector('.units').textContent), sub: norm(hdr.querySelector('.sub') && hdr.querySelector('.sub').textContent) };
     }
     let m;
     if (document.getElementById('portal-confirmation')) { const c = document.getElementById('portal-confirmation'); p.kind = 'portal-confirmation'; p.portal = { ref: c.dataset.ref, request: c.dataset.request, kind: c.dataset.kind }; }

@@ -464,16 +464,16 @@ async function flowA() {
   await P.getByText('Before you hang up').waitFor({ timeout: 10000 });
   ok(await until(async () => (await P.locator('.cr.done').count()) === 6, 25000, 250), 'six prompts tick while the scripted call plays');
   await P.getByText('Stop and draft the boxes').click(); await P.getByText(/Fill the \d+ boxes/).click();
-  ok(await until(async () => /Piedmont/.test(await L.locator('#lauris-form textarea').evaluateAll(ts => ts.map(t => t.value).join(' '))), 30000), 'the draft fills the boxes with what the call said (Piedmont Counseling)');
-  const readPrior = async () => ((await L.locator('#lauris-form label[for]').evaluateAll(ls => Object.fromEntries(ls.map(l => [l.textContent, document.getElementById(l.htmlFor).value]))))['Prior / current services (provider · dates · outcome)'] || '');
-  await until(async () => /Piedmont Counseling, Mar–Jun/.test(await readPrior()), 15000, 250);   // the boxes are typed one after another: wait for this one before reading it
+  ok(await until(async () => /Screening call with the grandmother/.test(await L.locator('#lauris-form textarea').evaluateAll(ts => ts.map(t => t.value).join(' '))), 30000), 'the draft fills the boxes with what the call said (Blue Ridge Pediatrics)');
+  const readPrior = async () => ((await L.locator('#lauris-form label[for]').evaluateAll(ls => Object.fromEntries(ls.map(l => [l.textContent, document.getElementById(l.htmlFor).value]))))['Prior treatment (provider · dates · outcome)'] || '');
+  await until(async () => /Blue Ridge Pediatrics \(Dr\. Alvarez\), Jun/.test(await readPrior()), 15000, 250);   // the boxes are typed one after another: wait for this one before reading it
   const prior = await readPrior();
-  ok(/Piedmont Counseling, Mar–Jun/.test(prior) && !/School counseling weekly since Sep 2025/.test(prior), 'only what was said: nothing the call did not say');
+  ok(/Blue Ridge Pediatrics \(Dr\. Alvarez\), Jun/.test(prior) && !/Weekly check-in/.test(prior), 'only what was said: nothing the call did not say');
   await H.shot('flowA-drafted');
   await L.getByRole('button', { name: 'Process Form' }).click(); await H.lwait(null, /processed=/);
   ok(await until(async () => { const s = await H.state(); return s.screenings.find(x => x.client === 'TW')?.status === 'done' && s.referrals.find(r => r.id === 'REF-118').stage === 'in_intake'; }, 10000), 'Process Form (a person) is observed: the screening is done, the referral is in intake');
   ok((await H.state()).events.some(e => e.record === 'REF-118' && /Screening processed/.test(e.what) && e.actor_kind === 'bridge'), 'recorded from the bridge event');
-  await H.panelReady(); await P.getByText('Open the intake (CNA)').click(); await H.lwait(null, /session\/cna/);
+  await H.panelReady(); await P.getByText('Open the ASAM assessment').click(); await H.lwait(null, /session\/cna/);
   await P.getByText('copied from screening').first().waitFor({ timeout: 20000 }); ok(true, 'the intake opens with the screening answers carried forward');
   await H.shot('flowA-cna');
   H.noErrors(); await H.close();
@@ -524,7 +524,7 @@ async function flowB() {
   await H.go('#/MobileDictate?client=MR'); await ui.locator('#spoken').waitFor({ timeout: 10000 });
   ok(await ui.locator('a[href="#example"]').count() === 1, 'the presenter example is offered (no microphone needed)');
   await ui.locator('a[href="#example"]').click(); await page.waitForTimeout(400);
-  ok(/^played basketball with M\.R\./i.test(await ui.locator('#spoken').inputValue()), 'the example fills the words');
+  ok(/^ran the refusal skills role play with M\.R\./i.test(await ui.locator('#spoken').inputValue()), 'the example fills the words');
   await ui.getByRole('link', { name: 'Looks right' }).click(); await page.waitForTimeout(300);
   ok(/Save to M\.R\. \(grade 2, Campbell ES-1\)\?/.test(await H.root(3000)), 'a confirmation names the student and the school');
   await ui.getByRole('link', { name: 'Save to M.R.' }).click();
@@ -535,7 +535,7 @@ async function flowB() {
   // the daily note, on a desktop page of its own (the same in-memory demo cannot be shared across pages): the dictation is saved through the API first
   const D = await fresh(); const { ui: ui2, page: p2 } = D;
   await D.signIn('Direct support');
-  await D.api('dictation.save', { client: 'MR', spoken: 'played basketball with M.R. after he got upset in math, he cooled down after and went back to class', rewritten: '' }, 'khale');
+  await D.api('dictation.save', { client: 'MR', spoken: 'ran the refusal skills role play with M.R. in group, he practiced saying no to a drink at a party twice, craving was a 5 before and a 2 after', rewritten: '' }, 'khale');
   await D.go('#/ExtDPN?client=MR'); await D.lwait(null, /3310\/session\/dpn/); await D.panelReady();
   const P = D.P(), L = D.L();
   await P.getByText('Dictation dropped in').waitFor({ timeout: 20000 });
@@ -568,7 +568,7 @@ async function flowC() {
   await reviewAndFill(P);
   await P.getByText(/boxes typed into the form/).first().waitFor({ timeout: 30000 });
   const v = await L.locator('#lauris-form label[for]').evaluateAll(ls => Object.fromEntries(ls.map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
-  ok(!v['Section I · criterion 3 — recognise danger to self or others'] && !v['Section III · trauma-informed care'], 'criterion 3 and trauma-informed care are left blank: no invented text');
+  ok(!v['Reason for the requested level'] && !Object.keys(v).some(l => /criterion|trauma/i.test(l)), 'the reason for the level is left blank: no invented text');
   ok(!/Harvest will coordinate|monthly/i.test(v['Care coordination'] || ''), 'no promise written for the clinician');
   await L.getByRole('button', { name: 'Process Form' }).click(); await H.lwait(null, /processed=/);
   ok(await until(async () => (await stageOf(H, 'R-0416')) === 'needs_approval', 10000), 'Process Form lands in Pending clinical approval (observed)');

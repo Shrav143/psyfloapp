@@ -34,6 +34,7 @@ register('Analytics', class extends Screen {
     this.pg = null; try { this.pg = await import('../shared/payer-guidance.js'); } catch { this.pg = null; }   // E3's payer guidance, when it exists
   }
   get actor() { return session.actor; }
+  get css() { return '.an-sub3{margin-top:var(--sp-3)}.an-sub3:first-child{margin-top:0}.an-sub3__h{margin:0 0 6px;font-size:var(--fs-13);line-height:var(--lh-13);font-weight:600;color:var(--muted-700)}'; }
   get prov() { return V.datasetOf(this.state.dataset); }
   href(route) { const t = legacyFor({ id: route.id, params: route.params || {} }); return hrefFor(t.id, t.params); }
   hash(section, dataset) {

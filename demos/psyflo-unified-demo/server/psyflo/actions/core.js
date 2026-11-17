@@ -246,7 +246,7 @@ export default {
     const nid = id || 'R-0' + (Math.max(...s.requests.map(q => +q.id.slice(2))) + 1);
     const start = addBusinessDays(s.today, 1);
     const lim = rule(s, 'initial_sra.send_within_days'); const cs = clockStart(s, c); const from = cs.date;
-    r = { id: nid, client, payer: p, channel, service, service_line: 'tdt', type, units_requested: units, stage: 'draft_ready', drafted_at: this.now(), dates: `${start} to ${addDays(start, 88)}`,
+    r = { id: nid, client, payer: p, channel, service, service_line: 'tdt', asam_level: /outpatient/i.test(service) ? '1' : '2.1', type, units_requested: units, stage: 'draft_ready', drafted_at: this.now(), dates: `${start} to ${addDays(start, 88)}`,
       limit_30: type === 'initial' && from ? addDays(from, lim.value) : null, limit_30_basis: type === 'initial' ? { rule: 'initial_sra.send_within_days', days: lim.value, start_event: cs.event, wanted_event: ruleValue(s, 'initial_sra.start_event', 'intake_processed'), fallback: !!cs.fallback, start: from, verification: lim.verification } : null };
     s.requests.unshift(r);
     this.event(`${type === 'initial' ? 'Initial SRA' : 'Continued stay'} drafted from the record`, 'Psyflo', nid, { actor_kind: 'system' });

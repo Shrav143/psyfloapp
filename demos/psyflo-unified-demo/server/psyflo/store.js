@@ -91,7 +91,7 @@ function applyCanvas(s) {
   ev('2026-10-13T15:02', 'Family link sent by text to the guardian', 'jperez', 'REF-118');
   ev(t.family_link_submitted, 'Family link submitted · insurance details received', 'Denise Rivers', 'REF-118');
   ev(t.eligibility_checked, 'Eligibility recorded · active · Humana (DMAS screenshot stored)', 'jperez', 'REF-118');
-  ev(t.screening, 'Screening call · 19 boxes drafted, processed in Lauris', 'jperez', 'REF-118');
+  ev(t.screening, 'Screening call · 15 boxes drafted, processed in Lauris', 'jperez', 'REF-118');
   ev('2026-10-19T19:20', 'Consent for services signed on the parent portal', 'Denise Rivers', 'TW');
   ev('2026-10-22T13:58', 'Initial SRA processed in Lauris', 'jperez', 'R-0416');
   ev(t.sra_signed, 'Signed in Lauris Forms to Approve · signed PDF saved', 'jperez', 'R-0416');

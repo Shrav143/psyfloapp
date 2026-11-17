@@ -25,7 +25,8 @@ const LAY = {
     Z.timeline(o),
     must(P, 'out.review', p => Z.review(p, o)),
     must(P, 'out.assess', p => Z.tableCard(p, o, { title: 'Assessment trends by scale', cls: 'an-card--wide' })),
-    row2(must(P, 'out.goals', p => Z.tableCard(p, o, { title: 'Goals and progress' })), must(P, 'out.usable', p => Z.tableCard(p, o)))
+    row2(must(P, 'out.goals', p => Z.tableCard(p, o, { title: 'Goals and progress' })), must(P, 'out.usable', p => Z.tableCard(p, o))),
+    must(P, 'out.asam', p => Z.tableCard(p, o, { title: 'ASAM ratings: change since the first assessment', cls: 'an-card--wide' }))
   ],
   payer: (P, o, st) => [
     Z.kpis(P['pay.kpi'], o),
@@ -34,6 +35,7 @@ const LAY = {
     row2(must(P, 'pay.reasons', p => Z.hbars(p, o, { title: 'Top denial reasons' })), must(P, 'pay.docdef', p => Z.hbars(p, o, { title: 'Documentation deficiencies' }))),
     row2(must(P, 'pay.denial_by_payer', p => Z.tableCard(p, o)), must(P, 'pay.service', p => Z.hbars(p, o, { key: 'share', rowSub: r => `n = ${r.decided && r.decided.suppressed ? 'fewer than 5' : r.decided}` }))),
     row2(must(P, 'pay.appeals', p => Z.tiles(p, o)), must(P, 'pay.units', p => unitsTiles(p, o))),
+    asamCard(P, o),
     must(P, 'pay.insights', p => Z.insights(p, o))
   ],
   population: (P, o) => [
@@ -44,6 +46,8 @@ const LAY = {
     row2(must(P, 'pop.enrollment', p => Z.hbars(p, o, { title: 'Enrollment', sub: 'by status' }))),
     sec('Diagnosis & Clinical Needs'),
     row2(must(P, 'pop.dx', p => Z.hbars(p, o, { title: 'Most common primary diagnoses', pct: true })), must(P, 'pop.cooc', p => Z.hbars(p, o, { title: 'Co-occurring diagnoses', pct: true }))),
+    sec('Level of care (ASAM)'),
+    row2(must(P, 'pop.level', p => Z.hbars(p, o, { title: 'Level of care', sub: 'ASAM level of the open request' })), must(P, 'pop.reassess', p => Z.hbars(p, o, { title: 'Reassessment', sub: 'where the clock stands' }))),
     sec('Service Utilization'),
     row2(must(P, 'pop.util', p => Z.tableCard(p, o)), must(P, 'pop.service', p => Z.hbars(p, o, { title: 'Service types' }))),
     must(P, 'pop.flow', p => Z.vcols(p, o, { title: 'Admissions and discharges', sub: 'last six months', cls: 'an-card--wide' })),
@@ -53,8 +57,18 @@ const LAY = {
     must(P, 'pop.goals', p => Z.hbars(p, o, { title: 'Treatment goals', cls: 'an-card--wide' }))
   ]
 };
-const NAMED = { outcomes: ['out.kpi', 'out.trend', 'out.func', 'out.feedback', 'out.complete', 'out.review', 'out.assess', 'out.goals', 'out.usable'], payer: ['pay.kpi', 'pay.by_payer', 'pay.trend', 'pay.upcoming', 'pay.reasons', 'pay.docdef', 'pay.denial_by_payer', 'pay.service', 'pay.appeals', 'pay.units', 'pay.insights'],
-  population: ['pop.kpi', 'pop.age', 'pop.sites', 'pop.locality', 'pop.payer', 'pop.referral', 'pop.enrollment', 'pop.dx', 'pop.cooc', 'pop.util', 'pop.service', 'pop.flow', 'pop.ivs', 'pop.goals'] };
+const NAMED = { outcomes: ['out.kpi', 'out.trend', 'out.func', 'out.feedback', 'out.complete', 'out.review', 'out.assess', 'out.goals', 'out.usable', 'out.asam'], payer: ['pay.kpi', 'pay.by_payer', 'pay.trend', 'pay.upcoming', 'pay.reasons', 'pay.docdef', 'pay.denial_by_payer', 'pay.service', 'pay.appeals', 'pay.units', 'pay.insights', 'asam.by_level', 'asam.state', 'asam.dims'],
+  population: ['pop.kpi', 'pop.age', 'pop.sites', 'pop.locality', 'pop.payer', 'pop.referral', 'pop.enrollment', 'pop.dx', 'pop.cooc', 'pop.util', 'pop.service', 'pop.flow', 'pop.ivs', 'pop.goals', 'pop.level', 'pop.reassess'] };
+
+// Level of care (ASAM): the three payer-side panels (outcomes by level asked for, payer reasons by dimension, denials by level-of-care reading) are one card with one
+// definition button, so the page stays within its density target; each panel keeps its own title, table and definition (the export prints them separately)
+const ASAM_IDS = ['asam.by_level', 'asam.dims', 'asam.state'];
+function asamCard(P, o) {
+  const ps = ASAM_IDS.map(id => P[id]).filter(Boolean); if (!ps.length) return '';
+  const def = { id: 'asam.card', title: 'Level of care (ASAM)', provenance: o.dataset, definition: ps.map(p => `${p.title}. ${p.definition || ''}`).join(' ') };
+  const inner = ps.map(p => `<div class="an-sub3" data-panel="${esc(p.id)}"><h4 class="an-sub3__h">${esc(p.title)}</h4>${Z.table(p, { ...o, ...(o.pgOf ? o.pgOf(p.id) : {}) })}</div>`).join('');
+  return Z.card(def, o, inner, { cls: 'an-card--wide', sub: 'what the ratings and the payer\'s reason say' });
+}
 
 // authorization trends: metric chips switch between volume, outcome and units
 function payTrend(p, o, pm) {

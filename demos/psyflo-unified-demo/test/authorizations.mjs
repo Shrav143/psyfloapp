@@ -6,7 +6,7 @@ import { authQueue, normalizeParams, GROUP, STAGE_LIST, CHIPS, authCase, unitsVi
 import { evidenceIndex } from '../web/js/shared/enhance.js';
 import { addBusinessDays } from '../web/js/shared/dates.js';
 import { STATUS } from '../web/js/ui/chip.js';
-import { draftInitialSRA } from '../web/js/shared/draft.js';
+import { draftInitialSRA, asamSources } from '../web/js/shared/draft.js';
 
 const T = suite('authorizations');
 const req = async (id, as = 'jperez') => (await state(as)).requests.find(r => r.id === id);
@@ -137,12 +137,12 @@ const toNeedsApproval = async () => {
   await reset('live'); const { no } = await prepTWTo('isp-ready');
   const { FORMS } = await import('../server/lauris/forms.js');
   const st = await state('jperez'); const tw = st.clients.find(c => c.id === 'TW'); const sc = st.screenings.find(x => x.client === 'TW');
-  const sra = draftInitialSRA({ client: tw, screening: { facts: sc.facts, when: sc.when }, referral: st.referrals.find(r => r.id === 'REF-118'), today: st.today, request: st.requests.find(r => r.id === 'R-0416') });
+  const sra = draftInitialSRA({ client: tw, screening: { facts: sc.facts, when: sc.when }, referral: st.referrals.find(r => r.id === 'REF-118'), today: st.today, request: st.requests.find(r => r.id === 'R-0416'), ...asamSources(st, 'TW') });
   const sv = Object.fromEntries(sra.boxes.map(b => [b.label, b.value])); const f = { action: 'process' };
   FORMS['sra-initial'].fields.forEach((fl, i) => { if (sv[fl.label] != null && !['table', 'phq', 'static'].includes(fl.type)) f['f' + i] = sv[fl.label]; });
   const sid = sidOf(await lpost(`/consumers/${no}/session/sra-initial`, 'jperez', f));
   const ev = (event, extra = {}) => bridge('lauris.observed', { event, session: String(sid), form: 'sra-initial', consumer: { no: String(no), initials: 'T.W.' }, values: event === 'processed' ? sv : {}, typed: [], user: 'J. Perez, LPC', ...extra });
-  const signed = async () => { await lpost(`/approvals/${sid}/sign`, 'jperez', {}); return ev('signed', { preview: { title: 'TDT Initial SRA', rows: sra.boxes.map(b => ({ label: b.label, value: b.value })) } }); };
+  const signed = async () => { await lpost(`/approvals/${sid}/sign`, 'jperez', {}); return ev('signed', { preview: { title: 'IOP Initial SRA', rows: sra.boxes.map(b => ({ label: b.label, value: b.value })) } }); };
   assert.ok((await ev('processed')).ok); return { no, sid, ev, signed };
 };
 try {
@@ -166,18 +166,18 @@ try {
     assert.eq(await p.locator('.a-di').count(), 0, 'no "In Denial Intelligence" line in the status cell any more');
     assert.deepEq(realErrs(errs), []); await p.context().close();
   });
-  await T.test('the table (feedback Nov 11, laid out like the artifact): units are one bar "N left of M" flagged from 75% used; the Next action cell holds the button and a dated deadline with a warning icon; ten filters on the page', async () => {
+  await T.test('the table (feedback Nov 11, laid out like the artifact): units are one bar "N left of M" flagged from 75% used; the Next action cell holds the button and a dated deadline with a warning icon; twelve filters on the page (ten and the two ASAM filters)', async () => {
     await reset('canvas'); const { p, errs } = await mk('jperez');
     await p.goto(BASE + '/#/Authorizations'); await p.waitForTimeout(900);
     const row = name => p.locator('tbody tr[data-ui-row]', { hasText: name }).first();
     assert.match(await row('M.R.').innerText(), /27\s*left of 110/); assert.ok(await row('M.R.').locator('.ui-units.is-warn').count(), 'M.R. is at 75% used: yellow flag');
     assert.ok(await row('T.N.').locator('.ui-units.is-out').count(), '0 left of 65 is the red state'); assert.eq(await row('D.W.').locator('.ui-units.is-warn, .ui-units.is-out').count(), 0, '110 left of 110 carries no flag');
     assert.ok(await row('A.L.').locator('.ui-dateflag--overdue .ui-dateflag__i svg').count(), 'an overdue date carries a warning icon');
-    const heads = (await p.locator('thead th').allInnerTexts()).map(x => x.trim().replace(/\s+/g, ' ')); assert.deepEq(heads, ['Consumer', 'Service', 'Payer', 'Assigned clinician', 'Authorization period', 'Requested', 'Approved', 'Remaining', 'Status', 'Next action'], 'the artifact columns');
+    const heads = (await p.locator('thead th').allInnerTexts()).map(x => x.trim().replace(/\s+/g, ' ')); assert.deepEq(heads, ['Consumer', 'Level of care', 'Payer', 'Assigned clinician', 'Authorization period', 'Requested', 'Approved', 'Remaining', 'Status', 'Next action'], 'the artifact columns, with Level of care (service and ASAM level) in place of Service');
     const cell = await row('M.R.').locator('.a-c-next').innerText(); assert.match(cell, /Nov 13/, 'the Next action cell carries the dated deadline: ' + cell); assert.ok(await row('M.R.').locator('.a-c-next .ui-dateflag--soon').count(), 'a flag icon on a deadline that is close');
     assert.noMatch(await p.locator('tbody').innerText(), /Harvest-reported|Unverified|Payer-specific|window ended/i, 'sources and sentences moved into the tooltip');
-    for (const l of ['Status', 'Payer', 'Service type', 'Request type', 'Assigned clinician', 'Location', 'School', 'Units remaining', 'Next step due']) assert.ok(await p.locator('.ui-fsel__l', { hasText: new RegExp('^' + l + '$') }).count(), 'filter ' + l);
-    assert.eq(await p.locator('.ui-fbar .ui-fsel, .ui-fbar .ui-fsearch').count(), 10, 'search plus nine dropdowns: the artifact grid of ten');
+    for (const l of ['Status', 'Payer', 'Service type', 'Request type', 'Assigned clinician', 'Location', 'School', 'Level of care', 'Reassessment', 'Units remaining', 'Next step due']) assert.ok(await p.locator('.ui-fsel__l', { hasText: new RegExp('^' + l + '$') }).count(), 'filter ' + l);
+    assert.eq(await p.locator('.ui-fbar .ui-fsel, .ui-fbar .ui-fsearch').count(), 12, 'search plus eleven dropdowns: the artifact grid of ten and the two ASAM filters (level of care, reassessment)');
     assert.eq(await p.locator('.ui-pager').count(), 1, 'the pager is at the bottom'); { const n = (await state('jperez')).requests.length; assert.match(await p.locator('.ui-pager').innerText(), new RegExp('Showing\\s*1–' + Math.min(n, 25) + '\\s*of\\s*' + n + '\\s*authorizations')); } assert.noMatch(await p.locator('main > header, .a-head').innerText(), /\d+ of \d+/, 'no "N of M" at the top');
     assert.eq(await p.locator('details.ui-fmore').count(), 0, 'no "More filters" disclosure');
     await p.selectOption('select[data-key="units"]', 'warn'); await p.waitForTimeout(400);

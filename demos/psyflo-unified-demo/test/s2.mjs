@@ -108,7 +108,7 @@ async function run(mode) {
       assert.eq(await yellow(lp), 6, 'six yellow boxes'); assert.eq((await lsnap()).consumers.length, L.first.lauris, 'typed, not saved');
       await lp.getByRole('button', { name: 'Save Consumer' }).click(); await lp.waitForURL(/consumers\/\d+\?created/);
       no = Number(lp.url().match(/consumers\/(\d+)/)[1]);
-      const l = await lsnap(); const c = lcons(l, no); assert.ok(c && c.initials === 'T.W.' && c.program === 'TDT' && /MS-2/.test(c.school), 'consumer in Lauris'); assert.eq(c.active_file.length, 0, 'the Active File starts empty');
+      const l = await lsnap(); const c = lcons(l, no); assert.ok(c && c.initials === 'T.W.' && c.program === 'TDT' && /Main IOP/.test(c.school), 'consumer in Lauris'); assert.eq(c.active_file.length, 0, 'the Active File starts empty');
       const s = await waitState(x => x.clients.find(cc => cc.id === 'TW').lauris_no === no || ref(x).lauris_no === no || JSON.stringify(x.clients.find(cc => cc.id === 'TW')).includes(String(no)), { what: 'Psyflo to learn the Harvest #' });
       L.no = no;
     });
@@ -123,18 +123,18 @@ async function run(mode) {
       await panel(lp).getByLabel(/Guardian agreed/).check(); await panel(lp).getByText('Agreed · start recording').click();
       await panel(lp).getByText('Before you hang up').waitFor();
       const s = await state('jperez'); assert.eq(s.recording_consents.length, 1); assert.ok(s.recording_consents[0].by === 'jperez', 'who and when: ' + JSON.stringify(s.recording_consents[0]));
-      await lp.waitForTimeout(10500); assert.eq(await panel(lp).locator('.cr.done').count(), 6, 'six prompts done');
+      await lp.waitForTimeout(12500); assert.eq(await panel(lp).locator('.cr.done').count(), 9, 'nine prompts done: six ASAM dimensions, prior treatment, suicidal thoughts asked, schedule and transport');
       await shot(lp, `s2-${mode}-5b-call`);
     });
     await F.step('5c Stop: the draft waits for the clinician (nothing in Lauris processed yet); Fill; the boxes hold only what was said; the person edits one box', async () => {
       await panel(lp).getByText('Stop and draft the boxes').click(); await panel(lp).getByText(/Fill the \d+ boxes/).click();
-      await lp.waitForFunction(() => /Piedmont/.test([...document.querySelectorAll('#lauris-form textarea')].map(t => t.value).join(' ')), null, { timeout: 30000 }); await lp.waitForTimeout(800);
-      const v = await formValues(lp); const prior = v['Prior / current services (provider · dates · outcome)'];
-      assert.match(prior, /Piedmont Counseling, Mar–Jun/); assert.noMatch(prior, /School counseling weekly since Sep 2025/, 'nothing the call did not say');
+      await lp.waitForFunction(() => /Screening call with the grandmother/.test([...document.querySelectorAll('#lauris-form textarea')].map(t => t.value).join(' ')), null, { timeout: 30000 }); await lp.waitForTimeout(800);
+      const v = await formValues(lp); const prior = v['Prior treatment (provider · dates · outcome)'];
+      assert.match(prior, /Blue Ridge Pediatrics \(Dr\. Alvarez\), Jun .*2 visits; no change in use/); assert.noMatch(prior, /Weekly check-in/, 'nothing the call did not say; the current check-in is listed apart');
       const s = await state('jperez'); assert.ok(!s.screenings.find(x => x.client === 'TW') || s.screenings.find(x => x.client === 'TW').status !== 'done', 'not processed');
       assert.eq(ref(s).stage, 'needs_screening', 'the referral does not move before Process Form');
       assert.eq((await lsnap()).sessions.filter(x => x.no === L.no).length, 0, 'Lauris holds no session for T.W. before a person saves');
-      await lp.fill('#lauris-form textarea >> nth=1', v['School coordination to date'] + ' (edited by J. Perez)');
+      await lp.fill('#lauris-form textarea >> nth=1', v['Current services to date'] + ' (edited by J. Perez)');
     });
     await F.step('5d Process Form (a person): screening done, referral in intake, the 30-day clock starts from its configured event, Lauris session processed, queue and Do next follow', async () => {
       await lp.getByRole('button', { name: 'Process Form' }).click(); await lp.waitForURL(/processed=/);
@@ -152,11 +152,11 @@ async function run(mode) {
       const ia = scoreRows(await state('dowens'), 'dowens').intake; assert.ok(ia && /^(—|Fewer than 5)/.test(ia.headline), 'the intake-to-SRA measure shows no figure for one case (withheld or not started): ' + JSON.stringify(ia && [ia.headline, ia.note]));
       L.screen = { status: sc.status, stage: ref(s).stage, id };
     });
-    await F.step('6 intake opens (CNA) with the screening answers carried forward ("copied from screening"); nothing is processed by opening it', async () => {
-      await panel(lp).getByText('Open the intake (CNA)').click(); await lp.waitForURL(/session\/cna/);
+    await F.step('6 the ASAM assessment opens with the screening answers carried forward ("copied from screening"); nothing is processed by opening it', async () => {
+      await panel(lp).getByText('Open the ASAM assessment').click(); await lp.waitForURL(/session\/cna/);
       await panel(lp).getByText('copied from screening').first().waitFor();
       await panel(lp).getByText(/^Fill \d+ boxes/).click(); await lp.waitForTimeout(4000);
-      const cna = await formValues(lp); assert.match(cna['Prior services (provider · dates · outcome)'], /Piedmont/);
+      const cna = await formValues(lp); assert.match(cna['Prior treatment (provider · dates · outcome)'], /Blue Ridge Pediatrics/);
       const s = await state('jperez'); assert.eq(ref(s).stage, 'in_intake'); assert.eq((await lsnap()).sessions.filter(x => x.no === L.no && x.form === 'cna' && x.status === 'processed').length, 0, 'filled, not processed');
       await shot(lp, `s2-${mode}-6-intake`);
       L.last = { stage: ref(s).stage, elig: L.elig, screening: L.screen.status, lauris: (await lsnap()).consumers.length, activeFile: lcons(await lsnap(), L.no).active_file.map(x => x.form), eligibilityRecords: s.eligibility.length, linkSubmitted: !!s.family_links.find(f => f.referral === REF).submitted_at };

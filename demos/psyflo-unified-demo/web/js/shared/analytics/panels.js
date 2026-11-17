@@ -11,21 +11,24 @@
 //   feedback:[{src,q,v}], monthly:{ 'YYYY-MM':{ incidents, office } }, svc:[{key,label,n}], units:{authorized,used}, flags:[], have:{ goals, score, note, guardian } }
 import { grp, sup, groupPatients, MIN_FLOOR, median, r1, monthLabel, addMonths, monthKey, sum, pct, inRange } from './common.js';
 import { daysBetween } from '../dates.js';
+import { levelPopulationPanels, asamOutcomePanels } from './asam.js';
 
 export const AGE_BANDS = [['5–7', 5, 7], ['8–10', 8, 10], ['11–13', 11, 13], ['14–17', 14, 17]];
 export const ageBand = a => { if (a == null || a === '') return null; const b = AGE_BANDS.find(x => a >= x[1] && a <= x[2]); return b ? b[0] : a < 5 ? 'Under 5' : '18 and over'; };
 
-export const DX_LABEL = { F90: 'ADHD', F91: 'Conduct and behavior', F93: 'Childhood anxiety', F41: 'Anxiety', F32: 'Depression', F33: 'Depression', F43: 'Trauma and stress', F12: 'Substance use', F84: 'Autism spectrum', F98: 'Other childhood', F34: 'Mood' };
+export const DX_LABEL = { F90: 'ADHD', F91: 'Conduct and behavior', F93: 'Childhood anxiety', F40: 'Social anxiety', F41: 'Anxiety', F32: 'Depression', F33: 'Depression', F43: 'Trauma and stress', F10: 'Alcohol use disorder', F12: 'Cannabis use disorder', F15: 'Stimulant use disorder', F17: 'Nicotine dependence', F84: 'Autism spectrum', F98: 'Other childhood', F34: 'Mood' };
 export function dxFromText(text) {
   const out = []; for (const m of String(text || '').matchAll(/\b([A-Z]\d{2})(?:\.\d+)?/g)) { const k = m[1]; if (!out.some(x => x.key === k)) out.push({ key: k, label: `${k} ${DX_LABEL[k] || 'Other diagnosis'}` }); }
   return out;
 }
+// goal areas follow the ASAM dimension a treatment goal is tied to (the first match wins): D6 family and recovery supports, D3 coping skills, D5 use and screens,
+// D4 engagement. Goals are stated as counts, so the words that name the area decide.
 export const GOAL_AREAS = [
-  ['emotion', 'Emotional regulation', /regulat|emotion|coping|strategy|calm|feel|anx|mood|depress/i],
-  ['peer', 'Peer and social', /peer|friend|social|conflict|contact|aggress|bully/i],
-  ['school', 'School participation', /class|school|attend|work|task|assign|direction|follow|focus|elope/i],
-  ['family', 'Family functioning', /famil|home|guardian|parent/i],
-  ['safety', 'Safety and risk', /safety|harm|danger|suicid|substance/i]
+  ['family', 'Family and recovery supports (D6)', /famil|recovery support|supports?\b|household|home\b|guardian|parent/i],
+  ['coping', 'Coping skills (D3)', /cop(e|ing)|skill|regulat|emotion|anx|mood|depress|calm|feel/i],
+  ['use', 'Use and screens (D5)', /urine|screen|abstin|relapse|craving|sober|drink|cannabis|alcohol|vap|using|substance use|use episode/i],
+  ['engage', 'Engagement (D4)', /attend|group|engag|session|motivat|readiness/i],
+  ['safety', 'Safety and risk', /safety|harm|danger|suicid|overdose/i]
 ];
 export const goalArea = text => { const g = GOAL_AREAS.find(a => a[2].test(String(text || ''))); return g ? { key: g[0], label: g[1] } : { key: 'other', label: 'Other goal' }; };
 
@@ -44,6 +47,8 @@ export function groupPanel(facts, id, title, keyFn, env, o = {}) {
 
 // ---------- the grouping predicates, shared by the panel builders and by the clinician drill-down ----------
 export const GROUPERS = {
+  'pop.level': f => f.level || (f.asam && f.asam.level) || 'none',
+  'pop.reassess': f => (f.asam && f.asam.state) || 'none',
   'pop.enrollment': f => f.status,
   'pop.age': f => f.ageBand,
   'pop.sites': f => f.site,
@@ -91,6 +96,7 @@ export function populationPanels(F, env) {
   P.push(ivRows);
   P.push(utilizationPanel(F, env));
   P.push(flowPanel(F, env));
+  P.push(...levelPopulationPanels(F, env));
   return P;
 }
 
@@ -242,6 +248,7 @@ export function outcomePanels(F, env) {
   // patients requiring clinical review
   const rk = groupPatients(F.filter(f => (f.flags || []).length), GROUPERS['out.review'], { min: env.min, label: k => REVIEW_LABEL[k] || k });
   const rRows = rk.rows.map(r => ({ label: r.label, n: r.n, ...(env.drill ? { _drill: { p: 'out.review', k: r.key } } : {}) })); if (rk.hidden) rRows.push(SMALL(env.min, rk.hidden));
+  P.push(...asamOutcomePanels(F, env));
   P.push({ id: 'out.review', title: 'Needs clinical review', ...T(COLS('Signal', ['n', 'Patients']), rRows), definition: 'Signals that a clinician may want to look: no score on record or none in 60 days, a goal with no note in 28 days, a latest score worse than the first, or an incident in the period. A signal prompts a review; it is not a conclusion.', empty: rRows.length ? '' : 'No signal for a group this size.' });
   return P;
 }

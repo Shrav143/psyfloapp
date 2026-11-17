@@ -15,7 +15,7 @@ import { MISSING, dateFields } from '../../../web/js/shared/enhance.js';
 
 const byId = (arr, id) => (arr || []).find(x => x.id === id);
 export const CLINICAL_FORMS = ['screening', 'cna', 'isp', 'sra-initial', 'sra-continued', 'quarterly', 'discharge'];
-export const FORM_LABEL = { screening: 'Admission screening', cna: 'Intake (CNA)', isp: 'Treatment plan', dpn: 'Daily progress note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', incident: 'Incident report', quarterly: 'Quarterly report', 'sra-initial': 'Initial request', 'sra-continued': 'Continued stay request', discharge: 'Discharge summary', other: 'Other supported documentation' };
+export const FORM_LABEL = { screening: 'Admission screening', cna: 'ASAM multidimensional assessment', isp: 'Treatment plan', dpn: 'Daily progress note', weekly: 'Weekly family-member contact', collateral: 'Monthly collateral', incident: 'Incident report', quarterly: 'Quarterly report', 'sra-initial': 'Initial request', 'sra-continued': 'Continued stay request', discharge: 'Discharge summary', other: 'Other supported documentation' };
 const FORMS = Object.keys(FORM_LABEL);
 const STATES = ['pending', 'accepted', 'rejected', 'edited'];
 
@@ -47,7 +47,7 @@ export function guardProcessedSession(s, client, session) {
     refuse('That Lauris session is already processed. A processed note is not changed: open Evidence review to read it.', { record: client, code: 'write_once' });
 }
 export function stagePush(d, stage, by, src, at, extra = {}) { const st = { stage, at, by, src, ...extra }; d.stages.push(st); return st; }
-export function needClient(s, id) { const c = byId(s.clients, id); if (!c) refuse('Student not found.', { status: 404, audit: false }); return c; }
+export function needClient(s, id) { const c = byId(s.clients, id); if (!c) refuse('Client not found.', { status: 404, audit: false }); return c; }
 
 // a source resolves when it points at something stored. kind 'input' is the person's own words in this draft.
 function resolves(s, src, d) {
@@ -74,7 +74,7 @@ export default {
     if (!FORMS.includes(form)) refuse('Unknown document type.', { status: 422, audit: false });
     if (!['given', 'declined'].includes(kind)) refuse('Consent is given or declined.', { status: 422, audit: false });
     const who = (Array.isArray(present) ? present : [present]).map(x => String(x || '').trim()).filter(Boolean);
-    if (kind === 'given' && !who.length) refuse('Say who agreed (for example the guardian and the student).', { status: 422, audit: false });
+    if (kind === 'given' && !who.length) refuse('Say who agreed (for example the family member and the client).', { status: 422, audit: false });
     s.recording_consents = s.recording_consents || [];
     const rec = { id: 'rc-' + (s.recording_consents.length + 1), client, form, kind, present: who, mode: kind === 'given' ? 'recording' : 'typing', by: this.who(), at: this.now(), date: today(s) };
     s.recording_consents.push(rec);
@@ -158,7 +158,7 @@ export default {
   }
 };
 
-// Saved and Processed come from the page bridge only. The observed event is matched to the author's draft for this student and form;
+// Saved and Processed come from the page bridge only. The observed event is matched to the author's draft for this client and form;
 // a processed draft is closed for good (guardWrite).
 export const hooks = {
   observed(store, s, ev) {

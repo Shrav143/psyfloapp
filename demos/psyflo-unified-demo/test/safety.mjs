@@ -46,7 +46,7 @@ await T.test('WPS-06 direct support opens another staffer\'s student in Lauris: 
   assert.ok(!/Say what happened|Draft it|Fill/.test(t), 'no draft or fill offered');
 });
 await T.test('WPS-07 the panel always shows an identity card (initials, Harvest #, school) before it offers anything; a page whose initials disagree is a hard stop (see enhance)', async () => {
-  const t = await panelText('khale', '/consumers/3310/session/dpn'); assert.match(t, /M\.R\./); assert.match(t, /Harvest #3310/); assert.match(t, /Campbell County · ES-1/);
+  const t = await panelText('khale', '/consumers/3310/session/dpn'); assert.match(t, /M\.R\./); assert.match(t, /Harvest #3310/); assert.match(t, /Campbell County · IOP/);
 });
 await T.test('WPS-09 / DSL-01 the panel is off for an outpatient (#4300) and a SEBS (#5120) record: nothing read, nothing typed', async () => {
   for (const [no, svc] of [[4300, 'Outpatient'], [5120, 'SEBS']]) { const t = await panelText('jperez', `/consumers/${no}`); assert.match(t, /Psyflo is off for/); assert.match(t, new RegExp(svc)); assert.ok(!/Scribe|Track Time|Scan & Enhance|Fill/.test(t), svc + ': no action offered'); }
@@ -65,9 +65,9 @@ await T.test('ICE-03 M.R. continued stay: every count equals the stored rows (40
   assert.eq(idx.counts.daily, s.notes.filter(n => n.client === 'MR' && n.type === 'daily').length); const cs = buildContinuedStay(s, 'MR', { from: a.start, to: s.today }, { household: false, request: req(s, 'R-0411') });
   const all = JSON.stringify(cs); assert.ok(!/\b61 (daily )?notes|\b21 daily notes/.test(all), 'no canvas constant'); assert.ok(idx.gaps.some(g => /^Evidence missing — verify/.test(g.text)));
 });
-await T.test('ICE-04 an initial SRA drafted without the school\'s numbers or the screening facts does not draft criterion 1 (no frequency, duration, intensity or office-referral counts that nobody gave)', async () => {
+await T.test('ICE-04 an initial SRA drafted without the assessment, the partner\'s numbers or the screening facts does not draft a dimension (no rating, frequency, amount or incident count that nobody gave)', async () => {
   const d = draftInitialSRA({ client: { initials: 'X.Y.' }, screening: { facts: {}, when: '2026-10-20' }, referral: { id: 'REF-9' }, school: null, today: '2026-10-29', request: { id: 'R-1', units_requested: 150 } });
-  const c1 = d.boxes.find(x => /criterion 1/.test(x.label)); assert.ok(!c1 || /^Evidence missing — verify/.test(c1.value), `criterion 1 was drafted as: "${c1 && c1.value}"`);
+  const dims = d.boxes.filter(x => /^Dimension \d/.test(x.label)); assert.eq(dims.length, 6); for (const c1 of dims) assert.ok(/^Evidence missing — verify/.test(c1.value), `${c1.label} was drafted as: "${c1.value}"`);
 });
 await T.test('ICE-05 a discharge draft with no stored plan writes no event as done (no date after today)', async () => {
   const d = draft('discharge', { client: { id: 'TN', initials: 'T.N.' }, today: '2026-10-29' }); assert.ok(d.boxes.every(x => x.missing || /^Evidence missing/.test(x.value)), JSON.stringify(d.boxes.map(x => x.value.slice(0, 50))));

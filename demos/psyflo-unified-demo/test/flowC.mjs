@@ -18,7 +18,7 @@ try {
     const s = await state('jperez');
     assert.eq(s.requests.find(r => r.id === 'R-0416')?.stage, 'draft_ready'); assert.eq(s.clients.find(c => c.id === 'TW').goals.length, 3);
   });
-  await T.test('SRA: drafted from the call and the school counts; criterion 3 and trauma-informed care left blank; no invented dates or promises', async () => {
+  await T.test('SRA: written dimension by dimension from the stored ASAM assessment, the call and the partner counts; the reason for the level and the rationale left blank; no invented dates or promises', async () => {
     await panel().getByText('Open the initial request (SRA)').click(); await p.waitForURL(/sra-initial/);
     await panel().getByText(/Review \d+ statements/).click();                 // every statement shows its source; nothing is typed yet
     await panel().getByText(/Accept the \d+ with sources/).click();            // no accept-all: this counts the boxes that have sources
@@ -26,8 +26,9 @@ try {
     await panel().getByText(/boxes typed into the form/).first().waitFor({ timeout: 30000 });
     await p.screenshot({ path: SHOTS + '/flowC-1-sra.png' });
     const v = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll('#lauris-form label[for]')].map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
-    assert.ok(!v['Section I · criterion 3 — recognise danger to self or others'], 'criterion 3 blank');
-    assert.ok(!v['Section III · trauma-informed care'], 'trauma-informed care blank');
+    for (const n of [1, 2, 3, 4, 5, 6]) { const k = Object.keys(v).find(l => l.startsWith('Dimension ' + n + ' —')); assert.ok(k && /^Rated \d \(\w+\) at the Oct 16 assessment\./.test(v[k]), `Dimension ${n} is typed from the stored assessment: ${k} = ${(v[k] || '').slice(0, 60)}`); }
+    assert.match(v['Level of care'], /^Level 2\.1 \(intensive outpatient\) is requested\..*lowest level that fits every rating is Level 2\.1, suggested/s, 'the level of care states what the ratings suggest');
+    assert.ok(!v['Reason for the requested level'] && !Object.keys(v).some(l => /criterion|trauma/i.test(l)), 'the reason for the level is the clinician\'s: blank');
     assert.noMatch(v['Care coordination'] || '', /Harvest will coordinate|monthly/i, 'no promise written for the clinician');
     assert.noMatch(Object.values(v).join(' '), /10\/27\/2026 – 01\/23\/2027/, 'no hard-coded dates');
   });

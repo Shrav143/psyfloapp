@@ -18,7 +18,6 @@ export function refKnown(ctx, r) {
   const s = ctx.S(); const M = ctx.M; const fl = M.familyLinkFor(s, r.id); const el = M.eligibilityFor(s, r.id); const a = fl?.answers || {}; const f = r.form || {};
   const k = [`${M.school(s, r.school).name} · received ${fmtDate(r.received)}`];
   if (f.concerns?.length) k.push('Concerns: ' + f.concerns.slice(0, 3).join(', ').toLowerCase() + (f.concerns.length > 3 ? '…' : ''));
-  if (f.iep) k.push('IEP on file');
   k.push(fl?.submitted_at ? `Family link submitted ${fmtDate(fl.submitted_at)}${a.guardian_name ? ' · ' + a.guardian_name + (a.relationship ? ' (' + a.relationship + ')' : '') : ''}` : fl?.opened_at ? 'Family link opened · not submitted' : fl?.sent_at ? 'Family link sent · not opened' : 'Family link not sent yet');
   k.push(el?.status === 'recorded' ? `Eligibility: ${M.payerShort(s, el.plan)} · checked ${fmtDate(el.checked_at)}` : 'Eligibility not checked yet');
   return k;
@@ -51,12 +50,14 @@ export function preCallBoxes(ctx, c, ref) {
   const s = ctx.S(); const M = ctx.M; c = c || {}; const r = ref || s.referrals.find(x => x.id === c.referral);
   const fl = r && M.familyLinkFor(s, r.id); const el = r && M.eligibilityFor(s, r.id); const a = fl?.answers || {};
   const b = [];
-  if (a.guardian_name || c.guardian?.name) b.push({ label: 'Guardian on the call', value: `${a.guardian_name || c.guardian.name} (${a.relationship || c.guardian?.relationship || 'guardian'})`, src: [a.guardian_name ? 2 : 1] });
+  if (a.guardian_name || c.guardian?.name) b.push({ label: 'Family member on the call', value: `${a.guardian_name || c.guardian.name} (${a.relationship || c.guardian?.relationship || 'family member'})`, src: [a.guardian_name ? 2 : 1] });
   if (a.phone || c.guardian?.phone) b.push({ label: 'Phone', value: a.phone || c.guardian.phone, src: [a.phone ? 2 : 1] });
   if (a.language) b.push({ label: 'Preferred language', value: a.language, src: [2] });
   if (el?.status === 'recorded') b.push({ label: 'Medicaid', value: `${M.payer(s, el.plan).name} · checked ${fmtDate(el.checked_at)}`, src: [3] });
   if (a.medicaid_id) b.push({ label: 'Medicaid ID', value: 'on file (family link)', src: [2] });
-  if (r?.form?.iep) b.push({ label: 'IEP', value: 'Yes — copy attached to referral', src: [1] });
+  // where the referral came from (court diversion, pediatric clinic, counselor, emergency department, family): the referral form's own words, else the referring user's role
+  const refBy = (s.school_users || []).find(u => u.id === r?.referred_by); const source = r?.source || r?.form?.source || r?.form?.referral_source || (refBy ? `${refBy.role} (${refBy.name})` : '');
+  if (source) b.push({ label: 'Referral source', value: String(source), src: [1] });
   return b;
 }
 

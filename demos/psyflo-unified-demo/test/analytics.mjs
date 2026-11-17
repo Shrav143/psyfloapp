@@ -117,9 +117,9 @@ await T.test('administrator and supervisor get aggregates only: no clinical text
     for (const g of goalText) assert.ok(!agg.includes(g.slice(0, 30)), `${who} digest has no goal text`);
     assert.ok(!agg.includes('_drill'), `${who} digest carries no drill-down descriptor`);
     assert.ok(s.clients.every(c => !c.diagnosis && !(c.goals || []).length || who === 'cdiaz'), `${who} state has no diagnosis or goals (own caseload only for a supervisor)`);
-    const r = V.CB.membersOf(s, actorOf(s, who), {}, { p: 'pop.age', k: '8–10' }); assert.ok(r.denied && /clinical-records/.test(r.reason) && r.rows.length === 0, `${who} drill-down denied with a reason`);
+    const r = V.CB.membersOf(s, actorOf(s, who), {}, { p: 'pop.age', k: '14–17' }); assert.ok(r.denied && /clinical-records/.test(r.reason) && r.rows.length === 0, `${who} drill-down denied with a reason`);
   }
-  const s = await state('jperez'); const r = V.CB.membersOf(s, actorOf(s, 'jperez'), {}, { p: 'pop.age', k: '8–10' });
+  const s = await state('jperez'); const r = V.CB.membersOf(s, actorOf(s, 'jperez'), {}, { p: 'pop.age', k: '14–17' });
   assert.ok(!r.denied && r.rows.length >= 5, 'the clinician can open the patients behind a group'); assert.ok(r.rows.every(x => x.initials && x.id));
   const own = V.sectionView(s, actorOf(s, 'jperez'), C.PROV.CASE, 'population', {}).panels.find(p => p.id === 'pop.age');
   assert.ok(own.rows.some(x => x._drill), 'the clinician sees drill descriptors on a group of 5 or more');

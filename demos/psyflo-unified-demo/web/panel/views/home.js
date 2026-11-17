@@ -7,7 +7,7 @@ import { now as clockNow } from '../../js/shared/clock.js';
 import { newReferrals, refInfo, refKnown, referralForConsumer } from '../lib/boxes.js';
 import { FORM_NAME } from '../parts.js';
 
-const NEXT_FORM = { screening: ['cna', 'Open the intake (CNA)'], cna: ['isp', 'Open the treatment plan (ISP)'], isp: ['sra-initial', 'Open the initial request (SRA)'], 'sra-initial': ['/approvals', 'Open Forms to Approve'], 'sra-continued': ['/approvals', 'Open Forms to Approve'] };
+const NEXT_FORM = { screening: ['cna', 'Open the ASAM assessment'], cna: ['isp', 'Open the treatment plan (ISP)'], isp: ['sra-initial', 'Open the initial request (SRA)'], 'sra-initial': ['/approvals', 'Open Forms to Approve'], 'sra-continued': ['/approvals', 'Open Forms to Approve'] };
 
 const hello = ctx => { const s = ctx.S(); const h = +clockNow(s).slice(11, 13); return h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'; };
 function incidentClock(ctx) {

@@ -8,7 +8,8 @@
 import { suite, assert, api, tryApi, state, reset, playwright, errors, login, session, BASE, LAURIS, SHOTS } from './lib/index.mjs';
 import { documentRows, allDocs, normalizeDocs, clientsInScope, DOC_TYPES } from '../web/js/shared/sel/roster.js';
 import { pendingFor } from '../web/js/shared/sel/mywork.js';
-import { routeAllowed } from '../web/js/shared/permissions.js';
+import { routeAllowed, can } from '../web/js/shared/permissions.js';
+import { noteDimensions } from '../web/js/shared/enhance.js';
 import { MATURITY } from '../web/js/shared/maturity.js';
 import { NAV } from '../web/js/shared/nav.js';
 import { NAV_FOR } from '../web/js/shared/permissions.js';
@@ -180,6 +181,9 @@ try {
     await p.waitForSelector('.ui-dialog[data-kind="drawer"]'); const dlg = p.locator('.ui-dialog[data-kind="drawer"]');
     assert.match(await dlg.innerText(), /daily note|weekly|monthly/i); assert.ok(await dlg.locator('#doc-rv-c').count(), 'a note field');
     assert.ok(await dlg.locator('button:has-text("Approve")').count() && await dlg.locator('button:has-text("Return with a note")').count() && await dlg.locator('button:has-text("didn\'t happen")').count(), 'three decisions');
+    // the ASAM dimensions the note addresses (noteDimensions) show as chips for a role that reads note text, and for no other
+    { const rv = await actorOf('cdiaz'); const nn = rv.s.notes.find(x => x.id === id); const want = can(rv.actor, 'notes.view') ? noteDimensions(nn, (rv.s.clients.find(c => c.id === nn.client) || {}).goals).map(k => 'D' + k) : [];
+      const got = (await dlg.locator('.doc-rv__chips .ui-chip').allInnerTexts()).map(t => t.trim()).filter(t => /^D\d \u00b7 /.test(t)).map(t => t.slice(0, 2)); assert.deepEq(got, want, 'dimension chips: ' + got + ' vs ' + want); }
     await p.screenshot({ path: SHOTS + '/documentation-review-drawer-1440.png' });
     const before = (await p.locator('.ui-fchip[aria-pressed="true"]').innerText()).match(/\d+/)[0];
     await dlg.locator('button:has-text("Approve")').click(); await p.waitForTimeout(800);

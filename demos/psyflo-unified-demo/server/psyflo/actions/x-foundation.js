@@ -5,7 +5,7 @@ import { MATRIX, CAP_LIST } from '../../../web/js/shared/permissions.js';
 import fs from 'node:fs';
 import { Refusal, refuse, seedRng } from '../gates.js';
 import { actorFor } from '../session.js';
-import { draftSeeded, draftInitialSRA } from '../../../web/js/shared/draft.js';
+import { draftSeeded, draftInitialSRA, asamSources } from '../../../web/js/shared/draft.js';
 import { rule } from '../../../web/js/shared/rules.js';
 
 const byId = (arr, id) => (arr || []).find(x => x.id === id);
@@ -60,17 +60,17 @@ const BUILD = {
   'tw-isp-ready': (store, L) => {
     const st = store.state; const tw = byId(st.clients, 'TW'); const no = tw.lauris_no;
     process(store, L, no, 'cna');
-    const d = draftSeeded('isp', { client: tw, screening: st.screenings.find(x => x.client === 'TW'), today: st.today });
+    const d = draftSeeded('isp', { client: tw, screening: st.screenings.find(x => x.client === 'TW'), today: st.today, ...asamSources(st, 'TW') });
     process(store, L, no, 'isp', Object.fromEntries(d.boxes.map(b => [b.label, b.value])));
   },
   'tw-signed': (store, L) => {
     const st = store.state; const tw = byId(st.clients, 'TW'); const no = tw.lauris_no;
     const sc = st.screenings.find(x => x.client === 'TW');
-    const d = draftInitialSRA({ client: tw, screening: { facts: sc.facts, when: sc.when }, referral: byId(st.referrals, 'REF-118'), today: st.today, request: byId(st.requests, 'R-0416') });
+    const d = draftInitialSRA({ client: tw, screening: { facts: sc.facts, when: sc.when }, referral: byId(st.referrals, 'REF-118'), today: st.today, request: byId(st.requests, 'R-0416'), ...asamSources(st, 'TW') });
     const sess = process(store, L, no, 'sra-initial', Object.fromEntries(d.boxes.map(b => [b.label, b.value])));
     act(store, 'request.approve', { id: 'R-0416', comment: 'fixture' }, 'jperez');
     L.sign(sess.id, 'jperez');
-    observe(store, L, { event: 'signed', session: String(sess.id), form: 'sra-initial', consumer: { no: String(no), initials: 'T.W.' }, preview: { title: 'TDT Initial SRA', rows: d.boxes.map(b => ({ label: b.label, value: b.value })) } });
+    observe(store, L, { event: 'signed', session: String(sess.id), form: 'sra-initial', consumer: { no: String(no), initials: 'T.W.' }, preview: { title: 'IOP Initial SRA', rows: d.boxes.map(b => ({ label: b.label, value: b.value })) } });
   },
   'tw-sent': store => { act(store, 'request.send', { id: 'R-0416' }, 'jperez'); }
 };

@@ -20,6 +20,8 @@ import { today as clockToday, now as clockNow } from '../clock.js';
 import { rule, ruleValue, decisionDay } from '../rules.js';
 import { can, CAP_NOTE } from '../permissions.js';
 import { reauthDue } from './auth.js';
+import { asamAccess, readingClients, currentRequest, clientReading } from './asam-view.js';
+import { latestAssessment } from '../asam.js';
 
 // ---------------------------------------------------------------------------------------------------------------- sections
 export const SECTION_LABEL = { todo: 'To do', review: 'Review', team: 'Team', day: 'My day', referrals: 'Referrals' };
@@ -283,6 +285,21 @@ export function worklist(s, actor) {
     for (const cl of s.clients || []) {
       const a = cl.authorization; if (!a || !a.exhausted) continue;
       add({ record: cl.id, client: cl.id, kind: 'units-out', rank: 52, group: 'today', when: 'today', title: `Units used up · ${label(s, cl.id)}`, sub: `${a.used} of ${a.units} units used`, chip: { text: 'No units left', tone: 'danger' }, verb: 'Review units', to: caseHref((s.requests || []).find(x => x.client === cl.id)?.id || '') });
+    }
+  }
+
+  // ---- ASAM level of care: a reassessment overdue or due soon (every role that works requests: a date, no clinical text), an incident since the last assessment and a
+  // request level the ratings do not support (clinician and supervisor: they hold the ratings). Computed from the stored assessments (sel/asam-view.js).
+  if (cap('auth.status') && actor.role !== 'direct_support') {
+    const acc = asamAccess(actor);
+    for (const clientId of readingClients(s, actor)) {
+      const a = latestAssessment(s, clientId); if (!a) continue;
+      const q = currentRequest(s, clientId); const rd = clientReading(s, actor, clientId, q ? { request: q } : {});
+      const to = q ? `Authorization.dc.html?id=${q.id}&section=level` : `Patient?id=${clientId}&section=asam`; const rec = q ? q.id : clientId;
+      if (rd.overdue) add({ record: rec, client: clientId, kind: 'asam-reassess', rank: 14, urgent: true, group: 'today', when: 'today', title: `ASAM reassessment overdue · ${label(s, clientId)}`, sub: rd.dueWhy, chip: { text: `${-rd.due.left} day${-rd.due.left === 1 ? '' : 's'} overdue`, tone: 'danger' }, verb: 'Open level of care', to, rule: rd.due.rule });
+      else if (rd.soon) add({ record: rec, client: clientId, kind: 'asam-reassess', rank: 6, group: 'week', when: dayLabel(rd.due.dueDate), sortKey: rd.due.dueDate, title: `ASAM reassessment due · ${label(s, clientId)}`, sub: rd.dueWhy, chip: { text: `Due ${fmtDate(rd.due.dueDate)}`, tone: 'warning' }, verb: 'Open level of care', to, rule: rd.due.rule });
+      if (rd.incident && acc.ratings) add({ record: rec, client: clientId, kind: 'asam-incident', rank: 11, urgent: true, group: 'today', when: 'today', title: `Incident since the last assessment · ${label(s, clientId)}`, sub: `Incident ${fmtDate(rd.incident.date)}, last assessed ${fmtDate(rd.date)}: a reassessment is indicated`, chip: { text: 'Reassess', tone: 'danger' }, verb: 'Open level of care', to, ops: false });
+      if (acc.ratings && q && rd.check && rd.check.state === 'over') add({ record: rec, client: clientId, kind: 'asam-level', rank: 56, group: 'today', when: 'today', title: `Level ${rd.check.requested} above what the ratings fit · ${label(s, clientId)}`, sub: rd.check.headline, chip: { text: 'Add the reason', tone: 'warning' }, verb: 'Open level of care', to, ops: false });
     }
   }
 

@@ -54,7 +54,7 @@ try {
     const { p, e, c } = await schoolPage('SchoolPortal');
     const order = await p.evaluate(() => { const n = document.querySelector('[data-harvest-needs]'); const t = document.querySelector('table'); return { needs: !!n, count: n && n.dataset.harvestNeeds, before: !!(n && t && (n.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_FOLLOWING)), cards: document.querySelectorAll('[data-harvest-needs]').length, h1: document.querySelectorAll('#root h1').length, main: document.querySelectorAll('#root main').length, header: document.querySelectorAll('#root header').length, footer: document.querySelectorAll('#root footer').length }; });
     assert.ok(order.needs && order.before, 'the card sits above the table'); assert.eq(order.cards, 1); assert.eq(order.count, '1'); assert.eq(order.h1, 1); assert.eq(order.main, 1); assert.eq(order.header, 1); assert.eq(order.footer, 1);
-    const t = await text(p); assert.match(t, /Harvest needs/); assert.match(t, /Missing: Schedule and grades/); assert.match(t, /Referrals from MS-2/); assert.match(t, /Demo data · nothing is real/);
+    const t = await text(p); assert.match(t, /Harvest needs/); assert.match(t, /Missing: Schedule and grades/); assert.match(t, /Referrals from Main IOP/); assert.match(t, /Demo data · nothing is real/);
     assert.noMatch(t, /Humana|Anthem|Medicaid|eligib|\bIEP\b|authoriz|PHQ|DSM|units/i, 'no insurance or clinical words on the school home');
     await p.screenshot({ path: SHOTS + '/school-home-1440.png', fullPage: true });
     assert.deepEq(e, [], e.join(' | ')); await c.close();

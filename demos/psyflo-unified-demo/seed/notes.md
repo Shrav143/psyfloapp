@@ -40,7 +40,7 @@ Counselor updates never go to Lauris on their own. In the extension a staffer ei
 
 HOW THE DATA GETS IN · form
 
-Captured: the school counselor fills this web form (same fields as Harvest's paper form) and attaches the behaviour report, attendance log, schedule and grades.
+Captured: the school counselor fills this web form (same fields as Harvest's paper form) and attaches the counselor's use reports, attendance log, schedule and grades.
 
 Flows: straight to Psyflo, stored under Harvest's account. Nothing goes to Lauris yet.
 
@@ -136,7 +136,7 @@ Populates: units used and left are read from Lauris, never written to it. Scribe
 
 Engineering: Chrome extension on laurisonline.com; reads the page on load; writes nothing on this page; role comes from the Psyflo login, enforced server-side so a support-staff login cannot fetch screening, intake or request content; the phone companion app dictates into the same notes.
 
-Updated Nov 7: The "N new referrals" tile (clinician, admin) lists Psyflo's referrals still in "needs screening" that the extension hasn't yet seen created in Lauris, with school, concerns, IEP, family-link status and eligibility from the referral form, the family link and the eligibility record. Scan & enhance was dropped. Direct support's picker is fixed: daily note, weekly guardian call, monthly collateral call, incident report; the timer is optional.
+Updated Nov 7: The "N new referrals" tile (clinician, admin) lists Psyflo's referrals still in "needs screening" that the extension hasn't yet seen created in Lauris, with school, referral source, concerns, family-link status and eligibility from the referral form, the family link and the eligibility record. Scan & enhance was dropped. Direct support's picker is fixed: daily note, weekly guardian call, monthly collateral call, incident report; the timer is optional.
 
 ## 14 · Scribe · screening call · Oct 16 (`ExtScreening.dc.html`)
 
@@ -144,15 +144,15 @@ HOW THE DATA GETS IN · call
 
 How the screener gets here: the same way as today — Add Session → Admission Screening in Lauris. Psyflo's to-do and the panel button open that form; either way it is the form they always use.
 
-Captured: the LPC's call is recorded (consent read first). Psyflo transcribes it and pulls out each behaviour with frequency, duration and intensity, prior services, IEP, school coordination.
+Captured: the LPC's call is recorded (consent read first). Psyflo transcribes it and pulls out each substance with frequency, amount, route and last use, plus prior treatment, withdrawal history, family substance use, medications and safety.
 
-Flows: before the call, the extension fills the guardian/Medicaid/IEP boxes (green) from the referral and family link. During the call: audio → transcript → fields → typed into the yellow boxes on the open form. The LPC checks and presses Process Form.
+Flows: before the call, the extension fills the family member, phone and Medicaid boxes (green) from the referral and family link. During the call: audio → transcript → fields → typed into the yellow boxes on the open form. The LPC checks and presses Process Form.
 
 Populates: Lauris (official, after Process Form); Psyflo keeps the fields for the intake (6) and the initial request (8).
 
 Engineering: audio from a softphone or room mic; the extension writes only into boxes on the open form; audio deleted after processing.
 
-Updated Nov 7: On New Consumer the panel types Name, Locality, School and Program from the referral form, Date of birth from the family link and Clinician from Psyflo's assignment (or whoever is signed in), each with its source chip; a person presses Save Consumer and the extension links the new Harvest # back to the referral. On Admission Screening the guardian, phone, language, Medicaid ID, Medicaid and IEP boxes come from the family link, the eligibility check and the referral, each with its chip.
+Updated Nov 7: On New Consumer the panel types Name, Locality, School and Program from the referral form, Date of birth from the family link and Clinician from Psyflo's assignment (or whoever is signed in), each with its source chip; a person presses Save Consumer and the extension links the new Harvest # back to the referral. On Admission Screening the family member, phone, language, Medicaid ID, Medicaid and referral source boxes come from the family link, the eligibility check and the referral, each with its chip.
 
 Updated Nov 8: Recording starts from the panel, never from Lauris, and the panel shows "Record the screening call" wherever it lands on the way to a screening: numbered steps on New Consumer (the consumer must exist in Lauris first), "Open Admission Screening to record" on the consumer page, and the recorder at the top of the Admission Screening form.
 
@@ -278,7 +278,7 @@ Populates: guardian contact on the continued-stay request.
 
 HOW THE DATA GETS IN · Monthly collateral
 
-Captured: the teacher, guardian or provider contact (Scribe or typed).
+Captured: the school counselor, family member or provider contact (Scribe or typed).
 
 Flows: drafted into the Lauris monthly collateral note; the clinician reads and presses Process Form.
 
@@ -314,7 +314,7 @@ Updated Nov 7: Only staff flagged to need approval (new hires, anyone on review 
 
 HOW THE DATA GETS IN · dashboard
 
-Captured: nothing new — everything is read from what the extension, the phone app and Lauris's rejected-forms list already carry: notes done and open, time in by 24 h, rejected forms and why, contacts made, assessments due, goals named in notes, progress ratings, safety-care holds.
+Captured: nothing new — everything is read from what the extension, the phone app and Lauris's rejected-forms list already carry: notes done and open, time in by 24 h, rejected forms and why, contacts made, assessments due, goals named in notes, progress ratings, found-with-substance reports.
 
 Flows: the same page in two views. The staffer sees their own day and their deliberate-practice goals; the site supervisor sees every staffer at the site, review mode per person (trainee notes route for approval), and patterns the month they happen.
 
@@ -322,7 +322,7 @@ Populates: the metrics Michelle Hamilton described (note completion, care contin
 
 Engineering: role-scoped views; approval routing is a permission flag; pattern alerts are simple thresholds against site averages; nothing here is typed in.
 
-Updated Nov 7: Notes behind and on time are counted from the notes the extension reports at Process Form: daily notes within 24 h of the session (sessions are taken to end at the 3:30 pm dismissal), the weekly guardian call by the end of the week, the monthly collateral by month end. Rejected forms, safety-care holds and the "(export)" on-time figures come from Harvest's Lauris export. Direct support see only their own day, a supervisor the staff at their sites, clinicians and admin everyone. Goal watch by student was dropped (Nov 7).
+Updated Nov 7: Notes behind and on time are counted from the notes the extension reports at Process Form: daily notes within 24 h of the session (sessions are taken to end at the 3:30 pm dismissal), the weekly guardian call by the end of the week, the monthly collateral by month end. Rejected forms, found-with-substance reports and the "(export)" on-time figures come from Harvest's Lauris export. Direct support see only their own day, a supervisor the staff at their sites, clinicians and admin everyone. Goal watch by student was dropped (Nov 7).
 
 ## 29 · Authorizations · Oct 29 (`Authorizations.dc.html`)
 
@@ -490,9 +490,9 @@ Populates: the packet tile on the parent portal (12); the intake checklist, so t
 
 HOW THE DATA GETS IN · family progress
 
-Captured: nothing new. Daily ratings and goal progress from staff notes, office referrals from the school counselor, teacher check-ins (only once the school release is signed), and the guardian's own check-ins (31).
+Captured: nothing new. Daily ratings and goal progress from staff notes, use-related reports from the school counselor, counselor check-ins (only once the school release is signed), and the family member's own check-ins (31).
 
-Flows: Psyflo turns those into plain words: good days by month, each goal as days met, the skills practised (from the plan's interventions, in a parent's words), what the teacher said.
+Flows: Psyflo turns those into plain words: good days by month, each goal as days met, the skills practised (from the plan's interventions, in a family member's words), what the counselor said.
 
 Populates: nothing. Read-only for the guardian. No scores and no diagnoses.
 

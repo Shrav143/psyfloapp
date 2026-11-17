@@ -32,7 +32,7 @@ import { rule, ruleValue } from '../rules.js';
 import { can } from '../permissions.js';
 import { noteTimeliness, worklist, managedStaff, pendingFor } from './mywork.js';
 import { rowOf } from './auth.js';
-import { clientReading, assessmentHistory, asamAccess, levelFilterOk, reassessFilterOk, readingMatches, levelOptions, reassessWhy } from './asam-view.js';
+import { clientReading, assessmentHistory, asamAccess, currentRequest, levelFilterOk, reassessFilterOk, readingMatches, levelOptions } from './asam-view.js';
 
 const rank = r => ({ direct_support: 1, supervisor: 2, clinician: 3, admin: 4 }[r] || 0);
 const SEV_N = { r: 0, y: 1, n: 2, g: 3, '': 4 };
@@ -169,19 +169,20 @@ export function outstandingByClient(s, actor) {
     if (isDS && a.staff !== actor.id) continue;
     add({ client: a.client, kind: 'form', type: 'assessment', title: a.instrument, sub: '', due: a.due, dueText: dueText(a.due, t), sev: sevOfDue(a.due, t), status: a.due < t ? 'behind' : 'due', rank: 45, verb: isDS ? 'Ask' : 'Open', to: isDS ? 'MobileAssess.dc.html?client=' + a.client : chartHref(a.client, 'documentation'), lauris: laurisPath(hn(a.client), 'assessment'), who: M.staffShort(s, a.staff) });
   }
-  // ASAM: a reassessment that is due or overdue (every role: a date, not clinical text); an incident since the last assessment and a level the ratings do not support
-  // (clinician and supervisor: they hold the ratings); an in-service client with no assessment says "Not assessed" (never a guess)
-  { const acc = asamAccess(actor); const clin = actor.role === 'clinician';
+  // ASAM: a reassessment that is due or overdue, an incident since the last assessment, an in-service client with no assessment ("Not assessed", never a guess): EHR work, so a
+  // clinician's item opens the assessment form in Lauris; a level the ratings do not support is an authorization step (Psyflo, no Lauris page). Direct support sees the
+  // reassessment state in the roster's Level of care column and its alert, not as an item (they do not do the assessment, and their items open Lauris only).
+  if (!isDS) { const acc = asamAccess(actor); const clin = actor.role === 'clinician';
     for (const c of clientsInScope(s, actor)) {
       const rd = clientReading(s, actor, c.id); const to = chartHref(c.id, 'asam'); const lau = clin ? laurisPath(hn(c.id), 'cna') : '';
       const verb = clin ? 'Open the assessment' : 'Open';
       if (!rd.has) {
-        if (!isDS && !['discharged', 'referral', 'intake'].includes(c.stage)) add({ client: c.id, kind: 'asam', type: 'none', title: 'ASAM assessment', sub: 'Not assessed: no ASAM assessment on file', due: '', dueText: 'Not assessed', sev: 'y', status: 'action', rank: 39, verb, to, lauris: lau });
+        if (!['discharged', 'referral', 'intake'].includes(c.stage)) add({ client: c.id, kind: 'asam', type: 'none', title: 'ASAM assessment', sub: 'Not assessed: no ASAM assessment on file', due: '', dueText: 'Not assessed', sev: 'y', status: 'action', rank: 39, verb, to, lauris: lau });
         continue;
       }
       if (rd.incident && acc.ratings) add({ client: c.id, kind: 'asam', type: 'incident', title: 'Incident since the last assessment', sub: `Incident ${fmtDate(rd.incident.date)}, last assessed ${fmtDate(rd.date)}: a reassessment is indicated`, due: '', dueText: fmtDate(rd.incident.date), sev: rd.incident.level != null && rd.incident.level <= 2 ? 'r' : 'y', status: 'action', rank: 11, verb, to, lauris: lau });
       if (rd.overdue || rd.soon) add({ client: c.id, kind: 'asam', type: 'reassess', title: 'ASAM reassessment', sub: rd.dueWhy, due: rd.due.dueDate, dueText: dueText(rd.due.dueDate, t), sev: rd.overdue ? 'r' : 'y', status: rd.overdue ? 'behind' : 'due', rank: rd.overdue ? 13 : 37, verb, to, lauris: lau, rule: rd.due.rule });
-      if (acc.ratings && rd.check && (rd.check.state === 'over' || rd.check.state === 'under')) add({ client: c.id, kind: 'asam', type: 'level', title: rd.check.state === 'over' ? `Level ${rd.check.requested} is above what the ratings fit` : `Ratings point above Level ${rd.check.requested}`, sub: rd.check.headline, due: '', dueText: '', sev: rd.check.state === 'over' ? 'y' : 'n', status: 'action', rank: rd.check.state === 'over' ? 41 : 46, verb: 'Open', to: chartHref(c.id, 'asam'), lauris: '' });
+      if (acc.ratings && rd.check && (rd.check.state === 'over' || rd.check.state === 'under')) add({ client: c.id, kind: 'auth', type: 'level', title: rd.check.state === 'over' ? `Level ${rd.check.requested} is above what the ratings fit` : `Ratings point above Level ${rd.check.requested}`, sub: rd.check.headline, due: '', dueText: '', sev: rd.check.state === 'over' ? 'y' : 'n', status: 'action', rank: rd.check.state === 'over' ? 41 : 46, verb: 'Open', to: (currentRequest(s, c.id) ? `Authorization.dc.html?id=${currentRequest(s, c.id).id}&section=level` : to), lauris: '', record: (currentRequest(s, c.id) || {}).id, ops: false });
     }
   }
   // intake forms, CNAs, treatment plans, quarterly reports, discharge summaries that are not done
@@ -233,7 +234,12 @@ function buildRow(s, actor, c, items) {
   if (review) alerts.push({ key: 'review', sev: 'y', icon: 'clock', text: `${plural(review, 'note')} waiting for review`, to: chartHref(c.id, 'documentation') });
   if (au && au.units && au.units.warn) alerts.push({ key: 'units', sev: au.units.left === 0 ? 'r' : 'y', icon: 'alert', text: au.units.left === 0 ? 'No units left' : `${au.units.pctUsed}% of units used (${au.units.left} left)`, to: chartHref(c.id, 'authorization') });
   if (au && au.date && (au.dateSev === 'soon' || au.dateSev === 'overdue')) alerts.push({ key: 'deadline', sev: au.dateSev === 'overdue' ? 'r' : 'y', icon: 'clock', text: `${au.dateWhy || 'Deadline'}`, to: chartHref(c.id, 'authorization') });
-  for (const it of items.filter(i => i.kind === 'asam')) alerts.push({ key: 'asam-' + it.type, sev: it.sev, icon: it.type === 'reassess' ? 'refresh' : it.type === 'level' ? 'bars' : it.type === 'none' ? 'dot' : 'alert', text: it.type === 'reassess' ? it.sub : it.type === 'none' ? 'Not assessed' : it.title, to: chartHref(c.id, 'asam') });
+  // ASAM alerts come from the reading itself (every role sees a reassessment that is due; the incident and the level need the ratings)
+  { const ach = chartHref(c.id, 'asam'); const isDS = actor && actor.role === 'direct_support';
+    if (asam.has && (asam.overdue || asam.soon)) alerts.push({ key: 'asam-reassess', sev: asam.overdue ? 'r' : 'y', icon: 'refresh', text: asam.dueWhy, to: ach });
+    if (asam.incident && asam.access.ratings) alerts.push({ key: 'asam-incident', sev: asam.incident.level != null && asam.incident.level <= 2 ? 'r' : 'y', icon: 'alert', text: `Incident ${fmtDate(asam.incident.date)} after the last assessment: a reassessment is indicated`, to: ach });
+    if (asam.check && asam.check.state === 'over') alerts.push({ key: 'asam-level', sev: 'y', icon: 'bars', text: asam.check.headline, to: ach });
+    if (!asam.has && !isDS && !['discharged', 'referral', 'intake'].includes(c.stage)) alerts.push({ key: 'asam-none', sev: 'y', icon: 'dot', text: 'Not assessed: no ASAM assessment on file', to: ach }); }
   if (authActions && !alerts.some(a => a.key === 'deadline')) alerts.push({ key: 'auth-action', sev: items.some(i => i.kind === 'auth' && i.sev === 'r') ? 'r' : 'y', icon: 'inbox', text: `${plural(authActions, 'authorization action')}`, to: chartHref(c.id, 'authorization') });
   if (referralSteps) alerts.push({ key: 'referral', sev: items.some(i => i.kind === 'referral' && i.sev === 'r') ? 'r' : 'y', icon: 'inbox', text: `${plural(referralSteps, 'referral step')}`, to: chartHref(c.id, 'documentation') });
   const worst = alerts.reduce((a, x) => worse(a, x.sev), items.reduce((a, x) => worse(a, x.sev), ''));

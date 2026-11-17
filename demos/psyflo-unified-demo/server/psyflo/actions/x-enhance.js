@@ -7,6 +7,9 @@
 //                           the guard is in the action (`mode:'historical'` refuses every write), not only in the panel.
 //   There is no addendum and no late-entry feature (G-093, review/05 RE-3). Evidence marks (excluded, sensitive) are Psyflo-side labels on a
 //   stored note with who and when; they never change the note.
+//   The review reads the stored ASAM assessment next to the notes (shared/enhance.js): the gaps include a reassessment that is due or overdue, a dimension rated
+//   2 or more that no note addresses, a lapse or incident with no response in 2 days and a step-down plan with no criteria, and the review keeps the per-dimension
+//   coverage ("Dimension 5 · Relapse and continued use · last addressed Oct 27") with the findings.
 import { refuse } from '../gates.js';
 import { scanFindings, evidenceIndex } from '../../../web/js/shared/enhance.js';
 import { guardWrite, guardProcessedSession, needVersion, openVersion, needClient, stagePush, today, FORM_LABEL } from './x-scribe.js';
@@ -84,17 +87,19 @@ export default {
     let d = s.doc_versions.filter(x => x.mode === 'historical' && x.client === client && x.by === by && x.date === today(s)).at(-1);
     if (!d) { d = { key: 'dv-' + String(s.doc_versions.length + 1).padStart(4, '0'), client, form: 'evidence', mode: 'historical', by, date: today(s), session: null, input: { kind: 'stored notes' }, items: [], findings: [], stages: [], lauris_status: 'read-only', created_at: at }; s.doc_versions.push(d); }
     d.period = { from: f, to: t }; d.counts = idx.counts;
-    d.findings = idx.gaps.map((g, i) => ({ id: 'g' + (i + 1), category: g.kind === 'missing' ? 'evidence' : 'wording', issue: g.text, why: '', rule: null, evidence: (g.refs || []).slice(0, 10).map(ref => ({ ref })), state: 'open' }));
+    d.findings = idx.gaps.map((g, i) => ({ id: 'g' + (i + 1), category: g.kind === 'missing' ? 'evidence' : g.dim ? 'missing' : 'wording', issue: g.text, why: '', rule: g.rule || null, dim: g.dim || null, evidence: (g.refs || []).slice(0, 10).map(ref => ({ ref })), state: 'open' }));
+    d.coverage = idx.byDimension.map(x => ({ n: x.n, label: x.label, count: x.count, last: x.last, rating: x.rating, rated_on: x.rated_on, line: x.line }));   // what each dimension has in the notes of this period
     stagePush(d, 'read', by, 'person', at, { period: d.period }); d.updated_at = at;
-    this.event(`Evidence review (read-only) · ${c.initials} · ${f} to ${t} · ${idx.counts.daily} daily · ${idx.counts.weekly} weekly · ${idx.counts.monthly} monthly`, by, client, { actor_kind: 'person' });
-    return { key: d.key, counts: idx.counts, gaps: idx.gaps.length };
+    const asamGaps = idx.gaps.filter(g => /^(reassess|lapse|dim\d|stepdown)/.test(g.id)).length;
+    this.event(`Evidence review (read-only) · ${c.initials} · ${f} to ${t} · ${idx.counts.daily} daily · ${idx.counts.weekly} weekly · ${idx.counts.monthly} monthly · ${asamGaps} ASAM gap${asamGaps === 1 ? '' : 's'}`, by, client, { actor_kind: 'person' });
+    return { key: d.key, counts: idx.counts, gaps: idx.gaps.length, asam_gaps: asamGaps, coverage: d.coverage };
   },
 
   // an evidence mark: exclude a stored note from the request, or mark it sensitive (counted, never quoted). Who and when are kept; the note is not touched.
   'evidence.mark'(s, { client, ref, excluded, sensitive, reason = '' }) {
     needClient(s, client);
     const n = (s.notes || []).find(x => x.id === ref && x.client === client);
-    if (!n) refuse('That evidence row is not a stored note of this student.', { status: 404, audit: false });
+    if (!n) refuse('That evidence row is not a stored note of this client.', { status: 404, audit: false });
     const why = String(reason || '').trim();
     if (excluded === true && why.length < 3) refuse('Say why the row is left out of the request (it is kept with your name and the time).', { status: 422, audit: false });
     s.evidence_marks = s.evidence_marks || [];
@@ -106,12 +111,12 @@ export default {
     if (before.excluded === m.excluded && before.sensitive === m.sensitive) return { unchanged: true };
     m.reason = why || m.reason; m.by = by; m.at = at;
     m.history.push({ excluded: m.excluded, sensitive: m.sensitive, reason: why, by, at });
-    const label = { daily: 'daily note', weekly_guardian: 'weekly guardian call', monthly_collateral: 'monthly collateral' }[n.type] || n.type;
+    const label = { daily: 'daily note', weekly_guardian: 'weekly family-member contact', monthly_collateral: 'monthly collateral' }[n.type] || n.type;
     this.event(`Evidence ${m.excluded ? 'excluded from the request' : m.sensitive ? 'marked sensitive (counted, never quoted)' : 'mark removed'} · ${label} ${String(n.date).slice(0, 10)}${why ? ' · ' + why : ''}`, by, client, { actor_kind: 'person' });
     return { ref, excluded: m.excluded, sensitive: m.sensitive, by, at };
   },
 
-  // the period the person chose for the evidence index (kept per person and student)
+  // the period the person chose for the evidence index (kept per person and client)
   'evidence.period'(s, { client, from, to, preset = '' }) {
     needClient(s, client);
     if (!ISO.test(from || '') || !ISO.test(to || '')) refuse('Choose a start and an end date.', { status: 422, audit: false });

@@ -63,13 +63,13 @@ export const ASAM_CSS = `
 const RTONE = n => (n == null ? 'na' : Math.max(0, Math.min(4, +n)));
 export const ratingPill = (n, d) => {
   const t = d ? `${d.short} ${d.label}: ${n == null ? 'not rated' : `${n} ${ratingLabel(n)}`}` : (n == null ? 'Not rated' : `${n} ${ratingLabel(n)}`);
-  return `<span class="asam-n ${n == null ? 'asam-n--na' : 'asam-r' + RTONE(n)}" title="${esc(t)}" aria-label="${esc(t)}">${n == null ? '–' : esc(String(n))}</span>`;
+  return `<span class="asam-n ${n == null ? 'asam-n--na' : 'asam-r' + RTONE(n)}" title="${esc(t)}">${n == null ? '–' : esc(String(n))}</span>`;
 };
 // the compact D1 to D6 strip: six numbers coloured by rating, each with its dimension on hover; the group has one accessible name
 export function strip(ratings) {
   if (!ratings) return '';
   const name = `ASAM ratings: ${DIMS.map((d, i) => `${d.short} ${ratings[i] == null ? 'not rated' : ratings[i] + ' ' + ratingLabel(ratings[i])}`).join(', ')}`;
-  return `<span class="asam-strip" role="group" aria-label="${esc(name)}" data-asam-strip>${DIMS.map((d, i) => ratingPill(ratings[i], d)).join('')}</span>`;
+  return `<span class="asam-strip" role="img" aria-label="${esc(name)}" data-asam-strip>${DIMS.map((d, i) => ratingPill(ratings[i], d)).join('')}</span>`;
 }
 export function levelChip(rd, o = {}) {
   if (!rd.level) return `<span class="ui-muted">Level not recorded</span>`;

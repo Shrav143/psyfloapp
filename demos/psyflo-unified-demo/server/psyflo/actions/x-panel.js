@@ -8,7 +8,7 @@ import { identity, validateBridgeEvent } from './lead-extension.js';
 import { refuse } from '../gates.js';
 
 const byId = (arr, id) => (arr || []).find(x => x.id === id);
-const FORM_NAME = { screening: 'Admission Screening', cna: 'CNA', isp: 'ISP 2.0', dpn: 'Daily Progress Note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'TDT Initial SRA', 'sra-continued': 'CMHRS Continued Stay', discharge: 'Discharge summary', 'new-consumer': 'New consumer' };
+const FORM_NAME = { screening: 'Admission Screening', cna: 'ASAM Multidimensional Assessment', isp: 'ISP 2.0', dpn: 'Daily Progress Note', weekly: 'Weekly family contact', collateral: 'Monthly collateral', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'IOP Initial SRA', 'sra-continued': 'Continued Stay Request', discharge: 'Discharge summary', 'new-consumer': 'New consumer' };
 const norm = v => String(v ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
 // same text, ignoring spacing and case; a drop-down may show "Level 2 · hospitalization" for a typed "Level 2"
 const same = (a, b, select) => { a = norm(a); b = norm(b); return a === b || (select && !!a && !!b && a.startsWith(b)); };
@@ -26,7 +26,7 @@ export default {
     const client = c.id;
     const last = s.lauris_versions.filter(v => v.session === session && v.form === form).at(-1);
     if (last && last.event === event && JSON.stringify(last.values) === JSON.stringify(values)) return { duplicate: true, id: last.id };
-    // what the panel typed into this form for this student today (latest value per box)
+    // what the panel typed into this form for this client today (latest value per box)
     const today = this.now().slice(0, 10);
     const filled = {};
     for (const f of (s.fills || []).filter(f => client && f.client === client && f.form === form && String(f.at).slice(0, 10) === today))
@@ -78,7 +78,7 @@ export default {
   'panel.dictation'(s, { client, spoken, rewritten, chips, checks }) {
     const staff = this.who();
     if (!String(spoken || '').trim()) throw new Error('Nothing to draft from');
-    const c = byId(s.clients, client); if (!c) throw new Error('Student not found');
+    const c = byId(s.clients, client); if (!c) throw new Error('Client not found');
     s.dictations = s.dictations.filter(d => !(d.client === client && d.status === 'waiting' && d.source === 'panel'));
     const id = 'dict-' + Date.now();
     s.dictations.push({ id, client, staff, at: this.now(), spoken: String(spoken).trim(), rewritten, chips, checks, status: 'waiting', source: 'panel' });

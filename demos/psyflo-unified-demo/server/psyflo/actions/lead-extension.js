@@ -10,7 +10,7 @@ import { attest } from '../../attest.js';
 
 const byId = (arr, id) => arr.find(x => x.id === id);
 const NOTE_TYPE = { dpn: 'daily', weekly: 'weekly_guardian', collateral: 'monthly_collateral', quarterly: 'quarterly', incident: 'incident', discharge: 'discharge' };
-const FORM_NAME = { screening: 'Admission Screening', cna: 'CNA', isp: 'ISP 2.0', dpn: 'Daily Progress Note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'TDT Initial SRA', 'sra-continued': 'CMHRS Continued Stay', discharge: 'Discharge summary' };
+const FORM_NAME = { screening: 'Admission Screening', cna: 'ASAM Multidimensional Assessment', isp: 'ISP 2.0', dpn: 'Daily Progress Note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'IOP Initial SRA', 'sra-continued': 'Continued Stay request', discharge: 'Discharge summary' };
 
 // Wrong-patient protection: a Lauris record is matched to a Psyflo student by the Harvest # ONLY (never by initials), and the
 // initials shown on the open page must agree with Psyflo's record (the identity card). Returns { client, status, reason }.

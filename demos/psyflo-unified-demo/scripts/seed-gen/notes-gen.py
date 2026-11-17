@@ -13,7 +13,7 @@
 #   * a few sentences repeat across notes on purpose (boilerplate detection has something to find); every other sentence is unique (checked below).
 # The story it tells, all from the ASAM assessments in seed/extra/asam.json: last drink Aug 9; assessed Aug 12; IOP starts Aug 18; the stepfather moves out
 # Sept 12; one lapse Sunday Sept 27 (two drinks at a party), reported Sept 28, relapse prevention review Sept 28 and family session Sept 29 (within 2 days);
-# negative urine drug screens Oct 1 and Oct 13 (and Aug 18, Sept 8, Sept 22, Oct 26); reassessed Oct 14 (PHQ-9 12); 30 days without use on Oct 27.
+# a positive EtG screen Sept 29 (two days after the lapse); negative urine drug screens Oct 1 and Oct 13 (and Aug 18, Sept 8, Sept 22, Oct 26); reassessed Oct 14 (PHQ-9 12); 30 days without use on Oct 27.
 import json, os, sys, random, re
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -33,19 +33,21 @@ DEFAULT_INTERVENTIONS = [
     ('SUD 1.4', 'Drug and alcohol refusal skills'), ('SUD 1.5', 'Contingency management'), ('SUD 2.1', 'Family session'), ('SUD 2.2', 'Recovery support planning')]
 
 def load_plan():
-    goals, ivs, site = DEFAULT_GOALS, DEFAULT_INTERVENTIONS, 'IOP'
+    goals, ivs, site, who = DEFAULT_GOALS, DEFAULT_INTERVENTIONS, 'IOP', 'Mother'
     try:
         seed = json.load(open(os.path.join(ROOT, 'seed', 'seed.json')))
         mr = next(c for c in seed['clients'] if c['id'] == CLIENT)
         if all(str(i['code']).startswith('SUD') for i in seed['interventions']) and len(mr.get('goals', [])) == 3:
             goals = [{'n': g['n'], 'objective': g['objective']} for g in mr['goals']]
             ivs = [(i['code'], i['name']) for i in seed['interventions']]
+        g = mr.get('guardian') or {}
+        if g.get('name') and g.get('relationship') == 'mother': who = g['name']          # the name Lauris prefills in "Contact with"
         name = next((s['name'] for s in seed['schools'] if s['id'] == mr.get('school')), '')
         last = name.split('·')[-1].strip()
         if re.search(r'IOP', last): site = last
     except Exception:
         pass
-    return goals, dict(ivs), site
+    return goals, dict(ivs), site, who
 
 def load_bands():
     rules = json.load(open(os.path.join(ROOT, 'seed', 'extra', 'rules.json')))['rules']
@@ -65,7 +67,8 @@ BP_B = 'Reviewed the craving rating with M.R. and updated his skill card.'
 
 # ------------------------------------------------------------------------------------------------------------------ the 40 group days
 # (mmdd, direct minutes, objective, interventions, mood check-in, progress today, skill topic for the contact-time line, flags, narrative)
-# flags: u = urine drug screen collected, f = family session with his mother (extended day), l = left early
+# flags: u = urine drug screen collected, f = family session with his mother (extended day), l = left early, i = individual session (the topic names it)
+# (the Sept 29 positive EtG screen is also an incident record in seed.json, "Positive alcohol screen (EtG) Sept 29 after the Sept 27 lapse; clinician follow-up done Sept 30")
 DAYS = [
  ('0818', 205, 1, ['SUD 1.1', 'SUD 1.5'], 'Guarded → engaged', 'Craving 7 of 10; screen negative; set 3 goals', 'program orientation', 'u',
   'First day of IOP, group of 8. Reviewed the program schedule, how the craving rating works and what happens after a screen. His urine drug screen at intake was negative and his CIWA-Ar score was 1 with no tremor. Craving was a 7 out of 10 at check-in. M.R. said he is here because his mother asked, and he wrote down three things he wants from the program.'),
@@ -78,7 +81,7 @@ DAYS = [
  ('0825', 202, 2, ['SUD 1.1'], 'Low', 'Craving 5 of 10; 2 activities scheduled', 'low mood and drinking', '',
   'Low mood and drinking: the group of 8 built an activity schedule with one rewarding activity a day. M.R. picked shooting baskets with his cousin and a call with his aunt. He rated his mood a 4 out of 10 and his craving a 5. All three blocks attended, and he stayed to the end of the process group.'),
  ('0826', 312, 3, ['SUD 2.1', 'SUD 2.2'], 'Nervous → relieved', 'Craving 6 of 10; family plan agreed', 'family plan for evenings', 'f',
-  'Family session with M.R. and his mother, 50 minutes in person. Reviewed the home plan: no alcohol within reach, a set time to check in on weeknights while she works two jobs, and what she will say if he comes home after drinking. M.R. agreed to the check-in time. His mother said her husband keeps beer in the garage fridge and agreed to ask him to take it out. Craving was 6 before the session; he also attended the morning group of 8.'),
+  'Family session with M.R. and his mother, 50 minutes in person. Reviewed the home plan: no alcohol within reach, a set time to check in on weeknights while she works two jobs, and what she will say if he comes home after drinking. M.R. agreed to the check-in time. His mother said her husband keeps beer in the garage fridge and agreed to ask him to take it out. Craving was 6 at check-in; he also attended the group of 8 before the session.'),
  ('0827', 188, 1, ['SUD 1.2'], 'Calm', 'Craving 6 to 3 in 10 minutes', 'urge surfing', '',
   'Urge surfing practice in a group of 7. M.R. rated a craving at 6, followed it for ten minutes with the timer and reported it at 3 when the timer ended. He wrote the steps on a skill card and said he would try it at home.'),
  ('0831', 194, 1, ['SUD 1.4'], 'Upbeat', 'Craving 5 of 10; refused a drink once', 'refusal skills with push-back', '',
@@ -87,14 +90,14 @@ DAYS = [
   'Recovery support planning in a group of 8. M.R. named four supports: his aunt, his football coach, the Wednesday night teen recovery meeting and one friend who does not drink. He agreed to try the meeting with his aunt. PHQ-9 was 15 today, down from 16 at the assessment, with no thoughts of self-harm. Craving 5 out of 10.'),
  ('0902', 190, 2, ['SUD 1.1', 'SUD 1.5'], 'Tired → steadier', 'Craving 4 of 10; wrote 1 balanced thought', 'thinking traps', '',
   'Thinking traps in a group of 7. M.R. caught "I already messed up, so I may as well drink" as all-or-nothing thinking and wrote a balanced thought to replace it. Craving 4 out of 10. ' + BP_A),
- ('0903', 165, 2, ['SUD 1.1'], 'Calm', 'Craving 4 of 10; stayed for 2 of 3 blocks', 'making up a missed session', 'l',
-  'Left after the skills group for a dentist visit with his mother, so he attended two of the three blocks. Craving was 4 at check-in. M.R. asked to make up the process group next week, and staff put it on his schedule. Group of 8.'),
+ ('0903', 165, 2, ['SUD 1.1'], 'Calm', 'Craving 4 of 10; left 1 block early', 'craving log review', 'l',
+  'Left partway through the process group for a dentist visit with his mother, so he missed the end of the day. Craving was 4 at check-in. M.R. asked to make up the process group next week, and staff put it on his schedule. Group of 8.'),
  ('0908', 210, 1, ['SUD 1.2', 'SUD 1.5'], 'Calm', 'Screen negative; craving 4 of 10; 1 draw earned', 'high-risk situations', 'u',
   'Collected a urine drug screen at check-in: negative. M.R. earned a draw from the prize bowl and chose a gift card. High-risk list for the group of 8: he named weekends at a friend\'s house and arguments with his stepfather as the two he is most worried about. Craving 4 out of 10.'),
  ('0909', 192, 2, ['SUD 1.1'], 'Reflective', 'Craving 4 of 10; ranked 3 values', 'values card sort', '',
   'Values card sort in the motivational interviewing group of 8. M.R. put being trusted and playing football at the top and said drinking gets in the way of both. He asked how long it takes for a mother to trust again. Craving 4 out of 10. ' + BP_A),
  ('0910', 305, 3, ['SUD 2.1', 'SUD 2.2'], 'Relieved, a little guilty', 'Craving 5 of 10; weekend plan agreed', 'family plan for the weekend', 'f',
-  'Second family session, 50 minutes, with M.R. and his mother. His mother said her husband is moving out this weekend. M.R. said he feels relieved and also guilty. The plan: she will take the alcohol out of the house before Saturday, M.R. will text her when he gets home, and his aunt will stay Saturday night. Craving 5 at check-in. He attended the morning group of 7 as well.'),
+  'Second family session, 50 minutes, with M.R. and his mother. His mother said her husband is moving out this weekend. M.R. said he feels relieved and also guilty. The plan: she will take the alcohol out of the house before Saturday, M.R. will text her when he gets home, and his aunt will stay Saturday night. Craving 5 at check-in. He attended the group of 7 before the session as well.'),
  ('0911', 215, None, [], 'Tired', '', 'guest speaker', '',
   'A guest speaker from the teen recovery meeting spoke to the whole group for an hour, and the evening group joined, so there were 12 in the room. M.R. asked one question about what the first month was like.'),
  ('0915', 195, 2, ['SUD 1.1'], 'Low', 'PHQ-9 14; craving 5 of 10', 'changes at home', '',
@@ -116,9 +119,9 @@ DAYS = [
  ('0925', 184, 1, ['SUD 1.2'], 'Restless', 'Craving 5 of 10; confidence 6 of 10', 'party plan review', '',
   'Reviewed the party plan again with a group of 6. M.R. said he would go and "probably be fine," and he did not agree to a ride from his aunt. Staff asked what could go wrong and he named two things. He rated his confidence in the plan a 6. Craving 5 out of 10.'),
  ('0928', 214, 1, ['SUD 1.2', 'SUD 1.1'], 'Ashamed → steadier', 'Craving 8 of 10; CIWA-Ar 0; lapse reviewed', 'lapse review (relapse prevention)', '',
-  'M.R. told staff at check-in that he had two drinks at the party on Sunday, September 27, and then left. This is his first use since August 9. His craving was an 8 and his CIWA-Ar score was 0 with no tremor or sweating. Staff walked through the lapse step by step with him: what happened before, the first drink and what he did after. He named the point where he stopped following the plan. J. Perez, clinician, was told the same day, and a family session with his mother is set for tomorrow. No screen today; the next one is Thursday.'),
- ('0929', 318, 3, ['SUD 2.1', 'SUD 1.2'], 'Low → steadier', 'PHQ-9 13; craving 6 of 10; home plan revised', 'family session after the lapse', 'f',
-  'Family session with M.R. and his mother, 55 minutes, two days after the lapse. M.R. told his mother what happened. They agreed on three changes: no parties without an adult he knows, his mother or his aunt picks him up, and he texts on arrival and on leaving. His mother said she was upset and still wants him in treatment. PHQ-9 was 13 with no thoughts of self-harm. Craving was a 6; he also attended the morning group of 8.'),
+  'M.R. told staff at check-in that he had two drinks at the party on Sunday, September 27, and then left. This is his first use since August 9. His craving was an 8 and his CIWA-Ar score was 0 with no tremor or sweating. Staff walked through the lapse step by step with him: what happened before, the first drink and what he did after. He named the point where he stopped following the plan. J. Perez, clinician, was told the same day, and a family session with his mother is set for tomorrow, when a screen will also be collected.'),
+ ('0929', 318, 3, ['SUD 2.1', 'SUD 1.2'], 'Low → steadier', 'PHQ-9 13; screen positive (EtG); craving 6 of 10; home plan revised', 'family session after the lapse', 'fu',
+  'Family session with M.R. and his mother, 55 minutes, two days after the lapse. M.R. told his mother what happened. They agreed on three changes: no parties without an adult he knows, his mother or his aunt picks him up, and he texts on arrival and on leaving. His mother said she was upset and still wants him in treatment. The urine drug screen collected at check-in was positive for the alcohol metabolite (EtG), as expected two days after the lapse he reported, and J. Perez will meet with M.R. tomorrow about the result. PHQ-9 was 13 with no thoughts of self-harm. Craving was a 6; he also attended the group of 8 before the session.'),
  ('1001', 212, 1, ['SUD 1.5', 'SUD 1.2'], 'Determined', 'Screen negative; craving 5 of 10; 4 days no use', 'lapse as a case study', 'u',
   'Urine drug screen negative this morning, four days after the lapse. His draws restart from one, and M.R. said that felt fair. The group of 8 used the lapse as a case study in relapse prevention, with M.R. leading the part on what he would do differently. Craving was a 5.'),
  ('1005', 190, 3, ['SUD 2.2'], 'Calm', 'Craving 4 of 10; attended 1 meeting', 'recovery supports update', '',
@@ -131,22 +134,22 @@ DAYS = [
   'Refusal skills with harder scenarios: a friend pushes, a cousin jokes, an older teammate offers a ride and a drink. M.R. role-played all three and chose "say no and leave" for two of them. Craving 3 out of 10. Group of 8. ' + BP_B),
  ('1013', 207, 1, ['SUD 1.5'], 'Calm', 'Screen negative; craving 3 of 10', 'contingency management', 'u',
   'Urine drug screen negative, the second since the lapse. M.R. earned a draw and picked the movie pass. Craving 3 out of 10. Group of 7. ' + BP_A),
- ('1014', 204, None, [], 'Nervous → calm', '', 'ASAM reassessment', '',
-  'J. Perez completed the ASAM reassessment with M.R. during the process group. PHQ-9 was 12. M.R. stayed for the rest of the day and said the questions about home were the hardest. Group of 7.'),
+ ('1014', 204, None, [], 'Nervous → calm', '', 'ASAM reassessment with J. Perez', 'i',
+  'J. Perez completed the ASAM reassessment with M.R. in an individual session before group. PHQ-9 was 12. M.R. stayed for the rest of the day and said the questions about home were the hardest. Group of 7.'),
  ('1015', 310, 3, ['SUD 2.1', 'SUD 1.1'], 'Hopeful', 'Craving 3 of 10; stated the step-down plan', 'family session on the reassessment', 'f',
-  'Family session this afternoon: M.R. and his mother for 50 minutes. J. Perez joined for ten minutes to go over the reassessment: the ratings are lower than in August, and the plan is to step down to Level 1 when depression is rated 1 or lower and there has been no use for 30 days. M.R. repeated the plan back in his own words. His mother asked what she can do about evenings and agreed to keep Wednesday night free for the meeting. Craving was a 3; he also attended the morning group of 8.'),
+  'Family session after group: M.R. and his mother for 50 minutes. J. Perez joined for ten minutes to go over the reassessment: the ratings are lower than in August, and the plan is to step down to Level 1 when depression is rated 1 or lower and there has been no use for 30 days. M.R. repeated the plan back in his own words. His mother asked what she can do about evenings and agreed to keep Wednesday night free for the meeting. Craving was a 3; he also attended the group of 8 before the session.'),
  ('1016', 188, 1, ['SUD 1.2', 'SUD 1.4'], 'Upbeat', 'Craving 3 of 10; weekend plan written', 'weekend plan', '',
   'Weekend plan for Saturday\'s football game and the team dinner afterward. M.R. wrote who he will sit with, who will drive him and what he will say if someone offers him a drink. Craving was a 3. Group of 6.'),
  ('1019', 194, 3, ['SUD 2.2'], 'Calm', 'Craving 2 of 10; left a gathering early', 'peers who drink', '',
   'M.R. reported seeing friends who drink on Saturday and leaving when the drinking started, with a text to his aunt. Staff named what he did well and asked what would make it easier. He added a second friend who does not drink to his supports list. Craving was a 2. Group of 8. ' + BP_B),
  ('1021', 201, 2, ['SUD 1.1', 'SUD 1.5'], 'Low → steadier', 'Craving 5 of 10; used urge surfing once', 'urge surfing after an argument', '',
   'M.R. had an argument with his mother on Tuesday and wanted a drink. He used urge surfing on the way home, told his mother afterward and did not drink. In group he told it as a story, and the group of 7 helped him name the thought behind it. Craving was a 5 at check-in. ' + BP_A),
- ('1022', 140, 2, ['SUD 1.1'], 'Calm', 'Craving 3 of 10; stayed for 2 of 3 blocks', 'psychiatry visit', 'l',
-  'Left after the skills group for his monthly psychiatry visit with his mother. Craving was a 3 at check-in. He took the PHQ-9 sheet from group to share with the psychiatrist. Group of 8.'),
+ ('1022', 140, 2, ['SUD 1.1'], 'Calm', 'Craving 3 of 10; left 1 block early', 'mood and cravings', 'l',
+  'Left partway through the process group for his monthly psychiatry visit with his mother. Craving was a 3 at check-in. He took the PHQ-9 sheet from group to share with the psychiatrist. Group of 8.'),
  ('1026', 206, 1, ['SUD 1.2', 'SUD 1.5'], 'Upbeat', 'Screen negative; craving 3 of 10', 'planning for Halloween weekend', 'u',
   'The urine drug screen at check-in was negative. M.R. planned for Halloween weekend: two parties are likely, one with an adult host. He and the group of 8 chose which one he would go to, who would drive and when he leaves. Craving was a 3. ' + BP_B),
  ('1028', 304, 3, ['SUD 2.1', 'SUD 1.2'], 'Steady', 'PHQ-9 11; craving 2 of 10; 30 days no use', 'family session on the step-down plan', 'f',
-  'Fifth family session, 50 minutes, with his mother and M.R. Thirty days without use were reached on October 27. The other step-down criterion is not met: depression was rated 2 on October 14 and the PHQ-9 today was 11. M.R. and his mother agreed to keep the current level through Halloween weekend and look at the plan again at the next reassessment. Craving was a 2; he also attended the morning group of 7.'),
+  'Fifth family session, 50 minutes, with his mother and M.R. Thirty days without use were reached on October 27. The other step-down criterion is not met: depression was rated 2 on October 14 and the PHQ-9 today was 11. M.R. and his mother agreed to keep the current level through Halloween weekend and look at the plan again at the next reassessment. Craving was a 2; he also attended the group of 7 before the session.'),
 ]
 
 # ------------------------------------------------------------------------------------------------------------------ weekly family-member contacts
@@ -192,34 +195,39 @@ def us(mmdd): return mmdd[:2] + '/' + mmdd[2:] + '/2026'
 def hm(t): return '%02d:%02d' % (t // 60, t % 60)
 def duration_text(m): return ('%d h %d min' % (m // 60, m % 60)) if m >= 60 else '%d min' % m
 
+GENERIC_TOPICS = ['coping with cravings', 'relapse prevention skills', 'communication skills', 'handling stress without drinking']
+
 def blocks(i, minutes, flags, topic, rng):
-    """Contact-time lines whose durations add up to the direct minutes."""
-    ext, short = 'f' in flags, 'l' in flags
-    kinds = []
+    """Contact-time lines whose durations add up to the direct minutes. The skills group names the topic taught that day; on a family-session day the
+    topic belongs to the family session, on a reassessment day to the individual session."""
+    ext, short, ind_day = 'f' in flags, 'l' in flags, 'i' in flags
+    gtopic = rng.choice(GENERIC_TOPICS) if (ext or ind_day) else topic
     if ext:
-        ci, ind, sg, pg, fam = 25, 35, 75, 60, 55 if minutes == 318 else 50
-        used = ci + ind + sg + pg + fam
-        kinds = [('Individual session with counselor', ind), ('Check-in, craving rating and mood', ci), ('Skills group', sg), ('Process group', pg), (rng.choice(SUP_LABELS), minutes - used), ('Family session with mother', fam)]
+        ci, ind, sg, pg, fam, uds = 25, 35, 75, 60, 55 if minutes == 318 else 50, 10 if 'u' in flags else 0
+        kinds = [('Individual session with counselor', ind, None), ('Check-in, craving rating and mood', ci, None)] + ([('Urine drug screen collection and result', uds, None)] if uds else []) \
+            + [('Skills group', sg, gtopic), ('Process group', pg, None), (rng.choice(SUP_LABELS), minutes - (ci + ind + sg + pg + fam + uds), None), ('Family session with mother', fam, topic)]
+        start = 14 * 60 + 30 + 5 * (i % 4)
     elif short:
         ci, sg = 25, 75
-        kinds = [('Check-in, craving rating and mood', ci), ('Skills group', sg), ('Process group', minutes - ci - sg)]
+        kinds = [('Check-in, craving rating and mood', ci, None), ('Skills group', sg, gtopic), ('Process group', minutes - ci - sg, None)]
+        start = 15 * 60 + 15 + 5 * (i % 4)
     else:
-        ci, sg, uds = 20 + 5 * (i % 3), 70 + 5 * (i % 4), 10 if 'u' in flags else 0
-        rem = minutes - ci - sg - uds
+        ci, sg, uds, ind = 20 + 5 * (i % 3), 70 + 5 * (i % 4), 10 if 'u' in flags else 0, 30 if ind_day else 0
+        rem = minutes - ci - sg - uds - ind
         pg = round(rem * 0.55)
-        kinds = [('Check-in, craving rating and mood', ci)] + ([('Urine drug screen collection and result', uds)] if uds else []) + [('Skills group', sg), ('Process group', pg), (rng.choice(SUP_LABELS), rem - pg)]
-    t = 15 * 60 + 15 + 5 * (i % 4); lines = []; total = 0; end = t
-    for label, dur in kinds:
+        kinds = ([('Individual session', ind, topic)] if ind else []) + [('Check-in, craving rating and mood', ci, None)] + ([('Urine drug screen collection and result', uds, None)] if uds else []) \
+            + [('Skills group', sg, gtopic), ('Process group', pg, None), (rng.choice(SUP_LABELS), rem - pg, None)]
+        start = 15 * 60 + 15 + 5 * (i % 4)
+    t = start; lines = []; total = 0; end = t
+    for label, dur, tp in kinds:
         assert dur > 0, (minutes, kinds)
-        # the skills group names the topic taught that day
-        text = label + (' · ' + topic if label == 'Skills group' else '')
-        lines.append('%s–%s · %s' % (hm(t), hm(t + dur), text)); total += dur
+        lines.append('%s–%s · %s' % (hm(t), hm(t + dur), label + (' · ' + tp if tp else ''))); total += dur
         end = t + dur; t = end + rng.choice([5, 10])
     assert total == minutes
     return '\n'.join(lines), end
 
 def build():
-    goals, ivname, site = load_plan()
+    goals, ivname, site, who = load_plan()
     bands, cap = load_bands()
     rng = random.Random(3310)
     iv_text = lambda codes: ' · '.join('%s %s' % (c, ivname[c]) for c in codes)
@@ -239,7 +247,7 @@ def build():
         sessions.append({'id': sid, 'no': CONSUMER, 'form': 'dpn', 'date': iso(mmdd), 'staff': STAFF, 'status': 'processed', 'processed_at': proc, 'processed_by': STAFF, 'values': fields})
         sid += 1
     for i, (mmdd, minutes, discussed, follow, household) in enumerate(WEEKLY):
-        contact = 'Mother (family member) · phone'
+        contact = who + ' (family member) · phone'
         fields = {'Date': us(mmdd), 'Contact with': contact, 'Duration': '%d min' % minutes, 'Release on file': 'Yes · ' + RELEASE, 'What was discussed': discussed, 'Follow-up': follow}
         proc = '%sT16:%02d' % (iso(mmdd), 5 + 3 * i)
         n = {'id': 'mr-w-' + mmdd, 'client': CLIENT, 'staff': STAFF, 'type': 'weekly_guardian', 'date': iso(mmdd), 'contact': contact, 'duration_min': minutes, 'discussed': discussed,

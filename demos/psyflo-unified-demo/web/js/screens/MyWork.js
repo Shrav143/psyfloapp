@@ -10,7 +10,9 @@ import { ROLE_LABEL, can } from '../shared/permissions.js';
 import { rule } from '../shared/rules.js';
 import { today as clockToday, now as clockNow } from '../shared/clock.js';
 import { sectionsFor, resolveSection, worklist, dayView, teamView, reviewQueue, viewedStaff, tabCounts, canSeeDay, SECTION_LABEL } from '../shared/sel/mywork.js';
-import { todoHtml, dayHtml, teamHtml, reviewHtml, reviewModel, tabsHtml, confirmAccess, withDate } from './MyWorkViews.js';
+import { todoHtml, dayHtml, teamHtml, reviewHtml, reviewModel, tabsHtml, confirmAccess, withDate, caseloadHtml } from './MyWorkViews.js';
+import { clientReading } from '../shared/sel/asam-view.js';
+import { ASAM_CSS } from './asam-ui.js';
 
 const idOf = to => String(to || '').replace(/^\.?\//, '').replace(/^#\/?/, '').split('?')[0].replace(/\.dc\.html$/, '');
 const KNOWN = ['todo', 'review', 'team', 'day', 'referrals'];
@@ -18,6 +20,13 @@ const KNOWN = ['todo', 'review', 'team', 'day', 'referrals'];
 register('MyWork', class extends Screen {
   init() { this.state = { all: false, week: false, waiting: false, dueAll: false, allNotes: false, sel: this.params.id || null, sort: null }; }
   get actor() { return session.actor; }
+  get css() { return ASAM_CSS + '.mw-case{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;padding:10px 0;border-top:1px solid var(--line-200)}.mw-case__n{font-weight:600;min-width:90px;color:var(--ink-900);text-decoration:none}.mw-case__n:hover{text-decoration:underline}'; }
+  // the patients on one staffer's caseload with their level of care and reassessment state (ratings only where the role holds them)
+  caseload(sid) {
+    const s = this.s, a = this.actor;
+    const rows = (s.clients || []).filter(c => c.staff === sid && c.stage !== 'discharged').map(c => ({ id: c.id, label: M.clientLabel(s, c.id, false), reading: clientReading(s, a, c.id) }));
+    return caseloadHtml(rows);
+  }
 
   // where a row's button goes: the route when it is registered and this role may open it, else the case view, else a stated reason
   resolve(it) {
@@ -57,12 +66,12 @@ register('MyWork', class extends Screen {
       const w = worklist(s, a); const wr = { ...w, today: this.prep(w.today), week: this.prep(w.week), waiting: this.prep(w.waiting) };
       body = todoHtml(wr, this.state, { ...o, only: sec });
     } else if (sec === 'day') {
-      body = dayHtml(dayView(s, a, a.id), this.state, o);
+      body = dayHtml(dayView(s, a, a.id), this.state, o) + this.caseload(a.id);
     } else if (sec === 'team') {
       const t = teamView(s, a);
       const sid = this.params.staff && canSeeDay(s, a, this.params.staff) ? this.params.staff : null;
       body = teamHtml(t, { ...o, canApprove: can(a, 'notes.review'), sort: this.state.sort, onSort: sort => this.setState({ sort }), selected: sid, ruleChip: withDate(o.rule24) });
-      if (sid) { const v = dayView(s, a, sid); body += `<section class="mw-staff" aria-label="${esc(v.name)}'s day"><h2 class="mw-h2">${esc(v.name)}'s day <a class="ui-linkbtn" href="#/MyWork?section=team">Close</a></h2>${dayHtml(v, this.state, o)}</section>`; }
+      if (sid) { const v = dayView(s, a, sid); body += `<section class="mw-staff" aria-label="${esc(v.name)}'s day"><h2 class="mw-h2">${esc(v.name)}'s day <a class="ui-linkbtn" href="#/MyWork?section=team">Close</a></h2>${dayHtml(v, this.state, o)}${this.caseload(sid)}</section>`; }
     } else if (sec === 'review') {
       const q = reviewQueue(s, a);
       const cur = q.pending.find(n => n.id === this.state.sel) || q.pending[0] || null;

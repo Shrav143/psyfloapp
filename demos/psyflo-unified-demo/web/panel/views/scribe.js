@@ -1,11 +1,11 @@
 // Scribe (E5): choose a note type, record or type, review, edit, fill the open Lauris form; a person presses Process Form.
-//   Admission screening · Intake / CNA · Daily progress note · Weekly guardian contact · Monthly collateral · Other supported documentation
+//   Admission screening · ASAM assessment (intake) · Daily progress note · Weekly guardian contact · Monthly collateral · Other supported documentation
 //   (incident reports live under More, with a banner on home while a state-portal clock runs).
 // Guidance while you record shows only what is still unanswered, each as a QUESTION; Psyflo never answers for the person. Drafts come from
 // the person's own words and stored records. A recording starts only after a recorded consent; refusing means typing.
 import { esc } from '../../js/runtime.js';
 import { fmtDate, fmtTime } from '../../js/shared/dates.js';
-import { draftScreening, screeningFacts, screeningPrompts, enhanceDictation, draftSeeded } from '../../js/shared/draft.js';
+import { draftScreening, screeningFacts, screeningPrompts, enhanceDictation, draftSeeded, asamSources } from '../../js/shared/draft.js';
 import { dailyGuidance, weeklyGuidance, collateralGuidance, tidySentence, MISSING } from '../../js/shared/enhance.js';
 import * as R from '../lib/recorder.js';
 import { consentFor, consentCard } from '../lib/consent.js';
@@ -15,7 +15,7 @@ import { formValue } from '../lib/items.js';
 
 const TYPES = [
   { id: 'screening', label: 'Admission screening', short: 'Screening', cap: 'drafts.clinical', form: 'screening' },
-  { id: 'cna', label: 'Intake / CNA', short: 'Intake', cap: 'drafts.clinical', form: 'cna' },
+  { id: 'cna', label: 'ASAM assessment', short: 'ASAM', cap: 'drafts.clinical', form: 'cna' },
   { id: 'dpn', label: 'Daily progress note', short: 'Daily note', cap: 'notes.own', form: 'dpn' },
   { id: 'weekly', label: 'Weekly guardian contact', short: 'Weekly call', cap: 'notes.own', form: 'weekly' },
   { id: 'collateral', label: 'Monthly collateral', short: 'Collateral', cap: 'notes.own', form: 'collateral' },
@@ -24,7 +24,7 @@ const TYPES = [
 const OTHER = [['isp', 'Treatment plan (ISP)', 'drafts.clinical'], ['sra-initial', 'Initial request (SRA)', 'drafts.clinical'], ['sra-continued', 'Continued stay', 'drafts.clinical'], ['quarterly', 'Quarterly report', 'drafts.clinical'], ['discharge', 'Discharge summary', 'drafts.clinical'], ['incident', 'Incident report', 'notes.own']];
 const types = ctx => TYPES.filter(t => ctx.can(t.cap));
 const typeOf = id => TYPES.find(t => t.id === id);
-const DPN_EXAMPLE = 'played basketball with M.R. after he got upset in math, he cooled down after and went back to class';
+const DPN_EXAMPLE = 'ran the refusal skills role play with M.R. in group, he practiced saying no to a drink at a party twice, craving was a 5 before and a 2 after';
 
 function currentType(ctx) {
   const st = ctx.st; const p = ctx.page; const ok = types(ctx).map(t => t.id);
@@ -125,8 +125,8 @@ function screeningHTML(ctx, c) {
   const { banner, boxRow, accordion, checksBlock } = ctx.parts; const s = ctx.S(); const st = ctx.st; const pg = ctx.pg;
   const r = s.referrals.find(x => x.id === c.referral); const el = r && ctx.M.eligibilityFor(s, r.id); const fl = r && ctx.M.familyLinkFor(s, r.id);
   const sc = st.sc || 'pre'; const text = st.rec ? R.text(st) : (st.transcript || '');
-  const facts = screeningFacts(text); const prompts = screeningPrompts(facts);
-  const met = prompts.filter(p => ['c1', 'c2', 'c3'].includes(p.key) && p.done).length;
+  const facts = screeningFacts(text); const prompts = screeningPrompts(facts, ctx.M.today(s));
+  const met = prompts.filter(p => /^d[1-6]$/.test(p.key) && p.done).length;
   const pre = B.preCallBoxes(ctx, c); let h = '';
   if (!fl?.submitted_at || el?.status !== 'recorded') h += banner('y', `${!fl?.submitted_at ? 'The family link is not submitted yet.' : 'Eligibility is not recorded yet.'} Psyflo fills the guardian and insurance boxes only from the family link and a recorded eligibility check.`);
   if (sc === 'pre' && !st.ask) {
@@ -140,7 +140,7 @@ function screeningHTML(ctx, c) {
   if (sc === 'pre' && st.ask) h += consentCard(ctx, 'screening', { label: 'Admission screening' });
   if (sc === 'rec') {
     h += `<div class="banner n"><span class="rec on"></span><div style="flex:1"><b>Recording the call · ${R.elapsed(st)}</b> · consent recorded · ${st.rec && st.rec.mode === 'script' ? 'scripted call playing' : 'microphone'} · boxes drafted when you hang up</div></div>
-      <div class="row w" style="gap:6px 8px"><h2 class="st">Before you hang up</h2><span class="chip ${met >= 2 ? 'g' : 'y'}">insurance needs 2 of 3 · we can show ${met}</span></div>
+      <div class="row w" style="gap:6px 8px"><h2 class="st">Before you hang up</h2><span class="chip ${met >= 6 ? 'g' : 'y'}">ASAM · evidence for ${met} of 6 dimensions</span></div>
       <div id="sg">${promptsHTML(ctx, prompts)}</div>
       <div class="tx" id="tx">${esc(text.split('\n').slice(-6).join('\n'))}</div>
       <div class="row"><button class="btn p" style="flex:1" data-act="recStop">Stop and draft the boxes</button><button class="btn o" data-act="copyAsks">Copy asks</button></div>`;
@@ -162,9 +162,9 @@ function screeningHTML(ctx, c) {
 function groupRows(boxes) { const out = []; const seen = {}; for (const b of boxes) { const k = b.row || b.label; if (seen[k]) { seen[k].value += ' · ' + b.value; continue; } seen[k] = { label: k, value: b.value, src: b.src }; out.push(seen[k]); } return out; }
 function promptsHTML(ctx, prompts, after) {
   const open = prompts.filter(p => !p.done); const done = prompts.filter(p => p.done);
-  const row = p => `<div class="cr${p.done ? ' done' : ''}">${p.done ? ctx.I.ok : p.partial ? ctx.I.warn : after ? ctx.I.no : ctx.I.open}<div><b>${esc(p.title)}</b>${esc(p.text)}${!p.done && p.ask ? `<div class="ask">Ask now: ${esc(p.ask)}</div>` : ''}</div></div>`;
+  const row = p => `<div class="cr${p.done ? ' done' : ''}">${p.alert ? ctx.I.no : p.done ? ctx.I.ok : p.partial ? ctx.I.warn : after ? ctx.I.no : ctx.I.open}<div><b>${esc(p.title)}</b>${esc(p.text)}${!p.done && p.ask ? `<div class="ask">Ask now: ${esc(p.ask)}</div>` : ''}</div></div>`;
   if (after) return prompts.map(row).join('');
-  return `${open.map(row).join('') || '<div class="hint">Everything the insurer needs has been heard.</div>'}${done.length ? `<details class="acc" style="margin-top:6px"><summary>${done.length} answered</summary><div>${done.map(row).join('')}</div></details>` : ''}`;
+  return `${open.map(row).join('') || '<div class="hint">Everything the assessment and the payer need has been heard.</div>'}${done.length ? `<details class="acc" style="margin-top:6px"><summary>${done.length} answered</summary><div>${done.map(row).join('')}</div></details>` : ''}`;
 }
 function oneAtATime(ctx, boxes, typeAct, skipAct) {
   const st = ctx.st; const b = boxes[st.one]; if (!b) return ctx.parts.banner('', 'That was the last box.');
@@ -206,7 +206,7 @@ function feedbackHTML(ctx, dict) {
   if (!st.fbDone && prev && !st.fbOpen) return ctx.parts.banner('n', `${prev.kind === 'good' ? 'Marked <b>Good recommendation</b>.' : `<b>Needs improvement</b> saved with this note: “${esc(prev.text)}”.`} Your supervisor sees it with the note. <a href="#" data-act="needsImp">Add more</a>`);
   if (st.fbDone) return ctx.parts.banner('n', `${st.fbDone === 'good' ? 'Marked <b>Good recommendation</b>.' : `<b>Needs improvement</b> saved with this note: “${esc(st.fbSent || '')}”.`} Your supervisor sees it with the note.`);
   return `<div class="row"><button class="btn o" style="flex:1" data-act="goodRec">Good recommendation</button><button class="btn o${st.fbOpen ? ' on' : ''}" style="flex:1" data-act="needsImp">Needs improvement</button></div>
-    ${st.fbOpen ? `<div class="tile"><div class="lab">How should Psyflo improve it?</div><textarea class="ed" aria-label="How to improve" data-in="fbText" placeholder="e.g. wrong objective · too long · he did not walk off the court">${esc(st.fbText || '')}</textarea><div class="row" style="margin-top:8px"><button class="btn p" style="flex:1" data-act="fbSend">Save feedback</button><button class="btn o" data-act="fbCancel">Cancel</button></div></div>` : ''}`;
+    ${st.fbOpen ? `<div class="tile"><div class="lab">How should Psyflo improve it?</div><textarea class="ed" aria-label="How to improve" data-in="fbText" placeholder="e.g. wrong objective · too long · he did not role-play refusal skills">${esc(st.fbText || '')}</textarea><div class="row" style="margin-top:8px"><button class="btn p" style="flex:1" data-act="fbSend">Save feedback</button><button class="btn o" data-act="fbCancel">Cancel</button></div></div>` : ''}`;
 }
 function dpnHTML(ctx, c) {
   const { banner, checksBlock } = ctx.parts; const s = ctx.S(); const st = ctx.st; const pg = ctx.pg; const ds = dpnState(ctx, c); const e = ds.e;
@@ -259,7 +259,7 @@ function sayItHTML(ctx, c, form, prompt) {
   return `<div class="tile t"><div class="row"><span class="ic" style="background:var(--teal-600);color:#fff">${ctx.I.mic}</span><div style="flex:1"><h2>Say what happened</h2><div class="small muted">${esc(prompt)}</div></div></div>
     <div class="row w" style="margin-top:10px"><button class="btn p" style="flex:1" data-act="sayMic" data-k="${form}">${ctx.I.mic} Record (microphone)</button></div>
     <label class="lab" style="display:block;margin-top:10px" for="say-ta-${form}">Or type it</label>
-    <textarea class="ed" id="say-ta-${form}" data-in="sayText" data-ui-draft="${esc(key)}" data-k="${form}" placeholder="${form === 'dpn' ? 'e.g. worked on taking a break before leaving the room; he used it twice' : 'What was said and agreed'}">${esc(ctx.ui.draft.get(key, ''))}</textarea>
+    <textarea class="ed" id="say-ta-${form}" data-in="sayText" data-ui-draft="${esc(key)}" data-k="${form}" placeholder="${form === 'dpn' ? 'e.g. ran the refusal skills role play in group; craving was a 4 before and a 2 after' : 'What was said and agreed'}">${esc(ctx.ui.draft.get(key, ''))}</textarea>
     <div class="row" style="margin-top:8px"><button class="btn p" style="flex:1" data-act="sayDraft" data-k="${form}">Draft it</button></div>
     <div class="hint" style="margin-top:4px">${R.hasSpeech() ? 'Nothing is recorded until you press Record and confirm consent.' : 'Speech recognition is not available in this browser: type it instead.'}${hasCons ? ' · consent recorded today' : ''}</div></div>`;
 }
@@ -297,26 +297,26 @@ function schoolCollateralHTML(ctx, c) {
     <div class="hint" style="margin-top:6px">Coordination is left for you.</div></div>`;
 }
 
-// ------------------------------------------------------------------ intake / CNA (live after Flow A)
-const PHQ = ['1', '1', '0', '1', '0', '0', '1', '0', '0'];
+// ------------------------------------------------------------------ ASAM assessment (the intake; live after Flow A)
+// Psyflo copies what the screening call said into the presenting issue, the prior treatment and each dimension's text. The six ratings (0 to 4),
+// the level recommendation and the plan are the clinician's: they stay empty and are listed as "Left for you".
 function cnaHTML(ctx, c) {
-  const { banner, boxRow, checksBlock, SAMPLE_CHIP } = ctx.parts; const s = ctx.S(); const st = ctx.st;
+  const { banner, boxRow, checksBlock } = ctx.parts; const s = ctx.S(); const st = ctx.st;
   const sc = s.screenings.find(x => x.client === c.id && (x.boxes || x.facts));
   const facts = sc?.facts || (sc?.transcript ? screeningFacts(sc.transcript) : null);
   const screening = sc ? { facts, boxes: sc.boxes || (sc.transcript ? draftScreening({ transcript: sc.transcript, today: ctx.M.today(s) }).boxes : []), when: sc.when } : null;
-  const d = draftSeeded('cna', { client: c, screening, today: ctx.M.today(s) });
-  const phq = PHQ.map((v, i) => ({ label: `PHQ item ${i + 1}`, value: v, src: [3] }));
-  const boxes = d.boxes.concat(phq);
+  const d = draftSeeded('cna', { client: c, screening, today: ctx.M.today(s), ...asamSources(s, c.id) });
+  const boxes = d.boxes; const typed = boxes.filter(b => b.value && !b.missing).length;
   const cons = consentFor(ctx, c, 'cna'); let h = '';
-  if (st.ask === 'cna') h += consentCard(ctx, 'cna', { label: 'Intake' });
-  else if (!cons) h += `<div class="tile"><div class="row"><span class="rec"></span><div style="flex:1"><b>Not recording</b> · intake conversation</div><button class="btn p sm" data-act="cnaAsk">Record</button></div><div class="hint" style="margin-top:4px">Recording needs a recorded consent. You can also type in Lauris.</div></div>`;
-  else h += `<div class="banner n"><span class="rec ${st.cnaRec !== false ? 'on' : ''}"></span><div style="flex:1"><b>${st.cnaRec !== false ? 'Recording' : 'Paused'} · intake conversation</b> · consent recorded ${fmtDate(cons.at)}</div><button class="tog" data-act="cnaPause">${st.cnaRec !== false ? 'Pause' : 'Resume'}</button></div>`;
-  if (!screening) h += banner('y', 'No screening on record: presenting issue and prior services cannot be copied. Run the screening first.');
-  h += `<div class="row w"><h2 class="st" style="flex:1">CNA fields · ${boxes.length}</h2>${SAMPLE_CHIP()}</div>
-    <div class="hint">Boxes marked "copied from screening" come from the call. The rest is a seeded sample, not built from this intake.</div>`;
-  h += ctx.parts.accordion(`Boxes · ${d.boxes.length}`, d.boxes.map(b => `<div class="box"><div class="l">${esc(b.label)} ${b.copied ? '<span class="chip g">copied from screening</span>' : ''}</div><div class="v">${esc(b.value || '—')}</div>${b.note ? `<div class="small" style="color:var(--warning-fg)">← ${esc(b.note)}</div>` : ''}</div>`).join('') + `<div class="box"><div class="l">PHQ-9 · answers from the interview</div><div class="v">${PHQ.join(' · ')}. Item 9 asked directly. Lauris scores on Process Form.</div></div>` + d.blank.map(b => `<div class="box"><div class="l">${esc(b.label)}</div><div class="v muted">${esc(b.why)}</div></div>`).join(''), { id: 'cna-boxes' });
+  if (st.ask === 'cna') h += consentCard(ctx, 'cna', { label: 'ASAM assessment' });
+  else if (!cons) h += `<div class="tile"><div class="row"><span class="rec"></span><div style="flex:1"><b>Not recording</b> · assessment conversation</div><button class="btn p sm" data-act="cnaAsk">Record</button></div><div class="hint" style="margin-top:4px">Recording needs a recorded consent. You can also type in Lauris.</div></div>`;
+  else h += `<div class="banner n"><span class="rec ${st.cnaRec !== false ? 'on' : ''}"></span><div style="flex:1"><b>${st.cnaRec !== false ? 'Recording' : 'Paused'} · assessment conversation</b> · consent recorded ${fmtDate(cons.at)}</div><button class="tog" data-act="cnaPause">${st.cnaRec !== false ? 'Pause' : 'Resume'}</button></div>`;
+  if (!screening) h += banner('y', 'No screening on record: the presenting issue, the prior treatment and each dimension cannot be copied. Run the screening first.');
+  h += `<div class="row w"><h2 class="st" style="flex:1">ASAM assessment fields · ${typed} to type</h2></div>
+    <div class="hint">Boxes marked "copied from screening" come from the call. A dimension the call did not cover says "Evidence missing" and is not typed. The ratings, the level and the plan are yours.</div>`;
+  h += ctx.parts.accordion(`Boxes · ${boxes.length}`, boxes.map(b => `<div class="box"><div class="l">${esc(b.label)} ${b.copied ? '<span class="chip g">copied from screening</span>' : ''}</div><div class="v${b.missing ? ' muted' : ''}">${esc(b.value || '—')}</div>${b.note ? `<div class="small" style="color:var(--warning-fg)">← ${esc(b.note)}</div>` : ''}</div>`).join('') + d.blank.map(b => `<div class="box"><div class="l">${esc(b.label)}</div><div class="v muted">${esc(b.why)}</div></div>`).join(''), { id: 'cna-boxes' });
   h += `<div class="lab">Still to ask</div>${cnaAsk(facts)}${checksBlock(d.checks)}
-    <div class="row"><button class="btn p" style="flex:1" data-act="cnaFill" ${ctx.pg.filling ? 'disabled' : ''}>Fill ${boxes.length} boxes</button><button class="btn o" data-act="cnaOne">Review one by one</button></div>`;
+    <div class="row"><button class="btn p" style="flex:1" data-act="cnaFill" ${ctx.pg.filling ? 'disabled' : ''}>Fill ${typed} boxes</button><button class="btn o" data-act="cnaOne">Review one by one</button></div>`;
   if (st.one != null) h += oneAtATime(ctx, boxes, 'cnaOneType', 'cnaOneSkip');
   st.cnaBoxes = { boxes, sources: d.sources };
   return h;
@@ -324,7 +324,7 @@ function cnaHTML(ctx, c) {
 function cnaAsk(f) {
   const rows = [];
   if (f && f.prior_provider) rows.push(['Dates', `${f.prior_provider}: confirm start and end month, and whether it was through secondary insurance`]);
-  rows.push(['Danger', 'Does the student understand the risk when they leave the building? (criterion 3)'], ['Collateral', 'Releases: school counselor, pediatrician, previous outpatient provider']);
+  rows.push(['Screens', 'Urine drug screen result, and a withdrawal screen (CIWA or COWS) when the last use was within the past week'], ['Co-occurring', 'PHQ-9 and GAD-7 scores (the Surveys page), any current diagnosis and who prescribes'], ['Collateral', 'Releases: referring counselor, pediatrician, previous treatment provider']);
   return rows.map(([a, b]) => `<div class="stamp"><div><b>${a}</b></div><div>${esc(b)}</div></div>`).join('');
 }
 
@@ -374,7 +374,7 @@ const acts = {
     ctx.do('screening.drafted', { client: c.id, referral: c.referral, transcript: txt }).catch(() => { });
   },
   recAgain(el, ctx) { const st = ctx.st; st.sc = 'pre'; st.draft = null; st.scFilled = false; st.transcript = ''; ctx.draw(); },
-  copyAsks(el, ctx) { const asks = screeningPrompts(screeningFacts(R.text(ctx.st))).filter(p => !p.done && p.ask).map(p => '• ' + p.ask).join('\n'); navigator.clipboard?.writeText(asks).then(() => ctx.flash('Asks copied'), () => ctx.flash(asks)); },
+  copyAsks(el, ctx) { const asks = screeningPrompts(screeningFacts(R.text(ctx.st)), ctx.M.today(ctx.S())).filter(p => !p.done && p.ask).map(p => '• ' + p.ask).join('\n'); navigator.clipboard?.writeText(asks).then(() => ctx.flash('Asks copied'), () => ctx.flash(asks)); },
   scFill: async (el, ctx) => { const st = ctx.st; const c = ctx.client(); const d = st.draft; await ctx.fill(d.boxes, { form: 'screening', client: c, sources: d.sources }); st.scFilled = true; ctx.draw(); },
   scOne(el, ctx) { ctx.st.one = 0; ctx.draw(); }, oneClose(el, ctx) { ctx.st.one = null; ctx.draw(); },
   scOneType: async (el, ctx) => { const st = ctx.st; const b = st.draft.boxes[st.one]; await ctx.fill([b], { form: 'screening', client: ctx.client(), sources: st.draft.sources }); st.one++; ctx.draw(); },

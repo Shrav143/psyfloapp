@@ -26,7 +26,7 @@ export async function prepTW() {
 }
 
 // ---- the UI/HTTP path to later T.W. checkpoints (a person's clicks in Lauris, reported by the page bridge), used to prove the fixtures ----
-import { draftSeeded, draftInitialSRA } from '../../web/js/shared/draft.js';
+import { draftSeeded, draftInitialSRA, asamSources } from '../../web/js/shared/draft.js';
 import { sleep } from './index.mjs';
 const bridgeEv = (no, form, sid, event = 'processed', values = {}, extra = {}) => bridge('lauris.observed', { event, session: String(sid), form, consumer: { no: String(no), initials: 'T.W.' }, values, typed: [], user: 'J. Perez, LPC', ...extra });
 const sidOf = r => (r.loc || '').match(/processed=(\d+)/)?.[1];
@@ -40,19 +40,19 @@ export async function prepTWTo(stage) {
   if (stage === 'screened') return { no };
   const st = await state('jperez'); const tw = st.clients.find(c => c.id === 'TW');
   const cna = await lpost(`/consumers/${no}/session/cna`, 'jperez', { action: 'process' }); await bridgeEv(no, 'cna', sidOf(cna));
-  const d = draftSeeded('isp', { client: tw, screening: st.screenings.find(x => x.client === 'TW'), today: st.today });
+  const d = draftSeeded('isp', { client: tw, screening: st.screenings.find(x => x.client === 'TW'), today: st.today, ...asamSources(st, 'TW') });
   const vals = Object.fromEntries(d.boxes.map(b => [b.label, b.value]));
   const isp = await lpost(`/consumers/${no}/session/isp`, 'jperez', await fields('isp', vals)); const j = await bridgeEv(no, 'isp', sidOf(isp), 'processed', vals);
   if (!j.ok) throw new Error('isp: ' + j.error);
   if (stage === 'isp-ready') return { no };
   const s2 = await state('jperez'); const sc = s2.screenings.find(x => x.client === 'TW');
-  const sra = draftInitialSRA({ client: tw, screening: { facts: sc.facts, when: sc.when }, referral: s2.referrals.find(r => r.id === 'REF-118'), today: s2.today, request: s2.requests.find(r => r.id === 'R-0416') });
+  const sra = draftInitialSRA({ client: tw, screening: { facts: sc.facts, when: sc.when }, referral: s2.referrals.find(r => r.id === 'REF-118'), today: s2.today, request: s2.requests.find(r => r.id === 'R-0416'), ...asamSources(s2, 'TW') });
   const sv = Object.fromEntries(sra.boxes.map(b => [b.label, b.value]));
   const p = await lpost(`/consumers/${no}/session/sra-initial`, 'jperez', await fields('sra-initial', sv)); const sid = sidOf(p);
   await bridgeEv(no, 'sra-initial', sid, 'processed', sv);
   await api('request.approve', { id: 'R-0416', comment: 'fixture' }, 'jperez');
   await lpost(`/approvals/${sid}/sign`, 'jperez', {});
-  await bridgeEv(no, 'sra-initial', sid, 'signed', {}, { preview: { title: 'TDT Initial SRA', rows: sra.boxes.map(b => ({ label: b.label, value: b.value })) } });
+  await bridgeEv(no, 'sra-initial', sid, 'signed', {}, { preview: { title: 'IOP Initial SRA', rows: sra.boxes.map(b => ({ label: b.label, value: b.value })) } });
   if (stage === 'signed') return { no };
   await api('request.send', { id: 'R-0416' }, 'jperez'); await sleep(3600);
   return { no };

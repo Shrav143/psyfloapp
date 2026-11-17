@@ -12,24 +12,24 @@ export const COHORT_RANGE = { start: '2025-08-18', lastEnrol: '2026-10-15' };
 export const COHORT_AS_OF = addDays(COHORT_RANGE.lastEnrol, 14);
 export const COHORT_SOURCE = 'Generated demonstration cohort (120 patients, fixed seed)';
 
-export const PROGRAMS = [['tdt', 'Therapeutic Day Treatment (school day)'], ['iop', 'Intensive Outpatient Program'], ['php', 'Partial Hospitalization'], ['ind', 'Individual outpatient therapy']];
-export const SITES = [['Lynchburg City · ES-3', 'Lynchburg City'], ['Lynchburg City · MS-2', 'Lynchburg City'], ['Campbell County · ES-1', 'Campbell County'], ['Campbell County · HS-1', 'Campbell County'], ['Campbell County · MS-1', 'Campbell County'], ['Clinic office · Lynchburg', 'Lynchburg City'], ['Clinic office · Campbell', 'Campbell County']];
+export const PROGRAMS = [['tdt', 'IOP day program (Level 2.1)'], ['iop', 'IOP evening group (Level 2.1)'], ['php', 'Partial hospitalization (Level 2.5)'], ['ind', 'Outpatient (Level 1)']];
+export const SITES = [['Lynchburg City · Main IOP', 'Lynchburg City'], ['Lynchburg City · Annex IOP', 'Lynchburg City'], ['Campbell County · IOP', 'Campbell County'], ['Campbell County · East IOP', 'Campbell County'], ['Campbell County · North IOP', 'Campbell County'], ['Clinic office · Lynchburg', 'Lynchburg City'], ['Clinic office · Campbell', 'Campbell County']];
 const PAYERS = { aetna: 'Aetna Better Health', anthem: 'Anthem HealthKeepers', humana: 'Humana Healthy Horizons', sentara: 'Sentara Health Plans', uhc: 'UnitedHealthcare' };
 const DXS = [
-  { k: 'adhd', label: 'ADHD', inst: 'vand', goals: ['sch', 'beh'] }, { k: 'anx', label: 'Anxiety disorders', inst: 'anx', goals: ['emo', 'soc'] }, { k: 'dep', label: 'Depressive disorders', inst: 'phq', goals: ['emo', 'fam'] },
-  { k: 'trm', label: 'Trauma-related disorders', inst: 'cafas', goals: ['emo', 'beh'] }, { k: 'beh', label: 'Behavioral disorders', inst: 'sdq', goals: ['beh', 'sch', 'fam'] }, { k: 'sud', label: 'Substance use disorders', inst: 'cafas', goals: ['sub', 'fam'] }];
-const INSTS = { vand: { name: 'Vanderbilt ADHD count', max: 18, base: [10, 16] }, phq: { name: 'PHQ-9', max: 27, base: [10, 17] }, gad: { name: 'GAD-7', max: 21, base: [9, 15] }, scared: { name: 'SCARED', max: 82, base: [30, 45] }, sdq: { name: 'SDQ total difficulties', max: 40, base: [15, 24] }, cafas: { name: 'CAFAS functioning total', max: 240, base: [90, 150] } };
-const GOALS = [['emo', 'Emotional regulation'], ['beh', 'Behavioral stabilization'], ['soc', 'Social functioning'], ['sch', 'School participation'], ['fam', 'Family functioning'], ['sub', 'Substance use recovery']];
+  { k: 'adhd', label: 'Cannabis use disorder', inst: 'vand', goals: ['sch', 'beh'] }, { k: 'anx', label: 'Anxiety disorders', inst: 'anx', goals: ['emo', 'soc'] }, { k: 'dep', label: 'Depressive disorders', inst: 'phq', goals: ['emo', 'fam'] },
+  { k: 'trm', label: 'Trauma-related disorders', inst: 'cafas', goals: ['emo', 'beh'] }, { k: 'beh', label: 'Alcohol use disorder', inst: 'sdq', goals: ['beh', 'sch', 'fam'] }, { k: 'sud', label: 'Stimulant and other substance use', inst: 'cafas', goals: ['sub', 'fam'] }];
+const INSTS = { vand: { name: 'Craving rating, weekly total', max: 18, base: [10, 16] }, phq: { name: 'PHQ-9', max: 27, base: [10, 17] }, gad: { name: 'GAD-7', max: 21, base: [9, 15] }, scared: { name: 'SCARED', max: 82, base: [30, 45] }, sdq: { name: 'Use-related problems score', max: 40, base: [15, 24] }, cafas: { name: 'CAFAS functioning total', max: 240, base: [90, 150] } };
+const GOALS = [['emo', 'Coping skills (D3)'], ['beh', 'Relapse prevention (D5)'], ['soc', 'Recovery supports (D6)'], ['sch', 'Group engagement (D4)'], ['fam', 'Family involvement (D6)'], ['sub', 'Reduced use (D5)']];
 // the approved ISP 2.0 picklist
 const IVS = [
-  { k: 'coping', name: 'Coping skills practice', goals: ['emo', 'beh'] }, { k: 'move', name: 'Movement', goals: ['emo'] }, { k: 'mind', name: 'Mindfulness and grounding', goals: ['emo'] }, { k: 'feel', name: 'Identify and name feelings', goals: ['emo'] },
-  { k: 'psy', name: 'Psychoeducation', goals: ['fam', 'sub', 'beh'] }, { k: 'prob', name: 'Structured problem solving', goals: ['beh', 'sch'] }, { k: 'friend', name: 'Make or maintain friendships', goals: ['soc'] },
-  { k: 'bound', name: 'Recognize danger and healthy boundaries', goals: ['soc', 'sub'] }, { k: 'social', name: 'Social skills coaching', goals: ['soc'] }, { k: 'famc', name: 'Family skills coaching', goals: ['fam'] }, { k: 'peer', name: 'Solving peer conflict', goals: ['soc', 'beh'] }];
-const SERVICES = [{ k: 'tdt', label: 'Therapeutic Day Treatment', min: 300 }, { k: 'php', label: 'Partial Hospitalization', min: 300 }, { k: 'iop', label: 'Intensive Outpatient', min: 180 }, { k: 'ind', label: 'Individual therapy', min: 50 }, { k: 'grp', label: 'Group therapy', min: 60 }, { k: 'fam', label: 'Family services', min: 50 }, { k: 'cc', label: 'Care coordination', min: 30 }];
+  { k: 'coping', name: 'Cognitive behavioral skills for substance use', goals: ['emo', 'beh'] }, { k: 'move', name: 'Healthy activity planning', goals: ['emo'] }, { k: 'mind', name: 'Urge surfing and grounding', goals: ['emo'] }, { k: 'feel', name: 'Motivational interviewing', goals: ['emo'] },
+  { k: 'psy', name: 'Substance use education', goals: ['fam', 'sub', 'beh'] }, { k: 'prob', name: 'Relapse prevention skills', goals: ['beh', 'sch'] }, { k: 'friend', name: 'Recovery support planning', goals: ['soc'] },
+  { k: 'bound', name: 'Drug and alcohol refusal skills', goals: ['soc', 'sub'] }, { k: 'social', name: 'Peer support skills', goals: ['soc'] }, { k: 'famc', name: 'Family session', goals: ['fam'] }, { k: 'peer', name: 'Handling peer pressure', goals: ['soc', 'beh'] }];
+const SERVICES = [{ k: 'tdt', label: 'IOP day program', min: 300 }, { k: 'php', label: 'Partial hospitalization', min: 300 }, { k: 'iop', label: 'IOP evening group', min: 180 }, { k: 'ind', label: 'Individual therapy', min: 50 }, { k: 'grp', label: 'Group therapy', min: 60 }, { k: 'fam', label: 'Family services', min: 50 }, { k: 'cc', label: 'Care coordination', min: 30 }];
 const REASONS = [
   { k: 'doc', label: 'Insufficient documentation of continued medical necessity', w: 26 }, { k: 'goal', label: 'Treatment plan does not show measurable goals', w: 14 }, { k: 'sig', label: 'Missing signature or date on a required form', w: 10 },
-  { k: 'units', label: 'Requested units exceed what the documentation supports', w: 22 }, { k: 'int', label: 'Service intensity not supported by the current assessment', w: 16 }, { k: 'rec', label: 'Records not received in time for review', w: 12 }];
-const REFERRALS = [['School counselor', 34], ['Family self-referral', 20], ['Pediatrician', 14], ['Community provider', 14], ['Juvenile justice liaison', 6], ['Hospital discharge', 6], ['Other', 6]];
+  { k: 'units', label: 'Requested units exceed what the documentation supports', w: 22 }, { k: 'int', label: 'Can be managed at a lower level of care (outpatient)', w: 16 }, { k: 'rec', label: 'Records not received in time for review', w: 12 }];
+const REFERRALS = [['School counselor', 34], ['Family self-referral', 20], ['Pediatric clinic', 14], ['Community provider', 14], ['Court diversion', 6], ['Emergency department', 6], ['Other', 6]];
 const LET = 'ABCDEFGHIJKLMNOPRSTUVWY';
 
 // ---------- deterministic generator ----------

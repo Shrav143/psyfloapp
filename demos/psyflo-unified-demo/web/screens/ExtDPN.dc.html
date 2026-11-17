@@ -63,25 +63,25 @@ a{color:#217A78}a:hover{color:#15605E}
         <div style="flex:1;min-width:0;padding:14px 20px;overflow:hidden">
           <div style="display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #DDE1E6;border-radius:4px;padding:10px 14px">
             <div style="width:40px;height:40px;border-radius:50%;background:#DDE1E6"></div>
-            <div><div style="font-weight:700;font-size:15px;color:#1F3B6B">M.R.</div><div style="font-size:11px;color:#666">Unique ID on file · DOB on file · Group: TDT – Campbell County · Staff: K. Hale</div></div>
+            <div><div style="font-weight:700;font-size:15px;color:#1F3B6B">M.R.</div><div style="font-size:11px;color:#666">Unique ID on file · DOB on file · Group: TDT – Campbell IOP · Staff: K. Hale</div></div>
             <div style="margin-left:auto;font-size:12px;color:#1F6FBF;font-weight:700">27 units available <span style="color:#666;font-weight:400">· ending 11/13/2026</span></div>
           </div>
           <div style="display:flex;gap:18px;margin:8px 0 10px"><span class="tab">General Information</span><span class="tab">Authorization Information</span><span class="tab">Documents</span><span class="tab on">Active File</span><span class="tab">Medications</span><span class="tab">Allergies</span></div>
 
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><label style="margin:0">Session entry</label><div class="in" style="min-width:260px">Daily Progress Note – TDT</div><span style="font-size:11px;color:#666">Add Session · 10/29/2026 · K. Hale</span></div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><label style="margin:0">Session entry</label><div class="in" style="min-width:260px">Daily Progress Note – IOP</div><span style="font-size:11px;color:#666">Add Session · 10/29/2026 · K. Hale</span></div>
           <div style="display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:10px;margin-bottom:10px">
-            <div><label>Service</label><div class="in g">H2016 (school day)</div></div>
-            <div><label>Setting</label><div class="in g">School · ES-1</div></div>
-            <div><label>Direct time</label><div class="in">5 h 10 min</div></div>
-            <div><label>Units (auto)</label><div class="in">3</div></div>
+            <div><label>Service</label><div class="in g">H0015 (IOP day)</div></div>
+            <div><label>Setting</label><div class="in g">IOP · Campbell IOP</div></div>
+            <div><label>Direct time</label><div class="in">3 h 40 min</div></div>
+            <div><label>Units (auto)</label><div class="in">2</div></div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px;margin-bottom:10px">
-            <div><label>Objective addressed (from ISP 2.0)</label><div class="in g">Obj. 1 – use a taught coping strategy before leaving the room in 4 of 5 escalations</div></div>
-            <div><label>Interventions (ISP picklist)</label><div class="in g">Clinical 2.1 Movement ▾ &nbsp;·&nbsp; QMHP 1.6 Recognize danger / healthy boundaries ▾ &nbsp;·&nbsp; QMHP 1.9 Solving peer conflict ▾</div></div>
+            <div><label>Objective addressed (from ISP 2.0)</label><div class="in g">Obj. 1 – negative urine or breath alcohol screen in 4 of 5 weekly screens (D5)</div></div>
+            <div><label>Interventions (ISP picklist)</label><div class="in g">SUD 1.4 Drug and alcohol refusal skills ▾ &nbsp;·&nbsp; SUD 1.2 Relapse prevention skills ▾ &nbsp;·&nbsp; SUD 1.3 Cognitive behavioral skills for substance use ▾</div></div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px;margin-bottom:10px">
-            <div><label>Mood check-in</label><div class="in">Frustrated → calm</div></div>
-            <div><label>Progress today</label><div class="in">Partial – strategy used after prompt</div></div>
+            <div><label>Mood check-in</label><div class="in">Craving 5 of 10 → 2 of 10</div></div>
+            <div><label>Progress today</label><div class="in">Partial – skill used after prompt</div></div>
           </div>
           <label>Narrative</label>
           <div class="in" style="min-height:150px;white-space:pre-line;line-height:1.5">{{narrative}}</div>
@@ -114,37 +114,37 @@ a{color:#217A78}a:hover{color:#15605E}
 
         <div>
           <div style="font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600;margin-bottom:4px">Drafted for the narrative</div>
-          <div style="border:1px solid #F0B44C;background:#FFFDF7;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5"><sc-if value="{{isB}}" hint-placeholder-val="{{false}}"><span class="mark">Observed</span> client during math; he stayed on task 15 of 30 min. <div style="margin-top:6px;color:#525B66">→ <b>Worked with</b> M.R. during math using a visual timer and prompted re-entry twice; on task 15 of 30 min (Obj. 3, off-task behaviour).</div></sc-if><sc-if value="{{isA}}" hint-placeholder-val="{{true}}">Worked with M.R. on emotional regulation and frustration tolerance through a structured <b>Movement</b> intervention (basketball, 1:10–1:40 pm). When he lost the game he became frustrated and walked off the court; staff used a co-regulation walk and he re-engaged after 6 minutes, practicing <b>Solving peer conflict</b> language with a prompt. Addresses ISP Objective 1 (emotional regulation) and Objective 2 (impulse control).</sc-if></div>
+          <div style="border:1px solid #F0B44C;background:#FFFDF7;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5"><sc-if value="{{isB}}" hint-placeholder-val="{{false}}"><span class="mark">Observed</span> client during group; he stayed on task 15 of 30 min. <div style="margin-top:6px;color:#525B66">→ <b>Worked with</b> M.R. during group using a visual timer and prompted re-entry twice; on task 15 of 30 min (Obj. 2, attendance and engagement).</div></sc-if><sc-if value="{{isA}}" hint-placeholder-val="{{true}}">Ran the <b>refusal skills</b> role play with M.R. in group; he practiced saying no to a drink at a party twice. He rated his craving 5 of 10 before and 2 of 10 after. Addresses ISP Objective 1 (negative weekly screens) with <b>Drug and alcohol refusal skills</b>.</sc-if></div>
           
         </div>
 
         <div style="border:1px solid #E6E1D9;border-radius:10px;padding:10px 12px;background:#fff">
           <div style="font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600;margin-bottom:4px">What Psyflo added, and where it came from</div>
-          <div style="font-size:12px;line-height:1.5"><span style="background:#DDF1EF;border-radius:3px;padding:0 3px">movement intervention → regulation</span> from the ISP drop-down · <span style="background:#DDF1EF;border-radius:3px;padding:0 3px">6 min, prompted</span> from your timer and what you said · <span style="background:#DDF1EF;border-radius:3px;padding:0 3px">objective 1.2</span> from the plan. Nothing else was invented.</div>
+          <div style="font-size:12px;line-height:1.5"><span style="background:#DDF1EF;border-radius:3px;padding:0 3px">refusal skills → relapse risk</span> from the ISP drop-down · <span style="background:#DDF1EF;border-radius:3px;padding:0 3px">craving 5 → 2 of 10</span> from what you said · <span style="background:#DDF1EF;border-radius:3px;padding:0 3px">objective 1</span> from the plan. Nothing else was invented.</div>
           <div style="display:flex;gap:6px;margin-top:8px"><button class="btn o" style="min-height:32px;padding:0 10px;font-size:12px">Good recommendation</button><button class="btn o" style="min-height:32px;padding:0 10px;font-size:12px;color:#8A2E1C">That didn't happen</button></div>
           
         </div>
 
-        <div style="font-size:12px"><span class="chip n">Movement intervention · QMHP 1.4 · Harvest's list</span></div>
+        <div style="font-size:12px"><span class="chip n">Refusal skills · SUD 1.4 · Harvest's list</span></div>
 
         <div>
           <div style="font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600;margin-bottom:2px">Checked before you press Process Form</div>
           <div class="ck"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{c1}}" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="{{c1p}}"></path></svg><div>{{c1t}}</div></div>
-          <div class="ck"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#217A78" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M9 12l2 2 4-4"></path></svg><div>Intervention on the ISP list — and <b>why</b> it was used (movement → regulation), not just that it happened</div></div>
+          <div class="ck"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#217A78" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M9 12l2 2 4-4"></path></svg><div>Intervention on the ISP list — and <b>why</b> it was used (refusal skills → relapse risk), not just that it happened</div></div>
           <div class="ck"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#217A78" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M9 12l2 2 4-4"></path></svg><div>Linked to an ISP objective; progress stated as a count, not a percentage</div></div>
-          <div class="ck"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#217A78" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M9 12l2 2 4-4"></path></svg><div>Frequency, duration and intensity present (6 min, prompted, moderate) — what the continued stay will need in 30 days</div></div>
+          <div class="ck"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#217A78" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M9 12l2 2 4-4"></path></svg><div>Count and craving rating present (twice, craving 5 → 2 of 10) — what the continued stay will need in 30 days</div></div>
         </div>
 
         <div>
           <div style="font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600;margin-bottom:2px">Contact time today</div>
           
-          <div class="stamp" style="border-top:0"><div>● 8:05–8:35</div><div>Morning check-in, classroom</div><div>30 m</div></div>
-          <div class="stamp"><div>● 9:50–11:05</div><div>In-class support, math &amp; reading</div><div>75 m</div></div>
-          <div class="stamp"><div>● 11:40–12:25</div><div>Lunch support</div><div>45 m</div></div>
-          <div class="stamp"><div>● 1:10–1:40</div><div>Movement intervention + co-regulation walk · voice memo 1:42</div><div>30 m</div></div>
-          <div class="stamp"><div>○ 1:40–3:10</div><div>Afternoon classes, transitions · <span style="color:#6F4A05">confirm</span></div><div>90 m</div></div>
-          <div class="stamp" style="font-weight:600"><div>Total</div><div>5 h 10 min → 3 units (5 h+)</div><div></div></div>
-          <div style="display:flex;align-items:center;gap:8px;margin-top:6px;border:1px solid #217A78;border-radius:8px;padding:8px 10px;background:#F2F9F8;font-size:12px"><div style="flex:1"><b>3 units used today for M.R.?</b> · 27 → 24 left on this authorization · checked against this page each time it is open</div><button class="btn p" style="min-height:32px;padding:0 10px;font-size:12px">Confirm</button></div>
+          <div class="stamp" style="border-top:0"><div>● 8:05–8:35</div><div>Check-in and craving ratings, group room</div><div>30 m</div></div>
+          <div class="stamp"><div>● 9:50–11:05</div><div>Relapse prevention skills group</div><div>75 m</div></div>
+          <div class="stamp"><div>● 11:40–12:25</div><div>Refusal skills practice, role play · voice memo 1:42</div><div>45 m</div></div>
+          <div class="stamp"><div>● 12:25–1:05</div><div>Individual session, motivational interviewing</div><div>40 m</div></div>
+          <div class="stamp"><div>● 1:10–1:40</div><div>Recovery support planning and a coping skills walk</div><div>30 m</div></div>
+          <div class="stamp" style="font-weight:600"><div>Total</div><div>3 h 40 min → 2 units (3 h to under 5 h)</div><div></div></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px;border:1px solid #217A78;border-radius:8px;padding:8px 10px;background:#F2F9F8;font-size:12px"><div style="flex:1"><b>2 units used today for M.R.?</b> · 27 → 25 left on this authorization · checked against this page each time it is open</div><button class="btn p" style="min-height:32px;padding:0 10px;font-size:12px">Confirm</button></div>
         </div>
 
         <div style="display:flex;gap:8px;margin-top:auto">
@@ -167,8 +167,8 @@ class Component extends DCLogic {
       tA: 'tog' + (a ? ' on' : ''), tB: 'tog' + (a ? '' : ' on'),
       pA: () => this.setState({ex:'a'}), pB: () => this.setState({ex:'b'}),
       srcLabel: a ? 'Said into the phone, 1:42 pm' : 'Typed in the narrative box',
-      said: a ? 'played basketball with him, he got frustrated when he lost and walked out, we did a walk and he came back' : 'Observed client during math; he stayed on task 15 of 30 min.',
-      narrative: a ? '' : 'Observed client during math; he stayed on task 15 of 30 min.',
+      said: a ? 'ran the refusal skills role play with M.R. in group, he practiced saying no to a drink at a party twice, craving was a 5 before and a 2 after' : 'Observed client during group; he stayed on task 15 of 30 min.',
+      narrative: a ? '' : 'Observed client during group; he stayed on task 15 of 30 min.',
       c1: a ? '#217A78' : '#8A2E1C', c1p: a ? 'M9 12l2 2 4-4' : 'M15 9l-6 6M9 9l6 6',
       c1t: a ? 'Billable verbs only — no "observed," "monitored," "watched"' : '"Observed" voids this unit in an audit. Replace with worked with / engaged / facilitated / prompted.'
     };

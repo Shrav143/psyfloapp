@@ -6,20 +6,20 @@ const NAME = { anthem: 'Anthem HealthKeepers', uhc: 'UnitedHealthcare', ffs: 'Me
 const CHANNEL = { fax: 'Fax', availity: 'Availity', portal: 'Portal' };
 
 export const DRAFTING_RULES = [
-  ['Dates within the last 30 days', 'anything offered as current evidence; older facts carry their date'],
-  ['Counts, never percentages', '"3 of 5 escalations", "6 dated occasions (Oct 2, 6, 9, 14, 20, 22)" — the forms ask that way'],
-  ['Frequency, duration, intensity', 'for every behaviour named (2–3×/week · 5–20 min · moderate)'],
-  ["Interventions named from Harvest's list", 'with why it was used (movement → regulation), not just that it happened'],
-  ['Every note names an ISP objective', 'and states progress as a count'],
-  ['No "observed"', 'direct-support notes say what the staffer did ("worked with", "prompted", "used")'],
-  ['Prior services carry provider, dates and outcome', 'an empty outcome blocks the draft and asks the question; "information about outpatient" and pro-bono contacts do not count as prior care'],
-  ['School counseling goes under care coordination', 'never as the failed prior service'],
-  ['Criterion 3 is left blank when 1 and 2 are met', 'two of three is enough; the panel says so'],
-  ['Nothing the clinician marked exclude', 'and nothing from the family that is not on the form\'s question; household disclosures stay out unless the clinician presses Include'],
-  ['Trauma-informed care and the admission decision are never drafted', 'Psyflo notes when the section was discussed and leaves the box to the clinician'],
-  ['Answer the question and stop', 'on information requests: three items asked, three answered, nothing added'],
-  ['Vary language across days', "if a staffer's last 30 notes share a paragraph, the enhancer varies it and the supervisor sees the pattern"],
-  ['Quiet day rule', 'a day with nothing to report says what was maintained and what still needed staff presence']
+  ["Dates within the last 30 days", "anything offered as current evidence; older facts carry their date"],
+  ["Counts, never percentages", "\"3 of 5 weekly screens negative\", \"6 dated use episodes (Oct 2, 6, 9, 14, 20, 22)\": the forms ask that way"],
+  ["Every dimension rated Moderate or higher is documented", "a rating of 2 or more needs an instrument score or dated records for that dimension (D1 withdrawal screen, D3 PHQ-9 or GAD-7, D5 dated use or screens); a rating of None or Mild is not argued"],
+  ["Interventions named from Harvest's list", "with why it was used (refusal skills practice before a weekend party), not just that it happened"],
+  ["Every note names a treatment plan goal", "and states progress as a count"],
+  ["No \"observed\"", "direct-support notes say what the staffer did (\"worked with\", \"prompted\", \"used\")"],
+  ["Prior treatment names the level, provider, dates and outcome", "an empty outcome blocks the draft and asks the question; \"information about outpatient\" and pro-bono contacts do not count as prior care"],
+  ["Referral partner counseling goes under care coordination", "never as the failed prior treatment"],
+  ["State the level and the dimensions that drive it", "the draft names the dimensions that are above the next lower level, from the stored ratings; when the ratings fit a lower level it asks the clinician for the reason"],
+  ["Nothing the clinician marked exclude", "and nothing from the family that is not on the form's question; household disclosures stay out unless the clinician presses Include"],
+  ["Psyflo never rates a dimension or chooses a level", "ratings and the level recommendation are the clinician's; drafts quote the stored assessment and leave a blank where the clinician must decide"],
+  ["Answer the question and stop", "on information requests: three items asked, three answered, nothing added"],
+  ["Vary language across days", "if a staffer's last 30 notes share a paragraph, the enhancer varies it and the supervisor sees the pattern"],
+  ["Quiet day rule", "a day with no use, no cravings and no concerns says what skill was practiced and what still needs follow-up"]
 ];
 
 register('PayerPlaybook', class extends Screen {

@@ -1,8 +1,10 @@
 # Scripted screening call · T.W. · Fri Oct 16, 2026, 2:04 pm
 
-Synthetic. Read aloud for Flow A, or use `screening_TW.txt` as the transcript input. Speakers: JP = Jordan Perez, LPC (screener). DR = Denise Rivers, grandmother and legal guardian.
+Synthetic. Read aloud for Flow A, or use `screening_TW.txt` as the transcript input. Speakers: JP = Jordan Perez, LPC (screener). DR = Denise Rivers, Tyler's grandmother (legal custody). Tyler is 16: daily cannabis, nicotine vape, anxiety.
 
-Boxes already filled before the call (from the referral and the family link): guardian name and relationship, phone, preferred language (English), Medicaid ID and plan (Humana Healthy Horizons, checked Oct 15), IEP (yes, copy attached).
+Boxes already filled before the call (from the referral and the family link): family member name and relationship, phone, preferred language (English), Medicaid ID and plan (Humana Healthy Horizons, checked Oct 15), referral source (the counselor who referred him).
+
+The call is the first evidence for the ASAM assessment that Jordan completes the same day (6 ratings, 0 to 4, the clinician's): each substance with its frequency, amount, route and last use; quit attempts; withdrawal history; prior treatment with provider, dates and outcome; who in the home uses; medications; suicidal thoughts asked directly.
 
 ---
 
@@ -10,73 +12,81 @@ JP: Hi Ms. Rivers, this is Jordan Perez from Harvest Outreach Center. Thanks for
 
 DR: That's fine.
 
-JP: Thank you. Just to confirm, you're Tyler's grandmother and his legal guardian?
+JP: Thank you. Just to confirm, you're Tyler's grandmother, and Tyler lives with you?
 
-DR: Yes, since he was four.
+DR: Yes, I've raised him since he was four. I have legal custody.
 
-JP: And the school said they've talked to you about this referral?
+JP: And Ms. Bell, the counselor who made the referral, has talked to you about it?
 
-DR: Ms. Bell called me last week. She said he's been getting in trouble a lot.
+DR: She called me last week. She said he was caught vaping and she could smell marijuana on him.
 
-JP: Let's talk about that. What does getting in trouble look like right now?
+JP: Let's talk about what Tyler is using. What do you know about marijuana first? How often?
 
-DR: Mostly fighting. Pushing kids, shoving. He shoved a boy at lunch two weeks ago and they sent him home. The school says it's two or three times a week.
+DR: Every day. He told me he started smoking last winter, so about eight months. Three or four times a day, he says.
 
-JP: How long do those last, and how bad do they get?
+JP: Do you know how much, and how he takes it?
 
-DR: Five minutes, maybe twenty if nobody gets to him. He doesn't hit to hurt, it's shoving. But he's had two office referrals this month already.
+DR: About a gram a day when he can get it. He smokes it, and he has a vape pen with the oil.
 
-JP: Does he ever leave the classroom or the building?
+JP: When did he last use?
 
-DR: About once a week. On the sixth he walked out to the parking lot and they gave him a day of in-school suspension.
+DR: Wednesday, the fourteenth. I found the pen in his jacket that night.
 
-JP: When he leaves, how long is he gone?
+JP: What about nicotine?
 
-DR: Ten minutes, half an hour. Once they found him by the buses.
+DR: He vapes every day too. Maybe one pod a week. He vaped this morning before he left the house.
 
-JP: Does he understand that leaving the building could be dangerous?
+JP: Any alcohol, or pills, or anything else?
 
-DR: I don't think he thinks about it. He just goes.
+DR: No alcohol that I know of. No pills, nothing like that. I check.
 
-JP: What about yelling, threats, that kind of thing?
+JP: Has he tried to cut down or stop?
 
-DR: Every day, pretty much. Not scary, just mouthing off, a few minutes and it's over.
+DR: Twice. In August and again in September. A week at the most each time.
 
-JP: Has he ever said anything about hurting himself?
+JP: What happens when he goes without? Shaking, sweating, being sick, trouble sleeping?
 
-DR: No. Never. I've asked him straight out.
+DR: He gets irritable and he doesn't sleep for a few days. No shaking, no throwing up, nothing like that.
 
-JP: Is he sleeping okay? Any sadness, keeping to himself?
+JP: Has Tyler had any counseling or treatment for this before?
 
-DR: He sleeps fine. He's not sad, he's mad. He does go to his room a lot after school.
-
-JP: Has he gotten counseling before, outside school?
-
-DR: A while ago. Piedmont Counseling, last spring. March to June, maybe six times. We stopped because I couldn't get him there after my hours changed.
+DR: Dr. Alvarez at Blue Ridge Pediatrics talked with him about it this past June. Two visits.
 
 JP: Did it help while he was going?
 
-DR: Not that I could see. The school was still calling.
+DR: Not that I could see. He kept using every day.
 
-JP: And at school, what have they tried?
+JP: And is anyone working with him right now?
 
-DR: There's a behavior person who sees him twice a week since September. And he checks in with somebody in the morning and afternoon. He has an IEP.
+DR: Ms. Bell sees him once a week since September.
 
-JP: Has the school talked about moving him to a different program or school?
+JP: Does anyone else in the home drink or use?
 
-DR: Ms. Bell brought it up twice. She said if it keeps up they'd have to look at other placements.
+DR: No. I don't drink and I don't smoke, and there is nothing in the house. But two of his friends smoke every day and he is with them after class.
 
-JP: Any medications, or anything medical I should know?
+JP: Any medications or medical conditions I should know about?
 
-DR: Just his inhaler for asthma. No other medicine.
+DR: No medicines and no medical problems. He had his sports physical in August.
+
+JP: Has he ever said anything about hurting himself or not wanting to be here?
+
+DR: No. Never. I've asked him straight out.
+
+JP: How has his mood been? Sleeping, worrying, sadness?
+
+DR: He worries a lot, and his stomach hurts when he is nervous. He is not sad.
+
+JP: How does Tyler feel about coming in?
+
+DR: He agreed to come. He wants to keep playing basketball, and the coach says he can't if he tests positive. He doesn't think he has to stop everything.
 
 JP: What does he do well? What does he like?
 
-DR: Basketball. Drawing. He's good one on one with an adult, it's the groups that set him off.
+DR: Basketball. Drawing. He's honest with me when I ask him straight.
 
-JP: That's helpful. Last thing: would afternoons work if we schedule the intake, and can you get to the school for it?
+JP: That's helpful. Last thing: the groups are three afternoons a week. Would afternoons work for the intake, and can you get him here?
 
-DR: Afternoons after two. I can get there.
+DR: Afternoons after three. I can drive him.
 
 JP: Thank you, Ms. Rivers. I'll text you the time. We'll see you next week.
 
@@ -84,22 +94,28 @@ JP: Thank you, Ms. Rivers. I'll text you the time. We'll see you next week.
 
 ## Expected output after Stop
 
-Psyflo drafts these boxes into the open Admission Screening form (all yellow, for the clinician to check):
+Psyflo drafts these boxes into the open Admission Screening form (all yellow, for the clinician to check). The last-use dates are worked out from the day of the call (Oct 16).
 
 | Box | Expected text |
 | --- | --- |
-| Guardian on the call | Grandmother (legal guardian) · (434) 555-0147 |
-| Physical aggression toward peers | Y · 2–3× / week · 5–20 min · Moderate · Shoved a classmate at lunch; 2 office referrals this month |
-| Leaving the classroom / building | Y · ~1× / week · 10–30 min · High · Left to the parking lot 10/6 — 1 day ISS |
-| Verbal aggression / threats | Y · Daily · <5 min · Low–mod |
-| Self-harm statements | N · Asked directly; grandmother says no |
-| Withdrawal / internalizing | Sleeps well; not sad per guardian; goes to his room after school |
-| Prior / current services | School counseling weekly since Sep 2025 — ongoing. Outpatient: Piedmont Counseling, Mar–Jun 2025, ~6 sessions, ended (transportation); no improvement seen |
-| School coordination to date | Behaviour interventionist 2×/week since Sep; check-in/check-out; IEP accommodations in place; school has raised alternative placement twice |
-| Medical · medications | No current medications; asthma, inhaler at school |
-| Strengths | Basketball; drawing; does well one-to-one with an adult |
+| Family member on the call | Grandmother (legal custody) · (434) 555-0147 |
+| Cannabis | Daily for about 8 months (3–4 times a day) · About 1 g a day · Smoked; vape pen · Oct 14 (Wed) |
+| Alcohol | None reported |
+| Nicotine (vape or cigarettes) | Daily · About 1 pod a week · Vaped · Oct 16 (the day of the call) |
+| Other substances (pills, opioids, stimulants) | None reported |
+| Prior treatment (provider · dates · outcome) | Blue Ridge Pediatrics (Dr. Alvarez), Jun (this past June · confirm the year), 2 visits; no change in use |
+| Current services to date | Weekly check-in with the counselor (Ms. Bell) since September |
+| Quit attempts and readiness to change | Two quit attempts (Aug, Sep), each a week at most. Agreed to come; wants to keep playing basketball; does not think they have to stop everything. |
+| Withdrawal history | Irritable and not sleeping for a few days when stopping; no shaking or vomiting |
+| Family substance use in the home | No one in the home uses; none is kept in the house |
+| Medical · medications | No current medications; no medical conditions |
+| Mood and anxiety symptoms | Worries a lot; stomach pain when nervous; not sad |
+| Suicidal thoughts and safety | Asked directly; grandmother says no |
+| Strengths | Basketball; drawing; honest with the family member when asked |
 | Narrative summary | One paragraph, drafted from the above, no new facts |
-| Meets admission criteria? | Left blank — the clinician decides |
-| Preliminary diagnosis | Left blank — the clinician decides |
+| Meets admission criteria? | Left blank: the clinician decides |
+| Preliminary diagnosis | Left blank: the clinician decides |
 
-Criteria check in the panel after the call: criterion 1 (relationships) shown; criterion 2 (failed prior service) now shown (Piedmont, dates, no improvement); criterion 3 (danger) partly shown (parking lot, "doesn't think about it"); level of care: alternative placement raised twice. Still missing from the school: unexcused absences, ISS/OSS days, classes taking/passing.
+Checks in the panel after the call: every substance reported has frequency, amount and last use; counts not percentages; dates within 30 days or labelled with a year; the prior treatment carries provider, dates and outcome; the current weekly check-in is listed apart from it; suicidal thoughts were asked directly.
+
+The prompts ("Before you hang up") tick one by one: Dimension 1 to 6 evidence (intoxication and withdrawal, medical, emotional and behavioral, readiness, relapse and continued use, recovery environment), prior treatment, suicidal thoughts asked, and schedule and transport for the level of care. Still missing from the record, because only the clinician or the referral partner can supply it: the ratings, the withdrawal screen, the urine drug screen result.

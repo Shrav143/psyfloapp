@@ -17,6 +17,9 @@ import { payerShort, clientLabel } from '../model.js';
 import { PROV, result, minN, sup, stat, cellText, todayOf, nowOf, day, inRange, periodOf, normPeriod, PERIODS, PERIOD_IDS, DEFAULT_PERIOD, median, r1, sum } from './common.js';
 import { populationPanels, outcomePanels, membersOf as factMembers, dxFromText, goalArea, ageBand, direction } from './panels.js';
 import { payerPanels, payerStrip } from './payer.js';
+import { asamPayerPanels, baselineAsamPanels } from './asam.js';
+import { clientLevel, requestReason, asamCheckOf, requestLevel } from '../sel/asam-view.js';
+import { assessmentsOf, ratingsOf, dueState } from '../asam.js';
 import { MEASURES, MEASURE, notesOnTime, prepTime, intakeToSra, missingCaught, submissionsWithReceipts, unresolvedRequests, NOTE_TYPE_LABEL, UNRESOLVED_KIND } from './metrics.js';
 
 const byId = (arr, id) => (arr || []).find(x => x.id === id);
@@ -102,7 +105,10 @@ export function clinicalFacts(s, ctx, P) {
     if (mine.some(i => inRange(i.date, P.from, P.to))) flags.push('safety');
     const recentNote = notes.some(n => { const d = day(n.processed_at || n.date); return d && daysBetween(d, t) <= 30 && daysBetween(d, t) >= 0; });
     const guardian = notes.some(n => n.type === 'weekly_guardian' && daysBetween(day(n.date), t) <= 30 && daysBetween(day(n.date), t) >= 0);
-    return { id: c.id, initials: c.initials, site: c.school, siteLabel: school.name || c.school, locality: school.locality || '', payer: auth.payer || (c.medicaid && c.medicaid.plan) || null, payerLabel: payerShort(s, auth.payer || (c.medicaid && c.medicaid.plan) || ''),
+    // ASAM: the latest assessment's level of care, reassessment state and ratings, and the first assessment's ratings (patients with two or more); null when not assessed
+    const asm = assessmentsOf(s, c.id).filter(a => a.dims); const lt = asm[0]; const lv = clientLevel(s, c.id).level;
+    const asam = lt ? { level: lv, state: dueState(s, lt, lv, t).state, ratings: ratingsOf(lt), first: asm.length > 1 ? ratingsOf(asm[asm.length - 1]) : null, n: asm.length, date: lt.date } : null;
+    return { id: c.id, initials: c.initials, site: c.school, siteLabel: school.name || c.school, level: lv, asam, locality: school.locality || '', payer: auth.payer || (c.medicaid && c.medicaid.plan) || null, payerLabel: payerShort(s, auth.payer || (c.medicaid && c.medicaid.plan) || ''),
       age: c.age != null ? c.age : null, ageBand: ageBand(c.age), program: 'TDT', status, stage: c.stage, enrolled: c.service_start || null, ended: c.discharged_on || null,
       dx: dxFromText(c.diagnosis), goals, ivs: [...ivs.values()], series: sc, monthly, feedback, svc: [...svc.values()], units: auth.units ? { authorized: auth.units, used: auth.used || 0 } : null,
       flags, have: { goals: (c.goals || []).length > 0, score: sc.some(x => x.points.length > 0), note: recentNote, guardian } };
@@ -112,6 +118,8 @@ export function clinicalFacts(s, ctx, P) {
 // one (site, period) slice of the clinical digest: panels with small groups suppressed, plus pilot measures 2 to 4 as figures
 export function clinicalSlice(s, ctx, P) {
   const facts = clinicalFacts(s, ctx, P); const env = { min: ctx.min, drill: ctx.drill, asOf: ctx.today, from: P.from };
+  // the payer-side ASAM panels: what the latest assessment said about the level each request asked for is read here, on the full state, and only counts leave (small groups suppressed)
+  const R = requestFacts(s, ctx, P).map(f => ({ ...f, state: asamCheckOf(s, f.client, (s.requests || []).find(r => r.id === f.id)).state }));
   const prep = prepTime(s, ctx, P), intake = intakeToSra(s, ctx, P), miss = missingCaught(s, ctx, P);
   const small = n => (n > 0 && n < ctx.min ? sup(ctx.min) : n);
   return {
@@ -121,7 +129,8 @@ export function clinicalSlice(s, ctx, P) {
       missing: { forms: miss.forms, items: miss.items, per100: miss.per100, flaggedForms: miss.flaggedForms }
     },
     population: populationPanels(facts, env).map(p => ({ ...p, provenance: PROV.CASE })),
-    outcomes: outcomePanels(facts, env).map(p => ({ ...p, provenance: PROV.CASE }))
+    outcomes: outcomePanels(facts, env).map(p => ({ ...p, provenance: PROV.CASE })),
+    asam: asamPayerPanels(R, { min: ctx.min })
   };
 }
 
@@ -131,8 +140,8 @@ export function clinicalSlice(s, ctx, P) {
 export const DIGEST_KEY = 'analytics_agg';
 let META = null;
 function panelMeta() {
-  if (META) return META; META = {}; const env = { min: 5, drill: false, asOf: '2000-01-01' };
-  for (const p of [...populationPanels([], env), ...outcomePanels([], env)]) META[p.id] = p;
+  if (META) return META; META = {}; const env = { min: 5, drill: false, asOf: '2000-01-01', meta: true };
+  for (const p of [...populationPanels([], env), ...outcomePanels([], env), ...asamPayerPanels([], env)]) META[p.id] = p;
   return META;
 }
 const KEEP = ['id', 'rows', 'total'];
@@ -146,7 +155,7 @@ export function digest(s, actor) {
   const put = p => { const sp = strip(p), k = JSON.stringify(sp); if (!seen.has(k)) { seen.set(k, pool.length); pool.push(sp); } return seen.get(k); };
   for (const site of sites) {
     const ctx = { ...base, site: site === 'all' ? '' : site, inScope: scopeFn(s, base.sites, site === 'all' ? '' : site) };
-    for (const p of PERIOD_IDS) { const sl = clinicalSlice(s, ctx, periodOf(base.today, p)); slices[`${site}|${p}`] = { pilot: sl.pilot, population: sl.population.map(put), outcomes: sl.outcomes.map(put) }; }
+    for (const p of PERIOD_IDS) { const sl = clinicalSlice(s, ctx, periodOf(base.today, p)); slices[`${site}|${p}`] = { pilot: sl.pilot, population: sl.population.map(put), outcomes: sl.outcomes.map(put), asam: sl.asam.map(put) }; }
   }
   return { v: 2, asOf: base.today, role: base.role, min: base.min, drill: base.drill, pool, slices };
 }
@@ -156,7 +165,7 @@ export function sliceFor(s, actor, F) {
   const key = `${F.site || 'all'}|${F.period}`; const d = s[DIGEST_KEY];
   if (d && d.slices && d.slices[key]) {
     let h = HYD.get(d); if (!h) { h = {}; HYD.set(d, h); }
-    if (!h[key]) { const sl = d.slices[key]; h[key] = { pilot: sl.pilot, population: sl.population.map(i => hydrate(d.pool[i])), outcomes: sl.outcomes.map(i => hydrate(d.pool[i])) }; }
+    if (!h[key]) { const sl = d.slices[key]; h[key] = { pilot: sl.pilot, population: sl.population.map(i => hydrate(d.pool[i])), outcomes: sl.outcomes.map(i => hydrate(d.pool[i])), asam: (sl.asam || []).map(i => hydrate(d.pool[i])) }; }
     return h[key];
   }
   if (actor && actor.role === 'clinician' && (s.clients || []).some(c => c.goals || c.diagnosis)) { const ctx = makeCtx(s, actor, F); return clinicalSlice(s, ctx, periodFor(s, F)); }
@@ -225,7 +234,8 @@ export function requestFacts(s, ctx, P, payerFilter = '') {
     else if (r.stage === 'partial_decide') { outcome = 'partial'; decided = day(r.offer_call) || null; }
     const anchor = sent || decided || day(r.drafted_at) || null;
     if (anchor && !(inRange(anchor, P.from, P.to) || (decided && inRange(decided, P.from, P.to)))) continue;
-    out.push({ id: r.id, client: r.client, payer: r.payer, payerLabel: payerShort(s, r.payer), type: r.type, svc: r.service, submitted: sent, decided, outcome, requested: r.units_requested || 0, approved, offered,
+    const rs = requestReason(s, r); const asmRow = (s.asam_assessments || []).find(a => a.client === r.client && a.request_level);
+    out.push({ id: r.id, client: r.client, level: requestLevel(r) || (asmRow ? String(asmRow.request_level) : null), dims: rs.dims, lvl: rs.level, reasonText: !!rs.text, payer: r.payer, payerLabel: payerShort(s, r.payer), type: r.type, svc: r.service, submitted: sent, decided, outcome, requested: r.units_requested || 0, approved, offered,
       reason: r.denial_reason || (r.decision_log || []).map(d => d.reason).find(Boolean) || null, appealed: r.stage === 'appeal_sent' || !!r.appeal, appealOutcome: (r.appeal && r.appeal.outcome) || null, renewal: r.type === 'continued_stay',
       days: sent && decided ? Math.max(0, daysBetween(sent, decided)) : null, stage: r.stage, extraWork: ['info_requested', 'peer_to_peer_requested', 'peer_to_peer_booked', 'p2p_awaiting', 'appeal_sent'].includes(r.stage) || !!r.p2p_at || !!r.info_requested_at || !!r.appeal || (r.decision_log || []).some(d => d.kind === 'p2p') });
   }
@@ -264,7 +274,12 @@ export function payerSection(s, rawF, actor) {
     rows: up.map(r => ({ when: r.when, what: r.what, case: r.case, src: r.src, _rule: r._rule, _payer: r._payer, _route: { id: 'DenialCase', params: { id: r._id } }, _past: r.past })), limit: 4,
     definition: 'Dated payer work on open requests: replies due, calls, windows closing and continued-stay renewals. Each date carries its source: a rule with its verification label, or a date a person recorded.', empty: 'No dated payer work on open requests.' });
   const undated = (s.requests || []).filter(r => ctx.inScope(r.client) && (!F.payer || r.payer === F.payer)).length - R.length;
-  return { dataset: PROV.CASE, strip: payerStrip(R, ctx.min), panels, period: P, filters: F, asOf: ctx.today, source: CASE_SOURCE, notes: undated > 0 ? [`${undated} request${undated === 1 ? '' : 's'} outside this period or with no recorded date are not counted.`] : [] };
+  // the ASAM panels (outcomes by level, reasons by dimension, denials by level-of-care reading) come from the same digest as the other aggregates: they read the ratings, which not every role holds
+  const sl = sliceFor(s, actor, F); const asam = !F.payer && sl && sl.asam ? sl.asam : [];
+  panels.push(...asam);
+  const notes = undated > 0 ? [`${undated} request${undated === 1 ? '' : 's'} outside this period or with no recorded date are not counted.`] : [];
+  if (F.payer) notes.push('The ASAM panels (level of care, reason by dimension) are for all payers: clear the payer filter to see them.');
+  return { dataset: PROV.CASE, strip: payerStrip(R, ctx.min), panels, period: P, filters: F, asOf: ctx.today, source: CASE_SOURCE, notes };
 }
 
 // ---------- the seeded baseline, labelled "Sample data, illustrative" ----------
@@ -288,6 +303,7 @@ export function baselinePanels(s) {
     definition: `${label}. Requests, partial rate and decision days per payer are seeded sample figures. Payers with fewer than ${min} requests are not shown.` });
   const loc = b.by_locality || {};
   P.push({ id: 'base.localities', title: 'Localities, sample', kind: 'table', ...common, columns: C('Locality', ['n', 'Decided'], ['partial', 'Partial'], ['aw', 'Awarded vs asked']), rows: Object.entries(loc).map(([k, v]) => ({ label: { cc: 'Campbell County', lc: 'Lynchburg City' }[k] || k, n: v.n, partial: Math.round(v.partial * 100) + '%', aw: Math.round(v.awarded_ratio * 100) + '%' })), definition: `${label}. By locality.` });
+  P.push(...baselineAsamPanels(s, min).map(p => ({ ...p, provenance: PROV.EXPORT })));
   return P;
 }
 
