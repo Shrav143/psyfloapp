@@ -90,13 +90,13 @@ M-088,Portal bridge,Keep,PRESERVED,"file web/panel/bridge.js · file extension/b
 M-089,Single global store + persistence,Keep + hooks,PRESERVED,state key rev · code: persistence file · code: store hooks,server/psyflo/store.js; server/index.js server/psyflo/actions/core.js
 M-090,SSE sync,Keep,PRESERVED,GET /api/stream answers,200
 M-091,Presets live / canvas,Presenter,MOVED,"action demo.reset registered with a capability entry · presets live and canvas · suite ui-kit PASS, fixtures PASS",canvas
-M-092,Seed merge,Keep,PRESERVED,code: seed merge from seed/extra,web/js/screens/DenialCase.js web/js/shared/rules.js
+M-092,Seed merge,Keep,PRESERVED,code: seed merge from seed/extra,web/js/screens/DenialCase.js web/js/shared/asam.js
 M-093,Audit events,Extend (actor kind),MOVED,every audit event has actor_kind,
 M-094,PDF writer,Extend raw-bytes path,MOVED,file server/pdf.js,
 M-095,File store,Keep,PRESERVED,code: file store route,web/js/screens/Submission.js web/js/screens/UiKit.js
 M-096,Sfax stub,Keep (labelled),PRESERVED,"code: Sfax stub (labelled Simulated) · action request.send registered with a capability entry · suite authorizations PASS, flowC PASS",web/js/screens/Analytics.js web/js/screens/Authorization.js
 M-097,SMS and email stubs,Keep,PRESERVED,code: SMS stub · code: email stub,web/js/screens/Eligibility.js web/js/screens/Referral.js; server/psyflo/actions/x-referrals.js
-M-098,Drafting engine + 14 checks,Keep; add finding schema,PRESERVED,code: 14 checks · drafting checks,web/js/shared/draft.js; 7 groups
+M-098,Drafting engine + 14 checks,Keep; add finding schema,PRESERVED,code: 14 checks · drafting checks,web/js/shared/draft.js; 8 groups
 M-099,Notes drawer,Presenter drawer,MOVED,"route /WhereThingsLive as jperez · suite ui-kit PASS, fixtures PASS",lands on #/WhereThingsLive
 M-100,Demo bar,Presenter toolbar,MOVED,"code: presenter dock · suite ui-kit PASS, fixtures PASS",web/js/api.js web/js/app.js
 M-101,Generated sidebar,Three-tab nav,MOVED,code: data-driven nav,web/js/screens/Users.js web/js/shared/nav.js
@@ -222,7 +222,7 @@ V-029,Roles permission editor,PORT (permission matrix),MOVED,"route /Settings as
 V-030,Unit rules editor,PORT,MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=units
 V-031,Reimbursement rates / money exposure,Defer (Tier 3),DROPPED-WITH-REASON,"suite roles PASS, settings PASS",claims disputes and money exposure are Tier 3 roadmap labels [00 §7 Tier 3]
 V-032,Audit trail,PORT (map to master `events`),MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=audit
-V-033,Payer requirement registry,PORT → rules (spec 4.6),MOVED,"state key rules · rules table · suite denials PASS, denials-ui PASS, rules PASS",73 rules
+V-033,Payer requirement registry,PORT → rules (spec 4.6),MOVED,"state key rules · rules table · suite denials PASS, denials-ui PASS, rules PASS",72 rules
 V-034,Eligibility vs benefits,PORT (Eligibility enhancement),MOVED,"route /Referral as jperez · suite referrals PASS, flowD PASS",lands on #/Referral?id=REF-118&panel=eligibility
 V-035,Alerts,REPLACE with Dashboard alerts,REPLACED-BY,route /Dashboard as jperez · suite mywork PASS,lands on #/Dashboard
 V-036,History dropdown,REFACTOR (drop voice/agent actors),MOVED,"code: history component · suite authorizations PASS, flowC PASS",web/js/screens/DenialCaseViews.js web/js/screens/UiKit.js

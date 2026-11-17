@@ -59,13 +59,13 @@ await T.test('S5 by clicking: D.W. partial -> what Sentara said, evidence, all p
   await p.getByRole('link', { name: /R-0402/ }).first().click(); await p.waitForSelector('.d-menu');
   assert.match(await txt(p), /D\.W\., 15[\s\S]*Partial approval/); assert.match(await txt(p), /Recommended next steps[\s\S]*0 of 7 done/);
   await p.getByRole('link', { name: /^What Sentara said/ }).click(); assert.match(await txt(p), /Decision details[\s\S]*Document[\s\S]*Evidence missing — verify the document reference/);
-  await p.getByRole('link', { name: /^Clinical evidence/ }).click(); assert.match(await txt(p), /Evidence missing — verify previous treatment outcome/); assert.match(await txt(p), /Physical aggression toward a peer/);
+  await p.getByRole('link', { name: /^Clinical evidence/ }).click(); assert.match(await txt(p), /Evidence missing — verify what is likely to happen at a lower level of care/); assert.match(await txt(p), /Urine drug screen · THC positive/);
   await p.getByRole('link', { name: /^Overview/ }).click(); await p.locator('#d-paths > summary').click(); const opt = await txt(p);
   assert.match(opt, /Accept decision/); assert.match(opt, /Prepare peer-to-peer/); assert.match(opt, /Payer rule not verified/); assert.match(opt, /Not available here \(2\)/);
   await p.locator('#d-paths .d-opt').filter({ hasText: 'Prepare peer-to-peer' }).getByRole('button', { name: 'Open' }).click(); await p.waitForSelector('#d-h-p2p');
   await p.getByRole('button', { name: /Ask Sentara for a peer-to-peer/ }).click(); await p.getByRole('dialog').getByRole('button', { name: 'Log the request' }).click(); await p.waitForTimeout(700);
   await p.getByRole('button', { name: 'Draft from records' }).click(); await p.waitForTimeout(700);
-  assert.match(await txt(p), /Evidence missing — verify the risk of a more restrictive setting/); assert.match(await txt(p), /Simulated/);
+  assert.match(await txt(p), /Evidence missing — verify what is likely to happen at a lower level of care/); assert.match(await txt(p), /Simulated/);
   await p.getByRole('button', { name: 'Mark reviewed' }).click(); await p.waitForTimeout(400);
   await p.getByRole('button', { name: 'Set the call' }).click(); await p.fill('#d-when', '2026-11-19T14:00'); await p.getByRole('dialog').getByRole('button', { name: 'Save the call' }).click(); await p.waitForTimeout(600);
   await p.getByRole('button', { name: 'Log the outcome' }).click(); const dlg = p.getByRole('dialog');
@@ -86,8 +86,8 @@ await T.test('K.T. information reply: Evidence-missing blocks review, an edit cl
   const p = await open('jperez'); await p.goto(BASE + '/#/DenialCase?id=R-0408&section=action&action=info'); await p.waitForSelector('#d-h-info');
   assert.match(await txt(p), /2 h left of 24/); await p.getByRole('button', { name: 'Draft from records' }).click(); await p.waitForTimeout(700);
   assert.ok(await p.getByRole('button', { name: 'Mark reviewed' }).isDisabled(), 'review is blocked while a placeholder remains');
-  await p.locator('.d-secdoc').nth(2).getByRole('button', { name: 'Edit' }).click();
-  const ta = p.locator('.d-edit textarea'); await ta.fill((await ta.inputValue()).replace(/\[Evidence missing[^\]]*\]/, 'The clinician states the supports do not include de-escalation in unstructured periods.'));
+  await p.locator('.d-secdoc').nth(1).getByRole('button', { name: 'Edit' }).click();
+  const ta = p.locator('.d-edit textarea'); await ta.fill((await ta.inputValue()).replace(/\[Evidence missing[^\]]*\]/, 'The clinician adds the CIWA-Ar score and the last-use date from the intake visit.'));
   await p.getByRole('button', { name: 'Save section' }).click(); await p.waitForTimeout(600);
   await p.getByRole('button', { name: 'Mark reviewed' }).click(); await p.waitForTimeout(400);
   const [popup] = await Promise.all([p.context().waitForEvent('page'), (async () => { await p.getByRole('button', { name: /Open Availity and send/ }).click(); await p.getByRole('dialog').getByRole('button', { name: /Open Availity/ }).click(); })()]);
@@ -154,7 +154,7 @@ await T.test('keyboard and dialogs: tabs and rows are reachable, the dialog trap
 await T.test('overview (artifact layout): header card with the process line, left menu, seven steps; Analyze opens a slide-over and fills "Where the denial is weak"; the review and the documentation request are saved', async () => {
   await reset('canvas');
   const p = await open('jperez'); await p.goto(BASE + '/#/DenialCase?id=R-0408'); await p.waitForSelector('.d-menu');
-  const hd = await p.locator('.ui-hcard').innerText(); assert.match(hd, /K\.T\., 9/); assert.match(hd, /Information request/); assert.match(hd, /Update status/); assert.match(hd, /Call payer · voice agent/); assert.match(hd, /Open in Authorizations/); assert.match(hd, /Open in Lauris/);
+  const hd = await p.locator('.ui-hcard').innerText(); assert.match(hd, /K\.T\., 16/); assert.match(hd, /Information request/); assert.match(hd, /Update status/); assert.match(hd, /Call payer · voice agent/); assert.match(hd, /Open in Authorizations/); assert.match(hd, /Open in Lauris/);
   assert.deepEq(await p.$$eval('.d-steps li b', bs => bs.map(b => b.innerText)), ['Decision received', 'Clinical review', 'Response prepared', 'Submitted', 'Payer response', 'Resolved']); assert.eq(await p.locator('.d-steps [aria-current=step]').count(), 1);
   const menu = await p.locator('.d-menu').innerText(); for (const w of ['REVIEW', 'Overview', 'What Anthem asked', 'Clinical evidence', 'Where the denial is weak', 'RESPOND', 'Reply to Anthem', 'Appeal draft', 'Peer-to-peer script', 'Reconsideration', 'Documentation request']) assert.ok(menu.includes(w), 'menu has ' + w);
   assert.deepEq(await p.$$eval('.d-act__t b', bs => bs.map(b => b.innerText)), ['Analyze Denial', 'Identify Missing Evidence', 'Request Additional Documentation', 'Generate Appeal Draft', 'Generate Peer-to-Peer Script', 'Prepare Reconsideration', 'Mark for Clinical Review']);
@@ -162,11 +162,11 @@ await T.test('overview (artifact layout): header card with the process line, lef
   assert.ok(await p.locator('mark.d-miss, .ui-evidence').count() >= 1, 'the chart facts carry their sources');
   await p.getByRole('button', { name: /^Analyze Denial/ }).first().click(); const dr = p.getByRole('dialog'); await dr.waitFor(); assert.match(await dr.innerText(), /Analyze Denial[\s\S]*rule-based[\s\S]*Simulated/); assert.match(await dr.innerText(), /Strong|Gap/);
   await dr.getByRole('button', { name: 'Open the full analysis' }).click(); await p.waitForTimeout(400);
-  const w = await txt(p); assert.match(w, /Where the denial is weak[\s\S]*Analyzed Oct 29/); assert.match(w, /Gap[\s\S]*Not documented: why the IEP supports are not enough/); assert.match(w, /Risk[\s\S]*illustrative samples/); assert.match(w, /Strong[\s\S]*The record answers/);
+  const w = await txt(p); assert.match(w, /Where the denial is weak[\s\S]*Analyzed Oct 29/); assert.match(w, /Gap[\s\S]*Not documented: D1: a withdrawal screen/); assert.match(w, /Risk[\s\S]*illustrative samples/); assert.match(w, /Strong[\s\S]*The record answers/);
   assert.ok(!/likel|probab|chance of|%/i.test(await p.locator('.d-wk').innerText()), 'no likelihood is given');
   const d = (await state('jperez')).disputes.find(x => x.request === 'R-0408'); assert.eq(d.analysis.by, 'jperez');
-  await p.getByRole('link', { name: /^Documentation request/ }).click(); await p.waitForTimeout(300); await p.getByLabel('School counselor').check(); await p.getByRole('button', { name: 'Record the request' }).click(); await p.waitForTimeout(700);
-  assert.match(await txt(p), /Requested from School counselor[\s\S]*Psyflo sends no message[\s\S]*Requested[\s\S]*why the IEP supports are not enough/);
+  await p.getByRole('link', { name: /^Documentation request/ }).click(); await p.waitForTimeout(300); await p.getByLabel('Referral partner').check(); await p.getByRole('button', { name: 'Record the request' }).click(); await p.waitForTimeout(700);
+  assert.match(await txt(p), /Requested from Referral partner[\s\S]*Psyflo sends no message[\s\S]*Requested[\s\S]*D1: a withdrawal screen/);
   await p.getByRole('button', { name: 'Mark received' }).click(); await p.waitForTimeout(500); assert.match(await txt(p), /1 of 1 received[\s\S]*Received/);
   await p.getByRole('link', { name: /^Overview/ }).click(); await p.waitForTimeout(250); await p.getByRole('button', { name: /^Mark for Clinical Review/ }).click(); const rv = p.getByRole('dialog'); await rv.waitFor(); assert.match(await rv.innerText(), /What the reviewer will find[\s\S]*Analyze Denial[\s\S]*Request Additional Documentation/);
   await rv.getByRole('button', { name: 'Mark for Clinical Review' }).click(); await p.waitForTimeout(700); const o = await txt(p); assert.match(o, /Clinical review · Jordan Perez/); assert.match(o, /3 of 7 done|4 of 7 done/);

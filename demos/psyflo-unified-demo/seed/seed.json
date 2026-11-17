@@ -86,7 +86,7 @@
     {"id": "AM", "initials": "A.M.", "age": 16, "sex": "F", "school": "CC-ES2", "harvest_no": 3360, "stage": "in_service", "diagnosis": "F10.10, F13.10", "substance": "Alcohol · non-prescribed pills", "incidents_3mo": 3},
     {"id": "LV", "initials": "L.V.", "age": 16, "sex": "F", "school": "CC-HS1", "harvest_no": 4110, "stage": "in_service", "diagnosis": "F10.10, F40.10", "substance": "Alcohol", "authorization": {"payer": "humana", "service": "after_school", "units": 60, "used": 22}},
     {"id": "SB", "initials": "S.B.", "age": 14, "sex": "F", "school": "CC-MS1", "harvest_no": 4210, "stage": "in_service", "diagnosis": "F12.10, F41.1", "substance": "Cannabis", "authorization": {"payer": "uhc", "units": 80, "used": 66}},
-    {"id": "PG", "initials": "P.G.", "age": 17, "sex": "M", "service_line": "outpatient", "school": "LC-MS2", "harvest_no": 4300, "stage": "in_service", "diagnosis": "F12.21, F41.1", "substance": "Cannabis · early remission", "authorization": {"payer": "aetna", "service": "outpatient", "units": 24, "used": 5}}
+    {"id": "PG", "initials": "P.G.", "age": 17, "sex": "M", "school": "LC-MS2", "harvest_no": 4300, "stage": "in_service", "diagnosis": "F12.21, F41.1", "substance": "Cannabis · early remission", "authorization": {"payer": "aetna", "service": "outpatient", "units": 24, "used": 5}}
   ],
   "referrals": [
     {"id": "REF-121", "client": "A.R., 14", "school": "LC-ES3", "received": "2026-10-28", "stage": "needs_screening", "source": "Family self-referral", "reason": "Cannabis use the family wants help with; no treatment so far", "next": "Family link opened · insurance step not done"},
@@ -111,7 +111,7 @@
     {"id": "R-0384", "client": "EC", "payer": "anthem", "channel": "availity", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "initial", "units_requested": 90, "stage": "denied", "denied_on": "2026-10-22", "notice_date": "2026-10-22", "denial_reason": "already connected to other services", "appeal_deadline": "2026-12-21"},
     {"id": "R-0395", "client": "SB", "payer": "uhc", "channel": "portal", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "continued_stay", "units_requested": 150, "units_awarded": 80, "stage": "active"},
     {"id": "R-0380", "client": "LV", "payer": "humana", "channel": "fax", "service": "TDT after-school · H2016-UG", "asam_level": "2.1", "type": "continued_stay", "units_requested": 60, "units_awarded": 60, "stage": "active"},
-    {"id": "R-0377", "client": "PG", "payer": "aetna", "channel": "fax", "service": "Outpatient", "asam_level": "1", "service_line": "outpatient", "type": "continued_stay", "units_requested": 24, "units_awarded": 24, "stage": "active"}
+    {"id": "R-0377", "client": "PG", "payer": "aetna", "channel": "fax", "service": "Outpatient", "asam_level": "1", "type": "continued_stay", "units_requested": 24, "units_awarded": 24, "stage": "active"}
   ],
   "notes_sample": [
     {"client": "MR", "staff": "khale", "date": "2026-10-29", "type": "daily", "illustrative": true, "direct_time_min": 220, "units": 2, "objective": 1, "interventions": ["SUD 1.4", "SUD 1.2", "SUD 1.3"], "mood": "Craving 5 of 10 → 2 of 10", "progress": "Partial – skill used after prompt",

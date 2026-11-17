@@ -57,7 +57,7 @@ async function run(mode) {
     });
     await F.step('2 evidence and options: dated sourced evidence, "Evidence missing — verify …" for what is not stored, only valid options, unverified paths labelled', async () => {
       await desk.goto(BASE + '/#/DenialCase?id=R-0402&section=evidence'); await desk.waitForSelector('.d-menu');
-      let t = await rootText(desk); assert.match(t, /Evidence missing — verify previous treatment outcome/); assert.match(t, /Physical aggression toward a peer/);
+      let t = await rootText(desk); assert.match(t, /Evidence missing — verify what is likely to happen at a lower level of care/); assert.match(t, /Urine drug screen · THC positive/); assert.match(t, /D5 · Relapse and continued use · rated 3/, 'the clinician\'s dimension ratings are listed as evidence');
       await desk.getByRole('link', { name: /^Overview/ }).click(); await desk.locator('#d-paths > summary').click(); t = await rootText(desk);
       assert.match(t, /Accept decision/); assert.match(t, /Prepare peer-to-peer/); assert.match(t, /Payer rule not verified/); assert.match(t, /Not available here \(2\)/);
     });
@@ -72,7 +72,7 @@ async function run(mode) {
     });
     await F.step('4 brief and schedule: "Draft from records" prints Evidence missing items and Simulated; Mark reviewed; Set the call stores p2p_at (stage booked)', async () => {
       await desk.getByRole('button', { name: 'Draft from records' }).click(); await desk.waitForTimeout(700);
-      const t = await rootText(desk); assert.match(t, /Evidence missing — verify the risk of a more restrictive setting/); assert.match(t, /Simulated/);
+      const t = await rootText(desk); assert.match(t, /Evidence missing — verify what is likely to happen at a lower level of care/); assert.match(t, /Simulated/);
       await desk.getByRole('button', { name: 'Mark reviewed' }).click(); await desk.waitForTimeout(400);
       await desk.getByRole('button', { name: 'Set the call' }).click(); await desk.fill('#d-when', '2026-11-19T14:00'); await desk.getByRole('dialog').getByRole('button', { name: 'Save the call' }).click();
       const s = await waitState(x => !!req(x, 'R-0402').p2p_at, { what: 'p2p_at' }); assert.match(req(s, 'R-0402').p2p_at, /^2026-11-19/); assert.ok(s.reminders.some(r => /D\.W|R-0402|peer/i.test(JSON.stringify(r))) || s.events.some(e => e.record === 'R-0402' && /call/i.test(e.what)), 'a reminder or timeline event for the call');
@@ -119,7 +119,7 @@ async function run(mode) {
       await desk.goto(BASE + '/#/DenialCase?id=R-0408&section=action&action=info'); await desk.waitForSelector('#d-h-info');
       assert.match(await rootText(desk), /2 h left of 24/); await desk.getByRole('button', { name: 'Draft from records' }).click(); await desk.waitForTimeout(700);
       assert.ok(await desk.getByRole('button', { name: 'Mark reviewed' }).isDisabled(), 'review is blocked while a placeholder remains');
-      await desk.locator('.d-secdoc').nth(2).getByRole('button', { name: 'Edit' }).click(); const ta = desk.locator('.d-edit textarea'); await ta.fill((await ta.inputValue()).replace(/\[Evidence missing[^\]]*\]/, 'The clinician states the supports do not include de-escalation in unstructured periods.'));
+      await desk.locator('.d-secdoc').nth(1).getByRole('button', { name: 'Edit' }).click(); const ta = desk.locator('.d-edit textarea'); await ta.fill((await ta.inputValue()).replace(/\[Evidence missing[^\]]*\]/, 'The clinician adds the CIWA-Ar score and the last-use date from the intake visit.'));
       await desk.getByRole('button', { name: 'Save section' }).click(); await desk.waitForTimeout(600); await desk.getByRole('button', { name: 'Mark reviewed' }).click(); await desk.waitForTimeout(400);
       assert.eq(req(await state('jperez'), 'R-0408').stage, 'info_requested', 'nothing is sent before the portal confirms');
       const [popup] = await Promise.all([desk.context().waitForEvent('page'), (async () => { await desk.getByRole('button', { name: /Open Availity and send/ }).click(); await desk.getByRole('dialog').getByRole('button', { name: /Open Availity/ }).click(); })()]);
