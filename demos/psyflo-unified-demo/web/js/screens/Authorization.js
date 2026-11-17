@@ -13,9 +13,10 @@ import { openPortal, diHref } from './Authorizations.js';
 import { srcHint, lockHint, missHint, ownerControl } from './a-fmt.js';
 import { A_CSS } from './a-css.js';
 import { openFlagDialog, flagButton } from './a-flag.js';
+import { ASAM_CSS, levelSection } from './asam-ui.js';
 
-const TITLES = { documents: 'Clinical documentation', evidence: 'Evidence', submission: 'Submission', units: 'Requested vs approved', payer: 'Payer decision', tasks: 'Related tasks', transition: 'Transition' };
-const LEFT = ['units', 'documents', 'evidence', 'tasks', 'transition'];
+const TITLES = { level: 'Level of care', documents: 'Clinical documentation', evidence: 'Evidence', submission: 'Submission', units: 'Requested vs approved', payer: 'Payer decision', tasks: 'Related tasks', transition: 'Transition' };
+const LEFT = ['units', 'level', 'documents', 'evidence', 'tasks', 'transition'];
 const SEC_IDS = [...Object.keys(TITLES), 'history', 'deadlines', 'renewal'];
 const SEC_ALIAS = { timeline: 'history' };
 const STEPS = ['Drafted', 'Submitted', 'Payer decision', 'In force', 'Renewal'];
@@ -34,7 +35,7 @@ register('Authorization', class extends Screen {
     this.state = { hist: { open: true, filter: '' }, plan: null };
     this.scrollTo = sec;
   }
-  get css() { return A_CSS; }
+  get css() { return A_CSS + ASAM_CSS; }
   get me() { return session.actor; }
   laurisHref(path) { return `${api.config.laurisURL}/login?as=${encodeURIComponent((this.me && this.me.id) || 'jperez')}&next=${encodeURIComponent(path)}`; }
   authPath(c) { return c.laurisNo ? `/consumers/${c.laurisNo}?tab=auth` : '/authorizations'; }
@@ -138,6 +139,16 @@ register('Authorization', class extends Screen {
     return `<div class="a-fban" role="status" id="a-fban"><span class="a-fban__t"><b>Flagged for attention</b> · ${esc(f.reasonLabel || '')} · by ${esc(f.byName || f.byShort || f.by)}, ${esc(fmtDateTime(f.at))}${note}</span><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-flag="${esc(c.id)}">Review flag</button></div>`;
   }
   dl(rows) { return `<dl class="ui-sdl">${rows.filter(Boolean).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join('')}</dl>`; }
+  // Level of care: computed from the stored assessments (sel/asam-view.js over web/js/shared/asam.js): the six ratings with the clinician's note and the date,
+  // what the ratings say about the level asked for, the change since the assessment before, the reassessment clock with its rule chip, the clinician's plan.
+  // No assessment: "Not assessed" and the way to the assessment in Lauris (a clinician opens it; the others are told who does).
+  sec_level(c) {
+    const rd = c.asam; const k = c.caps;
+    const href = this.laurisHref(c.laurisNo ? `/consumers/${c.laurisNo}/session/cna` : '/consumers');
+    const assess = k.clinical ? `<a class="ui-btn ui-btn--secondary" href="${esc(href)}" target="_blank" rel="noopener">Open the ASAM assessment in Lauris${icon('external')}</a>` : `<span class="a-why">Needs clinician</span>`;
+    const sec = levelSection(rd, { hist: c.asamHistory[0] || null, name: c.label, text: k.viewText, assess });
+    return { sum: sec.sum, chip: sec.chip, body: sec.body };
+  }
   sec_documents(c) {
     const items = c.docs.map(d => {
       const open = d.href ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(d.href)}" target="_blank" rel="noopener">Open${icon('external')}</a>` : d.lauris && this.c.caps.clinical ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(this.laurisHref(`/consumers/${d.lauris.no}/session/${d.lauris.form}`))}" target="_blank" rel="noopener">Open in Lauris${icon('external')}</a>` : '';

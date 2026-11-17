@@ -26,23 +26,27 @@
         "signed_pdf": "R-0408_K.T._initial_signed.pdf"
       },
       "info": {
-        "asked": "Please provide additional clinical information to support medical necessity: (1) frequency and duration of physical aggression within the last 30 days; (2) documentation of prior outpatient treatment and outcome; (3) current IEP supports and why they are insufficient.",
+        "asked": "Please provide additional clinical information to support the level of care requested: (1) frequency and amount of alcohol and other substance use in the last 30 days, with any urine drug screen or breath alcohol results; (2) withdrawal history and current withdrawal risk; (3) prior treatment at a lower level of care and its outcome; (4) current living situation and recovery supports; (5) current ASAM dimensional ratings and the level of care requested.",
         "items": [
-          "Frequency and duration of physical aggression within the last 30 days",
-          "Prior outpatient treatment and outcome",
-          "Current IEP supports and why they are insufficient"
+          "Frequency and amount of use in the last 30 days, with any screen results",
+          "Withdrawal history and current withdrawal risk",
+          "Prior treatment at a lower level of care and its outcome",
+          "Current living situation and recovery supports",
+          "Current ASAM dimensional ratings and the level of care requested"
         ],
         "answers": [
-          "Between September 29 and October 28, K.T. was physically aggressive toward peers on seven dated occasions (October 2, 6, 9, 14, 17, 22 and 27)<sup>1</sup>, each lasting 5–15 minutes at moderate intensity and requiring staff de-escalation<sup>1</sup>. Two of these incidents resulted in office referrals<sup>2</sup>. This frequency is unchanged from the 2–3 times per week reported at screening<sup>3</sup>.",
-          "K.T. attended weekly outpatient counseling at Piedmont Counseling from January to April 2026, nine sessions<sup>4</sup>. Treatment ended when the family lost transportation. The school's incident count did not decrease during or after that period (four incidents in March, five in April)<sup>2</sup>.",
-          "K.T.'s IEP, reviewed March 2026, provides a behaviour plan, preferential seating and a check-in/check-out system<sup>5</sup>. These supports are classroom-based and delivered by school personnel; they do not provide daily clinical intervention or de-escalation during unstructured periods, where five of the seven incidents above occurred<sup>1</sup>. TDT adds licensed clinical oversight and three units of direct intervention per school day, which the IEP cannot provide<sup>3</sup>."
+          "At the screening call on October 9 the family reported that K.T. drank on 7 of the previous 30 days (September 9 to October 8), five to eight drinks each time<sup>1</sup>. Two attempts to stop in that period each lasted under a week<sup>2</sup>. No urine drug screen or breath alcohol result is on file yet<sup>1</sup>.",
+          "K.T. had tremor and nausea after a weekend binge in August and needed no medication<sup>2</sup>. Her last drink was October 4 and she has had no withdrawal symptoms in the last 30 days<sup>2</sup>. The October 9 assessment rates withdrawal potential 2 (Moderate)<sup>2</sup>.",
+          "K.T. attended weekly outpatient counseling at Piedmont Counseling (Level 1) from January to April 2026, nine sessions<sup>3</sup>. Treatment ended when the family lost transportation. Drinking episodes did not decrease during or after that period (four in March, five in April)<sup>3</sup>.",
+          "K.T. lives with her father and stepmother; alcohol is kept unlocked in the home<sup>4</sup>. An aunt who lives nearby has offered rides<sup>4</sup>. She was referred through juvenile court diversion and said at intake she is not sure drinking is a problem<sup>5</sup>.",
+          "Ratings on October 9<sup>2</sup>: withdrawal potential 2, medical conditions 1, emotional and behavioral 1, readiness to change 3, relapse and continued use 3, recovery environment 2. The clinician recommended Level 2.1 (intensive outpatient), the level requested<sup>2</sup>. The ratings and the recommendation are the clinician's."
         ],
         "sources": [
-          "Daily notes Sep 29 – Oct 28",
-          "School incident log (counselor portal)",
           "Screening call Oct 9",
-          "Piedmont Counseling record (family link upload)",
-          "IEP summary, March 2026"
+          "ASAM multidimensional assessment Oct 9",
+          "Piedmont Counseling discharge letter (family link upload)",
+          "Family session note Oct 9",
+          "Intake note Oct 9"
         ],
         "dates": "Nov 3 – Jan 30"
       }
@@ -53,7 +57,7 @@
         "signed_pdf": "R-0402_D.W._continued_stay_signed.pdf"
       },
       "units_note": "payer called Oct 27",
-      "early_discharge_text": "Units were exhausted ahead of the authorization end date because the client required 3 units per school day throughout (units used read from Lauris). Need is unchanged: 2 physical incidents and 1 elopement in the last 30 days."
+      "early_discharge_text": "Units were exhausted ahead of the authorization end date because the client attended 3 units per IOP day throughout (units used read from Lauris). Need is unchanged: 3 dated use episodes (Oct 4, Oct 5 positive THC screen, Oct 21) and 1 emergency department visit after use (Oct 28) in the last 30 days."
     },
     "R-0388": {
       "fill": {
@@ -62,34 +66,42 @@
       },
       "units_note": "exhausted Oct 28 (assumed; 65 of 65 used)",
       "brief": {
-        "open_with": "\"This is Jordan Perez, LPC, license and NPI on the request. I'm calling about an eight-year-old girl at an elementary school in Campbell County who was approved for 65 of the 150 units we requested.\"",
+        "open_with": "\"This is Jordan Perez, LPC, license and NPI on the request. I'm calling about a 16-year-old girl in our Campbell County intensive outpatient program who was approved for 65 of the 150 units we requested.\"",
         "criteria": [
           {
-            "title": "Relationships.",
-            "text": "Hitting or pushing peers 3× a week in the last 30 days (Oct 1, 3, 8, 10, 15, 17, 22, 24, 28), 5–10 minutes each, needing staff to separate her. 3 office referrals. Classes: 6, passing 3."
+            "title": "Relapse and continued use (D5).",
+            "text": "Non-prescribed stimulant use reported Oct 10 and Oct 20, positive urine screens Oct 16 and Oct 25: 4 dated episodes in 16 days, after 3 episodes in the 14 days before intake. Rated 3 (Significant) on Oct 1."
           },
           {
-            "title": "Interventions that have not worked.",
-            "text": "School counseling weekly since Sep 2025 — ongoing, no change. Outpatient Jan–May 2026, 11 sessions — ended by the provider as \"not making progress.\""
+            "title": "Recovery environment (D6).",
+            "text": "Shares a bedroom with a cousin who sells pills; her mother works two jobs and is out until 9 pm most evenings. Rated 3 (Significant)."
+          },
+          {
+            "title": "Emotional and behavioral conditions (D3).",
+            "text": "PHQ-9 17 on Oct 22 (18 at intake); passive thoughts of death, no plan; safety plan updated Oct 22. Rated 3 (Significant)."
+          },
+          {
+            "title": "Treatment that has not worked.",
+            "text": "Weekly counseling with the referral partner's counselor since Sept 2025, ongoing, no change in use. Outpatient counseling Jan–May 2026, 11 sessions, ended by the provider as \"not making progress\"."
           }
         ],
-        "level_of_care": "Risk of a more restrictive setting: the school raised an alternative placement at the Oct 14 IEP meeting. Without daily intervention she is likely to be moved.",
+        "level_of_care": "The Oct 1 assessment recommended Level 2.5 (partial hospitalization) and the psychiatrist raised it again on Oct 26. Level 2.1 is requested because the family cannot provide rides for 20 hours a week. With fewer than the 150 units requested she is without a daily structured program: she used all 65 by Oct 28 and is still in service, unpaid.",
         "questions": [
           [
-            "\"Why can't the IEP handle this?\"",
-            "The IEP gives her a behaviour plan and seating. It gives her no clinical staff at lunch and transitions, where 6 of the 9 incidents happened."
+            "\"Why not Level 1 outpatient?\"",
+            "Weekly counseling since Sept 2025 and 11 outpatient sessions from Jan to May 2026 did not change her use; the provider ended that treatment as \"not making progress\". D3, D5 and D6 are each rated 3 (Significant)."
           ],
           [
             "\"Is she actively suicidal?\"",
-            "That is not a criterion for TDT. She meets two of the three listed criteria and one level-of-care criterion."
+            "She has passive thoughts of death and no plan (PHQ-9 17 on Oct 22); the safety plan was updated Oct 22 and the psychiatrist saw her Oct 26. The request rests on the dimension ratings and the level recommendation, not on suicide risk alone."
           ],
           [
-            "\"You can't be spending 5 hours a day.\"",
-            "Staff log start and stop times on their phones. October average: 5 h 12 min a day, including lunch and transitions. I can send the log."
+            "\"Level 2.1 is more than she needs.\"",
+            "The clinician's own recommendation was Level 2.5; Level 2.1 is the step the family can attend. Staff log start and stop times on their phones for every group (3 units a day). I can send the log."
           ],
           [
-            "\"She's been in services a long time.\"",
-            "Since Feb 2026. Incidents fell from daily to 3× a week; the goal is 1× a week before step-down. Progress is the reason to continue, not to stop."
+            "\"She has already had treatment.\"",
+            "Outpatient counseling ended in May 2026 without change; intensive outpatient began Oct 5. Four use episodes in the last 16 days (Oct 10, 16, 20 and 25). The goal is 4 of 5 weekly screens negative before step-down."
           ]
         ]
       }
@@ -100,7 +112,7 @@
         "signed_pdf": "R-0384_E.C._initial_signed.pdf"
       },
       "units_note": "denied Oct 22",
-      "denial_text": "Only the guardian can appeal. Drafted for her: a one-page plain-language letter, the reason restated, and what the payer's own letter means — so \"approved for less\" is not read as \"out of danger.\" Harvest keeps serving in the meantime; that choice is logged with the date."
+      "denial_text": "Only the family member can appeal. Drafted for the family: a one-page plain-language letter, the reason restated (\"already connected to other services\" and \"Level 1 outpatient is appropriate\"), and what the payer's own letter means, so \"approved for less\" is not read as \"no longer at risk.\" Harvest keeps serving in the meantime; that choice is logged with the date."
     }
   },
   "payer_history": [
@@ -110,46 +122,94 @@
       "when": "Sep",
       "requested": 150,
       "offer": 120,
-      "sent": "More evidence (suspended, eloped, aggressive) + counter at 140",
+      "sent": "More evidence (use episodes, a positive screen, leaving group early) + counter at 140",
       "award": 110,
       "lesson": "below the opening offer. More information produced a smaller award."
     }
   ],
   "denial_reasons": [
     {
-      "reason": "\"Already connected to other services\"",
+      "reason": "\"Does not meet ASAM Level 2.1 criteria\"",
       "count": 6,
-      "check": "Current-services table states each service's frequency and why it is insufficient alone — the too-many / too-few catch-22, answered in one field."
+      "dims": [
+        4,
+        5,
+        6
+      ],
+      "level": true,
+      "check": "Pulls the six stored ASAM ratings with the clinician's note and date for each; D4, D5 and D6 come with their dated records from the last 30 days (attendance counts, use episodes and screens, home environment), and the dimensions above what Level 1 can manage are named."
     },
     {
-      "reason": "\"Can be addressed through the IEP\"",
+      "reason": "\"Can be managed at a lower level of care (outpatient)\"",
       "count": 5,
-      "check": "IEP status and school-coordination narrative required; what the IEP does and does not provide is named."
+      "dims": [
+        5,
+        6
+      ],
+      "level": true,
+      "check": "Prior-treatment table (level, provider, dates, outcome) from earlier outpatient care, plus D5 use episodes and screens from the last 30 days and the home environment record; \"information about outpatient\" and pro-bono contacts are flagged as not counting as prior care."
     },
     {
-      "reason": "\"Can be addressed in outpatient\"",
+      "reason": "\"Already connected to other services\"",
       "count": 4,
-      "check": "Prior-services table: provider, dates, outcome — pro-bono and phantom services flagged as \"will not count as evidence of prior care.\""
+      "dims": [
+        5,
+        6
+      ],
+      "level": true,
+      "check": "Current-services table states each service's frequency and why it is not enough alone; weekly counseling with a referral partner is listed under care coordination, next to the dated D5 use record and D6 home environment that show its effect."
     },
     {
-      "reason": "\"Internalizing symptoms not observable\"",
-      "count": 3,
-      "check": "PHQ-9 trend, safety-plan reviews and guardian-reported sleep/withdrawal are pulled in as observed data, dated within 30 days."
-    },
-    {
-      "reason": "\"School counseling is not a covered service\"",
+      "reason": "\"No withdrawal risk documented\"",
       "count": 2,
-      "check": "Listed under care coordination rather than as the failed prior service, so it cannot be dismissed."
+      "dims": [
+        1
+      ],
+      "level": false,
+      "check": "D1 rating and note, the withdrawal screen (CIWA or COWS), last-use date and any withdrawal history, pulled as dated records from the last 30 days."
     },
     {
-      "reason": "\"No documented failed prior service\"",
-      "count": 2,
-      "check": "Draft blocks on an empty outcomes column; asks the guardian question before submission, not after a denial."
-    },
-    {
-      "reason": "\"There's no way you're spending 5+ hours with these kids\"",
+      "reason": "\"Co-occurring condition not documented\"",
       "count": 3,
-      "check": "Staff tap start/stop on their phone during the day, so there is a time-stamped record of 3 units a day, including lunch and transitions."
+      "dims": [
+        3
+      ],
+      "level": false,
+      "check": "PHQ-9 or GAD-7 scores with dates, safety-plan reviews and the co-occurring diagnosis and its treatment (D3) from the last 30 days; the draft blocks when a rating of 2 or more has no instrument score."
+    },
+    {
+      "reason": "\"Assessment is not current\"",
+      "count": 2,
+      "dims": [],
+      "level": true,
+      "check": "Date of the latest ASAM assessment against the reassessment rule (asam.reassess_days); an overdue reassessment, or one indicated by an incident since the last assessment, is flagged before the request goes out."
+    },
+    {
+      "reason": "\"No documented use in the last 30 days\"",
+      "count": 3,
+      "dims": [
+        5
+      ],
+      "level": false,
+      "check": "Dated use episodes, urine drug screens and craving ratings inside the last 30 days (D5); older facts are listed with their date and not counted as current."
+    },
+    {
+      "reason": "\"Recovery environment is supportive\"",
+      "count": 2,
+      "dims": [
+        6
+      ],
+      "level": false,
+      "check": "Home and living environment record with its date (who in the home uses, supports, transport) (D6); household disclosures stay out unless the clinician presses Include."
+    },
+    {
+      "reason": "\"Not engaging in treatment\"",
+      "count": 2,
+      "dims": [
+        4
+      ],
+      "level": false,
+      "check": "Attendance counts from the group notes (attended of scheduled), the client's own stated goal and stage of change (D4); counts, never percentages."
     }
   ],
   "events": [

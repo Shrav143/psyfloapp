@@ -22,7 +22,7 @@ await T.test('queue (artifact layout): nine columns, four open cases sorted by d
   assert.eq(rows.length, 4); assert.deepEq(rows.map(r => r.link), ['#/DenialCase?id=R-0408', '#/DenialCase?id=R-0402', '#/DenialCase?id=R-0388', '#/DenialCase?id=R-0384']);
   assert.match(rows[0].text, /DI-0408/); for (const r of rows) assert.ok(r.chips.length >= 1, 'a source chip on the deadline of ' + r.id);
   assert.ok(!/Demo: receive|Advance the clock/i.test(await txt(p)), 'no demo buttons on the screen (the dock has them)');
-  const labels = await p.$$eval('#root .ui-fsel__l', ls => ls.map(l => l.innerText.trim())); assert.deepEq(labels, ['Status', 'Decision type', 'Payer', 'Service', 'Assigned clinician', 'Deadline', 'Next step']);
+  const labels = await p.$$eval('#root .ui-fsel__l', ls => ls.map(l => l.innerText.trim())); assert.deepEq(labels, ['Status', 'Decision type', 'Payer', 'Service', 'Assigned clinician', 'Deadline', 'Next step', 'ASAM dimension']);
   assert.ok(await p.locator('.ui-fsearch').count() === 1, 'search');
   // no "N of M" count at the top; the pager sits under the table with 10, 25, 50, 100
   assert.ok(!(await p.locator('.ui-fcount').count()) || !/\d+ of \d+/.test(await p.locator('.ui-fcount').innerText()), 'no N of M in the filter bar');

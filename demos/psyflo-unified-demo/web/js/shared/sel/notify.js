@@ -9,6 +9,8 @@
 //             items point at the Denial Intelligence case when the role may open it)
 //   deadline  a deadline due soon or overdue that is not a payer item: reauth due, appeal window, send-by limit
 //   units     75% of the units are used (rules table, units.warn_used_pct) or none are left
+//   asam      level of care: ASAM reassessment overdue or due soon, request level not supported by the ratings (over) or below them (under), an incident
+//             since the last assessment (group 'Level of care'; ratings-based items only for clinicians and supervisors)
 //   note      direct support only: a note sent back, a note behind
 //   workflow  the enabled workflows (Settings > Workflows, shared/workflows/engine.js workflowItems): the effects meant for the person's role
 //             (a notice, a suggested flag, a task for a person), after the guardrails. Group 'Workflows'; source = { workflow, name, node, action }
@@ -20,6 +22,7 @@ import { can } from '../permissions.js';
 import { ruleValue } from '../rules.js';
 import { deadline, reqView, DI_STAGES, flagReasonLabel } from './auth.js';
 import { workflowItems } from '../workflows/engine.js';
+import { asamNotifications } from './asam-view.js';
 
 const SEV = { r: 0, y: 1, n: 2 };
 const sevOf = d => (d === 'overdue' ? 'r' : d === 'soon' ? 'y' : 'n');
@@ -65,6 +68,10 @@ export function notificationsFor(s, actor) {
     const left = Math.max(0, a.units - a.used); const req = (s.requests || []).find(x => x.client === c.id && x.stage !== 'closed');
     add({ id: `units:${c.id}:${a.units}:${a.used}`, at: (a.exhausted ? a.exhausted : today) + 'T00:00', kind: 'units', sev: left === 0 ? 'r' : 'y', title: `${M.clientLabel(s, c.id, false)} · ${left === 0 ? 'no units left' : used + '% of units used'}`, sub: `${left} left of ${a.units}${a.end ? ' · ends ' + fmtDate(a.end) : ''}`, record: req ? req.id : c.id, to: req && canAuth ? toCase(req.id) : `Patient?id=${c.id}&section=authorization`, group: 'Units' });
   }
+
+  // level of care (ASAM): a reassessment overdue or due soon, a request level the ratings do not support (over) or sit above (under), an incident since the last
+  // assessment. Computed from the stored assessments (sel/asam-view.js): a role gets only what its access allows, direct support its own caseload, no clinical text.
+  for (const n of asamNotifications(s, actor, { canAuth })) add(n);
 
   // direct support: notes sent back and notes behind, for their own patients
   if (actor.role === 'direct_support') {

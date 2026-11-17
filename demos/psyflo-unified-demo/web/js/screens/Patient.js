@@ -1,4 +1,4 @@
-// Patient chart (route Patient?id=<clientId>&section=documentation|authorization). Documentation first: notes, intake forms, CNAs and plans are owed
+// Patient chart (route Patient?id=<clientId>&section=documentation|authorization|asam). Documentation first: notes, intake forms, CNAs and plans are owed
 // whether or not a payer authorization exists. The authorization is one section of the chart, a compact summary with a link to the case.
 // On a document row the one action is "Open in Lauris" (shared/lauris-link.js, the same helper as the Dashboard): every note, CNA, guardian call, intake
 // form and plan is worked in the EHR. A note waiting for a reviewer adds Review (the Dashboard's Documents view with the drawer open).
@@ -7,8 +7,9 @@
 import { register, Screen, M, raw, ui, esc, session, hrefFor, canOpen, api } from '../app.js';
 import { ROLE_LABEL } from '../shared/permissions.js';
 import { fmtDate } from '../shared/dates.js';
-import { patientChart, chartHref } from '../shared/sel/roster.js';
-import { laurisLink } from '../shared/lauris-link.js';
+import { patientChart, chartHref, laurisPath, laurisKey } from '../shared/sel/roster.js';
+import { laurisLink, laurisHref } from '../shared/lauris-link.js';
+import { ASAM_CSS, chartSummary, historyList, levelChip, checkChip, dueFlag } from './asam-ui.js';
 
 const TONE = { r: 'danger', y: 'warning', n: 'neutral', g: 'success' };
 const ICON = { behind: 'alert', due: 'clock', in_progress: 'pencil', pending_review: 'eye', returned: 'undo', late: 'clock', done: 'check' };
@@ -22,7 +23,8 @@ register('Patient', class extends Screen {
     this.state = { scope: p.scope === 'all' ? 'all' : p.scope === 'open' ? 'open' : '', group: ['note', 'form'].includes(p.group) ? p.group : '', ...ui.pager.fromQuery(p) };
   }
   get actor() { return session.actor; }
-  get section() { return this.params.section === 'authorization' ? 'authorization' : 'documentation'; }
+  get css() { return ASAM_CSS; }
+  get section() { return this.params.section === 'authorization' ? 'authorization' : this.params.section === 'asam' ? 'asam' : 'documentation'; }
 
   chart() { const a = this.actor; return a && a.role ? patientChart(this.s, a, this.params.id) : null; }
 
@@ -62,7 +64,7 @@ register('Patient', class extends Screen {
 
   authHtml(c) {
     const au = c.auth;
-    if (!au) return `<div class="pt-none">${ui.chip('No authorization', { tone: 'neutral', icon: 'dot' })}</div>`;
+    if (!au) return `<div class="pt-none">${ui.chip('No authorization', { tone: 'neutral', icon: 'dot' })}${c.asam ? `<div class="pt-auth pt-auth--solo"><div class="pt-cell"><span class="pt-cell__l">Level of care</span><div class="pt-cell__v">${this.levelReading(c)}</div></div></div>` : ''}</div>`;
     const cell = (label, html) => `<div class="pt-cell"><span class="pt-cell__l">${esc(label)}</span><div class="pt-cell__v">${html}</div></div>`;
     const period = au.start || au.end ? `<span class="pt-period">${esc(au.start ? fmtDate(au.start) : '—')} to ${esc(au.end ? fmtDate(au.end) : '—')}</span>` : '<span class="pt-none-t">—</span>';
     const src = au.dateRule ? ui.infoPopover({ label: 'Where this date comes from', title: 'Deadline source', html: `<p>${esc(au.dateWhy || '')}</p><p>${ui.sourceChip(au.dateRule)}</p>` }) : '';
@@ -72,11 +74,28 @@ register('Patient', class extends Screen {
     const di = au.row && au.row.inDI && (canOpen('DenialCase') || canOpen('Partials')) ? `<a class="ui-btn ui-btn--secondary" href="${esc(hrefFor('DenialCase', { id: au.requestId }))}">In Denial Intelligence</a>` : '';
     return `<div class="pt-auth">
       ${cell('Status', au.requestId ? ui.statusChip(au.stage, { title: au.typeLabel || '' }) : ui.chip('Active', { tone: 'success', icon: 'check' }))}
-      ${cell('Payer', esc(au.payer || '—'))}${cell('Service', esc(au.service || '—'))}
+      ${cell('Payer', esc(au.payer || '—'))}${cell('Service', esc(au.service || '—'))}${c.asam ? cell('Level of care', this.levelReading(c)) : ''}
       ${cell('Units', au.units ? ui.unitsBar(au.units) : '<span class="pt-none-t">—</span>')}
       ${cell('Period', period)}${cell('Deadline', deadline)}${cell('Next action', next)}
       ${openCase || di ? `<div class="pt-auth__a">${openCase}${di}</div>` : ''}
     </div>`;
+  }
+
+  // the level reading: the level on the request, what the ratings say about it (clinician and supervisor), the reassessment state
+  levelReading(c) {
+    const rd = c.asam.reading;
+    return `<span class="pt-lv"><span class="pt-lv__r">${levelChip(rd)}${checkChip(rd)}</span>${dueFlag(rd, { always: false })}</span>`;
+  }
+  // the ASAM section: the level reading and the assessment history (date, kind, assessor, ratings, a note per dimension for a clinician, change vs the one before)
+  asamHtml(c) {
+    const { reading: rd, history, access } = c.asam; const a = this.actor; const s = this.s;
+    const cl = (s.clients || []).find(x => x.id === c.header.id);
+    const href = c.can.asamAssess ? laurisHref(api.config.laurisURL, a, laurisPath(laurisKey(cl), 'cna')) : '';
+    const open = href ? `<a class="ui-btn ui-btn--secondary" href="${esc(href)}" target="_blank" rel="noopener">Open the ASAM assessment in Lauris${ui.icon('external', 14)}<span class="ui-sr"> for ${esc(c.header.label)} (opens Lauris in a new tab)</span></a>` : '';
+    const hidden = !access.ratings ? `<p class="ui-lockline">${ui.hint('lock', 'The ratings and the clinician\'s notes are hidden for your role. Your role sees the level and the reassessment date.', { tone: 'n', cls: 'ui-lockhint', label: 'Ratings hidden for your role' })}<span class="ui-muted">Ratings and notes hidden for your role</span></p>` : (!access.text && history.some(h => h.hasPlan) ? `<p class="ui-lockline">${ui.hint('lock', 'The clinician\'s notes and plan are clinical text and are hidden for your role.', { tone: 'n', cls: 'ui-lockhint', label: 'Notes hidden for your role' })}<span class="ui-muted">Clinician's notes and plan hidden for your role</span></p>` : '');
+    const body = access.ratings || !rd.has ? historyList(history, rd, { text: access.text, action: open ? { label: 'Open the ASAM assessment in Lauris', href } : null }) : '';
+    const list = !access.ratings && rd.has ? `<p class="pt-sub">Latest assessment ${esc(fmtDate(rd.date, { year: true }))} · ${esc(rd.kind || '')}</p>` : '';
+    return `${chartSummary(rd, { link: rd.has ? open : '' })}${hidden}${list}${body}`;
   }
 
   renderVals() {
@@ -90,8 +109,9 @@ register('Patient', class extends Screen {
     const fact = (l, v) => v ? `<span class="pt-fact"><i>${esc(l)}</i> ${esc(v)}</span>` : '';
     const head = `<header class="pt-head"><a class="pt-back" href="${esc(hrefFor('Dashboard'))}">${ui.icon('chevR', 14)}<span>Dashboard</span></a><div class="pt-title"><h1>${esc(h.label)}</h1>${h.age ? `<span class="pt-age">${esc(h.age)}</span>` : ''}${h.stageLabel ? ui.chip(h.stageLabel, { tone: 'neutral', size: 'sm' }) : ''}${ui.chip(ROLE_LABEL[a.role] || a.role, { tone: 'outline', size: 'sm' })}</div><div class="pt-facts">${fact('Lauris #', h.lauris)}${fact('School', h.school)}${fact('Staff', h.staffShort)}${fact('Clinician', h.clinicianShort)}${fact('Payer', h.payer)}</div></header>`;
     const tab = (id, label, n) => `<a class="pt-tab" href="${esc(hrefFor(chartHref(h.id, id)))}"${sec === id ? ' aria-current="page"' : ''}>${esc(label)}${n ? `<b>${n}<span class="ui-sr"> open</span></b>` : ''}</a>`;
-    const tabs = `<nav class="pt-tabs" aria-label="Chart sections">${tab('documentation', 'Documentation', openN)}${tab('authorization', 'Authorization', 0)}</nav>`;
-    return { head: raw(head), tabs: raw(tabs), body: raw(sec === 'authorization' ? this.authHtml(c) : this.docsHtml(c)), maturity: raw(ui.maturity('route.Patient')) };
+    const asamN = c.items.filter(i => i.kind === 'asam').length;
+    const tabs = `<nav class="pt-tabs" aria-label="Chart sections">${tab('documentation', 'Documentation', openN)}${tab('authorization', 'Authorization', 0)}${tab('asam', 'ASAM', asamN)}</nav>`;
+    return { head: raw(head), tabs: raw(tabs), body: raw(sec === 'authorization' ? this.authHtml(c) : sec === 'asam' ? this.asamHtml(c) : this.docsHtml(c)), maturity: raw(ui.maturity('route.Patient')) };
   }
 
   after(root) {

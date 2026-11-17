@@ -103,15 +103,17 @@ await T.test('accept as offered / stretch / use them up reconcile through the re
 
 await reset('canvas');
 await T.test('K.T. information request: grounded draft, placeholders block review, the portal send waits for the page, then the case closes', async () => {
-  const g = await api('dispute.genDoc', { id: 'R-0408', doc: 'info' }, 'jperez'); assert.eq(g.sections, 3); assert.ok(g.missing >= 1, 'the IEP argument is left to the clinician');
-  let d = await dispute('R-0408'); const doc = d.docs.info; assert.eq(doc.sections.length, 3);
-  assert.match(doc.sections[0].text, /seven incidents of physical aggression \(Oct 2, 6, 9, 14, 17, 22 and 27\)/, 'counts and dates computed from stored records');
-  assert.match(doc.sections[0].text, /5 to 15 minutes at moderate intensity/);
-  assert.match(doc.sections[1].text, /Piedmont Counseling.*nine sessions\. Outcome:/);
+  const g = await api('dispute.genDoc', { id: 'R-0408', doc: 'info' }, 'jperez'); assert.eq(g.sections, 5); assert.ok(g.missing >= 1, 'the withdrawal screen is left to the clinician');
+  let d = await dispute('R-0408'); const doc = d.docs.info; assert.eq(doc.sections.length, 5);
+  assert.match(doc.sections[0].text, /D5 \(relapse and continued use\) was rated 3, significant, on Oct 9/, 'the clinician\'s dimension rating is quoted with its date');
+  assert.match(doc.sections[0].text, /drinking on 7 of the last 30 days/, 'counts come from the stored screening record');
+  assert.match(doc.sections[1].text, /D1 \(intoxication and withdrawal\) was rated 2, moderate/); assert.ok(doc.sections[1].missing.length, 'no withdrawal screen is on file: the gap is named, not filled');
+  assert.match(doc.sections[2].text, /Piedmont Counseling.*nine sessions\. Outcome:/);
+  assert.match(doc.sections[4].text, /ASAM initial assessment of Oct 9, 2026: D1 intoxication and withdrawal 2;.*D5 relapse and continued use 3/, 'the ratings answer the item about ratings');
   assert.ok(doc.sections.every(x => x.evidence.length || x.missing.length), 'every statement has a source or says it is missing');
   await assert.refused(tryApi('dispute.reviewDoc', { id: 'R-0408', doc: 'info' }, 'jperez'), /Evidence missing/, 422);
   await assert.refused(tryApi('dispute.send', { id: 'R-0408', doc: 'info' }, 'jperez'), /reviews|review/, 422);
-  const sec3 = doc.sections[2]; await api('dispute.editDoc', { id: 'R-0408', doc: 'info', section: sec3.key, text: sec3.text.replace(MISSING_RE, 'The supports are classroom-based and the clinician states they do not include de-escalation in unstructured periods.') }, 'jperez');
+  const sec3 = doc.sections[1]; await api('dispute.editDoc', { id: 'R-0408', doc: 'info', section: sec3.key, text: sec3.text.replace(MISSING_RE, 'The clinician adds the CIWA-Ar score and the last-use date from the intake visit.') }, 'jperez');
   await api('dispute.reviewDoc', { id: 'R-0408', doc: 'info' }, 'jperez'); d = await dispute('R-0408'); assert.eq(d.status, 'drafted');
   const res = await api('dispute.send', { id: 'R-0408', doc: 'info' }, 'jperez'); assert.match(res.open, /\/availity\/upload\?request=R-0408&kind=reply/);
   let r = await request('R-0408'); assert.eq(r.stage, 'portal_open'); d = await dispute('R-0408'); assert.eq(d.closed, null, 'still open until the portal confirms'); assert.eq(d.status, 'drafted');
@@ -147,14 +149,15 @@ await T.test('E.C. appeal (Availity): seeded sample cannot be reviewed; the guar
   let d = await dispute('R-0384'); assert.eq(d.path, 'appeal'); assert.ok(d.docs.appeal.seeded);
   await assert.refused(tryApi('dispute.reviewDoc', { id: 'R-0384', doc: 'appeal' }, 'jperez'), /seeded sample/, 422);
   const g = await api('dispute.genDoc', { id: 'R-0384', doc: 'appeal' }, 'jperez'); assert.ok(g.missing >= 1);
-  const drafted = (await state(await guardianToken('EC'))).appeal_drafts['R-0384']; assert.eq(drafted.status, 'draft', 'a draft reaches the family only as a status'); assert.ok(!drafted.en && !JSON.stringify(drafted).includes('office referrals'), 'no letter text before a clinician reviews it');
+  const drafted = (await state(await guardianToken('EC'))).appeal_drafts['R-0384']; assert.eq(drafted.status, 'draft', 'a draft reaches the family only as a status'); assert.ok(!drafted.en && !JSON.stringify(drafted).includes('THC'), 'no letter text before a clinician reviews it');
   d = await dispute('R-0384'); assert.ok(!d.docs.appeal.seeded); assert.match(d.docs.appeal.sections[0].text, /I am Ethan's guardian\. I am appealing Anthem's decision of October 22, 2026\./);
-  assert.match(d.docs.appeal.sections[2].text, /Four office referrals in the last 30 days \(Oct 5, 12, 19 and 26\)/);
+  assert.match(d.docs.appeal.sections[2].text, /The ratings support ASAM Level 2\.1: D4 \(3\), D5 \(3\), D6 \(3\) are above what Level 1 can manage/, 'the level reading comes from the stored ratings');
+  assert.match(d.docs.appeal.sections[3].text, /Four dated records in the last 30 days\. Urine drug screen positive for THC on Oct 5\./);
   assert.noMatch(JSON.stringify(d.docs.appeal), /only the guardian|Only a guardian/i);
   for (const sec of d.docs.appeal.sections.filter(x => x.missing.length)) await api('dispute.editDoc', { id: 'R-0384', doc: 'appeal', section: sec.key, text: sec.text.replace(MISSING_RE, 'The clinician adds the dated record before this goes out.') }, 'jperez');
   await api('dispute.reviewDoc', { id: 'R-0384', doc: 'appeal' }, 'jperez');
   const st = await state('jperez'); assert.eq(st.appeal_drafts['R-0384'].status, 'ready', 'published to the family portal after review');
-  assert.ok(!/4 office referrals this month/.test(st.appeal_drafts['R-0384'].en), 'the seeded sample text is gone');
+  assert.ok(!/four counselor reports in October/.test(st.appeal_drafts['R-0384'].en), 'the seeded sample text is gone');
   await assert.refused(tryApi('dispute.send', { id: 'R-0384', doc: 'appeal' }, 'jperez'), /no signed appeal letter/, 409);   // signing is the guardian's
   const gt = await guardianToken('EC'); const gs = await state(gt);
   assert.ok(gs.appeal_drafts['R-0384'] && gs.appeal_drafts['R-0384'].en && gs.appeal_drafts['R-0384'].status === 'ready', 'the guardian can read the reviewed letter'); assert.ok(!gs.disputes.length && !gs.dispute_evidence.length, 'and nothing else of the case');
@@ -247,11 +250,12 @@ await T.test('evidence is dated, sourced and gated; missing items print "Evidenc
   const s = await state('jperez'); const d = s.disputes.find(x => x.request === 'R-0402'); const r = s.requests.find(x => x.id === 'R-0402');
   const idx = evidenceIndex(s, d, r);
   assert.ok(idx.items.every(e => e.date && e.source), 'every record is dated and has a source');
-  assert.ok(idx.needs.some(n => /previous treatment outcome/.test(n.label)), 'Evidence missing — verify previous treatment outcome');
+  assert.ok(idx.needs.some(n => /what is likely to happen at a lower level of care/.test(n.label)), 'Evidence missing — verify what is likely to happen at a lower level of care');
   const sens = idx.items.find(e => e.kind === 'incident_report'); assert.eq(sens.state, 'sensitive'); assert.ok(!idx.usable.some(e => e.id === sens.id));
-  const draft = docText(buildDoc(s, d, r, 'p2p'), 'p2p'); assert.noMatch(draft, /hospitali[sz]ation/i, 'the sensitive record is not in the draft');
-  assert.match(draft, /two incidents of physical aggression \(Oct 5 and 14\) and one incident of elopement from class \(Oct 21\)/);
-  assert.match(draft, /\[Evidence missing — verify previous treatment outcome\]/);
+  const draft = docText(buildDoc(s, d, r, 'p2p'), 'p2p'); assert.noMatch(draft, /emergency department|hospitali[sz]ation/i, 'the sensitive record is not in the draft');
+  assert.match(draft, /D5 \(relapse and continued use\) was rated 3, significant, on Oct 9/);
+  assert.match(draft, /Urine drug screen positive for THC on Oct 5\./);
+  assert.match(draft, /\[Evidence missing — verify what is likely to happen at a lower level of care\]/);
   assert.match(draft, /\(unverified demo assumption\)/, 'the run-out rate is shown with its assumption');
   await api('dispute.includeEvidence', { id: 'R-0402', ref: sens.id, include: true }, 'jperez');
   const s2 = await state('jperez'); assert.ok(evidenceIndex(s2, s2.disputes.find(x => x.request === 'R-0402'), r).usable.some(e => e.id === sens.id));
@@ -262,7 +266,7 @@ await T.test('roles: admin sees status and deadlines but no clinical text; only 
   const a = await state('dowens');
   assert.eq(a.disputes.length, 4, 'admin sees the queue'); assert.eq(a.dispute_evidence.length, 0, 'no evidence records'); assert.eq(a.request_details && Object.keys(a.request_details).length, 0);
   for (const d of a.disputes) { for (const doc of Object.values(d.docs || {})) assert.ok(!('sections' in doc), 'no draft text for admin'); assert.ok(!('excluded' in d) && !('included' in d)); }
-  assert.noMatch(JSON.stringify(a.disputes), /Piedmont|physical aggression|hospital/i, 'no clinical words in the admin projection');
+  assert.noMatch(JSON.stringify(a.disputes), /Piedmont|Blue Ridge|urine drug screen|THC|emergency department/i, 'no clinical words in the admin projection');
   assert.eq(queueRows(a, {}).length, 4, 'the queue selector works on the admin projection');
   // after some work on a case, the admin's queue still agrees with the clinician's row for row (status, next action, deadline)
   await api('dispute.genDoc', { id: 'R-0384', doc: 'appeal' }, 'jperez'); await api('dispute.choose', { id: 'R-0402', path: 'p2p' }, 'jperez');

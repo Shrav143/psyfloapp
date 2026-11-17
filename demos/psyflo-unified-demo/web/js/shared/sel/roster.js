@@ -12,6 +12,9 @@
 //   patientChart(s, actor, clientId)     -> { header, docs, auth, items, can } | null            the Patient chart
 //   authSummary(s, actor, clientId)      -> { requestId, stage, units:{total,used,left,pctUsed,warn}, end, endSev, ... } | null
 //   normalizeRoster(params) / normalizeDocs(params)   -> canonical filters from a query string
+// ASAM (sel/asam-view.js): every roster row carries `asam` (the level tag, the match state, the D1 to D6 ratings and the reassessment clock for roles that may see them),
+// an outstanding item of kind 'asam' says what is due (reassessment overdue or due soon, an incident since the last assessment, a level the ratings do not support,
+// "Not assessed"), and the chart carries the assessment history.
 //
 // ITEM = { id, client, kind:'note'|'review'|'form'|'auth'|'referral'|'fix', type, title, due, dueText, sev:'r'|'y'|'n', verb, to, lauris, ops, rank }
 //   sev r = past due or blocked, y = due soon or waiting on a review, n = on the way. `to` is an old-style target the screen runs through hrefFor.
@@ -29,6 +32,7 @@ import { rule, ruleValue } from '../rules.js';
 import { can } from '../permissions.js';
 import { noteTimeliness, worklist, managedStaff, pendingFor } from './mywork.js';
 import { rowOf } from './auth.js';
+import { clientReading, assessmentHistory, asamAccess, levelFilterOk, reassessFilterOk, readingMatches, levelOptions, reassessWhy } from './asam-view.js';
 
 const rank = r => ({ direct_support: 1, supervisor: 2, clinician: 3, admin: 4 }[r] || 0);
 const SEV_N = { r: 0, y: 1, n: 2, g: 3, '': 4 };
@@ -165,6 +169,21 @@ export function outstandingByClient(s, actor) {
     if (isDS && a.staff !== actor.id) continue;
     add({ client: a.client, kind: 'form', type: 'assessment', title: a.instrument, sub: '', due: a.due, dueText: dueText(a.due, t), sev: sevOfDue(a.due, t), status: a.due < t ? 'behind' : 'due', rank: 45, verb: isDS ? 'Ask' : 'Open', to: isDS ? 'MobileAssess.dc.html?client=' + a.client : chartHref(a.client, 'documentation'), lauris: laurisPath(hn(a.client), 'assessment'), who: M.staffShort(s, a.staff) });
   }
+  // ASAM: a reassessment that is due or overdue (every role: a date, not clinical text); an incident since the last assessment and a level the ratings do not support
+  // (clinician and supervisor: they hold the ratings); an in-service client with no assessment says "Not assessed" (never a guess)
+  { const acc = asamAccess(actor); const clin = actor.role === 'clinician';
+    for (const c of clientsInScope(s, actor)) {
+      const rd = clientReading(s, actor, c.id); const to = chartHref(c.id, 'asam'); const lau = clin ? laurisPath(hn(c.id), 'cna') : '';
+      const verb = clin ? 'Open the assessment' : 'Open';
+      if (!rd.has) {
+        if (!isDS && !['discharged', 'referral', 'intake'].includes(c.stage)) add({ client: c.id, kind: 'asam', type: 'none', title: 'ASAM assessment', sub: 'Not assessed: no ASAM assessment on file', due: '', dueText: 'Not assessed', sev: 'y', status: 'action', rank: 39, verb, to, lauris: lau });
+        continue;
+      }
+      if (rd.incident && acc.ratings) add({ client: c.id, kind: 'asam', type: 'incident', title: 'Incident since the last assessment', sub: `Incident ${fmtDate(rd.incident.date)}, last assessed ${fmtDate(rd.date)}: a reassessment is indicated`, due: '', dueText: fmtDate(rd.incident.date), sev: rd.incident.level != null && rd.incident.level <= 2 ? 'r' : 'y', status: 'action', rank: 11, verb, to, lauris: lau });
+      if (rd.overdue || rd.soon) add({ client: c.id, kind: 'asam', type: 'reassess', title: 'ASAM reassessment', sub: rd.dueWhy, due: rd.due.dueDate, dueText: dueText(rd.due.dueDate, t), sev: rd.overdue ? 'r' : 'y', status: rd.overdue ? 'behind' : 'due', rank: rd.overdue ? 13 : 37, verb, to, lauris: lau, rule: rd.due.rule });
+      if (acc.ratings && rd.check && (rd.check.state === 'over' || rd.check.state === 'under')) add({ client: c.id, kind: 'asam', type: 'level', title: rd.check.state === 'over' ? `Level ${rd.check.requested} is above what the ratings fit` : `Ratings point above Level ${rd.check.requested}`, sub: rd.check.headline, due: '', dueText: '', sev: rd.check.state === 'over' ? 'y' : 'n', status: 'action', rank: rd.check.state === 'over' ? 41 : 46, verb: 'Open', to: chartHref(c.id, 'asam'), lauris: '' });
+    }
+  }
   // intake forms, CNAs, treatment plans, quarterly reports, discharge summaries that are not done
   if (!isDS) for (const d of s.documents || []) {
     if (d.status === 'done') continue;
@@ -195,7 +214,8 @@ export function normalizeRoster(p = {}) {
   const item = ['note', 'form', 'auth', 'review'].includes(g('item')) ? g('item') : '';
   const due = ['overdue', 'today', '7', '30'].includes(g('due')) ? g('due') : '';
   const units = ['25', '50', 'warn'].includes(g('units')) ? g('units') : '';
-  return { q: g('q'), attention, item, due, units, site: g('site'), staff: g('staff'), clinician: g('clinician'), payer: g('payer'), stage: g('stage'), sort: g('sort'), dir: g('dir') === 'desc' ? 'desc' : 'asc', open: g('open') };
+  const level = levelFilterOk(g('level')) ? g('level') : '', reassess = reassessFilterOk(g('reassess')) ? g('reassess') : '';
+  return { q: g('q'), attention, item, due, units, level, reassess, site: g('site'), staff: g('staff'), clinician: g('clinician'), payer: g('payer'), stage: g('stage'), sort: g('sort'), dir: g('dir') === 'desc' ? 'desc' : 'asc', open: g('open') };
 }
 
 function buildRow(s, actor, c, items) {
@@ -205,6 +225,7 @@ function buildRow(s, actor, c, items) {
   const review = count(i => i.kind === 'review'), fix = count(i => i.kind === 'fix');
   const formsLate = count(i => i.kind === 'form' && i.sev === 'r'), forms = count(i => i.kind === 'form');
   const authActions = count(i => i.kind === 'auth'), referralSteps = count(i => i.kind === 'referral');
+  const asam = clientReading(s, actor, c.id, au && au.row ? { request: au.row.req } : {});
   const alerts = [];
   if (behind) alerts.push({ key: 'note-behind', sev: 'r', icon: 'alert', text: `${plural(behind, 'note')} behind`, to: chartHref(c.id, 'documentation') });
   if (fix) alerts.push({ key: 'note-fix', sev: 'r', icon: 'alert', text: `${plural(fix, 'note')} sent back`, to: chartHref(c.id, 'documentation') });
@@ -212,6 +233,7 @@ function buildRow(s, actor, c, items) {
   if (review) alerts.push({ key: 'review', sev: 'y', icon: 'clock', text: `${plural(review, 'note')} waiting for review`, to: chartHref(c.id, 'documentation') });
   if (au && au.units && au.units.warn) alerts.push({ key: 'units', sev: au.units.left === 0 ? 'r' : 'y', icon: 'alert', text: au.units.left === 0 ? 'No units left' : `${au.units.pctUsed}% of units used (${au.units.left} left)`, to: chartHref(c.id, 'authorization') });
   if (au && au.date && (au.dateSev === 'soon' || au.dateSev === 'overdue')) alerts.push({ key: 'deadline', sev: au.dateSev === 'overdue' ? 'r' : 'y', icon: 'clock', text: `${au.dateWhy || 'Deadline'}`, to: chartHref(c.id, 'authorization') });
+  for (const it of items.filter(i => i.kind === 'asam')) alerts.push({ key: 'asam-' + it.type, sev: it.sev, icon: it.type === 'reassess' ? 'refresh' : it.type === 'level' ? 'bars' : it.type === 'none' ? 'dot' : 'alert', text: it.type === 'reassess' ? it.sub : it.type === 'none' ? 'Not assessed' : it.title, to: chartHref(c.id, 'asam') });
   if (authActions && !alerts.some(a => a.key === 'deadline')) alerts.push({ key: 'auth-action', sev: items.some(i => i.kind === 'auth' && i.sev === 'r') ? 'r' : 'y', icon: 'inbox', text: `${plural(authActions, 'authorization action')}`, to: chartHref(c.id, 'authorization') });
   if (referralSteps) alerts.push({ key: 'referral', sev: items.some(i => i.kind === 'referral' && i.sev === 'r') ? 'r' : 'y', icon: 'inbox', text: `${plural(referralSteps, 'referral step')}`, to: chartHref(c.id, 'documentation') });
   const worst = alerts.reduce((a, x) => worse(a, x.sev), items.reduce((a, x) => worse(a, x.sev), ''));
@@ -220,7 +242,7 @@ function buildRow(s, actor, c, items) {
     id: c.id, label: M.clientLabel(s, c.id, false), age: c.age || null, lauris: c.harvest_no || c.lauris_no || '', school: siteShort(s, c.school), siteId: c.school, locality: M.school(s, c.school).locality || '',
     stage: c.stage, staffId, staffShort: staffId ? M.staffShort(s, staffId) : '', clinicianId: c.clinician || '', clinicianShort: c.clinician ? M.staffShort(s, c.clinician) : '',
     payer: au ? au.payer : '', payerId: au ? au.payerId : '',
-    counts: { behind, due: notesDue, review, fix, forms, formsLate, auth: authActions, referral: referralSteps, total: items.length }, alerts, worst, auth: au, items, href: chartHref(c.id)
+    counts: { behind, due: notesDue, review, fix, forms, formsLate, auth: authActions, referral: referralSteps, asam: count(i => i.kind === 'asam'), total: items.length }, alerts, worst, auth: au, asam, items, href: chartHref(c.id)
   };
 }
 
@@ -232,6 +254,7 @@ const matchRow = (s, row, f) => {
   if (f.clinician && row.clinicianId !== f.clinician) return false;
   if (f.payer && row.payerId !== f.payer) return false;
   if (f.stage && !(row.auth && row.auth.stage === f.stage)) return false;
+  if ((f.level || f.reassess) && !readingMatches(row.asam, { level: f.level, reassess: f.reassess })) return false;
   if (f.attention === 'attention' && !(row.worst === 'r' || row.worst === 'y')) return false;
   if (f.attention === 'behind' && !(row.counts.behind || row.counts.fix || row.counts.formsLate)) return false;
   if (f.attention === 'review' && !row.counts.review) return false;
@@ -268,7 +291,8 @@ export function rosterRows(s, actor, filters = {}) {
     counts: { all: all.length, attention: ofAll(r => r.worst === 'r' || r.worst === 'y'), behind: ofAll(r => r.counts.behind || r.counts.fix || r.counts.formsLate), review: ofAll(r => r.counts.review), auth: ofAll(r => r.counts.auth || r.alerts.some(a => a.key === 'units' || a.key === 'deadline')), clear: ofAll(r => !r.items.length) },
     options: {
       sites: uniq(all, r => r.siteId, r => r.school), staff: uniq(all, r => r.staffId, r => r.staffShort), clinicians: uniq(all, r => r.clinicianId, r => r.clinicianShort),
-      payers: uniq(all, r => r.payerId, r => r.payer), stages: uniq(all, r => r.auth && r.auth.stage, r => r.auth && r.auth.stageLabel)
+      payers: uniq(all, r => r.payerId, r => r.payer), stages: uniq(all, r => r.auth && r.auth.stage, r => r.auth && r.auth.stageLabel),
+      levels: levelOptions([...new Set(all.map(r => r.asam.level).filter(Boolean))], asamAccess(actor))
     },
     totals: { items: all.reduce((n, r) => n + r.counts.total, 0), behind: all.reduce((n, r) => n + r.counts.behind + r.counts.fix + r.counts.formsLate, 0), review: all.reduce((n, r) => n + r.counts.review, 0) }
   };
@@ -369,7 +393,7 @@ export function patientChart(s, actor, clientId) {
   docs.sort((a, b) => order(a) - order(b) || String(a.due).localeCompare(String(b.due)));
   return {
     header: { id: c.id, label: row.label, age: c.age, grade: c.grade, lauris: row.lauris, school: M.school(s, c.school).name, siteShort: row.school, staffShort: row.staffShort, staffId: row.staffId, clinicianShort: row.clinicianShort, payer: row.payer, stageLabel: M.REF_STAGE[c.stage] || String(c.stage || '').replace(/_/g, ' ') },
-    row, items, docs, auth: row.auth,
-    can: { reviewNotes: can(actor, 'notes.review'), openCase: !!(row.auth && row.auth.requestId && can(actor, 'authorizations')), writeNotes: actor.role === 'direct_support' && can(actor, 'notes.own'), text: can(actor, 'notes.view') }
+    row, items, docs, auth: row.auth, asam: { reading: row.asam, history: assessmentHistory(s, actor, c.id), access: asamAccess(actor) },
+    can: { reviewNotes: can(actor, 'notes.review'), openCase: !!(row.auth && row.auth.requestId && can(actor, 'authorizations')), writeNotes: actor.role === 'direct_support' && can(actor, 'notes.own'), text: can(actor, 'notes.view'), asamAssess: actor.role === 'clinician' && can(actor, 'drafts.clinical') }
   };
 }

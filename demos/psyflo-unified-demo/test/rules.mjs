@@ -27,7 +27,7 @@ await T.test('the register is covered: R-001..R-054 each appear in at least one 
 });
 await T.test('unit bands: official 120/180/300 by default; the 60-minute rule is only an alternate value', async () => {
   const s = await state('jperez');
-  assert.deepEq(unitBands(s, 'tdt'), [[120, 1], [180, 2], [300, 3]]); assert.eq(rule(s, 'units.tdt.day_tiers').category, 'OFFICIAL-VERIFIED');
+  assert.deepEq(unitBands(s, 'tdt'), [[120, 1], [180, 2], [300, 3]]); assert.eq(rule(s, 'units.tdt.day_tiers').category, 'UNVERIFIED-DEMO-ASSUMPTION', 'carried over from day treatment, not verified for IOP');
   assert.deepEq(rule(s, 'units.tdt.alt_tiers').value, [[60, 1], [180, 2], [300, 3]]); assert.eq(rule(s, 'units.tdt.alt_tiers').category, 'UNVERIFIED-DEMO-ASSUMPTION');
   for (const [m, u] of [[60, 0], [119, 0], [120, 1], [220, 2], [299, 2], [300, 3]]) assert.eq(unitsFor(s, 'tdt', m), u, m + ' min');
 });
@@ -38,7 +38,7 @@ await T.test('the named rules exist with the right category: plan due, decision 
   assert.eq(rule(s, 'info_request.hours').value, 24); cat('continued_stay.lead_business_days', 'UNVERIFIED-DEMO-ASSUMPTION');
   assert.eq(rule(s, 'notes.daily_due_hours').value, 24); cat('notes.daily_due_hours', 'HARVEST-REPORTED');
   assert.eq(rule(s, 'discharge.lapse_days').value, 31); cat('discharge.lapse_days', 'OFFICIAL-VERIFIED');
-  assert.ok(rule(s, 'redesign.tdt_end').value && rule(s, 'eligibility.recheck_days').unit);
+  assert.ok(rule(s, 'asam.reassess_days').value && rule(s, 'asam.level_limits').value && rule(s, 'eligibility.recheck_days').unit);
   for (const d of ['consent', 'release', 'enrollment', 'quarterly', 'appeal']) assert.ok(['remote_allowed', 'in_person_required', 'pending_validation'].includes(signatureMode(s, d)), d);
   assert.eq(rule(s, 'analytics.min_group_size').value, 5);
   assert.eq(rule(s, 'nope').missing, true);

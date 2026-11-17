@@ -8,8 +8,12 @@ import { register, Screen, raw, ui, M, hrefFor } from '../app.js';
 import { deadlineCell, ownerCell, lockHint, svcShort } from './a-fmt.js';
 import { hoursBetween } from '../shared/dates.js';
 import * as D from '../shared/sel/disputes.js';
+import { disputeReason, DIMS } from '../shared/sel/asam-view.js';
+import { ASAM_CSS } from './asam-ui.js';
 
-const KEYS = ['q', 'decision', 'status', 'payer', 'service', 'owner', 'deadline', 'next', 'from', 'to'];
+const KEYS = ['q', 'decision', 'status', 'payer', 'service', 'owner', 'deadline', 'next', 'dim', 'from', 'to'];
+// the ASAM dimension filter: a dimension the payer's stated reason turns on, the level of care itself, or a reason not compared with the dimensions yet
+const DIM_FILTER = [['', 'Any dimension'], ...DIMS.map(d => [String(d.n), `${d.short} ${d.label}`]), ['level', 'Level of care'], ['none', 'Not compared yet']];
 const esc = ui.esc;
 
 register('DenialIntelligence', class extends Screen {
@@ -17,7 +21,22 @@ register('DenialIntelligence', class extends Screen {
     const f = {}; for (const k of KEYS) f[k] = this.params[k] != null ? String(this.params[k]) : '';
     this.state = { f, sort: { key: 'deadline', dir: 'asc' }, ...ui.pager.fromQuery(this.params) };
   }
-  rows() { return D.queueRows(this.s, this.state.f); }
+  get css() { return ASAM_CSS; }
+  // what the payer's reason turns on (sel/asam-view.js: the reason table, then reasonDims over the payer's own words); the lead's queue rows do not carry it
+  reasonOf(r) { return disputeReason(this.s, D.byDisputeId(this.s, r.id)); }
+  rows() {
+    const dim = this.state.f.dim; const rows = D.queueRows(this.s, this.state.f);
+    if (!dim) return rows;
+    return rows.filter(r => { const x = this.reasonOf(r); return dim === 'level' ? x.level : dim === 'none' ? !x.dims.length && !x.level : x.dims.includes(+dim); });
+  }
+  // the reason cell line: the dimensions as chips (hover names each), then the level-of-care mark; "not compared yet" when the words match none
+  reasonLine(r) {
+    const x = this.reasonOf(r);
+    if (x.none) return '<span class="ui-sub d-rs">Reason not recorded</span>';
+    const dims = x.dims.map(n => { const d = DIMS.find(z => z.n === n); return `<span class="d-dim" title="${esc(`${d.short} ${d.name}`)}" aria-label="${esc(`${d.short} ${d.name}`)}">${esc(d.short)}</span>`; }).join('');
+    const lvl = x.level ? `<span class="d-dim d-dim--lv" title="The reason is about the level of care">Level of care</span>` : '';
+    return dims || lvl ? `<span class="d-rs" data-asam-dims="${esc(x.dims.join(','))}">${dims}${lvl}</span>` : '<span class="ui-sub d-rs">Not compared with the dimensions yet</span>';
+  }
   deadlineCell(r) {
     if (!r.open) return `<span class="ui-muted">Closed ${esc(M.fmtDate(r.closed))}</span>`;
     const dl = r.deadline; if (!dl) return '<span class="ui-muted">—</span>';
@@ -51,7 +70,7 @@ register('DenialIntelligence', class extends Screen {
       id: 'di-f', label: 'Denial filters', search: { key: 'q', placeholder: 'Consumer, ID or payer', label: 'Search cases' },
       selects: [{ key: 'status', label: 'Status', options: D.STATUS_FILTERS }, { key: 'decision', label: 'Decision type', options: [['', 'All types'], ['partial', 'Partial approval'], ['info', 'Information requested'], ['denied', 'Denied']] },
         { key: 'payer', label: 'Payer', options: [['', 'All payers'], ...payers] }, { key: 'service', label: 'Service', options: [['', 'All services'], ...services] }, { key: 'owner', label: 'Assigned clinician', options: [['', 'All clinicians'], ...owners] },
-        { key: 'deadline', label: 'Deadline', options: [['', 'Any deadline'], ['overdue', 'Overdue'], ['7', 'Within 7 days'], ['none', 'No date set']] }, { key: 'next', label: 'Next step', options: [['', 'Any next step'], ...D.NEXT_GROUPS] }],
+        { key: 'deadline', label: 'Deadline', options: [['', 'Any deadline'], ['overdue', 'Overdue'], ['7', 'Within 7 days'], ['none', 'No date set']] }, { key: 'next', label: 'Next step', options: [['', 'Any next step'], ...D.NEXT_GROUPS] }, { key: 'dim', label: 'ASAM dimension', options: DIM_FILTER }],
       state: f, onChange: next => this.setF(next), onClear: next => { ui.query.writeQuery({ from: '', to: '' }); this.setState({ f: { ...next, from: '', to: '' }, page: 1 }); }
     });
     const columns = [
@@ -59,7 +78,7 @@ register('DenialIntelligence', class extends Screen {
       { key: 'consumer', label: 'Consumer', sort: true, width: '8%', render: r => `<span class="d-who">${esc(r.consumer)}</span>` },
       { key: 'payer', label: 'Payer', sort: true, width: '10%', render: r => esc(r.payerName) },
       { key: 'service', label: 'Service', sort: true, hideBelow: 1280, width: '7%', render: r => esc(svcShort(r.service)) },
-      { key: 'decision', label: 'Decision', sort: true, width: '14%', render: r => `<span class="d-dec"><b>${esc(r.decision.main)}</b><span class="ui-sub">${esc(r.decision.sub)}</span></span>` },
+      { key: 'decision', label: 'Decision', sort: true, width: '14%', render: r => `<span class="d-dec"><b>${esc(r.decision.main)}</b><span class="ui-sub">${esc(r.decision.sub)}</span>${this.reasonLine(r)}</span>` },
       { key: 'status', label: 'Status', sort: true, width: '14%', render: r => ui.statusChip(r.status, { kind: 'dispute' }) },
       { key: 'next', label: 'Next step', sort: true, width: '14%', render: r => this.nextCell(r) },
       { key: 'deadline', label: 'Deadline', sort: true, width: '15%', className: 'd-c-dl', render: r => this.deadlineCell(r) },
@@ -75,7 +94,7 @@ register('DenialIntelligence', class extends Screen {
     const clinical = D.canReadClinical(me);
     const note = clinical ? '' : lockHint('Status view, no clinical text: administrators see status, units and deadlines. Clinical text is for clinicians.', { label: 'Status view · no clinical text' });
     const help = ui.infoPopover({ label: 'About this table', title: 'Denial Intelligence', html: '<p>Every open case where a payer asked for information, offered fewer units or denied a request, sorted by what is most urgent. Click a column to sort.</p><p>A warning icon beside a date means due soon or overdue; hover it for the reason. The small icon after a date shows where the number comes from (Officially verified, Payer-specific, Harvest-reported or Unverified demo assumption) when you hover it.</p>' });
-    const active = ['q', 'decision', 'status', 'payer', 'service', 'owner', 'deadline', 'next'].filter(k => f[k]).length + (f.from || f.to ? 1 : 0);
+    const active = ['q', 'decision', 'status', 'payer', 'service', 'owner', 'deadline', 'next', 'dim'].filter(k => f[k]).length + (f.from || f.to ? 1 : 0);
     const clear = active ? `<div class="ui-fclear"><button type="button" class="ui-linkbtn" data-x="clear-all">Clear all filters (${active})</button></div>` : '';
     return { mat: raw(ui.maturity('route.DenialIntelligence') + note), help: raw(help), date: raw(this.dateCard()), bar: raw(bar), clear: raw(clear), table: raw(table), pager: raw(pager) };
   }

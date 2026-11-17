@@ -1,7 +1,7 @@
 // The bell: the notification centre (R3 · Authorizations). A separate system from the work lists: it tells a person what changed or what is
 // close, and one click opens the record. Opened by the shell's top bar (window event `psyflo:topbar`, detail.id === 'bell'); the unread
 // number on the bell is set with window.psyfloTopbar.setBadge('bell', n) every time the state changes.
-//   · the list is computed from the role-projected state by shared/sel/notify.js (flags raised by somebody else, payer items, deadlines,
+//   · the list is computed from the role-projected state by shared/sel/notify.js (flags raised by somebody else, payer items, deadlines, ASAM level-of-care items,
 //     units at the warning threshold, notes sent back, and the enabled workflows' items under Workflows with a "From workflow: <name>" line);
 //     a role never gets an item about a record it cannot open
 //   · read state is per person: "Mark read" and "Mark all read" call the notify.read action (their own list only; it is not an audit event)
@@ -13,9 +13,9 @@ import { esc, icon } from './util.js';
 import { notificationsFor } from '../shared/sel/notify.js';
 import { fmtDate, fmtDateTime } from '../shared/dates.js';
 
-const KIND_ICON = { flag: 'flag', payer: 'inbox', deadline: 'clock', units: 'bars', note: 'pencil', workflow: 'bolt' };
+const KIND_ICON = { flag: 'flag', payer: 'inbox', deadline: 'clock', asam: 'list', units: 'bars', note: 'pencil', workflow: 'bolt' };
 const SEV_WORD = { r: 'Urgent', y: 'Soon', n: 'Info' };
-const GROUPS = ['Flags', 'Payer', 'Deadlines', 'Units', 'Notes', 'Workflows'];
+const GROUPS = ['Flags', 'Payer', 'Deadlines', 'Level of care', 'Units', 'Notes', 'Workflows'];
 let handle = null, lastKey = '';
 
 const actorNow = () => { try { return window.psyflo && window.psyflo.session && window.psyflo.session.actor; } catch { return null; } };

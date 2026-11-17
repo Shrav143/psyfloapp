@@ -9,6 +9,7 @@ import { addDays, addBusinessDays, daysBetween, hoursBetween, fmtDate, fmtDateTi
 import { today as clockToday, now as clockNow } from '../clock.js';
 import { rule, ruleValue } from '../rules.js';
 import { can } from '../permissions.js';
+import * as asam from '../asam.js';
 import { byId, client as clientOf, payer as payerOf, staff as staffOf, appealDeadline, requestHistory, CHANNEL_LABEL, STAGE_LABEL } from '../model.js';
 
 // ---------------------------------------------------------------------------------------------------------------- vocabulary
@@ -177,15 +178,28 @@ export function nextAction(s, d, r) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------- evidence
+// The ASAM Criteria organise the case: every record is filed under the dimension (D1 to D6) it documents, the clinician's dated ratings are
+// themselves evidence, and what is "missing" is read from the ratings: a dimension rated Moderate or higher needs an instrument or a dated record.
 const SENS = e => e.sensitivity === SENSITIVE;
-const behaviorWord = b => ({ 'physical aggression': 'physical aggression', elopement: 'elopement from class' }[b] || b || 'incident');
 const dateList = rows => {
   const sorted = rows.slice().sort((a, b) => a.date < b.date ? -1 : 1); const out = []; let lastMon = '';
   for (const e of sorted) { const [, m, dd] = e.date.split('-'); const mon = fmtDate(e.date).split(' ')[0]; out.push(mon === lastMon ? String(+dd) : fmtDate(e.date)); lastMon = mon; }
   return out.length > 1 ? out.slice(0, -1).join(', ') + ' and ' + out.at(-1) : out[0] || '';
 };
-const minutesText = rows => { const m = rows.map(e => e.minutes); if (m.some(x => x == null)) return null; const lo = Math.min(...m), hi = Math.max(...m); return lo === hi ? `about ${lo} minutes` : `${lo} to ${hi} minutes`; };
-const intensityText = rows => { const v = [...new Set(rows.map(e => e.intensity))]; return v.some(x => !x) ? null : v.join(' to '); };
+// the evidence kind that documents each dimension: an instrument or a dated record, never the clinician's rating itself
+export const DIM_KIND = { 1: 'withdrawal', 2: 'medical', 3: 'mh_screen', 4: 'engagement', 5: 'use_episode', 6: 'environment' };
+const KIND_DIM = Object.fromEntries(Object.entries(DIM_KIND).map(([n, k]) => [k, +n]));
+// the one label for what each dimension still needs (the evidence index and the sentence builders print the same words, so a gap is listed once)
+export const dimNeedLabel = (n, window, initial) => ({
+  1: `D1: a withdrawal screen (CIWA or COWS) and the last-use date from the last ${window} days`,
+  2: `D2: medical conditions and medications on record from the last ${window} days`,
+  3: `D3: a PHQ-9 or GAD-7 score and a safety screen from the last ${window} days`,
+  4: initial ? "D4: the client's own stated reason for treatment and readiness to change" : `D4: attendance counts for the last ${window} days`,
+  5: `D5: dated use episodes or urine drug screens from the last ${window} days`,
+  6: 'D6: the recovery environment (housing, who in the home uses, supports)'
+}[n]);
+const PRIOR_NEED = 'previous treatment at a lower level of care: provider, dates and outcome';
+const byDate = (a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : a.id < b.id ? -1 : 1;
 
 // The evidence index of a case: every stored dated record about the client that a draft may cite, numbered in date order.
 // `read` false = the viewer may not read clinical text: counts only. Sensitive records are listed but not used unless included.
@@ -194,11 +208,17 @@ export function evidenceIndex(s, d, r, { read = true } = {}) {
   const window = ruleValue(s, 'evidence.current_window_days', 30); const since = addDays(today, -window);
   const excluded = new Set((d && d.excluded) || []); const included = new Set((d && d.included) || []);
   const rows = [];
-  for (const e of (s.dispute_evidence || []).filter(e => e.client === r.client)) rows.push({ ...e });
-  for (const i of (s.incidents || []).filter(i => i.client === r.client)) rows.push({ id: `EV-INC-${String(i.date).slice(0, 10)}`, client: r.client, kind: 'incident_report', date: String(i.date).slice(0, 10), label: `Level ${i.level} incident report`, quote: i.what, source: 'Incident report (state portal clock)', sensitivity: SENSITIVE, provenance: 'record' });
-  for (const n of (s.notes || []).filter(n => n.client === r.client && (n.narrative || n.text || (n.fields && n.fields.narrative)))) rows.push({ id: `EV-NOTE-${n.id}`, client: r.client, kind: 'daily_note', date: String(n.date || '').slice(0, 10), label: 'Daily progress note', quote: String(n.narrative || n.text || n.fields.narrative).slice(0, 300), source: `Daily note · ${fmtDate(n.date)}`, provenance: 'record' });
-  if (c.safety_plan_date && !rows.some(e => e.kind === 'safety_plan')) rows.push({ id: `EV-SP-${r.client}`, client: r.client, kind: 'safety_plan', date: c.safety_plan_date, label: 'Safety plan reviewed', quote: `Safety plan reviewed on ${fmtDate(c.safety_plan_date)}.`, source: 'Clinical record · safety plan', provenance: 'record' });
-  rows.sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : a.id < b.id ? -1 : 1);
+  for (const e of (s.dispute_evidence || []).filter(e => e.client === r.client)) rows.push({ ...e, dim: e.dim != null ? e.dim : (KIND_DIM[e.kind] || 0) });
+  for (const i of (s.incidents || []).filter(i => i.client === r.client)) rows.push({ id: `EV-INC-${String(i.date).slice(0, 10)}`, client: r.client, kind: 'incident_report', dim: 0, date: String(i.date).slice(0, 10), label: `Level ${i.level} incident report`, quote: i.what, source: 'Incident report (state portal clock)', sensitivity: SENSITIVE, provenance: 'record' });
+  for (const n of (s.notes || []).filter(n => n.client === r.client && (n.narrative || n.text || (n.fields && n.fields.narrative)))) { const q = String(n.narrative || n.text || n.fields.narrative).slice(0, 300); rows.push({ id: `EV-NOTE-${n.id}`, client: r.client, kind: 'daily_note', dim: asam.reasonDims(q).dims[0] || 0, date: String(n.date || '').slice(0, 10), label: 'Group note', quote: q, source: `Group note · ${fmtDate(n.date)}`, provenance: 'record' }); }
+  if (c.safety_plan_date && !rows.some(e => e.kind === 'safety_plan')) rows.push({ id: `EV-SP-${r.client}`, client: r.client, kind: 'safety_plan', dim: 3, date: c.safety_plan_date, label: 'Safety plan reviewed', quote: `Safety plan reviewed on ${fmtDate(c.safety_plan_date)}.`, source: 'Clinical record · safety plan', provenance: 'record' });
+  // the clinician's ASAM ratings: one row for each assessment, and one per dimension for the latest (so a draft can cite "D5 rated 3 on Oct 12")
+  const all = asam.assessmentsOf(s, r.client); const latest = all[0] || null;
+  for (const a of all) rows.push({ id: `EV-ASM-${a.id}`, client: r.client, kind: 'assessment', dim: 0, date: String(a.date).slice(0, 10), label: `ASAM assessment · ${a.kind === 'initial' ? 'initial' : 'reassessment'}`, quote: `Ratings ${asam.ratingsLine(a)}.${a.plan ? ' ' + a.plan : ''}`, source: a.source, provenance: a.provenance || 'seed', assessment: a.id });
+  // a household disclosure held back from drafts (sensitive) also holds back the clinician's D6 note, which repeats it
+  const envHeld = rows.some(e => e.kind === 'environment' && SENS(e) && !included.has(e.id));
+  if (latest) for (const dm of asam.DIMS) { const rt = asam.ratingOf(latest, dm.n); if (rt == null) continue; rows.push({ ...(dm.n === 6 && envHeld ? { sensitivity: SENSITIVE } : {}), id: `EV-ASM-${latest.id}-D${dm.n}`, client: r.client, kind: DIM_KIND[dm.n], dim: dm.n, date: String(latest.date).slice(0, 10), label: `${dm.short} · ${dm.label} · rated ${rt}`, quote: asam.noteOf(latest, dm.n) || `${dm.short} rated ${rt} (${asam.ratingLabel(rt).toLowerCase()}).`, source: latest.source, provenance: latest.provenance || 'seed', rating: rt, fromAssessment: true }); }
+  rows.sort(byDate);
   const items = rows.map((e, i) => {
     const state = excluded.has(e.id) ? 'excluded' : SENS(e) && !included.has(e.id) ? 'sensitive' : 'sourced';
     const current = !!e.date && e.date >= since;
@@ -206,22 +226,32 @@ export function evidenceIndex(s, d, r, { read = true } = {}) {
   });
   const usable = items.filter(e => e.usable);
   const needs = [];
-  const need = (key, label, ok) => { if (!ok) needs.push({ key, label }); };
-  const cur = k => usable.filter(e => e.kind === k && e.current);
-  need('incidents', 'dated incidents in the last ' + window + ' days', cur('incident').length > 0);
+  const need = (key, label, ok, dim = 0) => { if (!ok) needs.push({ key, label, dim }); };
+  const cur = k => usable.filter(e => e.kind === k && e.current && !e.fromAssessment);
+  const lvl = asam.requestLevel(r); const R = n => asam.ratingOf(latest, n); const asks = (n, min) => !latest || R(n) == null || R(n) >= min;
+  // the assessment itself must be current under the reassessment rule
+  if (!latest) need('assessment', 'an ASAM assessment (none is on file)', false, 0);
+  else { const du = asam.dueState(s, latest, lvl); need('assessment', `a current ASAM assessment (the last is ${du.days} day${du.days === 1 ? '' : 's'} old; the rule is ${du.limit})`, du.state !== 'overdue', 0); }
+  const initial = r.type === 'initial';
+  if (asks(1, 1)) need('d1', dimNeedLabel(1, window), cur('withdrawal').length > 0, 1);
+  if (asks(2, 2)) need('d2', dimNeedLabel(2, window), cur('medical').length > 0, 2);
+  if (asks(3, 2)) need('d3', dimNeedLabel(3, window), cur('mh_screen').length > 0, 3);
+  need('d4', dimNeedLabel(4, window, initial), cur('engagement').length > 0 || (!initial && cur('daily_note').length > 0), 4);
+  need('d5', dimNeedLabel(5, window), cur('use_episode').length > 0 || cur('daily_note').some(e => e.dim === 5), 5);
+  if (asks(6, 2)) need('d6', dimNeedLabel(6), usable.some(e => e.kind === 'environment' && !e.fromAssessment), 6);
   const priors = usable.filter(e => e.kind === 'prior_service');
   const reqFields = ruleValue(s, 'evidence.prior_service_required_fields', ['provider', 'dates', 'outcome']);
   const priorOk = p => (!reqFields.includes('provider') || p.provider) && (!reqFields.includes('dates') || p.from) && (!reqFields.includes('outcome') || p.outcome);
-  need('prior', 'previous treatment outcome', priors.some(priorOk));
+  if (lvl && lvl !== '1') need('prior', PRIOR_NEED, priors.some(priorOk), 5);
   const svcs = usable.filter(e => e.kind === 'current_service');
   const askedServices = ((d && d.concerns) || []).some(x => /other services|connected|already/i.test(x.text));
-  if (svcs.length || askedServices) need('services', 'current services and why each is insufficient alone', svcs.length > 0 && svcs.every(x => x.outcome || x.insufficient));
-  if (r.stage !== 'info_requested' && issueOfRequest(r) !== 'denial') need('risk', 'the risk of a more restrictive setting', usable.some(e => e.kind === 'placement_risk'));
-  if (r.type !== 'initial') need('isp', 'ISP objective progress counts for the period', (c.goals && c.goals.length) || usable.some(e => e.kind === 'isp_goal'));
+  if (svcs.length || askedServices) need('services', 'current services and why each is not enough on its own', svcs.length > 0 && svcs.every(x => x.outcome || x.insufficient), 0);
+  if (r.stage !== 'info_requested' && issueOfRequest(r) !== 'denial') need('risk', 'what is likely to happen at a lower level of care', usable.some(e => e.kind === 'placement_risk'), 0);
+  if (r.type !== 'initial') need('isp', 'treatment plan goal progress counts for the period', (c.goals && c.goals.length) || usable.some(e => e.kind === 'isp_goal'), 0);
   const notice = (d && d.notice) || {};
   const ledger = (r.decision_log || []).filter(x => x.kind === 'initial' && !x.superseded_by).at(-1);
-  need('notice', 'the document reference for the payer decision', !!(ledger && ledger.doc_ref) || !!notice.doc_ref);
-  return { items, usable, needs, window, since, counts: { documented: items.length, usable: usable.length, missing: needs.length, held: items.filter(e => !e.usable).length }, read };
+  need('notice', 'the document reference for the payer decision', !!(ledger && ledger.doc_ref) || !!notice.doc_ref, 0);
+  return { items, usable, needs, window, since, initial, assessment: latest, counts: { documented: items.length, usable: usable.length, missing: needs.length, held: items.filter(e => !e.usable).length }, read };
 }
 export const evidenceById = (idx, id) => idx.items.find(e => e.id === id) || null;
 // options for ui.evidenceChip from an index row
@@ -231,21 +261,6 @@ export function chipOpts(e) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------- drafts (built only from stored evidence; rule-based, labelled Simulated)
-const periodEnd = (idx) => addDays(idx.since, idx.window);
-const incidentsFor = (idx) => idx.usable.filter(e => e.kind === 'incident' && e.current);
-const sentenceIncidents = (idx, name) => {
-  const rows = incidentsFor(idx);
-  if (!rows.length) return { text: missing('dated incidents in the last ' + idx.window + ' days'), ids: [], miss: ['dated incidents in the last ' + idx.window + ' days'] };
-  const by = {}; rows.forEach(e => { (by[e.behavior || 'incident'] = by[e.behavior || 'incident'] || []).push(e); });
-  const parts = Object.entries(by).map(([b, list]) => `${nw(list.length)} incident${list.length === 1 ? '' : 's'} of ${behaviorWord(b)} (${dateList(list)})`);
-  const mins = minutesText(rows); const inten = intensityText(rows); const miss = [];
-  let tail = '';
-  if (mins) tail += `, each lasting ${mins}`; else { tail += ` ${missing('the duration of each incident')}`; miss.push('the duration of each incident'); }
-  if (inten) tail += ` at ${inten} intensity`; else { tail += ` ${missing('the intensity of each incident')}`; miss.push('the intensity of each incident'); }
-  const unstructured = rows.filter(e => e.setting === 'unstructured');
-  const where = rows.every(e => e.setting) && unstructured.length ? ` ${cap(nw(unstructured.length))} of the ${nw(rows.length)} happened in unstructured periods (${[...new Set(unstructured.map(e => e.where))].join(', ')}).` : '';
-  return { text: `Between ${fmtDate(idx.since)} and ${fmtDate(periodEnd(idx))}, the school reported ${parts.join(' and ')}${tail}.${where}`, ids: rows.map(e => e.id), miss };
-};
 const monthName = ym => MON_LONG[+String(ym).slice(5, 7) - 1];
 // "2026-01" to "2026-04" -> "January to April 2026"; open end -> "since September 2025"
 const spanText = (from, to) => {
@@ -257,7 +272,7 @@ const spanText = (from, to) => {
 };
 const sentencePrior = (idx) => {
   const priors = idx.usable.filter(e => e.kind === 'prior_service');
-  if (!priors.length) return { text: missing('previous treatment outcome'), ids: [], miss: ['previous treatment outcome'] };
+  if (!priors.length) return { text: missing(PRIOR_NEED), ids: [], miss: [PRIOR_NEED] };
   const miss = [];
   const text = priors.map(p => {
     let t = `${p.label}${p.from ? ', ' + spanText(p.from, p.to) : ''}${p.sessions ? ', ' + nw(p.sessions) + ' sessions' : ''}`;
@@ -278,45 +293,76 @@ const sentenceCurrent = (idx) => {
   }).join(' ');
   return { text, ids: svcs.map(x => x.id), miss };
 };
-const sentenceIep = (idx, rows) => {
-  const iep = idx.usable.filter(e => e.kind === 'iep');
-  if (!iep.length) return { text: missing('the current IEP supports'), ids: [], miss: ['current IEP supports'] };
-  const e = iep.at(-1); const sup = (e.supports || []).join(', ');
-  const incs = incidentsFor(idx); const unstructured = incs.filter(x => x.setting === 'unstructured');
-  let t = `The IEP (${e.label.replace(/^IEP /i, '')}) lists ${sup || missing('the supports it lists')}.`;
-  const miss = [];
-  if (incs.length && incs.every(x => x.setting)) t += ` ${cap(nw(unstructured.length))} of the ${nw(incs.length)} incidents in the last ${idx.window} days happened in unstructured periods (${[...new Set(unstructured.map(x => x.where))].join(', ')}).`;
-  t += ` ${missing('why these supports are not enough on their own (the clinician states this)')}`; miss.push('why the IEP supports are not enough');
-  return { text: t, ids: [e.id, ...incs.map(x => x.id)], miss };
-};
 const sentenceRisk = (idx) => {
   const e = idx.usable.find(x => x.kind === 'placement_risk');
-  return e ? { text: `${e.quote}`, ids: [e.id], miss: [] } : { text: missing('the risk of a more restrictive setting'), ids: [], miss: ['risk of a more restrictive setting'] };
-};
-const sentenceOffice = (idx) => {
-  const rows = idx.usable.filter(e => e.kind === 'office_referral' && e.current);
-  return rows.length ? { text: `${cap(nw(rows.length))} office referral${rows.length === 1 ? '' : 's'} in the last ${idx.window} days (${dateList(rows)}).`, ids: rows.map(e => e.id), miss: [] } : null;
+  return e ? { text: `${e.quote}`, ids: [e.id], miss: [] } : { text: missing('what is likely to happen at a lower level of care'), ids: [], miss: ['what is likely to happen at a lower level of care'] };
 };
 const clinicianOf = (s, d) => staffOf(s, d.owner || 'jperez');
-const kidWord = c => c.sex === 'F' ? 'girl' : c.sex === 'M' ? 'boy' : 'student';
-const schoolLevel = (s, c) => { const sc = byId(s.schools, c.school) || {}; return { level: sc.level, locality: sc.locality }; };
+const siteOf = (s, c) => byId(s.schools, c.school) || {};
 
-// An info-request ask matched to the stored records that answer it
+// ----- the ASAM sentences: each is built from the clinician's stored rating and the dated records filed under that dimension
+const rl = n => asam.ratingLabel(n).toLowerCase();
+const recordsOf = (idx, n) => idx.usable.filter(e => e.kind === DIM_KIND[n] && !e.fromAssessment).sort(byDate);
+const notesOf = (idx, n) => idx.usable.filter(e => e.kind === 'daily_note' && e.dim === n && e.current).sort(byDate);
+// One dimension: "D5 (relapse, continued use…) was rated 3, significant, on Oct 12." + the dated records + the clinician's note. A dimension rated
+// Moderate or higher with no instrument or record on file prints Evidence missing; a Mild or None dimension is not flagged.
+export function sentenceDim(idx, n, { head = true } = {}) {
+  const a = idx.assessment; const dm = asam.dimOf(n); const rt = a ? asam.ratingOf(a, n) : null;
+  const lead = rt != null ? `${dm.short} (${dm.label.toLowerCase()}) was rated ${rt}, ${rl(rt)}, on ${fmtDate(a.date)}.` : `${dm.short} (${dm.label.toLowerCase()}) has no rating on file.`;
+  const recs = recordsOf(idx, n); const own = a ? idx.usable.find(e => e.fromAssessment && e.dim === n) : null;
+  const ids = [...(own ? [own.id] : []), ...recs.map(e => e.id)]; const miss = [];
+  let body = ''; const notes = recs.length ? [] : notesOf(idx, n);
+  if (notes.length) { body = `${cap(nw(notes.length))} group note${notes.length === 1 ? '' : 's'} in the last ${idx.window} days address this (${dateList(notes)}).`; ids.push(...notes.map(e => e.id)); }
+  else if (recs.length) {
+    const curN = recs.filter(e => e.current).length;
+    body = (n === 5 && curN ? `${cap(nw(curN))} dated record${curN === 1 ? '' : 's'} in the last ${idx.window} days. ` : '') + recs.map(e => e.quote).join(' ');
+  } else if (rt == null || rt >= 2 || n === 5 || n === 4) { const lab = dimNeedLabel(n, idx.window, idx.initial); body = missing(lab); miss.push(lab); }
+  const note = own && own.quote && !recs.length ? ` Assessment note: ${own.quote}` : '';
+  return { text: `${head ? lead + ' ' : ''}${body}${note}`.replace(/\s+/g, ' ').trim(), ids, miss };
+}
+export function sentenceRatings(idx) {
+  const a = idx.assessment;
+  if (!a) return { text: missing('the ASAM assessment'), ids: [], miss: ['ASAM assessment'] };
+  const parts = asam.DIMS.map(dm => `${dm.short} ${dm.label.toLowerCase()} ${asam.ratingOf(a, dm.n) != null ? asam.ratingOf(a, dm.n) : 'not rated'}`);
+  return { text: `ASAM ${a.kind === 'initial' ? 'initial assessment' : 'reassessment'} of ${fmtDate(a.date, { year: true })}: ${parts.join('; ')}.`, ids: [`EV-ASM-${a.id}`], miss: [] };
+}
+// What an outgoing document says about the level of care. The internal reading (asam.levelCheck.detail) stays on screen; this is safe to send.
+export function sentenceLevel(idx, r) {
+  const a = idx.assessment; const lvl = asam.requestLevel(r); const ck = asam.levelCheck(a, lvl);
+  if (ck.state === 'none') return { text: missing('the ASAM assessment and the level of care requested'), ids: [], miss: ['ASAM assessment and level of care'] };
+  const dl = list => list.map(x => `${asam.dimOf(x.n).short} (${x.rating})`).join(', ');
+  const ids = [`EV-ASM-${a.id}`, ...(ck.state === 'match' ? ck.drivers : ck.exceeds).map(x => `EV-ASM-${a.id}-D${x.n}`)]; const miss = [];
+  let text;
+  if (ck.state === 'match') text = ck.lowerLevel ? `The ratings support ASAM Level ${lvl}: ${dl(ck.drivers)} ${ck.drivers.length === 1 ? 'is' : 'are'} above what Level ${ck.lowerLevel} can manage.` : `The ratings support ASAM Level ${lvl}, the lowest level of care.`;
+  else if (ck.state === 'over') { text = `The ratings alone fit ASAM Level ${ck.lowest}. Level ${lvl} is requested because ${a.plan ? a.plan.replace(/^./, c => c.toLowerCase()).replace(/\.$/, '') : missing('the reason, outside the ratings, why this level is needed (the clinician states it)')}.`; if (!a.plan) miss.push('the reason the requested level is above what the ratings fit'); }
+  else { text = `The ratings point above ASAM Level ${lvl} (${dl(ck.exceeds)}; the lowest level that fits every rating is Level ${ck.lowest}). Level ${lvl} is the more conservative request${a.plan ? ': ' + a.plan : '. ' + missing('why the lower level was chosen')}`; if (!a.plan) miss.push('why the lower level was chosen'); }
+  return { text, ids, miss };
+}
+const dimsByRating = (a, min = 2) => asam.DIMS.map(dm => ({ n: dm.n, rt: asam.ratingOf(a, dm.n) })).filter(x => x.rt != null && x.rt >= min).sort((x, y) => y.rt - x.rt || x.n - y.n);
+
+// An info-request ask (or a payer reason) matched to the stored records that answer it. The ask is read for the ASAM dimensions it turns on.
 function answerAsk(s, d, r, idx, ask) {
-  if (/incident|aggress|behavio|frequen|durat/i.test(ask)) { const a = sentenceIncidents(idx); const off = sentenceOffice(idx); const scr = idx.usable.find(e => e.kind === 'screening'); return { text: [a.text, off && off.text, scr && `At the screening call on ${fmtDate(scr.date)} the guardian reported ${scr.quote.replace(/^Guardian reported /, '')}`].filter(Boolean).join(' '), ids: [...a.ids, ...(off ? off.ids : []), ...(scr ? [scr.id] : [])], miss: a.miss }; }
-  if (/outpatient|prior|treatment|service/i.test(ask)) { const p = sentencePrior(idx); const cur = sentenceCurrent(idx); return { text: [p.text, cur && cur.text].filter(Boolean).join(' '), ids: [...p.ids, ...(cur ? cur.ids : [])], miss: [...p.miss, ...(cur ? cur.miss : [])] }; }
-  if (/iep/i.test(ask)) return sentenceIep(idx);
-  if (/goal|isp|baseline/i.test(ask)) {
+  const rd = asam.reasonDims(ask);
+  if (/prior|previous|earlier|outcome of|tried/i.test(ask) && !/withdraw/i.test(ask)) { const p = sentencePrior(idx); const cur = sentenceCurrent(idx); return { text: [p.text, cur && cur.text].filter(Boolean).join(' '), ids: [...p.ids, ...(cur ? cur.ids : [])], miss: [...p.miss, ...(cur ? cur.miss : [])], dims: rd.dims, level: rd.level }; }
+  if (/goal|treatment plan|baseline/i.test(ask)) {
     const c = clientOf(s, r.client);
-    if (c.goals && c.goals.length) return { text: c.goals.map(g => `Goal ${g.n} (${g.name}): ${g.objective}`).join(' '), ids: [], miss: [] };
-    return { text: missing('the ISP goals and baselines'), ids: [], miss: ['ISP goals and baselines'] };
+    if (c.goals && c.goals.length) return { text: c.goals.map(g => `Goal ${g.n} (${g.name}): ${g.objective}`).join(' '), ids: [], miss: [], dims: rd.dims, level: rd.level };
+    return { text: missing('the treatment plan goals and baselines'), ids: [], miss: ['treatment plan goals and baselines'], dims: rd.dims, level: rd.level };
   }
-  return { text: missing('the answer to this item'), ids: [], miss: ['answer to this item'], unmatched: true };
+  if (/assessment|rating|dimension|level of care|ASAM/i.test(ask) && !/withdraw|housing|use in|urine/i.test(ask)) { const a = sentenceRatings(idx); const l = sentenceLevel(idx, r); return { text: `${a.text} ${l.text}`, ids: [...a.ids, ...l.ids], miss: [...a.miss, ...l.miss], dims: rd.dims, level: true }; }
+  if (rd.dims.length) {
+    const order = rd.dims.slice().sort((x, y) => (asam.ratingOf(idx.assessment, y) ?? -1) - (asam.ratingOf(idx.assessment, x) ?? -1)).slice(0, 3);
+    const parts = order.map(n => sentenceDim(idx, n)); const l = rd.level ? sentenceLevel(idx, r) : null;
+    const cur = rd.level ? sentenceCurrent(idx) : null;
+    return { text: [...parts.map(p => p.text), l && l.text, cur && cur.text].filter(Boolean).join(' '), ids: [...parts.flatMap(p => p.ids), ...(l ? l.ids : []), ...(cur ? cur.ids : [])], miss: [...parts.flatMap(p => p.miss), ...(l ? l.miss : []), ...(cur ? cur.miss : [])], dims: rd.dims, level: rd.level };
+  }
+  if (rd.level) { const l = sentenceLevel(idx, r); const cur = sentenceCurrent(idx); const p = sentencePrior(idx); return { text: [l.text, cur && cur.text, p.text].filter(Boolean).join(' '), ids: [...l.ids, ...(cur ? cur.ids : []), ...p.ids], miss: [...l.miss, ...(cur ? cur.miss : []), ...p.miss], dims: [], level: true }; }
+  return { text: missing('the answer to this item'), ids: [], miss: ['answer to this item'], unmatched: true, dims: [], level: false };
 }
 
 // buildDoc(s, d, r, kind) -> { kind, gen, sections:[{key,title,text,evidence:[ids],missing:[labels],basis}], reviewed:null, sent:null, versions:[] }
 export function buildDoc(s, d, r, kind, by = 'Psyflo') {
-  const idx = evidenceIndex(s, d, r); const c = clientOf(s, r.client); const pf = payerFirst(s, r.payer); const u = unitsView(s, d, r);
+  const idx = evidenceIndex(s, d, r); const c = clientOf(s, r.client); const pf = payerFirst(s, r.payer); const u = unitsView(s, d, r); const a = idx.assessment; const lvl = asam.requestLevel(r);
   const sec = (key, title, o, basis) => ({ key, title, text: o.text, evidence: o.ids || [], missing: o.miss || [], ...(basis ? { basis } : {}) });
   const sections = [];
   if (kind === 'info') {
@@ -325,14 +371,20 @@ export function buildDoc(s, d, r, kind, by = 'Psyflo') {
     asks.forEach((ask, i) => sections.push(sec('ask' + (i + 1), ask.replace(/\.$/, ''), answerAsk(s, d, r, idx, ask), `Item ${i + 1} of ${asks.length}`)));
     if (!asks.length) sections.push({ key: 'ask1', title: 'The payer\'s questions', text: missing('the items the payer asked for (read them from the payer message)'), evidence: [], missing: ['items the payer asked for'] });
   } else if (kind === 'p2p') {
-    const clin = clinicianOf(s, d); const { level, locality } = schoolLevel(s, c);
-    const an = w => /^(8|11|18|[aeiou])/i.test(String(w)) ? 'an' : 'a';
-    const open = `This is ${clin.name}${clin.credential ? ', ' + clin.credential : ''}, calling about ${c.age ? an(c.age) + ' ' + c.age + '-year-old ' : 'a '}${kidWord(c)}${level ? ' at ' + (level === 'elementary' ? 'an elementary' : 'a ' + level) + ' school' : ''}${locality ? ' in ' + locality : ''}. ${pf} ${u.offered != null ? 'offered' : 'approved'} ${u.current != null ? u.current : '?'} of the ${u.requested} units requested.`;
+    const clin = clinicianOf(s, d); const site = siteOf(s, c);
+    const open = `This is ${clin.name}${clin.credential ? ', ' + clin.credential : ''}, calling about an adolescent${c.age ? ', ' + c.age : ''}, in an intensive outpatient program${site.locality ? ' in ' + site.locality : ''}${c.diagnosis ? ' (' + c.diagnosis + ')' : ''}. ${pf} ${u.offered != null ? 'offered' : 'approved'} ${u.current != null ? u.current : '?'} of the ${u.requested} units requested${lvl ? ' for ASAM Level ' + lvl : ''}.`;
     sections.push(sec('open', 'Open with', { text: open, ids: [], miss: [] }, `Request ${r.id}`));
-    const inc = sentenceIncidents(idx); sections.push(sec('incidents', 'Dated evidence', inc));
+    const ra = sentenceRatings(idx); sections.push(sec('ratings', 'Dimension ratings', ra, a ? `Assessed ${fmtDate(a.date, { year: true })}` : 'No assessment'));
+    const lv = sentenceLevel(idx, r); const ck = asam.levelCheck(a, lvl);
+    sections.push(sec('level', 'Why this level and not a lower one', lv, lvl ? `ASAM Level ${lvl}` : ''));
+    // the evidence is argued dimension by dimension: the dimensions above the next lower level, or the highest-rated ones when the ratings do not settle it
+    const focus = (ck.state === 'match' ? ck.drivers.map(x => ({ n: x.n })) : a ? dimsByRating(a, 2).slice(0, 3) : []).slice(0, 3); const dd = (focus.length ? focus : [{ n: 5 }]).map(x => sentenceDim(idx, x.n));
+    sections.push(sec('incidents', 'Evidence by dimension', { text: dd.map(x => x.text).join(' '), ids: dd.flatMap(x => x.ids), miss: dd.flatMap(x => x.miss) }));
     const pr = sentencePrior(idx); const cur = sentenceCurrent(idx);
     sections.push(sec('services', 'Services already tried', { text: [pr.text, cur && cur.text].filter(Boolean).join(' '), ids: [...pr.ids, ...(cur ? cur.ids : [])], miss: [...pr.miss, ...(cur ? cur.miss : [])] }));
-    sections.push(sec('risk', 'Level of care', sentenceRisk(idx)));
+    sections.push(sec('risk', 'If the level is reduced', sentenceRisk(idx)));
+    const prev = asam.priorAssessment(s, r.client);
+    if (prev) sections.push(sec('change', 'Change since the last assessment', { text: `${asam.changeText(asam.change(prev, a))} (${fmtDate(prev.date)} to ${fmtDate(a.date)}).${a.plan ? ' ' + a.plan : ''}`, ids: [`EV-ASM-${prev.id}`, `EV-ASM-${a.id}`], miss: [] }));
     const when = u.runOut ? `about ${fmtDate(u.runOut)}` : 'a date that cannot be computed';
     const unitsText = `At ${u.rate} units a school day (${rule(s, 'units.rate_per_school_day').verification.toLowerCase()}), ${u.current} units cover ${u.days} school days, to ${when}. The request asked for ${u.requested} units${u.reqDays ? ' (' + u.reqDays + ' school days at the same rate)' : ''}${u.windowEnd ? ' through ' + fmtDate(u.windowEnd) : ''}.`;
     sections.push(sec('units', 'What the units mean', { text: unitsText, ids: [], miss: [] }, 'Rule: run-out rate'));
@@ -348,13 +400,16 @@ export function buildDoc(s, d, r, kind, by = 'Psyflo') {
       ? (stated ? `${pf} said the request was denied: ${reason}.` : missing("the payer's stated reason"))
       : (stated ? `${pf} offered ${u.offered != null ? u.offered : u.current} of the ${u.requested} units requested and said: ${reason}` : `${pf} offered ${u.offered != null ? u.offered : u.current} of the ${u.requested} units requested. ${missing("the payer's stated reason")}`);
     sections.push(sec('reason', d.issue === 'denial' ? "The payer's reason" : "The payer's decision", { text: reasonText, ids: [], miss: stated ? [] : ["payer's stated reason"] }, (d.notice && d.notice.doc_ref) || (d.notice && d.notice.source) || 'Decision notice'));
-    const off = sentenceOffice(idx); const inc = incidentsFor(idx).length ? sentenceIncidents(idx) : null; const cur = sentenceCurrent(idx); const pr = sentencePrior(idx);
-    const parts = [inc, off, cur, pr].filter(Boolean);
-    sections.push(sec('record', 'What the record shows', { text: parts.map(p => p.text).join(' '), ids: parts.flatMap(p => p.ids), miss: parts.flatMap(p => p.miss) }));
+    const lv = sentenceLevel(idx, r);
+    sections.push(sec('level', 'Level of care', lv, lvl ? `ASAM Level ${lvl}` : ''));
+    const dims = a ? dimsByRating(a).slice(0, 4).map(x => sentenceDim(idx, x.n)) : [];
+    const cur = sentenceCurrent(idx); const pr = sentencePrior(idx);
+    const parts = [...dims, cur, pr].filter(Boolean);
+    sections.push(sec('record', 'What the record shows', { text: parts.map(p => p.text).join(' ') || missing('the ASAM ratings and the records behind them'), ids: parts.flatMap(p => p.ids), miss: parts.length ? parts.flatMap(p => p.miss) : ['ASAM ratings and records'] }));
     sections.push(sec('ask', 'What is asked', { text: `Please review the attached records and approve the ${u.requested} units requested.`, ids: [], miss: [] }, `Request ${r.id}`));
   } else throw new Error('Unknown document: ' + kind);
   const usedIds = [...new Set(sections.flatMap(x => x.evidence))];
-  return { kind, gen: { at: clockNow(s), by, sim: true, rules: 'Psyflo drafting rules 1 to 14', sources: usedIds.length }, sections, reviewed: null, sent: null, versions: [], attached: kind === 'appeal' || kind === 'recon' ? attachedList(idx, usedIds, d) : undefined };
+  return { kind, gen: { at: clockNow(s), by, sim: true, rules: 'Psyflo drafting rules 1 to 14 · ASAM dimensions', sources: usedIds.length }, sections, reviewed: null, sent: null, versions: [], attached: kind === 'appeal' || kind === 'recon' ? attachedList(idx, usedIds, d) : undefined };
 }
 function attachedList(idx, ids, d) {
   const src = [...new Set(ids.map(id => (evidenceById(idx, id) || {}).source).filter(Boolean))];
@@ -369,12 +424,18 @@ export function docText(doc, kind) {
 export const docMissing = doc => (doc && doc.sections ? doc.sections.flatMap(x => (x.text.match(MISSING_RE) || [])) : []);
 export const docSent = doc => !!(doc && doc.sent);
 
-// Questions to put to the reviewer (neutral, about the decision itself, never a clinical claim) and what to check before the call
+// Questions to put to the reviewer (neutral, about the decision itself, never a clinical claim) and what to check before the call.
+// The ASAM questions come first: which ratings the reviewer read, which level the payer considers appropriate, whether a reassessment is needed.
 export function clarifyQuestions(s, d, r, idx) {
   const q = []; const pf = payerFirst(s, r.payer); const notice = d.notice || {};
   const reasons = (d.concerns || []).filter(x => !/not recorded/i.test(x.text));
   if (!reasons.length) q.push(`Which criteria did ${pf} find unmet? No written reason is on file.`);
   else q.push(`Does "${reasons[0].text.replace(/^"|"$/g, '')}" describe the whole basis for the decision, or are there other criteria?`);
+  const a = idx && idx.assessment; const lvl = asam.requestLevel(r); const ck = asam.levelCheck(a, lvl); const du = asam.dueState(s, a, lvl);
+  q.push(a ? `Which ASAM dimension ratings did the reviewer read, and from which assessment? The latest is dated ${fmtDate(a.date, { year: true })}.` : 'Which ASAM assessment did the reviewer read? None is on file for this client.');
+  if (lvl) q.push(`Which level of care does ${pf} consider appropriate, and which dimension would have to change for Level ${lvl} to be supported?`);
+  if (ck.state === 'over') q.push(`The ratings alone fit Level ${ck.lowest}. What reason beyond the ratings would ${pf} accept for Level ${lvl}?`);
+  if (du.state === 'overdue') q.push(`Does ${pf} need a new ASAM reassessment before it decides? The last is ${du.days} days old.`);
   q.push('Which records did the reviewer read, and what are their dates?');
   q.push('What additional records, with dates, would change the decision?');
   if (!notice.doc_ref) q.push('Can the decision be sent in writing with a reference number, and when will it arrive?');
@@ -386,28 +447,52 @@ export function clarifyQuestions(s, d, r, idx) {
 // ---------------------------------------------------------------------------------------------------------------- the workspace (R3): said vs shown, weak points, steps, call hours
 // What the payer said, set beside the stored records that answer it. A reason that no stored record can be matched to says "not compared yet":
 // nothing is invented. `need` is what stays marked Evidence missing for that reason. Same matching the drafts use (answerAsk).
+// Each reason also carries the ASAM dimensions it turns on (`dims`), each with the clinician's rating, so the workspace can say where the chart is
+// on the payer's side (a dimension rated None or Mild) and where it is not.
 const tidy = t => String(t || '').replace(MISSING_RE, '').replace(/\s+([.,;])/g, '$1').replace(/\s{2,}/g, ' ').replace(/(?:,\s*)+\./g, '.').trim();
 export function compareReasons(s, d, r, idx) {
   const items = (d.concerns || []).filter(x => x && x.text && !/not recorded/i.test(x.text));
+  const a = idx.assessment;
   return items.map((x, i) => {
     const said = String(x.text).replace(/^["“]|["”]$/g, '');
-    const a = answerAsk(s, d, r, idx, said); const matched = !a.unmatched;
-    return { key: 'r' + (i + 1), said, source: x.source || '', matched, shows: matched ? tidy(a.text) : '', ids: matched ? a.ids : [], need: matched ? a.miss : [] };
+    const ans = answerAsk(s, d, r, idx, said); const matched = !ans.unmatched;
+    const dims = (ans.dims || []).map(n => ({ n, short: asam.dimOf(n).short, label: asam.dimOf(n).label, rating: a ? asam.ratingOf(a, n) : null }));
+    return { key: 'r' + (i + 1), said, source: x.source || '', matched, shows: matched ? tidy(ans.text) : '', ids: matched ? ans.ids : [], need: matched ? ans.miss : [], dims, level: !!ans.level };
   });
 }
 // Everything not documented for this case: the evidence index's needs plus what each stated reason still lacks (deduplicated by label).
 // One list for the menu count, the Evidence page, the weak points, the documentation request and the gaps panel.
 export function missingItems(s, d, r, idx) {
-  const out = idx.needs.map(n => ({ key: n.key, label: n.label })); const seen = new Set(out.map(x => x.label.toLowerCase()));
-  for (const x of compareReasons(s, d, r, idx)) for (const m of x.need) { const k = String(m).toLowerCase(); if (seen.has(k)) continue; seen.add(k); out.push({ key: 'q-' + k.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40), label: m }); }
+  const out = idx.needs.map(n => ({ key: n.key, label: n.label, dim: n.dim })); const seen = new Set(out.map(x => x.label.toLowerCase())); const hasSvc = out.some(n => n.key === 'services');
+  for (const x of compareReasons(s, d, r, idx)) for (const m of x.need) { const k = String(m).toLowerCase(); if (seen.has(k) || (hasSvc && /^why .*(insufficient|not enough)/.test(k))) continue; seen.add(k); out.push({ key: 'q-' + k.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40), label: m }); }
   return out;
 }
-// Where the denial is weak: Strong = a stored record answers a stated reason · Gap = not documented yet · Clarify = the payer's criterion is not on file
-// or no stored record is matched to a reason · Risk = a documentation weakness. Derived from the same evidence index the drafts use; no likelihood is given.
+// Where the denial is weak, read against the ASAM ratings: Strong = a stored record answers a stated reason, or the ratings support the level · Gap = not
+// documented yet · Clarify = the payer's criterion is not on file or no stored record is matched to a reason · Risk = the ratings or the documentation
+// weaken the case (a level the ratings do not fit, ratings gone stale, an incident after the assessment, a dimension that is on the payer's side).
+// Derived from the same evidence index the drafts use; no likelihood is given.
 export const WEAK_KINDS = { strong: ['success', 'Strong'], gap: ['danger', 'Gap'], clarify: ['info', 'Clarify'], risk: ['warning', 'Risk'] };
 export function weakPoints(s, d, r, idx) {
   const pf = payerFirst(s, r.payer); const out = []; const reasons = compareReasons(s, d, r, idx);
-  reasons.filter(x => x.matched && !x.need.length && x.ids.length).forEach(x => out.push({ k: x.key, kind: 'strong', title: `The record answers “${x.said}”`, text: x.shows, ids: x.ids, fix: 'Cite these records in the response', go: 'evidence' }));
+  const a = idx.assessment; const lvl = asam.requestLevel(r); const ck = asam.levelCheck(a, lvl);
+  // 1. the level of care, read from the clinician's ratings
+  if (!a) out.push({ k: 'a-none', kind: 'gap', title: 'No ASAM assessment is on file', ids: [], fix: 'Complete the ASAM multidimensional assessment in Lauris before anything goes to the payer', go: 'evidence', lauris: true });
+  else {
+    const aid = `EV-ASM-${a.id}`;
+    if (ck.state === 'match') out.push({ k: 'a-match', kind: 'strong', title: `The ratings support Level ${ck.requested}`, text: ck.detail, ids: [aid, ...ck.drivers.map(x => `${aid}-D${x.n}`)], fix: 'Lead the response with the dimensions that are above the next lower level', go: 'evidence' });
+    else if (ck.state === 'over') out.push({ k: 'a-over', kind: 'risk', title: `The ratings alone fit Level ${ck.lowest}, below the Level ${ck.requested} requested`, text: ck.detail, ids: [aid], fix: 'The clinician states the reason beyond the ratings, or the request moves to the lower level', go: 'evidence' });
+    else if (ck.state === 'under') out.push({ k: 'a-under', kind: 'strong', title: `The ratings point above Level ${ck.requested}`, text: ck.detail, ids: [aid, ...ck.exceeds.map(x => `${aid}-D${x.n}`)], fix: 'Say why the lower level was requested (transport, family choice, a step-up plan)', go: 'evidence' });
+    const du = asam.dueState(s, a, lvl);
+    if (du.state === 'overdue') out.push({ k: 'a-due', kind: 'risk', title: `The ratings are ${du.days} days old; the reassessment rule is ${du.limit} days`, ids: [aid], rule: du.rule, fix: 'Reassess before replying: a payer can discount ratings older than its interval', go: 'evidence', lauris: true });
+    for (const i of (s.incidents || []).filter(i => i.client === r.client && String(i.date).slice(0, 10) > a.date)) out.push({ k: 'a-evt-' + String(i.date).slice(0, 10), kind: 'risk', title: `An incident on ${fmtDate(i.date)} came after the ${fmtDate(a.date)} assessment`, text: i.what, ids: [`EV-INC-${String(i.date).slice(0, 10)}`], fix: 'Reassess: the ratings may understate current risk (D1, D3 and D5 first)', go: 'evidence', lauris: true });
+  }
+  // 2. what each stated reason turns on: a dimension rated None or Mild is on the payer's side; one rated Moderate or higher needs its dated records
+  for (const x of reasons) {
+    if (!x.matched) continue;
+    const low = x.dims.filter(m => m.rating != null && m.rating <= 1); const high = x.dims.filter(m => m.rating == null || m.rating >= 2);
+    if (low.length) out.push({ k: x.key + '-w', kind: 'risk', title: `${low.map(m => `${m.short} is rated ${m.rating}`).join(' and ')}: “${x.said}” holds on ${low.length === 1 ? 'that dimension' : 'those dimensions'}`, text: `${low.map(m => m.label).join(', ')} ${low.length === 1 ? 'does' : 'do'} not support the request on its own. Do not rest the response there.`, ids: low.map(m => `EV-ASM-${a.id}-D${m.n}`), fix: `Rest the response on ${ck.drivers && ck.drivers.length ? ck.drivers.map(z => asam.dimOf(z.n).short).join(' and ') : 'the dimensions rated Moderate or higher'}`, go: 'evidence' });
+    if (!x.need.length && x.ids.length && (high.length || !x.dims.length)) out.push({ k: x.key, kind: 'strong', title: `The record answers “${x.said}”`, text: x.shows, ids: x.ids, fix: high.length ? `Cite ${high.map(m => m.short).join(' and ')} with the dated records` : 'Cite the level-of-care reading and the dated records', go: 'evidence' });
+  }
   missingItems(s, d, r, idx).forEach(n => out.push({ k: 'g-' + n.key, kind: 'gap', title: `Not documented: ${n.label}`, ids: [], fix: 'Collect it in the chart, or write the sentence yourself. Drafts print it as Evidence missing', go: 'evidence', lauris: true }));
   if (!reasons.length) out.push({ k: 'c-none', kind: 'clarify', title: `${pf} did not state a reason that is on file`, ids: [], fix: 'Read the payer letter, then ask which criterion was unmet (see the call questions)', go: 'said' });
   reasons.filter(x => !x.matched).forEach(x => out.push({ k: x.key + '-c', kind: 'clarify', title: `No stored record is matched to “${x.said}” yet`, ids: [], fix: `Ask ${pf} which criterion applied, and which records the reviewer read`, go: 'said' }));
@@ -421,7 +506,7 @@ export function weakPoints(s, d, r, idx) {
 // The seven recommended steps and what each has produced so far (all read from what a person recorded; none is a prediction)
 export const STEP_LIST = [['analyze', 'Analyze Denial'], ['gaps', 'Identify Missing Evidence'], ['docreq', 'Request Additional Documentation'], ['appeal', 'Generate Appeal Draft'], ['p2p', 'Generate Peer-to-Peer Script'], ['recon', 'Prepare Reconsideration'], ['review', 'Mark for Clinical Review']];
 export const NEEDS_CLINICAL = ['analyze', 'gaps', 'docreq', 'appeal', 'p2p', 'recon'];
-export const DOCREQ_TO = { clinician: 'Treating clinician', guardian: 'Guardian', school: 'School counselor' };
+export const DOCREQ_TO = { clinician: 'Treating clinician', guardian: 'Guardian', school: 'Referral partner' };
 export function stepResults(s, d, r, idx) {
   const out = {}; const docs = d.docs || {};
   if (d.analysis) out.analyze = `Analyzed ${fmtDate(String(d.analysis.at).slice(0, 10))}`;

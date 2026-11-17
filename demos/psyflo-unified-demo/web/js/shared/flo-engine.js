@@ -19,6 +19,9 @@ import { can, routeAllowed } from './permissions.js';
 import { rule, verificationLabel } from './rules.js';
 import { rosterRows, documentRows, chartHref } from './sel/roster.js';
 import { DI_STAGES, rowOf } from './sel/auth.js';
+import { asamAccess, disputeReason, DIMS, kindLabel } from './sel/asam-view.js';
+import { disputesOf } from './sel/disputes.js';
+import { assessmentsOf, ratingOf, ratingsLine, ratingLabel, levelName, dimOf } from './asam.js';
 
 export const FLO_NAME = 'FLO';
 const STAFF = ['direct_support', 'supervisor', 'clinician', 'admin'];
@@ -50,6 +53,10 @@ export const STAGE_MEANING = {
   early_discharge: 'An early discharge and a new initial request are planned. The dates are set by a clinician.',
   closed: 'Closed. No further action is expected on this request.'
 };
+
+// ASAM (level of care): the answers below read the same functions as the screens (shared/asam.js through sel/asam-view.js): the clinician's ratings, the
+// level they fit (suggested, never determined), the reassessment clock. They cite the assessment date, say "Not assessed" when there is none, never quote a
+// clinician's note, and give a role only what its access allows (the ratings: clinician and supervisor; the level and the reassessment date: every staff role).
 
 // What each Dashboard mark means (read from web/js/screens/Dashboard.js: badges in the Notes and Forms columns, icons in the Alerts column)
 const LEGEND = [
@@ -118,6 +125,12 @@ export function floSuggestions(s, actor) {
       ? ['Who is behind on notes?', 'Which authorizations are running low?', 'What are the deadlines this week?', 'Which denials are open?']
       : ['Who is behind on notes?', 'Which notes are waiting for review?', 'Which authorizations are running low?', 'What are the deadlines this week?'];
   if (actor && actor.role === 'clinician') base.push('Which denials are open?');
+  base.push('Who is due for reassessment?');
+  if (asamAccess(actor).ratings) {
+    base.push('Whose ratings do not support their requested level?', 'Show D5 trends');
+    const first = context(s, actor).rows.find(r => r.asam && r.asam.has && r.asam.access.ratings);
+    if (first) base.push(`What level do the ratings suggest for ${first.label}?`);
+  }
   base.push('How many patients do I have?', 'What does "Partial — decide" mean?', 'Where does the 75% units flag come from?');
   return base;
 }
@@ -218,6 +231,124 @@ function denials(c) {
   });
 }
 
+// ---------------------------------------------------------------------------------------------------------------- ASAM answers
+const RATING_TONE = n => (n >= 3 ? 'danger' : n === 2 ? 'warning' : 'neutral');
+const asamBlocked = (intent, title, what, c) => ({ kind: 'blocked', intent, title, links: [], followUps: ['Who is due for reassessment?', 'Who is behind on notes?'],
+  summary: [`${what} are hidden for your role.`, c.actor.role === 'admin' ? 'Your role sees the level of care and the reassessment date, not the ratings or the clinician\'s notes.' : 'Direct support sees the level of care and the reassessment state only. A clinician or supervisor can read the ratings.'], source: 'From the permission table: the ratings are for clinicians and supervisors; the clinician\'s notes are clinical text.' });
+const reassessRule = c => { const r = rule(c.s, 'asam.reassess_days'); return { days: r && !r.missing && r.value != null ? r.value : 30, label: r && !r.missing ? verificationLabel(r.category) : 'Unverified demo assumption' }; };
+
+function reassessDue(c, ptn) {
+  const rows = ptn ? [ptn] : c.rows; const rr = reassessRule(c);
+  const hits = rows.filter(r => r.asam.has && (r.asam.overdue || r.asam.soon || r.asam.incident));
+  const none = rows.filter(r => !r.asam.has);
+  hits.sort((a, b) => (a.asam.overdue ? 0 : a.asam.soon ? 1 : 2) - (b.asam.overdue ? 0 : b.asam.soon ? 1 : 2) || (a.asam.due.left - b.asam.due.left) || a.label.localeCompare(b.label));
+  const od = hits.filter(r => r.asam.overdue).length, soon = hits.filter(r => r.asam.soon).length, inc = hits.filter(r => r.asam.incident).length;
+  const stateOf = r => r.asam.overdue ? { t: `${-r.asam.due.left} day${-r.asam.due.left === 1 ? '' : 's'} overdue`, tone: 'danger' } : r.asam.soon ? { t: r.asam.due.left === 0 ? 'Due today' : `Due in ${pl(r.asam.due.left, 'day')}`, tone: 'warning' } : { t: 'On time', tone: 'neutral' };
+  const rowOfHit = r => [patientCell(r, 'asam'), date(r.asam.date), date(r.asam.due.dueDate), stateOf(r), r.asam.incident ? { t: `Incident ${date(r.asam.incident.date)}`, tone: 'danger' } : ''];
+  if (ptn) {
+    const r = ptn;
+    return done('reassess', { title: `Reassessment · ${r.label}`,
+      summary: r.asam.has ? [`${r.label}: ${r.asam.dueWhy}`, r.asam.incident ? `An incident on ${date(r.asam.incident.date)} came after the last assessment, so a reassessment is indicated.` : ''] : [`${r.label}: Not assessed`, 'No ASAM assessment is on file, so no reassessment clock is running.'],
+      links: links(c.link(`${r.label}, ASAM`, chartHref(r.id, 'asam'), 'Patient')),
+      source: r.asam.has ? `From the assessment of ${date(r.asam.date)} and the clock. ${rr.days} days between assessments is the asam.reassess_days rule (${rr.label}); payers set their own intervals.` : 'From the stored assessments: none exists for this patient.', followUps: ['Who is due for reassessment?'] });
+  }
+  return done('reassess', {
+    title: 'Due for ASAM reassessment',
+    summary: hits.length ? [`${pl(hits.length, 'patient')} ${hits.length === 1 ? 'is' : 'are'} due or overdue for ASAM reassessment`, `${od} overdue, ${soon} due within 7 days${inc ? `, ${inc} with an incident since the last assessment` : ''}.${none.length ? ` ${pl(none.length, 'patient')} ${none.length === 1 ? 'is' : 'are'} Not assessed.` : ''}`]
+      : ['No reassessment is due or overdue.', none.length ? `${pl(none.length, 'patient')} ${none.length === 1 ? 'is' : 'are'} Not assessed.` : 'Every assessed patient is within the interval.'],
+    table: hits.length ? { cols: ['Patient', 'Last assessed', 'Reassess by', 'State', ''], rows: hits.map(rowOfHit) } : null,
+    list: none.length ? [`Not assessed (no ASAM assessment on file): ${and(none.map(r => r.label))}.`] : [],
+    links: links(c.link('Authorizations, reassessment overdue', '#/Authorizations?reassess=overdue', 'Authorizations'), c.link('Dashboard, reassessment overdue', '#/Dashboard?reassess=overdue', 'Dashboard')),
+    source: `From the dates of the stored ASAM assessments and the clock. A reassessment is due ${rr.days} days after an assessment (rule asam.reassess_days: ${rr.label}); payers set their own intervals. An incident dated after the last assessment also flags one.`,
+    followUps: ['Who is behind on notes?', 'What are the deadlines this week?']
+  });
+}
+
+function levelMismatch(c) {
+  if (!asamAccess(c.actor).ratings) return asamBlocked('level-mismatch', 'Ratings and requested level', 'The ratings', c);
+  const rows = c.rows.filter(r => r.asam.has && r.asam.levelSource === 'request' && r.asam.check && r.asam.check.state !== 'none');
+  const over = rows.filter(r => r.asam.check.state === 'over'), under = rows.filter(r => r.asam.check.state === 'under');
+  const hits = [...over, ...under];
+  const line = r => { const k = r.asam.check; return [patientCell(r, 'asam'), levelName(k.requested), ratingsLine(r.asam.a), levelName(k.lowest), { t: k.state === 'over' ? 'Ratings fit a lower level' : 'Ratings point higher', tone: k.state === 'over' ? 'warning' : 'info' }, date(r.asam.date)]; };
+  return done('level-mismatch', {
+    title: 'Ratings and the level requested',
+    summary: hits.length ? [`${pl(hits.length, 'request')} ${hits.length === 1 ? 'is' : 'are'} not supported by the ratings as they stand`, `${over.length} above what the ratings fit (a payer can step ${over.length === 1 ? 'it' : 'them'} down unless a reason is documented), ${under.length} below what they point to. ${rows.length - hits.length} of ${rows.length} assessed requests match.`]
+      : ['Every assessed request matches its ratings.', `${rows.length} request${rows.length === 1 ? '' : 's'} read against the latest assessment.`],
+    table: hits.length ? { cols: ['Patient', 'Requested', 'Ratings', 'Lowest level that fits (suggested)', 'Reading', 'Assessed'], rows: hits.map(line) } : null,
+    list: c.rows.some(r => !r.asam.has && r.auth) ? [`Not assessed: ${and(c.rows.filter(r => !r.asam.has && r.auth).map(r => r.label))}.`] : [],
+    links: links(c.link('Authorizations, ratings fit a lower level', '#/Authorizations?level=over', 'Authorizations'), c.link('Authorizations, ratings point higher', '#/Authorizations?level=under', 'Authorizations')),
+    source: 'From each patient\'s latest ASAM assessment (the clinician\'s ratings) and the level on the request. The level the ratings fit is a simplified demo decision rule (Unverified demo assumption): it is suggested, not determined, and the clinician decides.',
+    followUps: ['Who is due for reassessment?', 'Show D5 trends']
+  });
+}
+
+function suggestedLevel(c, ptn) {
+  if (!ptn) return done('level-suggest', { title: 'Level the ratings suggest', summary: ['Name a patient and I will read their ratings.', 'For example: What level do the ratings suggest for ' + ((c.rows.find(r => r.asam.has) || {}).label || 'T.N.') + '?'], source: 'From the patients in this role\'s scope.', followUps: ['Who is due for reassessment?'] });
+  const rd = ptn.asam;
+  if (!rd.has) return done('level-suggest', { title: `Level · ${ptn.label}`, summary: [`${ptn.label}: Not assessed`, 'No ASAM assessment is on file, so there are no ratings to read and no level to suggest.'], links: links(c.link(`${ptn.label}, ASAM`, chartHref(ptn.id, 'asam'), 'Patient')), source: 'From the stored assessments: none exists for this patient.', followUps: ['Who is due for reassessment?'] });
+  if (!rd.access.ratings) return { ...asamBlocked('level-suggest', `Level · ${ptn.label}`, 'The ratings', c), summary: [`The ratings are hidden for your role.`, `${ptn.label} is at ${rd.level ? levelName(rd.level) : 'a level not recorded on the request'}; the last assessment was ${date(rd.date)}; ${rd.dueWhy}.`] };
+  const k = rd.check; const dims = DIMS.map(d => { const n = ratingOf(rd.a, d.n); return [`${d.short} ${d.label}`, { t: n == null ? 'Not rated' : `${n} · ${ratingLabel(n)}`, tone: n == null ? 'neutral' : RATING_TONE(n) }, date(rd.date)]; });
+  return done('level-suggest', {
+    title: `Level · ${ptn.label}`,
+    summary: rd.lowest ? [`${ptn.label}: the ratings of ${date(rd.date)} suggest ${levelName(rd.lowest)}`, `${rd.level ? `The request is at ${levelName(rd.level)}: ${k.headline}.` : 'No level is recorded on the request.'} The ratings and the level are the clinician's; this is a suggested reading by a demo decision rule.`] : [`${ptn.label}: the assessment of ${date(rd.date)} is not fully rated`, 'A level can be suggested only when all six dimensions are rated.'],
+    table: { cols: ['Dimension', 'Rating', 'Assessed'], rows: dims },
+    list: [rd.recommended ? `The clinician recommended ${levelName(rd.recommended)} in that assessment.` : '', rd.changeText ? `Since ${date(rd.prev.date)}: ${rd.changeText}.` : ''].filter(Boolean),
+    links: links(c.link(`${ptn.label}, ASAM`, chartHref(ptn.id, 'asam'), 'Patient')),
+    source: `From the ${kindLabel(rd.kind).toLowerCase()} of ${date(rd.date)}. The level the ratings fit is a simplified demo decision rule (Unverified demo assumption), shown as a suggestion. FLO does not read the clinician's notes.`,
+    followUps: ['Whose ratings do not support their requested level?', 'Who is due for reassessment?']
+  });
+}
+
+function denialDimension(c, text, ptn) {
+  if (!can(c.actor, 'denials')) return { kind: 'blocked', intent: 'denial-dim', title: 'Denial cases', links: [], followUps: ['Which authorizations are running low?'], summary: ['Denial cases are not part of this role.', 'Denial Intelligence is for clinicians; administrators see status. Ask an administrator or a clinician.'], source: 'From the permission table (web/js/shared/permissions.js).' };
+  const all = disputesOf(c.s); const idm = text.match(/\b(r-\d{4}|di-\d{4})\b/i);
+  const d = idm ? all.find(x => String(x.request).toLowerCase() === idm[1].toLowerCase() || String(x.id).toLowerCase() === idm[1].toLowerCase()) : ptn ? all.find(x => x.client === ptn.id) : null;
+  const acc = asamAccess(c.actor);
+  if (!d) {
+    const rows = all.filter(x => x.closed == null).map(x => { const rr = disputeReason(c.s, x); const cl = M.byId(c.s.clients, x.client) || {}; return { x, rr, label: cl.initials || String(x.client).split(',')[0] }; });
+    return done('denial-dim', {
+      title: 'What each open denial turns on',
+      summary: rows.length ? [`${pl(rows.length, 'open case')}. Name one for its dimensions.`, 'For example: Which dimension drives the denial on ' + rows[0].label + '? The table reads the payer\'s stated reason against the six ASAM dimensions.'] : ['No denial case is open.', ''],
+      table: rows.length ? { cols: ['Case', 'Payer', 'The reason turns on'], rows: rows.map(({ x, rr, label }) => [{ t: label, to: `#/DenialCase?id=${encodeURIComponent(x.request)}`, sub: x.request }, M.payerShort(c.s, x.payer), rr.none ? 'Reason not recorded' : (rr.dims.length ? rr.dims.map(n => `D${n}`).join(' · ') : 'Not compared yet') + (rr.level ? ' · level of care' : '')]) } : null,
+      links: links(c.link('Open Denial Intelligence', '#/DenialIntelligence', 'DenialIntelligence')),
+      source: 'From the payer\'s stated reason recorded on each case, read against the six dimensions (the reasons table, then a keyword reading). FLO does not quote the reason.', followUps: ['Which denials are open?', 'Who is due for reassessment?'] });
+  }
+  const rr = disputeReason(c.s, d); const cl = M.byId(c.s.clients, d.client) || {}; const label = cl.initials || String(d.client).split(',')[0];
+  const rd = ptn ? ptn.asam : null; const a = rd && rd.a;
+  const lines = rr.dims.map(n => { const dm = dimOf(n); const v = acc.ratings && a && a.dims ? ratingOf(a, n) : null; return `${dm.short} ${dm.label}${v != null ? `: rated ${v} (${ratingLabel(v)}) in the assessment of ${date(a.date)}` : acc.ratings && !a ? ': Not assessed' : ''}`; });
+  return done('denial-dim', {
+    title: `What the denial turns on · ${label}`,
+    summary: rr.none ? [`${label} · ${d.request}: no reason is recorded on the case`, 'Nothing can be compared with the dimensions until the payer\'s reason is entered.']
+      : rr.dims.length ? [`${label} · ${d.request}: the payer's reason turns on ${and(rr.dims.map(n => `D${n}`))}`, `${and(rr.why)}.${rr.level ? ' It is also a reason about the level of care.' : ''}`]
+        : [`${label} · ${d.request}: the reason is not compared with the dimensions yet`, rr.level ? 'It is a reason about the level of care.' : 'None of the six dimensions is named in the words recorded.'],
+    list: lines,
+    links: links(c.link(`Open the case`, `#/DenialCase?id=${encodeURIComponent(d.request)}`, 'DenialCase'), c.link('Denial Intelligence, filter by dimension', rr.dims.length ? `#/DenialIntelligence?dim=${rr.dims[0]}` : '#/DenialIntelligence', 'DenialIntelligence')),
+    source: 'From the payer\'s stated reason on the case, read against the six ASAM dimensions (the reasons table, then a keyword reading), and the ratings of the latest assessment where your role may read them. FLO does not quote the reason.',
+    followUps: ['Which denials are open?', 'Show D5 trends']
+  });
+}
+
+const DIM_WORDS = [[1, /withdraw|intoxicat/], [2, /biomedical|medical/], [3, /emotional|mood|depress|anxiety|co-?occurring/], [4, /readiness|engag/], [5, /relapse|continued use|craving/], [6, /environment|recovery|living|home/]];
+function dimTrend(c, text) {
+  if (!asamAccess(c.actor).ratings) return asamBlocked('dim-trend', 'Dimension trends', 'The ratings', c);
+  const m = text.match(/\bd([1-6])\b/); const n = m ? +m[1] : (DIM_WORDS.find(([, rx]) => rx.test(text)) || [5])[0]; const dm = dimOf(n);
+  const rows = c.rows.map(r => ({ r, list: assessmentsOf(c.s, r.id).filter(a => a.dims && ratingOf(a, n) != null).slice().reverse() }));
+  const two = rows.filter(x => x.list.length >= 2), one = rows.filter(x => x.list.length === 1), none = c.rows.filter(r => !r.asam.has);
+  const delta = x => ratingOf(x.list[x.list.length - 1], n) - ratingOf(x.list[0], n);
+  const lower = two.filter(x => delta(x) < 0).length, same = two.filter(x => delta(x) === 0).length, higher = two.filter(x => delta(x) > 0).length;
+  const series = x => x.list.map(a => `${date(a.date)}: ${ratingOf(a, n)}`).join(' → ');
+  return done('dim-trend', {
+    title: `${dm.short} ${dm.label} · trend`,
+    summary: two.length ? [`${dm.short} ${dm.label}: ${lower} lower, ${same} unchanged, ${higher} higher`, `across ${pl(two.length, 'patient')} with two or more assessments. ${one.length ? `${pl(one.length, 'patient')} ${one.length === 1 ? 'has' : 'have'} one assessment so far. ` : ''}${none.length ? `${pl(none.length, 'patient')} Not assessed.` : ''}`.trim()]
+      : [`No patient has two assessments to compare on ${dm.short} yet.`, none.length ? `${pl(none.length, 'patient')} Not assessed.` : ''],
+    table: two.length ? { cols: ['Patient', `${dm.short} by assessment date`, 'Change'], rows: two.sort((a, b) => delta(b) - delta(a) || a.r.label.localeCompare(b.r.label)).map(x => [patientCell(x.r, 'asam'), series(x), { t: delta(x) < 0 ? `Lower risk (${delta(x)})` : delta(x) > 0 ? `Higher risk (+${delta(x)})` : 'No change', tone: delta(x) > 0 ? 'danger' : delta(x) < 0 ? 'success' : 'neutral' }]) } : null,
+    list: one.length ? [`One assessment so far: ${and(one.map(x => `${x.r.label} (${ratingOf(x.list[0], n)} on ${date(x.list[0].date)})`))}.`] : [],
+    links: links(c.link('Dashboard, patients with ratings', '#/Dashboard', 'Dashboard')),
+    source: `From the ${dm.short} rating in each patient's stored ASAM assessments, oldest to newest. The ratings are the clinician's; counts, not percentages. FLO does not read the notes.`,
+    followUps: ['Who is due for reassessment?', 'Whose ratings do not support their requested level?']
+  });
+}
+
 function stageMeaning(c, text) {
   const t = text.toLowerCase().replace(/[—–-]/g, ' ').replace(/\s+/g, ' ');
   let best = null;
@@ -303,7 +434,8 @@ function patientAnswer(c, row, text) {
   if (k.forms) parts.push(`${pl(k.forms, 'form')} owed${k.formsLate ? ` (${k.formsLate} past due)` : ''}`);
   return done('patient', {
     title: row.label, summary: [`${row.label} · Lauris #${row.lauris || '—'}`, parts.length ? `${and(parts)}.` : 'Nothing is outstanding.'],
-    list: [row.auth ? `Authorization: ${row.auth.stageLabel}${u ? `, ${u.left} of ${u.total} units left` : ''}${row.auth.end ? `, ends ${date(row.auth.end)}` : ''}.` : 'No authorization on file.', row.staffShort ? `Staff: ${row.staffShort}.` : ''].filter(Boolean),
+    list: [row.auth ? `Authorization: ${row.auth.stageLabel}${u ? `, ${u.left} of ${u.total} units left` : ''}${row.auth.end ? `, ends ${date(row.auth.end)}` : ''}.` : 'No authorization on file.', row.staffShort ? `Staff: ${row.staffShort}.` : '',
+      row.asam ? (row.asam.has ? `Level of care: ${row.asam.level ? levelName(row.asam.level) : 'not recorded'}. ${row.asam.dueWhy}.` : 'ASAM: Not assessed.') : ''].filter(Boolean),
     table: items.length ? { cols: ['Outstanding', 'Due', 'State'], rows: items.map(i => [i.title + (i.sub ? ' · ' + i.sub : ''), i.dueText || date(i.due), { t: i.sev === 'r' ? 'Behind' : i.sev === 'y' ? 'Soon' : 'Open', tone: SEV_TONE[i.sev] }]) } : null,
     links: links(c.link(`Open ${row.label}'s chart`, chartHref(row.id), 'Patient')),
     source: 'From stored notes, forms and the authorization for this patient. FLO does not read note text.', followUps: ['Which authorizations are running low?', 'Who is behind on notes?']
@@ -323,7 +455,7 @@ function formsDue(c) {
 }
 
 const help = (c) => done('help', {
-  title: 'What FLO can answer', summary: ['I answer from the records you can see.', 'Notes behind or in review, units and the 75% flag, deadlines, open denials, what a stage means, where a rule comes from, what the Dashboard marks mean, and facts about one patient.'],
+  title: 'What FLO can answer', summary: ['I answer from the records you can see.', 'Notes behind or in review, units and the 75% flag, deadlines, open denials, who is due for ASAM reassessment, whose ratings do not support the level requested, the level the ratings suggest, what a denial turns on, dimension trends, what a stage means, where a rule comes from, what the Dashboard marks mean, and facts about one patient.'],
   list: ['I never open or quote note text, diagnoses or medications.', 'I never change anything: I cannot flag, send, sign, call or approve.'],
   source: 'FLO is rule-based and Simulated: it matches your question to the questions it knows. No model is called.', followUps: floSuggestions(c.s, c.actor).slice(0, 4)
 });
@@ -347,6 +479,11 @@ const RX = {
   deadlines: /\bdeadlines?\b|\bdue (this|next|in|soon)\b|\bthis week\b|\bnext week\b|\bcoming up\b|\bupcoming\b|\bwhat('s| is) due\b/,
   denials: /\bdenials?\b|\bdenied\b|\bpartial\b|\bappeals?\b|\bpeer.to.peer\b|\bp2p\b|\binfo(rmation)? requests?\b/,
   forms: /\b(intake|cnas?|treatment plans?|\bisp\b|quarterly|discharge summar\w*|forms?)\b/,
+  reassess: /\bre-?assess\w*\b/,
+  mismatch: /\b(ratings?|dimensions?)\b.{0,60}\b(not|n'?t|no)\b.{0,12}\bsupport\w*|\bnot supported\b.{0,30}\bratings?|\b(requested|request)\b.{0,30}\blevel\b.{0,60}\b(ratings?|not support|too high|above|below)|\b(over|under)[- ]?(requested|asked)|\bstep[- ]?down (likely|candidates?)|\bratings? (fit|point|suggest)\b.{0,20}\b(lower|higher|above|below)\b/,
+  suggest: /\b(level|level of care)\b.{0,50}\b(ratings?|suggest\w*|fit|recommend\w*)\b|\b(ratings?|suggest\w*)\b.{0,40}\b(level|level of care)\b|\bwhat level\b/,
+  drives: /\bwhich (asam )?dimensions?\b|\bdimensions?\b.{0,30}\b(drives?|driving|behind|turns?|denial|denied|reason|case)\b|\b(drives?|turns? on|hinges?)\b.{0,30}\bdimensions?\b/,
+  trend: /\bd[1-6]\b.{0,24}\b(trends?|over time|change|history)\b|\b(trends?|history)\b.{0,24}\bd[1-6]\b|\b(withdrawal|biomedical|readiness|relapse|recovery environment|emotional)\b.{0,24}\btrends?\b/,
   stage: /\b(what (does|is|do)|mean|meaning|explain|define)\b/,
   units: /\bunits?\b/
 };
@@ -372,6 +509,11 @@ export function floAsk(s, actor, text) {
     if (RX.clinical.test(lc)) return clinical(c);
     if (RX.help.test(lc)) return help(c);
     if (RX.count.test(lc)) return patientCount(c);
+    if (RX.trend.test(lc)) return dimTrend(c, lc);
+    if (RX.drives.test(lc)) return denialDimension(c, lc, ptn);
+    if (RX.reassess.test(lc)) return reassessDue(c, ptn);
+    if (RX.mismatch.test(lc)) return levelMismatch(c);
+    if (RX.suggest.test(lc) && !/\b(units?|notes?)\b/.test(lc)) return suggestedLevel(c, ptn);
     if (ptn) return patientAnswer(c, ptn, lc);
     if (RX.stage.test(lc)) { const a = stageMeaning(c, lc); if (a) return a; }
     if (/\b(where|why|source|rule|how (long|many)|what is the)\b/.test(lc) || RX.stage.test(lc)) { const a = ruleAnswer(c, lc); if (a) return a; }

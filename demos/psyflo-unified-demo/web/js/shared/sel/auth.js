@@ -13,6 +13,8 @@ import { addDays, addBusinessDays, businessDaysBetween, daysBetween, dow, fmtDat
 import { rule, ruleValue, decisionDay, unitBands, maxUnitsPerDay } from '../rules.js';
 import { can } from '../permissions.js';
 import { evidenceIndex } from '../enhance.js';
+import { requestReading, assessmentHistory, levelFilterOk, reassessFilterOk, readingMatches, levelOptions, asamAccess } from './asam-view.js';
+import { levelById } from '../asam.js';
 
 // ---------------------------------------------------------------------------------------------------------------- vocabulary
 export const GROUP = {
@@ -60,7 +62,9 @@ export function normalizeParams(p = {}, today = '') {
   if (!from && !to && g('range')) { const r = monthRange(g('range'), today); if (r) [from, to] = r; }
   const units = ['25', '50', 'warn'].includes(g('units')) ? g('units') : '';
   const due = ['overdue', 'today', '7', '30'].includes(g('due')) ? g('due') : '';
-  return { q: g('q'), status, payer: g('payer'), type: g('type'), service: g('service'), owner: g('owner'), stage, site: g('site'), school: g('school'), units, due, ends, from, to, sort: g('sort'), dir: g('dir') === 'desc' ? 'desc' : 'asc' };
+  const level = levelFilterOk(g('level')) ? g('level') : '';            // an ASAM level id, or over / under (what the ratings say about the level asked for)
+  const reassess = reassessFilterOk(g('reassess')) ? g('reassess') : ''; // overdue | soon | none (not assessed) | incident (since the last assessment)
+  return { q: g('q'), status, payer: g('payer'), type: g('type'), service: g('service'), owner: g('owner'), stage, site: g('site'), school: g('school'), units, due, level, reassess, ends, from, to, sort: g('sort'), dir: g('dir') === 'desc' ? 'desc' : 'asc' };
 }
 // the query keys a legacy link may carry that the canonical state replaces (the screen clears them from the URL)
 export const LEGACY_KEYS = ['show', 'st', 'exp', 'range', 'tab'];
@@ -283,14 +287,15 @@ export function rowOf(s, r0, me) {
     ref: r.fax_ref || r.portal_ref || '',
     serviceLabel: serviceShort(r), serviceCode: String(r.service || '').split(' · ')[1] || '',
     periodText: per.start && per.end ? `${fmtDate(per.start)} – ${fmtDate(per.end)}` : per.end ? `ends ${fmtDate(per.end)}` : '',
-    flag: (() => { const f = openFlagOf(s, r.id); return f ? { ...f, byShort: staffShort(s, f.by), reasonLabel: flagReasonLabel(f.reason) } : null; })()
+    flag: (() => { const f = openFlagOf(s, r.id); return f ? { ...f, byShort: staffShort(s, f.by), reasonLabel: flagReasonLabel(f.reason) } : null; })(),
+    asam: requestReading(s, me, r)        // the level of care of this request read against the client's latest assessment (sel/asam-view.js)
   };
 }
 // the sort value of each column
 const GROUP_ORDER = ['needs', 'awaiting', 'draft', 'submitted', 'denial', 'active', 'closed'];
 const SEV_ORDER = { overdue: 0, soon: 1, ok: 2, none: 3 };
 export const SORTERS = {
-  case: r => r.label, payer: r => r.payer, type: r => r.typeLabel, service: r => r.serviceLabel, period: r => r.period.end || '9999', requested: r => (r.units.requested == null ? -1 : r.units.requested), approved: r => (r.units.awarded != null ? r.units.awarded : r.units.offered != null ? r.units.offered : -1),
+  case: r => r.label, payer: r => r.payer, type: r => r.typeLabel, service: r => r.serviceLabel, level: r => `${r.asam.level || '9'}|${r.asam.has ? (r.asam.overdue ? 0 : r.asam.soon ? 1 : 2) : 3}`, period: r => r.period.end || '9999', requested: r => (r.units.requested == null ? -1 : r.units.requested), approved: r => (r.units.awarded != null ? r.units.awarded : r.units.offered != null ? r.units.offered : -1),
   status: r => GROUP_ORDER.indexOf(r.group) * 100 + STAGE_LIST.indexOf(r.stage),
   units: r => (r.units.left != null ? r.units.left : r.units.requested), deadline: r => r.deadline.date || '9999', owner: r => r.owner.name, next: r => r.next.label,
   priority: r => SEV_ORDER[r.deadline.sev] * 10000 + GROUP_ORDER.indexOf(r.group) * 100 + STAGE_LIST.indexOf(r.stage)
@@ -308,6 +313,7 @@ function matches(s, row, f) {
   if (f.stage && row.stage !== f.stage) return false;
   if (f.site && row.locality !== f.site) return false;
   if (f.school && row.schoolId !== f.school) return false;
+  if (f.level || f.reassess) { if (!readingMatches(row.asam, { level: f.level, reassess: f.reassess })) return false; }
   if (f.units) { const u = row.units; if (!(u.total > 0)) return false; if (f.units === 'warn' && !u.warn) return false; if (f.units === '25' && u.left / u.total > 0.25) return false; if (f.units === '50' && u.left / u.total > 0.5) return false; }
   if (f.due) { const d = row.deadline.date && String(row.deadline.date).slice(0, 10); if (!d) return false; if (f.due === 'overdue' ? d >= s.today : f.due === 'today' ? d !== s.today : (d < s.today || d > addDays(s.today, +f.due))) return false; }
   if (f.from || f.to) { const { start, end } = row.period; if (!start && !end) return false; if (f.to && start && start > f.to) return false; if (f.from && end && end < f.from) return false; }
@@ -316,7 +322,7 @@ function matches(s, row, f) {
 }
 // authQueue(s, filters, me): filters are the canonical ones (normalizeParams). counts ignore the status chip so each chip shows what it would give.
 export function authQueue(s, filters = {}, me) {
-  const f = { q: '', status: '', payer: '', type: '', service: '', owner: '', stage: '', site: '', school: '', units: '', due: '', ends: '', from: '', to: '', sort: '', dir: 'asc', ...filters };
+  const f = { q: '', status: '', payer: '', type: '', service: '', owner: '', stage: '', site: '', school: '', units: '', due: '', level: '', reassess: '', ends: '', from: '', to: '', sort: '', dir: 'asc', ...filters };
   const all = (s.requests || []).map(r => rowOf(s, r, me));
   const base = all.filter(row => matches(s, row, f));
   const counts = { all: base.length }; for (const c of CHIP_VALUES) counts[c] = base.filter(row => row.tags.includes(c)).length;
@@ -325,8 +331,8 @@ export function authQueue(s, filters = {}, me) {
   return { rows: sortRows(shown, key, f.sort ? f.dir : 'asc'), counts, total: all.length, shown: shown.length, filters: f, sort: { key, dir: f.sort ? f.dir : 'asc' }, all };
 }
 // the select options the queue offers, from the rows that exist
-export function queueOptions(s) {
-  const reqs = s.requests || []; const rows = reqs.map(r => rowOf(s, r, null));
+export function queueOptions(s, me) {
+  const reqs = s.requests || []; const rows = reqs.map(r => rowOf(s, r, me || null));
   const uniq = (arr, key) => [...new Map(arr.map(x => [key(x), x])).values()];
   return {
     payers: uniq(rows, x => x.payerId).map(x => [x.payerId, x.payer]).sort((a, b) => a[1].localeCompare(b[1])),
@@ -335,7 +341,8 @@ export function queueOptions(s) {
     owners: uniq(rows.filter(x => x.owner.id), x => x.owner.id).map(x => [x.owner.id, x.owner.name]),
     sites: [...new Set(rows.map(x => x.locality).filter(Boolean))].sort().map(x => [x, x]),
     schools: uniq(rows.filter(x => x.schoolId), x => x.schoolId).map(x => [x.schoolId, x.school]).sort((a, b) => a[1].localeCompare(b[1])),
-    stages: STAGE_LIST.filter(st => reqs.some(r => r.stage === st)).map(st => [st, M.STAGE_LABEL[st] || st])
+    stages: STAGE_LIST.filter(st => reqs.some(r => r.stage === st)).map(st => [st, M.STAGE_LABEL[st] || st]),
+    levels: levelOptions([...new Set(rows.map(x => x.asam.level).filter(id => levelById(id)))], asamAccess(me))
   };
 }
 
@@ -588,7 +595,8 @@ export function authCase(s, id, me) {
     docs: documents(s, r), evidence: evidenceOf(s, r, me), submission: submissionOf(s, r), timeline: timelineOf(s, r, me), payerLog: payerLog(s, r), tasks: tasksOf(s, r, me), transition: transitionOf(s, r),
     signatureFlag: r.signature_flag || null, calls: ((s.auth_meta || {})[r.id] || {}).calls || [],
     flag: (() => { const f = openFlagOf(s, r.id); return f ? { ...f, byShort: staffShort(s, f.by), byName: staffName(s, f.by), reasonLabel: flagReasonLabel(f.reason) } : null; })(),
-    history: historyOf(s, r, me), serviceCode: String(r.service || '').split(' · ')[1] || '', period: periodOf(s, r)
+    history: historyOf(s, r, me), serviceCode: String(r.service || '').split(' · ')[1] || '', period: periodOf(s, r),
+    asam: requestReading(s, me, r), asamHistory: assessmentHistory(s, me, r.client)      // the level of care section: computed from the stored assessments, never typed
   };
 }
 

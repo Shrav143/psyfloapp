@@ -1,7 +1,8 @@
 // 29 · Authorizations — the work queue over request.stage (E2), laid out like the artifact's All Authorizations (R3) and formatted like Denial Intelligence (R4:
 // ui.dateCard, the shared page, filter grid, table and cells; sources and lines are icons with a hover definition): a period card, one grid of
-// ten filters, one table (Consumer · Service · Payer · Assigned clinician · Authorization period · Requested · Approved · Remaining · Status ·
-// Next action), the pager at the bottom. Selectors: shared/sel/auth.js. One row per request; the row opens the case.
+// twelve filters (the last two are the ASAM level of care and the reassessment state), one table (Consumer · Level of care · Payer · Assigned clinician ·
+// Authorization period · Requested · Approved · Remaining · Status · Next action), the pager at the bottom. The Level of care cell holds the service
+// ("IOP day · H0015") with the ASAM level beneath, the match-state chip from the client's latest assessment and the reassessment flag (sel/asam-view.js). Selectors: shared/sel/auth.js. One row per request; the row opens the case.
 // Also exports small helpers shared by the other request screens (Sent, Info request, Partials, Early discharge, Peer-to-peer)
 // so they read requests the same way. Keep these exports: other screens import them.
 import { register, Screen, M, raw, esc, ui, modal, toast, session, api, canOpen } from '../app.js';
@@ -11,6 +12,8 @@ import { authQueue, queueOptions, normalizeParams, LEGACY_KEYS, CHIPS } from '..
 import { openFlagDialog, flagButton } from './a-flag.js';
 import { A_CSS } from './a-css.js';
 import { deadlineCell, ownerCell, svcShort } from './a-fmt.js';
+import { ASAM_CSS, levelCell } from './asam-ui.js';
+import { REASSESS_FILTERS } from '../shared/sel/asam-view.js';
 
 // ---------- shared request helpers ----------
 export const details = (s, id) => (s.request_details && s.request_details[id]) || {};
@@ -84,7 +87,7 @@ export const caseHref = (id, section) => `#/Authorization?id=${encodeURIComponen
 
 const NOUN = 'authorizations';
 const COLS_HELP = 'Sorted by what is most urgent. Click a column to sort.';
-const KEYS = ['q', 'status', 'payer', 'service', 'type', 'owner', 'site', 'school', 'units', 'due'];
+const KEYS = ['q', 'status', 'payer', 'service', 'type', 'owner', 'site', 'school', 'level', 'reassess', 'units', 'due'];
 const KIND = { initial: 'Initial SRA', early_discharge_new_initial: 'Initial SRA', continued_stay: 'Concurrent SRA', concurrent: 'Concurrent SRA' };
 
 // 29 · All Authorizations. Every filter is on the page (nothing behind a "More filters" disclosure). The units are one bar ("110 left of 150", a
@@ -98,13 +101,13 @@ register('Authorizations', class extends Screen {
     if (LEGACY_KEYS.some(k => this.params[k] != null)) ui.query.writeQuery({ status: f.status, stage: f.stage, ends: f.ends, from: f.from, to: f.to, show: '', st: '', exp: '', range: '', tab: '' });
     this.ends = f.ends || '';
   }
-  get css() { return A_CSS; }
+  get css() { return A_CSS + ASAM_CSS; }
   get me() { return session.actor; }
   filters() { const st = this.state; return { ...st.f, stage: st.stage, ends: this.ends, from: st.range.from, to: st.range.to, sort: st.sort.key === 'priority' ? '' : st.sort.key, dir: st.sort.dir }; }
   setF(next) { this.setState({ f: { ...this.state.f, ...next }, page: 1 }); ui.query.writeQuery({ page: '' }); }
   renderVals() {
     const s = this.s; const me = this.me; const st = this.state;
-    const q = authQueue(s, this.filters(), me); const o = queueOptions(s);
+    const q = authQueue(s, this.filters(), me); const o = queueOptions(s, me);
     const opt = (head, list) => [['', head], ...list];
     const active = KEYS.filter(k => st.f[k]).length + (st.stage ? 1 : 0) + (this.ends ? 1 : 0) + (st.range.from || st.range.to ? 1 : 0);
     const bar = ui.filterBar({
@@ -118,6 +121,8 @@ register('Authorizations', class extends Screen {
         { key: 'owner', label: 'Assigned clinician', options: opt('All clinicians', o.owners) },
         { key: 'site', label: 'Location', options: opt('All locations', o.sites) },
         { key: 'school', label: 'School', options: opt('All schools', o.schools) },
+        { key: 'level', label: 'Level of care', options: opt('All levels', o.levels) },
+        { key: 'reassess', label: 'Reassessment', options: opt('Any', REASSESS_FILTERS) },
         { key: 'units', label: 'Units remaining', options: [['', 'Any'], ['25', '25% or less'], ['50', '50% or less'], ['warn', 'Flagged (75% used)']] },
         { key: 'due', label: 'Next step due', options: [['', 'Any time'], ['overdue', 'Overdue'], ['today', 'Today'], ['7', 'In 7 days'], ['30', 'In 30 days']] }
       ],
@@ -126,15 +131,15 @@ register('Authorizations', class extends Screen {
     const rows = ui.pager.slice(q.rows, { size: st.size, page: st.page });
     const cols = [
       { key: 'case', label: 'Consumer', sort: true, primary: true, width: '8%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.initials)}</b></span>${r.lauris ? `<span class="ui-sub ui-nw">Lauris #${esc(r.lauris)}</span>` : ''}` },
-      { key: 'service', label: 'Service', sort: true, hideBelow: 1024, width: '6%', render: r => `${esc(svcShort(r.serviceLabel))}${r.serviceCode ? `<span class="ui-sub">${esc(r.serviceCode)}</span>` : ''}` },
-      { key: 'payer', label: 'Payer', sort: true, hideBelow: 768, width: '10%', render: r => `<span title="${esc(r.payerFull)}">${esc(r.payerId === 'uhc' ? 'UHC' : r.payer)}</span>` },
-      { key: 'owner', label: 'Assigned clinician', sort: true, hideBelow: 1280, width: '9%', render: r => ownerCell(r.owner.short, r.owner.backup && r.owner.backup.name) },
-      { key: 'period', label: 'Authorization period', sort: true, hideBelow: 1024, width: '11%', render: r => `${r.periodText ? `<span class="ui-nw">${esc(r.periodText)}</span>` : '<span class="ui-muted">—</span>'}<span class="ui-sub">${esc(KIND[r.type] || r.typeLabel)}</span>` },
-      { key: 'requested', label: 'Requested', sort: true, align: 'right', hideBelow: 768, width: '7%', render: r => this.num(r.units.requested) },
-      { key: 'approved', label: 'Approved', sort: true, align: 'right', hideBelow: 768, width: '7%', render: r => r.units.awarded != null ? this.num(r.units.awarded) : r.units.offered != null ? `${this.num(r.units.offered)}<span class="ui-sub">offered</span>` : this.num(null) },
-      { key: 'units', label: 'Remaining', sort: true, width: '14%', className: 'a-c-units', render: r => this.unitsCell(r) },
-      { key: 'status', label: 'Status', sort: true, width: '12%', render: r => ui.statusChip(r.stage) },
-      { key: 'deadline', label: 'Next action', sort: true, width: '17%', className: 'a-c-next', render: r => this.nextCell(r) }
+      { key: 'level', label: 'Level of care', sort: true, hideBelow: 768, width: '15%', className: 'a-c-level', render: r => levelCell(r.asam, { svc: `${esc(svcShort(r.serviceLabel))}${r.serviceCode ? ' · ' + esc(r.serviceCode) : ''}` }) },
+      { key: 'payer', label: 'Payer', sort: true, hideBelow: 768, width: '9%', render: r => `<span title="${esc(r.payerFull)}">${esc(r.payerId === 'uhc' ? 'UHC' : r.payer)}</span>` },
+      { key: 'owner', label: 'Assigned clinician', sort: true, hideBelow: 1280, width: '8%', render: r => ownerCell(r.owner.short, r.owner.backup && r.owner.backup.name) },
+      { key: 'period', label: 'Authorization period', sort: true, hideBelow: 1024, width: '10%', render: r => `${r.periodText ? `<span class="ui-nw">${esc(r.periodText)}</span>` : '<span class="ui-muted">—</span>'}<span class="ui-sub">${esc(KIND[r.type] || r.typeLabel)}</span>` },
+      { key: 'requested', label: 'Requested', sort: true, align: 'right', hideBelow: 768, width: '6%', render: r => this.num(r.units.requested) },
+      { key: 'approved', label: 'Approved', sort: true, align: 'right', hideBelow: 768, width: '6%', render: r => r.units.awarded != null ? this.num(r.units.awarded) : r.units.offered != null ? `${this.num(r.units.offered)}<span class="ui-sub">offered</span>` : this.num(null) },
+      { key: 'units', label: 'Remaining', sort: true, width: '12%', className: 'a-c-units', render: r => this.unitsCell(r) },
+      { key: 'status', label: 'Status', sort: true, width: '11%', render: r => ui.statusChip(r.stage) },
+      { key: 'deadline', label: 'Next action', sort: true, width: '16%', className: 'a-c-next', render: r => this.nextCell(r) }
     ];
     const table = ui.queueTable({
       id: 'auth', caption: 'Authorizations', columns: cols, rows, rowId: r => r.id, href: r => caseHref(r.id),
@@ -152,7 +157,7 @@ register('Authorizations', class extends Screen {
     });
     const stageNote = st.stage ? `<div class="ui-stagenote" role="status"><span>Stage: <b>${esc(M.STAGE_LABEL[st.stage] || st.stage)}</b></span><button type="button" class="ui-linkbtn" data-x="stage-clear">Clear stage</button></div>` : '';
     const clear = active ? `<div class="ui-fclear"><button type="button" class="ui-linkbtn" data-x="clear-all">Clear all filters (${active})</button></div>` : '';
-    return { bar: raw(bar), stage: raw(stageNote), clear: raw(clear), queue: raw(table), pager: raw(pager), action: raw(action), range: raw(dateCard), maturity: raw(ui.maturity('route.Authorizations')), help: raw(ui.infoPopover({ label: 'About this table', title: 'Authorizations', html: `<p>${esc(COLS_HELP)}</p><p>Remaining shows what is left of the units. It turns yellow once ${esc(String(ruleWarn(s)))}% of the units are used. A warning icon beside a date means due soon or overdue; hover it for the reason. The small icon after a date shows where the number comes from (Officially verified, Payer-specific, Harvest-reported or Unverified demo assumption) when you hover it.</p><p>The flag button marks an authorization for attention. The people who work authorizations see it here and in their notifications (the bell at the top right).</p>` })) };
+    return { bar: raw(bar), stage: raw(stageNote), clear: raw(clear), queue: raw(table), pager: raw(pager), action: raw(action), range: raw(dateCard), maturity: raw(ui.maturity('route.Authorizations')), help: raw(ui.infoPopover({ label: 'About this table', title: 'Authorizations', html: `<p>${esc(COLS_HELP)}</p><p>Remaining shows what is left of the units. It turns yellow once ${esc(String(ruleWarn(s)))}% of the units are used. A warning icon beside a date means due soon or overdue; hover it for the reason. The small icon after a date shows where the number comes from (Officially verified, Payer-specific, Harvest-reported or Unverified demo assumption) when you hover it.</p><p>Level of care shows the service, the ASAM level the request asks for, and a chip for what the client's latest assessment says about it (ratings support it, a step-down is likely, or the ratings point higher). A flag appears when the reassessment is due or overdue, when an incident came after the last assessment, or when the level is above or below what the ratings fit. The ratings are the clinician's; the level the ratings fit is only suggested.</p><p>The flag button marks an authorization for attention. The people who work authorizations see it here and in their notifications (the bell at the top right).</p>` })) };
   }
   num(v) { return v == null ? '<span class="ui-muted" aria-label="Not recorded">—</span>' : `<b class="ui-num">${esc(String(v))}</b>`; }
   clearAll(f) {

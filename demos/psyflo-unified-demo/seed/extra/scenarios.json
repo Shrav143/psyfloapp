@@ -32,7 +32,7 @@
   },
   {
    "id": "s2",
-   "title": "School referral through intake",
+   "title": "School counselor referral through intake",
    "role": "school",
    "staff": null,
    "login": {
@@ -50,12 +50,12 @@
    "steps": [
     "School counselor submits the referral (REF-118)",
     "Clinician reviews it and sends the family link (simulated text)",
-    "Guardian fills the five steps on the phone",
+    "Family member fills the five steps on the phone",
     "Eligibility shows details received; a person records the check",
     "Screening call starts in Lauris: create the consumer, open Admission screening",
     "Missing questions show in the panel; play the scripted call",
     "Stop: the draft waits for the clinician; a person presses Process Form",
-    "Intake opens with the answers carried forward (CNA: copied from screening)"
+    "Intake opens with the answers carried forward (ASAM assessment: carried forward from screening)"
    ],
    "clock": "5:45",
    "minutes": 2,
@@ -81,7 +81,7 @@
     "Review the treatment plan (checkpoint: plan ready)",
     "Open the initial request draft in the panel",
     "Trace each statement to its source chip",
-    "Edit criterion 1; Fill all 7 boxes",
+    "Edit one dimension box; Fill all 7 boxes",
     "A person presses Process Form, then the approver approves internally",
     "A licensed person presses Get Signature in Forms to Approve",
     "A person presses Send (simulated Sfax receipt)",
@@ -109,8 +109,8 @@
    "steps": [
     "Open M.R.'s continued-stay request (Evidence review)",
     "Pick the evidence period",
-    "Review the daily notes counted from stored records",
-    "Review guardian and collateral contacts",
+    "Review the group notes counted from stored records",
+    "Review family and collateral contacts",
     "Check intervention counts and dates",
     "Exclude what should stay out",
     "Read the Evidence missing list",

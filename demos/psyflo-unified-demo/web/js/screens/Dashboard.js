@@ -24,13 +24,15 @@ import { worklist } from '../shared/sel/mywork.js';
 import { laurisLink } from '../shared/lauris-link.js';
 import { confirmAccess } from './MyWorkViews.js';
 import { DocumentsView } from './Documentation.js';
+import { ASAM_CSS, rosterCell } from './asam-ui.js';
+import { REASSESS_FILTERS } from '../shared/sel/asam-view.js';
 
 const idOf = to => String(to || '').replace(/^\.?\//, '').replace(/^#\/?/, '').split('?')[0].replace(/\.dc\.html$/, '');
 const SORTABLE = ['patient', 'staff', 'attention', 'units', 'due'];
 const SEV_ICON = { r: 'alert', y: 'clock', n: 'dot', g: 'check' };
 const SEV_WORD = { r: 'Past due', y: 'Due soon', n: 'On the way', g: 'Done' };
 const SEV_DATE = { r: 'overdue', y: 'soon', n: 'ok', g: 'ok' };
-const ALERT_ICON = { 'note-behind': 'pencil', 'note-fix': 'undo', 'form-late': 'file', review: 'eye', units: 'hourglass', deadline: 'calendar', 'auth-action': 'inbox' };
+const ALERT_ICON = { 'note-behind': 'pencil', 'note-fix': 'undo', 'form-late': 'file', review: 'eye', units: 'hourglass', deadline: 'calendar', 'auth-action': 'inbox', 'asam-reassess': 'refresh', 'asam-incident': 'alert', 'asam-level': 'bars', 'asam-none': 'dot' };
 const PHASE_ICON = { in_progress: 'pencil', needs_review: 'eye', not_started: 'dot' };
 const VIEWS = [['patients', 'Patients', 'users'], ['documents', 'Documents', 'file'], ['staff', 'Staff', 'bars']];
 const plural = (n, w) => `${n} ${n === 1 ? w : w + 's'}`;
@@ -51,10 +53,11 @@ register('Dashboard', class extends Screen {
     const a = this.actor;
     if (a && a.role === 'direct_support') { f.staff = ''; f.clinician = ''; }
     this.view = viewFor(a, this.params.view);   // direct support (no documentation capability) is always on Patients
-    this.state = { f: { q: f.q, attention: f.attention, site: f.site, staff: f.staff, clinician: f.clinician, payer: f.payer, units: f.units, due: f.due }, sort: { key: SORTABLE.includes(f.sort) ? f.sort : '', dir: f.dir }, open: f.open === 'all' || f.open === 'none' ? f.open : '', toggled: {}, ...ui.pager.fromQuery(this.params) };
+    this.state = { f: { q: f.q, attention: f.attention, site: f.site, staff: f.staff, clinician: f.clinician, payer: f.payer, level: f.level, reassess: f.reassess, units: f.units, due: f.due }, sort: { key: SORTABLE.includes(f.sort) ? f.sort : '', dir: f.dir }, open: f.open === 'all' || f.open === 'none' ? f.open : '', toggled: {}, ...ui.pager.fromQuery(this.params) };
     this.docs = new DocumentsView(this);
   }
   get actor() { return session.actor; }
+  get css() { return ASAM_CSS; }
   setF(next) { ui.query.writeQuery({ page: '' }); this.setState({ f: { ...this.state.f, ...next }, page: 1 }); }
 
   // where an Psyflo-side item's icon goes: its own target when this role may open it, else the patient chart (the chart explains the rest)
@@ -112,11 +115,16 @@ register('Dashboard', class extends Screen {
     if (!it.sub) return '';
     if (it.kind === 'form' && it.phase) return ui.hint(PHASE_ICON[it.phase] || 'info', it.sub, { tone: 'n' });
     if (it.kind === 'auth' || it.kind === 'referral') return ui.hint('info', it.sub, { tone: 'n' });
+    if (it.kind === 'asam') return ui.hint(it.type === 'reassess' ? 'refresh' : 'info', it.sub, { tone: it.sev === 'r' ? 'r' : it.sev === 'y' ? 'y' : 'n', label: `${it.title}: ${it.sub}` });
     return '';
   }
   itemActions(it, r) {
     const a = this.actor, ehr = it.kind !== 'auth' && it.kind !== 'referral';
     const who = r.label, title = it.title;
+    if (it.kind === 'asam') {   // the ASAM section of the chart; a clinician also gets the assessment form in Lauris (EHR work)
+      const lau = it.lauris ? laurisLink(api.config.laurisURL, a, it.lauris, { who, title: 'ASAM assessment' }) : '';
+      return lau + ui.hint('list', `Open the ASAM section of ${who}'s chart`, { label: `Open the ASAM section of the chart for ${who}: ${title}`, href: hrefFor(chartHref(r.id, 'asam')), cls: 'ui-hint--act' });
+    }
     if (ehr) {
       const lau = laurisLink(api.config.laurisURL, a, it.lauris, { who, title });
       const review = it.kind === 'review' && it.canReview && it.noteId ? this.docs.reviewIcon(it.noteId, who, title) : '';
@@ -188,6 +196,8 @@ register('Dashboard', class extends Screen {
     if (!isDS && o.staff.length > 1) selects.push({ key: 'staff', label: 'Staff', options: opt('Everyone', o.staff) });
     if (!isDS && o.clinicians.length > 1) selects.push({ key: 'clinician', label: 'Clinician', options: opt('Anyone', o.clinicians) });
     if (o.payers.length > 1) selects.push({ key: 'payer', label: 'Payer', options: opt('All payers', o.payers) });
+    if (o.levels.length) selects.push({ key: 'level', label: 'Level of care', options: opt('All levels', o.levels) });
+    selects.push({ key: 'reassess', label: 'Reassessment', options: opt('Any', REASSESS_FILTERS) });
     selects.push({ key: 'units', label: 'Units left', options: [['', 'Any'], ['25', '25% or less'], ['50', '50% or less'], ['warn', 'Flagged']] });
     selects.push({ key: 'due', label: 'Due', options: [['', 'Any time'], ['overdue', 'Overdue'], ['today', 'Today'], ['7', 'Next 7 days'], ['30', 'Next 30 days']] });
     const bar = ui.filterBar({
@@ -204,9 +214,9 @@ register('Dashboard', class extends Screen {
       const inner = o2.sort ? `<button type="button" class="ui-qt__sort${on ? ' is-on' : ''}" data-x="sort" data-key="${key}"><span>${esc(label)}</span>${ui.icon(on ? (asc ? 'asc' : 'desc') : 'sort', 14)}</button>` : esc(label);
       return `<th scope="col" class="${o2.cls || ''}"${o2.sort ? ` aria-sort="${on ? (asc ? 'ascending' : 'descending') : 'none'}"` : ''}>${inner}${o2.extra || ''}</th>`;
     };
-    const cols = isDS ? 6 : 7;
+    const cols = isDS ? 7 : 8;
     const allBtn = withItems.length ? ui.hint(allOpen ? 'chevU' : 'chevD', allOpen ? 'Collapse all' : 'Expand all', { cls: 'd-all', extra: `data-x="all" data-next="${allOpen ? 'none' : 'all'}"` }) : '';
-    const head = `<tr>${th('patient', 'Patient', { sort: true, extra: allBtn })}${isDS ? '' : th('staff', 'Responsible', { sort: true, cls: 'd-hide-lt-1100' })}${th('', 'Notes')}${th('', 'Forms')}${th('units', 'Authorization', { sort: true })}${th('due', 'Next date', { sort: true })}${th('attention', 'Alerts', { sort: true })}</tr>`;
+    const head = `<tr>${th('patient', 'Patient', { sort: true, extra: allBtn })}${isDS ? '' : th('staff', 'Responsible', { sort: true, cls: 'd-hide-lt-1100' })}${th('', 'Notes')}${th('', 'Forms')}${th('', 'Level of care', { extra: ui.hint('info', 'The ASAM level of care, the six dimension ratings D1 to D6 (clinician and supervisor only) and the reassessment state, read from the latest assessment.', { label: 'About the Level of care column' }) })}${th('units', 'Authorization', { sort: true })}${th('due', 'Next date', { sort: true })}${th('attention', 'Alerts', { sort: true })}</tr>`;
     const emp = v => (v ? '' : ' class="d-empty"');
     const body = pageRows.map(r => {
       const open = this.isOpen(r, rows.length), nd = nextDate(r, today);
@@ -214,7 +224,7 @@ register('Dashboard', class extends Screen {
       const site = r.school ? ui.hint('school', r.school, { label: `School: ${r.school}` }) : '';
       const clin = r.clinicianShort ? ui.hint('user', `Clinician: ${r.clinicianShort}`, { label: `Clinician: ${r.clinicianShort}` }) : '';
       const resp = isDS ? '' : `<td class="d-hide-lt-1100" data-label="Responsible"><span class="d-resp">${r.staffShort ? esc(r.staffShort) : '<span class="d-none">—</span>'}${clin}</span></td>`;
-      return `<tr class="d-row${r.worst === 'r' ? ' is-urgent' : ''}${open ? ' is-open' : ''}" data-id="${esc(r.id)}"><td class="d-c-name"><div class="d-nm">${tog}<span class="d-name"><a class="d-link" href="${esc(hrefFor(r.href))}">${esc(r.label)}<span class="ui-sr"> chart</span></a><span class="d-sub">Lauris #${esc(r.lauris)}${site}</span></span></div></td>${resp}<td data-label="Notes"${emp(r.counts.behind + r.counts.fix + r.counts.due + r.counts.review)}>${this.notesCell(r)}</td><td data-label="Forms"${emp(r.counts.forms)}>${this.formsCell(r)}</td><td data-label="Authorization"${emp(r.auth)}>${this.authCell(r)}</td><td data-label="Next date">${nd ? ui.dateFlag({ date: nd.date, sev: nd.sev, why: nd.why }) : '<span class="d-none" aria-label="No date">—</span>'}</td><td class="d-c-alerts" data-label="Alerts">${this.alertsCell(r)}</td></tr>` +
+      return `<tr class="d-row${r.worst === 'r' ? ' is-urgent' : ''}${open ? ' is-open' : ''}" data-id="${esc(r.id)}"><td class="d-c-name"><div class="d-nm">${tog}<span class="d-name"><a class="d-link" href="${esc(hrefFor(r.href))}">${esc(r.label)}<span class="ui-sr"> chart</span></a><span class="d-sub">Lauris #${esc(r.lauris)}${site}</span></span></div></td>${resp}<td data-label="Notes"${emp(r.counts.behind + r.counts.fix + r.counts.due + r.counts.review)}>${this.notesCell(r)}</td><td data-label="Forms"${emp(r.counts.forms)}>${this.formsCell(r)}</td><td data-label="Level of care" class="d-c-asam">${rosterCell(r.asam)}</td><td data-label="Authorization"${emp(r.auth)}>${this.authCell(r)}</td><td data-label="Next date">${nd ? ui.dateFlag({ date: nd.date, sev: nd.sev, why: nd.why }) : '<span class="d-none" aria-label="No date">—</span>'}</td><td class="d-c-alerts" data-label="Alerts">${this.alertsCell(r)}</td></tr>` +
         (r.items.length ? `<tr class="d-items-row" id="d-it-${esc(r.id)}"${open ? '' : ' hidden'}><td colspan="${cols}">${this.itemsHtml(r)}</td></tr>` : '');
     }).join('');
     const empty = res.total ? `<tr><td colspan="${cols}">${ui.emptyState({ title: 'No patients match', body: 'Clear a filter to see more.' })}</td></tr>` : `<tr><td colspan="${cols}">${ui.emptyState({ title: isDS ? 'No patients on your caseload yet' : 'No patients yet' })}</td></tr>`;

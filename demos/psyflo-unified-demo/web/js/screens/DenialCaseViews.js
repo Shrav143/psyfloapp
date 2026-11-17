@@ -4,6 +4,7 @@
 // Pure functions of a context { s, me, cv, ui, M, hrefFor, st } that return trusted HTML strings; the controller (DenialCase.js) wires the data-x buttons.
 // Few words: states are chips, detail opens on demand. Nothing here predicts an outcome or writes clinical text: every sentence has a stored source.
 import * as D from '../shared/sel/disputes.js';
+import * as asam from '../shared/asam.js';
 import { rule, ruleValue } from '../shared/rules.js';
 import { fmtDate, fmtDateTime, fmtTime, daysBetween, hoursBetween } from '../shared/dates.js';
 import { srcHint, lockHint, lockLine, missHint, ownerControl } from './a-fmt.js';
@@ -84,7 +85,8 @@ export function header(c) {
   const chips = [ui.statusChip(cv.status, { kind: 'dispute' }), deadlineChip(c), !cv.open ? ui.chip(`Closed ${fmtDate(d.closed)}`, { tone: 'neutral', icon: 'lock' }) : '',
     `<span class="d-auth"><span class="ui-muted">Authorization</span> ${ui.statusChip(r.stage)}</span>`, ownerControl(cv.owner.short, cv.backup && cv.backup.name)].join('');
   const u = cv.units; const svc = (r.service || '').split(' · ')[0];
-  const line = [cv.payer.name, svc, `Request ${r.id}`, `${u.requested} units requested`, `Sent by ${cv.channel.label}`, d.id].map(e).join(' · ');
+  const lvlTag = asam.requestLevel(r) ? asam.levelTag(asam.requestLevel(r)) : '';
+  const line = [cv.payer.name, svc, lvlTag, `Request ${r.id}`, `${u.requested} units requested`, `Sent by ${cv.channel.label}`, d.id].filter(Boolean).map(e).join(' · ');
   const tl = D.timelineOf(c.s, d, r, cv.status);
   const steps = `<ol class="d-steps" aria-label="Where this decision is">${tl.labels.map((l, i) => `<li class="${i < tl.step ? 'is-done' : i === tl.step ? 'is-now' : ''}"${i === tl.step ? ' aria-current="step"' : ''}><span class="d-steps__dot" aria-hidden="true">${i < tl.step ? ui.icon('check', 12) : i + 1}</span><b>${e(l)}</b><span class="d-steps__d">${i <= tl.step ? e(tl.dates[i]) : ''}</span></li>`).join('')}</ol>`;
   return `<nav class="ui-crumb" aria-label="Breadcrumb"><a href="#/DenialIntelligence">Denial Intelligence</a><span aria-hidden="true">/</span><span aria-current="page">${e(cv.c.initials)}</span></nav>
@@ -123,6 +125,29 @@ function stepsCard(c) {
   }).join('');
   return `<section class="ui-scard" aria-labelledby="d-h-steps"><div class="ui-scard__h"><h2 id="d-h-steps">Recommended next steps</h2><span class="d-sm ui-muted ui-scard__r">${done} of ${D.STEP_LIST.length} done</span></div>${next}<ol class="d-acts">${rows}</ol></section>`;
 }
+// Level of care: the clinician's stored ASAM ratings read against the level this request asks for (asam.levelCheck), the reassessment clock and what changed
+// since the last assessment. Computed from the stored assessment every time; nothing here is typed in. Clinical, so clinicians only.
+const dimTone = rt => rt == null ? 'neutral' : rt >= 3 ? 'danger' : rt === 2 ? 'warning' : 'success';
+export function dimStrip(c, a, hot = []) {
+  return `<ol class="d-dims" aria-label="ASAM dimension ratings, ${e(fmtDate(a.date, { year: true }))}">${asam.DIMS.map(dm => { const rt = asam.ratingOf(a, dm.n); return `<li class="d-dim${hot.includes(dm.n) ? ' is-driver' : ''}" data-r="${rt}" title="${e(dm.name)}"><span class="d-dim__s">${dm.short}</span><b>${rt != null ? rt : '–'}</b><span class="d-dim__l">${e(asam.ratingLabel(rt))}</span><span class="d-dim__n">${e(dm.label)}</span></li>`; }).join('')}</ol>`;
+}
+function levelCard(c) {
+  const { cv, ui, s } = c; const r = cv.r; const lvl = asam.requestLevel(r);
+  const head = extra => `<div class="ui-scard__h"><h2 id="d-h-lvl">Level of care</h2>${lvl ? ui.chip(asam.levelName(lvl), { tone: 'outline' }) : ''}${extra || ''}</div>`;
+  if (!c.clinical) return `<section class="ui-scard" aria-labelledby="d-h-lvl">${head()}${lockLine('Needs clinician: the dimension ratings are clinical records, so they are shown to clinicians only.')}</section>`;
+  const p = asam.profile(s, r.client, lvl); const a = p.a;
+  const lauris = c.laurisUrl && c.canLauris ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${e(c.laurisUrl)}" target="_blank" rel="noopener">Open the assessment in Lauris${ui.icon('external', 14)}<span class="ui-sr"> (opens Lauris in a new tab)</span></a>` : '';
+  if (!a) return `<section class="ui-scard" aria-labelledby="d-h-lvl">${head()}<div class="d-empty"><span class="ui-muted">No ASAM assessment is on file for this client.</span>${lauris}</div></section>`;
+  const ck = p.check; const du = p.due; const hot = (ck.state === 'match' ? ck.drivers : ck.exceeds).map(x => x.n);
+  const chips = [ui.chip(asam.CHECK_LABEL[ck.state], { tone: asam.CHECK_TONE[ck.state], icon: ck.state === 'match' ? 'check' : 'alert' }),
+    ui.chip(`Assessed ${fmtDate(a.date)} · ${du.days} d ago`, { tone: du.state === 'overdue' ? 'danger' : du.state === 'soon' ? 'warning' : 'neutral', icon: du.state === 'ok' ? 'clock' : 'alert', detail: du.state === 'overdue' ? `${-du.left} d past the ${du.limit}-day rule` : du.state === 'none' ? '' : `due ${fmtDate(du.dueDate)}` }) + srcHint(du.rule)].join(' ');
+  return `<section class="ui-scard" aria-labelledby="d-h-lvl">${head(`<span class="ui-scard__r"><span class="d-sm ui-muted">${e(a.kind === 'initial' ? 'Initial assessment' : 'Reassessment')} · ${e(c.M.staff(s, a.assessor).name)}</span></span>`)}
+  <p class="d-lvl__h"><b>${e(ck.headline)}</b></p>${dimStrip(c, a, hot)}
+  <p class="d-lvl__d">${e(ck.detail)}</p>${p.change ? `<p class="d-sm"><b>Since ${e(fmtDate(p.prev.date))}:</b> ${e(asam.changeText(p.change))}.</p>` : ''}${a.plan ? `<p class="d-sm"><b>Plan:</b> ${e(a.plan)}</p>` : ''}
+  <div class="d-lvl__c">${chips}${lauris}</div></section>`;
+}
+const dimChips = (c, x) => (x.dims && x.dims.length || x.level) ? `<div class="d-dimrow"><span class="d-cap">Turns on</span>${(x.dims || []).map(m => c.ui.chip(`${m.short} · ${m.rating != null ? 'rated ' + m.rating : 'not rated'}`, { tone: dimTone(m.rating), size: 'sm', title: m.label })).join('')}${x.level ? c.ui.chip('Level of care', { tone: 'info', size: 'sm' }) : ''}</div>` : '';
+
 // What the payer said, beside what the chart shows (stored records, each with its source; "Not documented" where none)
 const evChips = (c, ids) => { const idx = c.idx(); const chips = (ids || []).map(id => D.evidenceById(idx, id)).filter(Boolean).map(it => c.ui.evidenceChip(D.chipOpts(it))); return chips.slice(0, 3).join('') + (chips.length > 3 ? `<details class="d-more"><summary>+${chips.length - 3} more sources</summary><div class="d-sec__ev">${chips.slice(3).join('')}</div></details>` : ''); };
 function saidCard(c, o = {}) {
@@ -131,7 +156,7 @@ function saidCard(c, o = {}) {
   let rows;
   if (c.clinical) {
     const pairs = D.compareReasons(s, d, r, c.idx());
-    rows = pairs.map(x => `<div class="d-vs"><blockquote class="d-said">“${e(x.said)}”</blockquote><div class="d-shows"><span class="d-cap">What the chart shows</span>${x.matched ? `<p>${x.shows ? e(x.shows) : ''} ${evChips(c, x.ids)}</p>` : '<p class="ui-muted">Not compared yet: no stored record is matched to this reason.</p>'}${x.need.length ? `<p class="d-needrow">${missHint(x.need)}</p>` : ''}</div></div>`).join('')
+    rows = pairs.map(x => `<div class="d-vs"><blockquote class="d-said">“${e(x.said)}”</blockquote>${dimChips(c, x)}<div class="d-shows"><span class="d-cap">What the chart shows</span>${x.matched ? `<p>${x.shows ? e(x.shows) : ''} ${evChips(c, x.ids)}</p>` : '<p class="ui-muted">Not compared yet: no stored record is matched to this reason.</p>'}${x.need.length ? `<p class="d-needrow">${missHint(x.need)}</p>` : ''}</div></div>`).join('')
       || `<p>${missHint(["the payer's stated reason"])}</p>`;
   } else {
     rows = d.issue === 'info' ? `<p>${needs(c, 'Needs clinician')} <span class="d-sm ui-muted">The items the payer asked for are clinical text.</span></p>`
@@ -172,7 +197,7 @@ function pathsCard(c) {
   <ul class="d-opts">${on.map(card).join('')}</ul>
   ${off.length ? `<details class="d-det"><summary>Not available here (${off.length})</summary><ul class="d-opts">${off.map(card).join('')}</ul></details>` : ''}</details></section>`;
 }
-export function overviewSection(c) { return stepsCard(c) + saidCard(c, { compact: true, id: '-o' }) + weakCard(c, 3) + pathsCard(c); }
+export function overviewSection(c) { return levelCard(c) + stepsCard(c) + saidCard(c, { compact: true, id: '-o' }) + weakCard(c, 3) + pathsCard(c); }
 export function saidSection(c) { return saidCard(c, { id: '' }) + decisionSection(c); }
 export const weakSection = c => weakCard(c, 0);
 
@@ -198,7 +223,7 @@ export function evidenceSection(c) {
   const { cv, ui } = c;
   if (!c.clinical) return `<section class="ui-scard" aria-labelledby="d-h-ev"><h2 id="d-h-ev">Clinical evidence</h2>${lockLine('Needs clinician: clinical evidence is shown to clinicians only. Administrators see the status, units and deadlines of the case.')}</section>`;
   const idx = c.idx(); const d = cv.d;
-  const row = it => `<li class="d-ev${it.usable ? '' : ' d-ev--held'}"><span class="d-ev__d">${e(fmtDate(it.date, { year: !it.current }))}</span><span class="d-ev__b"><b>${e(it.label)}</b>${it.quote ? `<span class="d-sm ui-muted">${e(it.quote)}</span>` : ''}</span><span class="d-ev__c">${ui.evidenceChip(D.chipOpts(it))}</span><span class="d-ev__a">${D.canWork(c.me) && cv.open ? (it.usable ? btn('Exclude', 'incl', { sm: true, tone: 'ghost', data: { ref: it.id, include: '0' }, title: 'Keep this record out of drafts' }) : btn(it.state === 'sensitive' ? 'Include' : 'Include again', 'incl', { sm: true, tone: 'ghost', data: { ref: it.id, include: '1' }, title: it.state === 'sensitive' ? 'Sensitive: include only when appropriate and authorized' : 'Use this record in drafts again' })) : ''}</span></li>`;
+  const row = it => `<li class="d-ev${it.usable ? '' : ' d-ev--held'}"><span class="d-ev__d">${e(fmtDate(it.date, { year: !it.current }))}</span><span class="d-ev__b"><b>${it.dim ? ui.chip(asam.dimOf(it.dim).short, { tone: 'outline', size: 'sm', title: asam.dimOf(it.dim).name }) + ' ' : ''}${e(it.label)}</b>${it.quote ? `<span class="d-sm ui-muted">${e(it.quote)}</span>` : ''}</span><span class="d-ev__c">${ui.evidenceChip(D.chipOpts(it))}</span><span class="d-ev__a">${D.canWork(c.me) && cv.open ? (it.usable ? btn('Exclude', 'incl', { sm: true, tone: 'ghost', data: { ref: it.id, include: '0' }, title: 'Keep this record out of drafts' }) : btn(it.state === 'sensitive' ? 'Include' : 'Include again', 'incl', { sm: true, tone: 'ghost', data: { ref: it.id, include: '1' }, title: it.state === 'sensitive' ? 'Sensitive: include only when appropriate and authorized' : 'Use this record in drafts again' })) : ''}</span></li>`;
   const cur = idx.items.filter(x => x.current); const old = idx.items.filter(x => !x.current);
   const seeded = idx.items.some(x => x.provenance === 'seed');
   const need = c.missing();
@@ -386,8 +411,8 @@ export function actionSection(c) {
 export function panelBody(c, k) {
   const { cv, ui, s } = c; const d = cv.d; const r = cv.r; const idx = c.idx();
   if (k === 'analyze') {
-    const all = D.weakPoints(s, d, r, idx);
-    return `<p class="d-sm ui-muted">Read from the stored records of this case, rule-based. ${ui.chip('Simulated', { tone: 'outline', className: 'ui-chip--sim', title: 'No language model is called and no likelihood is given.' })} Analyzed ${e(when(d.analysis && d.analysis.at))}.</p><div class="d-wk">${all.slice(0, 5).map(w => weakRow(c, w, true)).join('') || '<p class="ui-muted">No weak points found in the stored records.</p>'}</div>${all.length > 5 ? `<p class="d-sm ui-muted">${all.length - 5} more in the full analysis.</p>` : ''}<div class="ui-btnrow"><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-px="tab" data-section="weak">Open the full analysis</button></div>`;
+    const all = D.weakPoints(s, d, r, idx); const ck = asam.levelCheck(idx.assessment, asam.requestLevel(r));
+    return `<p class="d-lvl__h"><b>${e(ck.headline)}</b></p><p class="d-sm ui-muted">Read from the stored ASAM ratings and records of this case, rule-based. ${ui.chip('Simulated', { tone: 'outline', className: 'ui-chip--sim', title: 'No language model is called and no likelihood is given.' })} Analyzed ${e(when(d.analysis && d.analysis.at))}.</p><div class="d-wk">${all.slice(0, 5).map(w => weakRow(c, w, true)).join('') || '<p class="ui-muted">No weak points found in the stored records.</p>'}</div>${all.length > 5 ? `<p class="d-sm ui-muted">${all.length - 5} more in the full analysis.</p>` : ''}<div class="ui-btnrow"><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-px="tab" data-section="weak">Open the full analysis</button></div>`;
   }
   if (k === 'gaps') {
     const need = c.missing();

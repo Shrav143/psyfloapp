@@ -133,7 +133,7 @@ function fieldHTML(f, i, value, green, c) {
   const id = 'f' + i; const span = `grid-column:span ${Math.round((f.w || 1) * 1)}`;
   const cls = 'in' + (green ? ' g' : '');
   if (f.type === 'table') {
-    return `<div style="grid-column:span 4"><span class="lbl">${esc(f.label)}</span><table class="t" data-label="${esc(f.label)}"><tr><th style="width:26%">Behaviour</th>${f.cols.map(h => `<th>${esc(h)}</th>`).join('')}</tr>
+    return `<div style="grid-column:span 4"><span class="lbl">${esc(f.label)}</span><table class="t" data-label="${esc(f.label)}"><tr><th style="width:26%">${esc(f.rowHead || 'Behaviour')}</th>${f.cols.map(h => `<th>${esc(h)}</th>`).join('')}</tr>
 ${f.rows.map((r, ri) => `<tr><td>${esc(r)}</td>${f.cols.map((h, ci) => { const key = `${r} — ${h}`; const v = (value || {})[key] || ''; return `<td><input class="in" name="t${i}_${ri}_${ci}" aria-label="${esc(key)}" value="${esc(v)}"${h === 'Y/N' ? ' style="width:44px"' : ''}></td>`; }).join('')}</tr>`).join('')}</table></div>`;
   }
   if (f.type === 'phq') {

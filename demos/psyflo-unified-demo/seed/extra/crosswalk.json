@@ -62,7 +62,7 @@
      "client": null,
      "request": "R-0399",
      "harvest_no": null,
-     "free_text": "A.L., 6"
+     "free_text": "A.L., 15"
     },
     "v3": {
      "case": "R-0399",
@@ -162,7 +162,7 @@
    {
     "id": "X-2",
     "topic": "REF-121",
-    "master": "A.R., 9, LC-ES3 (family link ar-demo)",
+    "master": "A.R., 14, LC-ES3 (family link ar-demo)",
     "v3": "R.M., 8, Campbell ES-1",
     "resolution": "Same id, different child. v3 referral not imported."
    },
