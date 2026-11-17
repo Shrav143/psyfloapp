@@ -285,13 +285,13 @@ async function denial() {
   ok(await ui.locator('.ui-qt__row').count() === 4, 'the queue lists four open cases');
   await ui.getByRole('link', { name: /R-0402/ }).first().click(); await ui.locator('.d-menu').waitFor();
   ok(/D\.W\., 15[\s\S]*Partial approval/.test(await H.main()), 'the D.W. partial approval case opens');
-  await ui.getByRole('link', { name: /^Clinical evidence/ }).click(); ok(/Evidence missing — verify previous treatment outcome/.test(await H.main()), 'missing evidence prints "Evidence missing — verify …"');
+  await ui.getByRole('link', { name: /^Clinical evidence/ }).click(); ok(/Evidence missing — verify what is likely to happen at a lower level of care/.test(await H.main()), 'missing evidence prints "Evidence missing — verify …"');
   await ui.getByRole('link', { name: /^Overview/ }).click(); await ui.locator('#d-paths > summary').click(); const opt = await H.main();
   ok(/Accept decision/.test(opt) && /Prepare peer-to-peer/.test(opt) && /Payer rule not verified/.test(opt), 'options: accept, prepare a peer-to-peer; a payer rule is labelled not verified');
   await ui.locator('#d-paths .d-opt').filter({ hasText: 'Prepare peer-to-peer' }).getByRole('button', { name: 'Open' }).click(); await ui.locator('#d-h-p2p').waitFor();
   await ui.getByRole('button', { name: /Ask Sentara for a peer-to-peer/ }).click(); await ui.getByRole('dialog').getByRole('button', { name: 'Log the request' }).click(); await page.waitForTimeout(600);
   await ui.getByRole('button', { name: 'Draft from records' }).click(); await page.waitForTimeout(600);
-  ok(/Evidence missing — verify the risk of a more restrictive setting/.test(await H.main()) && /Simulated/.test(await H.main()), 'the call notes draft from records, with a Simulated chip and no invented evidence');
+  ok(/Evidence missing — verify what is likely to happen at a lower level of care/.test(await H.main()) && /Simulated/.test(await H.main()), 'the call notes draft from records, with a Simulated chip and no invented evidence');
   await ui.getByRole('button', { name: 'Mark reviewed' }).click(); await page.waitForTimeout(400);
   await ui.getByRole('button', { name: 'Set the call' }).click(); await ui.locator('#d-when').fill('2026-11-19T14:00'); await ui.getByRole('dialog').getByRole('button', { name: 'Save the call' }).click(); await page.waitForTimeout(500);
   await ui.getByRole('button', { name: 'Log the outcome' }).click(); const dlg = ui.getByRole('dialog');
@@ -310,8 +310,8 @@ async function denial() {
   await H.go('#/DenialCase?id=R-0408&section=action&action=info'); await ui.locator('#d-h-info').waitFor();
   await ui.getByRole('button', { name: 'Draft from records' }).click(); await page.waitForTimeout(600);
   ok(await ui.getByRole('button', { name: 'Mark reviewed' }).isDisabled(), 'review is blocked while an "Evidence missing" placeholder remains');
-  await ui.locator('.d-secdoc').nth(2).getByRole('button', { name: 'Edit' }).click();
-  const ta = ui.locator('.d-edit textarea'); await ta.fill((await ta.inputValue()).replace(/\[Evidence missing[^\]]*\]/, 'The clinician states the supports do not include de-escalation in unstructured periods.'));
+  await ui.locator('.d-secdoc').nth(1).getByRole('button', { name: 'Edit' }).click();
+  const ta = ui.locator('.d-edit textarea'); await ta.fill((await ta.inputValue()).replace(/\[Evidence missing[^\]]*\]/, 'The clinician adds the CIWA-Ar score and the last-use date from the intake visit.'));
   await ui.getByRole('button', { name: 'Save section' }).click(); await page.waitForTimeout(500);
   await ui.getByRole('button', { name: 'Mark reviewed' }).click(); await page.waitForTimeout(400);
   await ui.getByRole('button', { name: /Open Availity and send/ }).click(); await ui.getByRole('dialog').getByRole('button', { name: /Open Availity/ }).click();
@@ -526,7 +526,7 @@ async function flowB() {
   await ui.locator('a[href="#example"]').click(); await page.waitForTimeout(400);
   ok(/^ran the refusal skills role play with M\.R\./i.test(await ui.locator('#spoken').inputValue()), 'the example fills the words');
   await ui.getByRole('link', { name: 'Looks right' }).click(); await page.waitForTimeout(300);
-  ok(/Save to M\.R\. \(grade 2, Campbell ES-1\)\?/.test(await H.root(3000)), 'a confirmation names the student and the school');
+  ok(/Save to M\.R\. \(Campbell IOP\)\?/.test(await H.root(3000)), 'a confirmation names the client and the treatment site');
   await ui.getByRole('link', { name: 'Save to M.R.' }).click();
   ok(await until(async () => (await H.state('khale')).dictations.some(d => d.client === 'MR' && d.status === 'waiting'), 8000), 'the dictation waits in Psyflo (with the Harvest #); nothing reaches Lauris');
   ok(/Waiting for Lauris/.test(await H.root(3000)), 'the phone says Waiting for Lauris');
@@ -540,7 +540,7 @@ async function flowB() {
   const P = D.P(), L = D.L();
   await P.getByText('Dictation dropped in').waitFor({ timeout: 20000 });
   const v = await L.locator('#lauris-form label[for]').evaluateAll(ls => Object.fromEntries(ls.map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
-  ok(/^Played basketball with M\.R\. after he got upset in math/.test(v['Narrative'].replace(/\s+/g, ' ').trim()), 'the dictation drops in as the staffer\'s own words');
+  ok(/^Ran the refusal skills role play with M\.R\. in group/i.test(v['Narrative'].replace(/\s+/g, ' ').trim()), 'the dictation drops in as the staffer\'s own words');
   ok(v['Mood check-in'] === '' && v['Progress today'] === '' && v['Units'] === '', 'nothing invented: mood and progress stay blank; units are left for the person to type in Lauris');
   await L.getByLabel('Direct time', { exact: true }).fill('3 h 40 min'); await L.getByLabel('Units', { exact: true }).fill('2');
   await L.getByRole('button', { name: 'Process Form' }).click(); await D.lwait(null, /processed=/);

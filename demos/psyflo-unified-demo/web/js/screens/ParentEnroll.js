@@ -65,7 +65,7 @@ const FIELDS = {
   'Intake information': [
     { k: 'child', en: "Child's name", es: 'Nombre del niño' },
     { k: 'dob', en: 'Date of birth', es: 'Fecha de nacimiento', ph: 'MM/DD/YYYY' },
-    { k: 'school', en: 'School and grade', es: 'Escuela y grado' },
+    { k: 'school', en: 'Referring partner', es: 'Socio que refiere' },
     { k: 'guardian', en: 'Your name', es: 'Su nombre', req: true },
     { k: 'phone', en: 'Best phone', es: 'Mejor teléfono', req: true },
     { k: 'best_time', en: 'Best time to call', es: 'Mejor hora para llamar' }
@@ -109,7 +109,7 @@ register('ParentEnroll', class extends PortalScreen {
     const rc = (ctx.ref && ctx.ref.contact) || {};
     if (item === 'Intake information') {
       const sch = c.school ? M.school(s, c.school).name : '';
-      return { child: [c.first_name, c.initials].filter(Boolean).join(' · '), dob: a.dob ? M.fmtDate(a.dob, { year: true }) : '', school: [sch, c.grade ? 'grade ' + c.grade : ''].filter(Boolean).join(' · '),
+      return { child: [c.first_name, c.initials].filter(Boolean).join(' · '), dob: a.dob ? M.fmtDate(a.dob, { year: true }) : '', school: [sch].filter(Boolean).join(' · '),
         guardian: a.guardian_name || rc.name || ctx.guardian || '', phone: a.phone || rc.phone || (c.guardian && c.guardian.phone) || '', best_time: a.best_time || '', ...sv };
     }
     return { ...sv };

@@ -34,19 +34,19 @@ try {
     const bar = await p.locator('.pm-bar').innerText();
     await p.getByRole('link', { name: 'Change' }).click(); await p.waitForTimeout(300);
     assert.match(await p.locator('.pm-bar').innerText(), /Choose a student/, 'Change shows a visible change'); assert.eq(await p.locator('.pm-chip[aria-pressed="true"]').count(), 0);
-    await p.locator('.pm-chip', { hasText: 'M.R.' }).click(); await p.waitForTimeout(300); assert.match(bar, /M\.R\./); assert.match(bar, /Harvest # 3310/); assert.match(bar, /Campbell IOP/); assert.match(bar, /grade 10/);
+    await p.locator('.pm-chip', { hasText: 'M.R.' }).click(); await p.waitForTimeout(300); assert.match(bar, /M\.R\./); assert.match(bar, /Harvest # 3310/); assert.match(bar, /Campbell IOP/);
     assert.deepEq(quiet(errs), [], quiet(errs).join(' | ')); await ctx.close();
   });
 
-  await T.test('wrong student: no student, or one not on the caseload, is a hard stop; the card shows Harvest # and school; saving asks "Save to M.R. (grade 10, Campbell IOP)?" with Change', async () => {
+  await T.test('wrong student: no student, or one not on the caseload, is a hard stop; the card shows Harvest # and school; saving asks "Save to M.R. (Campbell IOP)?" with Change', async () => {
     const { ctx, p } = await phone('khale');
     await go(p, '/MobileDictate'); let t = await text(p); assert.match(t, /Who is this about\?/); assert.eq(await p.locator('#spoken').count(), 0, 'nothing to type into until a student is chosen'); assert.noMatch(await p.locator('.pm-bar').innerText(), /M\.R\./, 'no fallback to M.R.');
     await go(p, '/MobileDictate?client=DW'); t = await text(p); assert.match(t, /That student is not on your list/, 'and the other worker\'s student is not even named'); assert.eq(await p.locator('#spoken').count(), 0); await p.screenshot({ path: SHOTS + '/mobile-5-not-on-list.png' });
-    await go(p, '/MobileDictate?client=MR'); assert.match(await p.locator('.pm-bar').innerText(), /M\.R\.[\s\S]*Harvest # 3310[\s\S]*Campbell IOP[\s\S]*grade 10/);
+    await go(p, '/MobileDictate?client=MR'); assert.match(await p.locator('.pm-bar').innerText(), /M\.R\.[\s\S]*Harvest # 3310[\s\S]*Campbell IOP/);
     await p.locator('#spoken').fill('played basketball with M.R. after he got upset in math, he cooled down after and went back to class'); await p.locator('#spoken').blur(); await p.waitForTimeout(500);
     t = await text(p); assert.match(t, /In note language/); assert.match(t, /Draft/); assert.match(t, /Not in your words yet/, 'what was not said stays a question');
     await p.getByRole('link', { name: 'Looks right' }).click(); await p.waitForTimeout(400);
-    assert.match(await text(p), /Save to M\.R\. \(grade 10, Campbell IOP\)\?/); assert.match(await text(p), /Harvest # 3310/); await p.screenshot({ path: SHOTS + '/mobile-6-confirm.png' });
+    assert.match(await text(p), /Save to M\.R\. \(Campbell IOP\)\?/); assert.match(await text(p), /Harvest # 3310/); await p.screenshot({ path: SHOTS + '/mobile-6-confirm.png' });
     await p.getByRole('link', { name: 'Change' }).last().click(); await p.waitForTimeout(300);
     assert.match(await text(p), /Change student/); await p.locator('.pm-sheet .pm-btn', { hasText: 'J.T.' }).click(); await p.waitForTimeout(400);
     assert.match(await p.locator('.pm-bar').innerText(), /J\.T\.[\s\S]*Harvest # 3315/, 'the card follows the change'); assert.eq((await state('khale')).dictations.filter(d => d.client === 'JT').length, 0, 'nothing was saved for the wrong student');

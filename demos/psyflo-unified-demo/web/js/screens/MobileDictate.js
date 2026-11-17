@@ -74,7 +74,7 @@ register('MobileDictate', class extends Screen {
       flagged: (e?.flagged || []).map(w => ({ w })), hasFlag: !!(e && e.flagged && e.flagged.length),
       saved, notSaved: !saved && !!e, readyLine: saved && c ? `Waiting until ${c.initials}'s daily note is open in Lauris (Harvest # ${c.harvest_no}). You review the words and press Process Form yourself.` : '',
       canSave, canSaveNot: !canSave, primaryLabel: saved ? 'Done' : e ? (offline ? 'Offline · cannot save' : 'Looks right') : 'Done',
-      confirming: st.confirming && !!c && !!e, confirmTitle: c ? `Save to ${c.initials} (${card.grade != null ? 'grade ' + card.grade + ', ' : ''}${card.schoolShort})?` : '', confirmLine: card ? `Harvest # ${card.harvest_no} · age ${card.age ?? '—'}` : '', confirmYes: c ? `Save to ${c.initials}` : 'Save', busy: st.busy,
+      confirming: st.confirming && !!c && !!e, confirmTitle: c ? `Save to ${c.initials} (${card.schoolShort})?` : '', confirmLine: card ? `Harvest # ${card.harvest_no} · age ${card.age ?? '—'}` : '', confirmYes: c ? `Save to ${c.initials}` : 'Save', busy: st.busy,
       changing: st.changing, dueN: u ? dueAssessments(s, u.id).length : 0
     };
   }

@@ -11,7 +11,7 @@ export function identityCard(s, clientId) {
   const sch = (s.schools || []).find(x => x.id === c.school);
   const short = sch ? sch.name.replace(' County', '').replace(' City', '').replace(' · ', ' ') : '';
   return { id: c.id, initials: c.initials, harvest_no: c.harvest_no || c.lauris_no || null, school: sch ? sch.name : '', schoolShort: short, grade: c.grade != null ? c.grade : null, age: c.age != null ? c.age : null,
-    line: [c.initials, c.harvest_no ? `# ${c.harvest_no}` : '', short, c.grade != null ? `grade ${c.grade}` : ''].filter(Boolean).join(' · ') };
+    line: [c.initials, c.harvest_no ? `# ${c.harvest_no}` : '', short, ].filter(Boolean).join(' · ') };
 }
 // a student the open page or a form named by Harvest # must match the card (no initials fallback); returns { ok, reason }
 export function sameStudent(s, clientId, harvestNo) {

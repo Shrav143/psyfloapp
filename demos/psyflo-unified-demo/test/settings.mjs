@@ -127,8 +127,8 @@ try {
   await T.test('rule library (the old Rules tab, now in the workflow map): filter by source, search, edit in the drawer (reason required, value type kept), and the audit tab shows it', async () => {
     const p = await open('dowens', '/#/Settings?tab=rules');
     await p.waitForSelector('#wm-pal .wm-pl--rules li'); const total = await p.locator('#wm-pal .wm-pl--rules li').count(); assert.ok(total >= 70, 'all rules listed: ' + total);
-    await p.selectOption('#wm-rcat', 'OFFICIAL-VERIFIED'); await p.waitForTimeout(300);
-    const off = await p.locator('#wm-pal .wm-pl--rules li').count(); assert.ok(off > 0 && off < total, 'filtered to officially verified');
+    await p.selectOption('#wm-rcat', 'HARVEST-REPORTED'); await p.waitForTimeout(300);
+    const off = await p.locator('#wm-pal .wm-pl--rules li').count(); assert.ok(off > 0 && off < total, 'filtered to Harvest-reported');
     await p.selectOption('#wm-rcat', ''); await p.fill('#wm-rq', 'follow-up'); await p.waitForTimeout(400);
     assert.eq(await p.locator('#wm-pal .wm-pl--rules li').count(), 1);
     await p.click('#wm-pal [data-wm="editRule"]'); await p.waitForSelector('.ui-dialog--drawer');

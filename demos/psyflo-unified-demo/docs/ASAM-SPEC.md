@@ -133,3 +133,11 @@ mention it in your report. The `DenialCase*` screens are the lead's: A3 renders 
   (for example "Physical aggression" counts); do not weaken a test that checks behavior. A suite you could not run or fix: say so in your report.
 * No `git commit`, no `git add`, no rebuild of `hosted/`. The lead integrates, rebuilds and republishes.
 * Report at the end, concisely: files changed, what is real logic vs seeded data, tests run and results, anything left inconsistent with the bible.
+
+## Status (delivered)
+
+* **Computed from the stored ratings, never stored:** the level a set of ratings fits, the match state (`match`, `over`, `under`), the dimensions that drive it, the reassessment clock, the change since the last assessment, incidents after the last assessment, the dimensions a payer's reason turns on, every Analytics aggregate, evidence gaps, weak points, and every draft sentence about a dimension.
+* **Seeded and stored (synthetic, "Illustrative sample"):** `seed/extra/asam.json` (20 assessments), the requests' `asam_level`, the denial evidence rows and payer reasons in `disputes.json`, the M.R. group notes (`scripts/seed-gen/notes-gen.py`), client diagnoses, goals and referral content.
+* **Not the ASAM text:** the per-level limits (rule `asam.level_limits`) are a simplified demo decision rule. Dimension and level names follow the 3rd edition (2013); a 4th edition exists.
+* **Day-treatment manual rules** carried over from the earlier build are marked "Unverified demo assumption" for IOP.
+* Regenerate seeds: `python3 scripts/seed-gen/asam-seed.py`, `disputes-seed.py`, `notes-gen.py`.

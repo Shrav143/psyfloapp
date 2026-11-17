@@ -43,7 +43,7 @@ async function run(mode) {
       if (mode === 'scenario') { await ph.goto(BASE + '/?present=1#/MobileDictate?client=MR'); await ph.waitForTimeout(1200); await ph.locator('a[href="#example"]').click(); await ph.waitForTimeout(500); assert.match(await ph.locator('#spoken').inputValue(), /^ran the refusal skills role play with M\.R\. in group/, 'the presenter example is loaded'); }
       else { await ph.getByRole('link', { name: 'Type' }).click(); await ph.waitForTimeout(700); await ph.locator('#spoken').fill(SAID); await ph.locator('#spoken').blur(); await ph.waitForTimeout(400); }
       await ph.getByRole('link', { name: 'Looks right' }).click(); await ph.waitForTimeout(300);
-      assert.match(await rootText(ph), /Save to M\.R\. \(grade 10, Campbell IOP\)\?/);
+      assert.match(await rootText(ph), /Save to M\.R\. \(Campbell IOP\)\?/);
       await ph.getByRole('link', { name: 'Save to M.R.' }).click();
       const s = await waitState(x => x.dictations.some(d => d.client === 'MR' && d.status === 'waiting'), { as: 'khale', what: 'the dictation to wait' });
       const d = s.dictations.find(x => x.client === 'MR' && x.status === 'waiting'); assert.eq(d.harvest_no, 3310); assert.eq(d.spoken.toLowerCase(), SAID.toLowerCase(), 'the staffer\'s own words, unchanged');

@@ -1270,6 +1270,38 @@
    "enabled": true,
    "effective_from": "2026-10-29",
    "history": []
+  },
+  {
+   "key": "asam.reassess_days",
+   "label": "ASAM reassessment due after (Level 1)",
+   "value": 90,
+   "unit": "days between ASAM assessments",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Demo assumption: payers set their own review intervals for each level of care; confirm on the authorization letter or with the payer",
+   "verified_on": null,
+   "note": "Outpatient: a longer interval.",
+   "default": 90,
+   "register": "R-055",
+   "scope": "1",
+   "enabled": true,
+   "effective_from": "2026-10-29",
+   "history": []
+  },
+  {
+   "key": "asam.reassess_days",
+   "label": "ASAM reassessment due after (Level 2.5)",
+   "value": 14,
+   "unit": "days between ASAM assessments",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Demo assumption: payers set their own review intervals for each level of care; confirm on the authorization letter or with the payer",
+   "verified_on": null,
+   "note": "Partial hospitalization: a shorter interval.",
+   "default": 14,
+   "register": "R-055",
+   "scope": "2.5",
+   "enabled": true,
+   "effective_from": "2026-10-29",
+   "history": []
   }
  ]
 }

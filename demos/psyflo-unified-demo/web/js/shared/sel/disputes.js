@@ -363,7 +363,7 @@ function answerAsk(s, d, r, idx, ask) {
 // buildDoc(s, d, r, kind) -> { kind, gen, sections:[{key,title,text,evidence:[ids],missing:[labels],basis}], reviewed:null, sent:null, versions:[] }
 export function buildDoc(s, d, r, kind, by = 'Psyflo') {
   const idx = evidenceIndex(s, d, r); const c = clientOf(s, r.client); const pf = payerFirst(s, r.payer); const u = unitsView(s, d, r); const a = idx.assessment; const lvl = asam.requestLevel(r);
-  const sec = (key, title, o, basis) => ({ key, title, text: o.text, evidence: o.ids || [], missing: o.miss || [], ...(basis ? { basis } : {}) });
+  const sec = (key, title, o, basis) => ({ key, title, text: o.text, evidence: [...new Set(o.ids || [])], missing: o.miss || [], ...(basis ? { basis } : {}) });
   const sections = [];
   if (kind === 'info') {
     const asked = (d.concerns || []).filter(x => /request for information/i.test(x.source || '')).map(x => x.text);
@@ -457,7 +457,7 @@ export function compareReasons(s, d, r, idx) {
     const said = String(x.text).replace(/^["“]|["”]$/g, '');
     const ans = answerAsk(s, d, r, idx, said); const matched = !ans.unmatched;
     const dims = (ans.dims || []).map(n => ({ n, short: asam.dimOf(n).short, label: asam.dimOf(n).label, rating: a ? asam.ratingOf(a, n) : null }));
-    return { key: 'r' + (i + 1), said, source: x.source || '', matched, shows: matched ? tidy(ans.text) : '', ids: matched ? ans.ids : [], need: matched ? ans.miss : [], dims, level: !!ans.level };
+    return { key: 'r' + (i + 1), said, source: x.source || '', matched, shows: matched ? tidy(ans.text) : '', ids: matched ? [...new Set(ans.ids)] : [], need: matched ? ans.miss : [], dims, level: !!ans.level };
   });
 }
 // Everything not documented for this case: the evidence index's needs plus what each stated reason still lacks (deduplicated by label).

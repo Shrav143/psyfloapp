@@ -5346,7 +5346,7 @@ a.ui-hint__b{cursor:pointer}
     const u = unitsView(s, d, r);
     const a = idx.assessment;
     const lvl = requestLevel(r);
-    const sec3 = (key2, title, o, basis) => ({ key: key2, title, text: o.text, evidence: o.ids || [], missing: o.miss || [], ...basis ? { basis } : {} });
+    const sec3 = (key2, title, o, basis) => ({ key: key2, title, text: o.text, evidence: [...new Set(o.ids || [])], missing: o.miss || [], ...basis ? { basis } : {} });
     const sections = [];
     if (kind === "info") {
       const asked = (d.concerns || []).filter((x) => /request for information/i.test(x.source || "")).map((x) => x.text);
@@ -5438,7 +5438,7 @@ ${x.text}`).join("\n\n");
       const ans = answerAsk(s, d, r, idx, said);
       const matched = !ans.unmatched;
       const dims = (ans.dims || []).map((n3) => ({ n: n3, short: dimOf(n3).short, label: dimOf(n3).label, rating: a ? ratingOf(a, n3) : null }));
-      return { key: "r" + (i + 1), said, source: x.source || "", matched, shows: matched ? tidy(ans.text) : "", ids: matched ? ans.ids : [], need: matched ? ans.miss : [], dims, level: !!ans.level };
+      return { key: "r" + (i + 1), said, source: x.source || "", matched, shows: matched ? tidy(ans.text) : "", ids: matched ? [...new Set(ans.ids)] : [], need: matched ? ans.miss : [], dims, level: !!ans.level };
     });
   }
   function missingItems(s, d, r, idx) {
@@ -8670,7 +8670,7 @@ ${x.text}`).join("\n\n");
       schoolShort: short,
       grade: c.grade != null ? c.grade : null,
       age: c.age != null ? c.age : null,
-      line: [c.initials, c.harvest_no ? `# ${c.harvest_no}` : "", short, c.grade != null ? `grade ${c.grade}` : ""].filter(Boolean).join(" · ")
+      line: [c.initials, c.harvest_no ? `# ${c.harvest_no}` : "", short].filter(Boolean).join(" · ")
     };
   }
   function sameStudent(s, clientId, harvestNo) {
@@ -21257,7 +21257,7 @@ textarea.sp-in{min-height:96px;resize:vertical}
   function patientBar(s, clientId, { change: change2 = true, verb = "Selected", note: note2 = "", choosing = false } = {}) {
     const c = clientId ? identityCard(s, clientId) : null;
     if (!c) return `<div class="pm-pid"><span class="pm-av pm-av--none" aria-hidden="true">?</span><div class="pm-pt"><b>${choosing ? "Choose a student" : "No student selected"}</b><span>${choosing ? "Tap a name below to change" : "Tap a name to start"}</span></div></div>`;
-    return `<div class="pm-pid"><span class="pm-av" aria-hidden="true">${esc3(c.initials.replace(/\./g, ""))}</span><div class="pm-pt"><b>${esc3(c.initials)}</b><span>${c.harvest_no ? "Harvest # " + esc3(c.harvest_no) + " · " : ""}${esc3(c.schoolShort)}${c.grade != null ? " · grade " + esc3(c.grade) : ""}</span>${note2 ? `<span class="pm-pn">${esc3(note2)}</span>` : ""}</div></div>${change2 ? '<a class="pm-chg" href="#change" id="pm-change">Change</a>' : ""}`;
+    return `<div class="pm-pid"><span class="pm-av" aria-hidden="true">${esc3(c.initials.replace(/\./g, ""))}</span><div class="pm-pt"><b>${esc3(c.initials)}</b><span>${c.harvest_no ? "Harvest # " + esc3(c.harvest_no) + " · " : ""}${esc3(c.schoolShort)}</span>${note2 ? `<span class="pm-pn">${esc3(note2)}</span>` : ""}</div></div>${change2 ? '<a class="pm-chg" href="#change" id="pm-change">Change</a>' : ""}`;
   }
   function dictationState(s, d) {
     if (d.status === "used") {
@@ -21680,7 +21680,7 @@ textarea.sp-in{min-height:96px;resize:vertical}
             canSaveNot: !canSave,
             primaryLabel: saved ? "Done" : e2 ? offline ? "Offline · cannot save" : "Looks right" : "Done",
             confirming: st.confirming && !!c && !!e2,
-            confirmTitle: c ? `Save to ${c.initials} (${card2.grade != null ? "grade " + card2.grade + ", " : ""}${card2.schoolShort})?` : "",
+            confirmTitle: c ? `Save to ${c.initials} (${card2.schoolShort})?` : "",
             confirmLine: card2 ? `Harvest # ${card2.harvest_no} · age ${card2.age ?? "—"}` : "",
             confirmYes: c ? `Save to ${c.initials}` : "Save",
             busy: st.busy,
@@ -22129,7 +22129,7 @@ textarea.sp-in{min-height:96px;resize:vertical}
         "Intake information": [
           { k: "child", en: "Child's name", es: "Nombre del niño" },
           { k: "dob", en: "Date of birth", es: "Fecha de nacimiento", ph: "MM/DD/YYYY" },
-          { k: "school", en: "School and grade", es: "Escuela y grado" },
+          { k: "school", en: "Referring partner", es: "Socio que refiere" },
           { k: "guardian", en: "Your name", es: "Su nombre", req: true },
           { k: "phone", en: "Best phone", es: "Mejor teléfono", req: true },
           { k: "best_time", en: "Best time to call", es: "Mejor hora para llamar" }
@@ -22217,7 +22217,7 @@ textarea.sp-in{min-height:96px;resize:vertical}
             return {
               child: [c.first_name, c.initials].filter(Boolean).join(" · "),
               dob: a.dob ? model_exports.fmtDate(a.dob, { year: true }) : "",
-              school: [sch, c.grade ? "grade " + c.grade : ""].filter(Boolean).join(" · "),
+              school: [sch].filter(Boolean).join(" · "),
               guardian: a.guardian_name || rc.name || ctx.guardian || "",
               phone: a.phone || rc.phone || c.guardian && c.guardian.phone || "",
               best_time: a.best_time || "",
@@ -25483,7 +25483,7 @@ Looked up ${esc3(model_exports.fmtDateTime(rec.checked_at, { year: true }))} by 
   function ruleItem(r, picked) {
     const k = chip_exports.verificationKind(r);
     const V = chip_exports.VERIFICATION[k];
-    const tid = "wm-rt-" + r.key.replace(/[^\w]/g, "-");
+    const tid = "wm-rt-" + (r.key + (r.scope != null ? "-" + r.scope : "")).replace(/[^\w]/g, "-");
     const tip = `${r.label}: ${showValue(r)}. ${V.full}. ${(r.source || "").slice(0, 160)}`;
     return `<li class="wm-pi wm-pi--rule"><span class="ui-hint wm-host" data-ui-hint><button type="button" class="wm-pi__b wm-ri" data-wm="addRule" data-key="${esc3(r.key)}" data-fk="rule-${esc3(r.key)}" aria-describedby="${tid}"><span class="wm-pi__i wm-v wm-v--${k}">${icon6(V.icon, 14)}</span><span class="wm-pi__t">${esc3(r.label)}<small>${esc3(showValue(r))}</small></span><span class="wm-pi__g">${icon6("grip", 14)}</span></button><span class="ui-hint__t" id="${tid}" aria-hidden="true">${esc3(tip)}</span></span>${ui.hint("pencil", "Edit this rule. It changes the rule everywhere, and it asks why.", { cls: "ui-hint--act", label: "Edit rule: " + r.label, extra: `data-wm="editRule" data-key="${esc3(r.key)}" data-fk="rule-edit-${esc3(r.key)}"` })}</li>`;
   }
@@ -36112,9 +36112,9 @@ ${xrefStart}
    "label": "Retro review request field",
    "value": "shown",
    "unit": "text",
-   "category": "OFFICIAL-VERIFIED",
-   "source": "Initial SRA form, July 2021 (T-074)",
-   "verified_on": "2026-11-11",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Carried over from the day-treatment build (Virginia Medicaid CMHRS manual). Not verified for IOP (H0015): confirm against the IOP service's own manual and the payer.",
+   "verified_on": null,
    "note": "Field exists on the official form.",
    "default": "shown",
    "register": "R-009",
@@ -36144,9 +36144,9 @@ ${xrefStart}
    "label": "Plan due (DMAS)",
    "value": 30,
    "unit": "calendar days from the start of services",
-   "category": "OFFICIAL-VERIFIED",
-   "source": "DMAS Chapter IV: ISP within 30 calendar days of starting services (T-070)",
-   "verified_on": "2026-11-11",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Carried over from the day-treatment build (Virginia Medicaid CMHRS manual). Not verified for IOP (H0015): confirm against the IOP service's own manual and the payer.",
+   "verified_on": null,
    "note": "Shown with the Harvest practice, never replaced by it.",
    "default": 30,
    "register": "R-010",
@@ -36160,9 +36160,9 @@ ${xrefStart}
    "label": "ISP review",
    "value": 90,
    "unit": "calendar days",
-   "category": "OFFICIAL-VERIFIED",
-   "source": "Chapter IV: reviewed at least every 90 calendar days (T-070)",
-   "verified_on": "2026-11-11",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Carried over from the day-treatment build (Virginia Medicaid CMHRS manual). Not verified for IOP (H0015): confirm against the IOP service's own manual and the payer.",
+   "verified_on": null,
    "note": "The 15-day signature detail is from v3 only.",
    "default": 90,
    "register": "R-011",
@@ -36208,9 +36208,9 @@ ${xrefStart}
    "label": "Weekly guardian contact",
    "value": "end_of_week",
    "unit": "choice",
-   "category": "OFFICIAL-VERIFIED",
-   "source": "Family contacts at least weekly (Chapter IV, T-070); the Friday cut-off is Harvest practice",
-   "verified_on": "2026-11-11",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Carried over from the day-treatment build (Virginia Medicaid CMHRS manual). Not verified for IOP (H0015): confirm against the IOP service's own manual and the payer.",
+   "verified_on": null,
    "note": "",
    "default": "end_of_week",
    "register": "R-014",
@@ -36247,9 +36247,9 @@ ${xrefStart}
     "one per billed unit"
    ],
    "unit": "list",
-   "category": "OFFICIAL-VERIFIED",
-   "source": "Chapter IV progress-note requirements; duplicates not paid (T-072)",
-   "verified_on": "2026-11-11",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Carried over from the day-treatment build (Virginia Medicaid CMHRS manual). Not verified for IOP (H0015): confirm against the IOP service's own manual and the payer.",
+   "verified_on": null,
    "note": "Stored for display; no automated enforcement.",
    "default": [
     "individual-specific",
@@ -36530,9 +36530,9 @@ ${xrefStart}
     "summer": "U7"
    },
    "unit": "map",
-   "category": "OFFICIAL-VERIFIED",
-   "source": "Modifiers: none school day, UG after school, U7 summer (T-068)",
-   "verified_on": "2026-11-11",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Carried over from the day-treatment build (Virginia Medicaid CMHRS manual). Not verified for IOP (H0015): confirm against the IOP service's own manual and the payer.",
+   "verified_on": null,
    "note": "",
    "default": {
     "school_day": "",
@@ -36582,9 +36582,9 @@ ${xrefStart}
    "label": "Discharge after a lapse in service",
    "value": 31,
    "unit": "consecutive calendar days",
-   "category": "OFFICIAL-VERIFIED",
-   "source": "Chapter IV: a lapse of more than 31 consecutive calendar days requires discharge (T-070, T-071)",
-   "verified_on": "2026-11-11",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Carried over from the day-treatment build (Virginia Medicaid CMHRS manual). Not verified for IOP (H0015): confirm against the IOP service's own manual and the payer.",
+   "verified_on": null,
    "note": "Harvest also quotes 30 days; both are shown.",
    "default": 31,
    "register": "R-026",
@@ -36742,9 +36742,9 @@ ${xrefStart}
    "label": "Who may sign an SRA",
    "value": "LMHP-type users (LMHP, LMHP-R, LMHP-S, LMHP-RP)",
    "unit": "text",
-   "category": "OFFICIAL-VERIFIED",
-   "source": "LMHP-type attestation; credentials, NPI on the initial form only (T-074)",
-   "verified_on": "2026-11-11",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Carried over from the day-treatment build (Virginia Medicaid CMHRS manual). Not verified for IOP (H0015): confirm against the IOP service's own manual and the payer.",
+   "verified_on": null,
    "note": "The signer is always read from the Lauris signature event.",
    "default": "LMHP-type users (LMHP, LMHP-R, LMHP-S, LMHP-RP)",
    "register": "R-038",
@@ -36758,9 +36758,9 @@ ${xrefStart}
    "label": "Electronic signature on SRA forms",
    "value": true,
    "unit": "boolean",
-   "category": "OFFICIAL-VERIFIED",
-   "source": "\\"Actual or electronic\\" on both SRA forms (T-074)",
-   "verified_on": "2026-11-11",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Carried over from the day-treatment build (Virginia Medicaid CMHRS manual). Not verified for IOP (H0015): confirm against the IOP service's own manual and the payer.",
+   "verified_on": null,
    "note": "",
    "default": true,
    "register": "R-038",
@@ -37181,6 +37181,38 @@ ${xrefStart}
    ],
    "register": "R-055",
    "scope": null,
+   "enabled": true,
+   "effective_from": "2026-10-29",
+   "history": []
+  },
+  {
+   "key": "asam.reassess_days",
+   "label": "ASAM reassessment due after (Level 1)",
+   "value": 90,
+   "unit": "days between ASAM assessments",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Demo assumption: payers set their own review intervals for each level of care; confirm on the authorization letter or with the payer",
+   "verified_on": null,
+   "note": "Outpatient: a longer interval.",
+   "default": 90,
+   "register": "R-055",
+   "scope": "1",
+   "enabled": true,
+   "effective_from": "2026-10-29",
+   "history": []
+  },
+  {
+   "key": "asam.reassess_days",
+   "label": "ASAM reassessment due after (Level 2.5)",
+   "value": 14,
+   "unit": "days between ASAM assessments",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "Demo assumption: payers set their own review intervals for each level of care; confirm on the authorization letter or with the payer",
+   "verified_on": null,
+   "note": "Partial hospitalization: a shorter interval.",
+   "default": 14,
+   "register": "R-055",
+   "scope": "2.5",
    "enabled": true,
    "effective_from": "2026-10-29",
    "history": []

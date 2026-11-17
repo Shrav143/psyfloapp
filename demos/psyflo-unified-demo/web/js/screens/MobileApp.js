@@ -32,7 +32,7 @@ export function tick(inst, fn) {
 export function patientBar(s, clientId, { change = true, verb = 'Selected', note = '', choosing = false } = {}) {
   const c = clientId ? identityCard(s, clientId) : null;
   if (!c) return `<div class="pm-pid"><span class="pm-av pm-av--none" aria-hidden="true">?</span><div class="pm-pt"><b>${choosing ? 'Choose a student' : 'No student selected'}</b><span>${choosing ? 'Tap a name below to change' : 'Tap a name to start'}</span></div></div>`;
-  return `<div class="pm-pid"><span class="pm-av" aria-hidden="true">${esc(c.initials.replace(/\./g, ''))}</span><div class="pm-pt"><b>${esc(c.initials)}</b><span>${c.harvest_no ? 'Harvest # ' + esc(c.harvest_no) + ' · ' : ''}${esc(c.schoolShort)}${c.grade != null ? ' · grade ' + esc(c.grade) : ''}</span>${note ? `<span class="pm-pn">${esc(note)}</span>` : ''}</div></div>${change ? '<a class="pm-chg" href="#change" id="pm-change">Change</a>' : ''}`;
+  return `<div class="pm-pid"><span class="pm-av" aria-hidden="true">${esc(c.initials.replace(/\./g, ''))}</span><div class="pm-pt"><b>${esc(c.initials)}</b><span>${c.harvest_no ? 'Harvest # ' + esc(c.harvest_no) + ' · ' : ''}${esc(c.schoolShort)}</span>${note ? `<span class="pm-pn">${esc(note)}</span>` : ''}</div></div>${change ? '<a class="pm-chg" href="#change" id="pm-change">Change</a>' : ''}`;
 }
 // What state is a dictation in? Processed only when a processed note says so (an observed Process Form), never because a flag was set.
 export function dictationState(s, d) {

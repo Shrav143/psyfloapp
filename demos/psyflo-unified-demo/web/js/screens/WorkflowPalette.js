@@ -21,7 +21,7 @@ function blockItem(id, b) {
   return `<li class="wm-pi"><span class="ui-hint wm-host" data-ui-hint><button type="button" class="wm-pi__b wm-k-${b.kind}" data-wm="addBlock" data-block="${id}" data-fk="pal-${id}" aria-describedby="${tid}"><span class="wm-pi__i">${icon(b.icon, 16)}</span><span class="wm-pi__t">${esc(b.short)}</span><span class="wm-pi__g">${icon('grip', 14)}</span></button><span class="ui-hint__t" id="${tid}" aria-hidden="true">${esc(b.def)}</span></span></li>`;
 }
 function ruleItem(r, picked) {
-  const k = chipMod.verificationKind(r); const V = chipMod.VERIFICATION[k]; const tid = 'wm-rt-' + r.key.replace(/[^\w]/g, '-');
+  const k = chipMod.verificationKind(r); const V = chipMod.VERIFICATION[k]; const tid = 'wm-rt-' + (r.key + (r.scope != null ? '-' + r.scope : '')).replace(/[^\w]/g, '-');
   const tip = `${r.label}: ${showValue(r)}. ${V.full}. ${(r.source || '').slice(0, 160)}`;
   return `<li class="wm-pi wm-pi--rule"><span class="ui-hint wm-host" data-ui-hint><button type="button" class="wm-pi__b wm-ri" data-wm="addRule" data-key="${esc(r.key)}" data-fk="rule-${esc(r.key)}" aria-describedby="${tid}"><span class="wm-pi__i wm-v wm-v--${k}">${icon(V.icon, 14)}</span><span class="wm-pi__t">${esc(r.label)}<small>${esc(showValue(r))}</small></span><span class="wm-pi__g">${icon('grip', 14)}</span></button><span class="ui-hint__t" id="${tid}" aria-hidden="true">${esc(tip)}</span></span>${ui.hint('pencil', 'Edit this rule. It changes the rule everywhere, and it asks why.', { cls: 'ui-hint--act', label: 'Edit rule: ' + r.label, extra: `data-wm="editRule" data-key="${esc(r.key)}" data-fk="rule-edit-${esc(r.key)}"` })}</li>`;
 }

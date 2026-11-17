@@ -154,7 +154,7 @@ await T.test('evidence missing: the Authorization evidence card shows one warnin
   await go(p, 'Authorization?id=R-0402', '.ui-hcard'); const mh = p.locator('#sec-evidence .ui-misshint .ui-hint__b'); assert.ok(await mh.count() >= 1, 'a missing-evidence icon'); assert.match(await mh.first().getAttribute('aria-label'), /evidence missing: /i); assert.match(await mh.first().innerText(), /^\d+$/, 'with its count');
   assert.eq(await p.locator('#sec-evidence .ui-evidence--missing').count(), 0, 'no pills in the Authorization evidence card');
   assert.ok(await p.locator('#sec-evidence .a-ass li').count() >= 1, 'the items to verify are listed');
-  await go(p, 'DenialCase?id=R-0402&section=evidence', '.d-menu'); assert.match(await p.locator('#root').innerText(), /Evidence missing — verify previous treatment outcome/, 'the full pill stays where a person acts on it');
+  await go(p, 'DenialCase?id=R-0402&section=evidence', '.d-menu'); assert.match(await p.locator('#root').innerText(), /Evidence missing — verify what is likely to happen at a lower level of care/, 'the full pill stays where a person acts on it');
   await go(p, 'DenialCase?id=R-0402', '.d-menu'); await p.getByRole('link', { name: /^What Sentara said/ }).click(); await p.waitForTimeout(300); assert.match(await p.locator('#root').innerText(), /Evidence missing — verify the document reference/, 'Decision details keep the missing document reference as text');
   assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();
 });
