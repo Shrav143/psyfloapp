@@ -275,7 +275,7 @@ try {
   await T.test('direct support has no Authorizations; a missing or foreign case says so instead of failing', async () => {
     const ds = await mk('khale'); await ds.p.goto(BASE + '/#/Authorizations'); await ds.p.waitForTimeout(700); assert.match(await ds.p.locator('#root').innerText(), /Not available/); await ds.p.context().close();
     const { p, errs } = await mk('jperez'); await p.goto(BASE + '/#/Authorization?id=R-9999'); await p.waitForTimeout(700); assert.match(await p.locator('main').innerText(), /not in the tracker/);
-    await p.goto(BASE + '/#/Authorization?id=R-0377'); await p.waitForTimeout(700); assert.match(await p.locator('main').innerText(), /not in the tracker/, 'outpatient rows are never in this projection');
+    await p.goto(BASE + '/#/Authorization?id=R-0377'); await p.waitForTimeout(700); assert.ok(!/not in the tracker/.test(await p.locator('main').innerText()) && /R-0377/.test(await p.locator('main').innerText()), 'the Level 1 request is in the tracker');
     assert.deepEq(realErrs(errs), []); await p.context().close();
   });
 } finally { await b.close(); }

@@ -224,8 +224,8 @@ await T.test('DSL-05 a school user cannot share an update about a student of ano
   const before = (await state('jperez')).shares.length; const j = await tryApi('school.share', { client: 'MR', where: 'Hall', what: 'text' }, { portalToken: 'sch-rbell-demo' }); assert.ok(!j.ok && [403, 404, 422].includes(j.status), JSON.stringify(j).slice(0, 200));
   assert.eq((await state('jperez')).shares.length, before);
 });
-await T.test('DSL-06 no SEBS or outpatient referral or client reaches Psyflo\'s state for any staff role (every referral is for TDT; no H.B. or P.G.)', async () => {
-  for (const who of ['jperez', 'cdiaz', 'dowens']) { const s = await state(who); assert.ok(!s.clients.some(c => /^(HB|PG)$/.test(c.id)), who + ': client'); assert.ok(!s.referrals.some(r => r.form && r.form.referral_for && !r.form.referral_for.includes('TDT')), who + ': a referral for another service line'); assert.ok(!JSON.stringify(s).includes('"H.B."'), who); }
+await T.test('DSL-06 no SEBS referral or client reaches Psyflo\'s state for any staff role (every referral is for TDT; no H.B.; P.G. is a Level 1 client and is in)', async () => {
+  for (const who of ['jperez', 'cdiaz', 'dowens']) { const s = await state(who); assert.ok(!s.clients.some(c => /^HB$/.test(c.id)), who + ': client'); assert.ok(s.clients.some(c => c.id === 'PG'), who + ': P.G. at Level 1'); assert.ok(!s.referrals.some(r => r.form && r.form.referral_for && !r.form.referral_for.includes('TDT')), who + ': a referral for another service line'); assert.ok(!JSON.stringify(s).includes('"H.B."'), who); }
 });
 await T.test('DSL-07 a counselor update is held back when no signed school release is on file: the monthly collateral panel says "No signed school release" and does not file it as a contact', async () => {
   await reset('canvas'); const j = await tryApi('school.share', { client: 'TW', where: 'Hall', text: 'T.W. left class twice and returned after a check-in.' }, { portalToken: 'sch-rbell-demo' }); assert.ok(j.ok, JSON.stringify(j).slice(0, 160));

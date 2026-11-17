@@ -20,10 +20,10 @@ const text = p => p.locator('#root').innerText();
 
 try {
   // ---------- disclosure ----------
-  await T.test("a school sees only its own school's students, as status fields; nothing clinical, no other school, no outpatient student", async () => {
+  await T.test("a school sees only its own school's students, as status fields; nothing clinical, no other school", async () => {
     const s = await state(RB);
     assert.ok(s.clients.length > 0 && s.clients.every(c => c.school === 'LC-MS2'), 'own school only');
-    assert.ok(!s.clients.some(c => c.id === 'PG'), 'the outpatient student is never sent');
+    assert.ok(s.clients.some(c => c.id === 'PG'), 'P.G. (Level 1, Main IOP) is a client of this site: status fields only');
     const allowed = ['id', 'initials', 'first_name', 'age', 'grade', 'school', 'stage', 'service_start'];
     for (const c of s.clients) assert.deepEq(Object.keys(c).filter(k => !allowed.includes(k)), [], 'client fields: ' + c.id);
     assert.ok(s.referrals.length > 0 && s.referrals.every(r => r.school === 'LC-MS2'), "no other school's referral");
@@ -37,12 +37,11 @@ try {
     if (seen.size) T.skip("a referral reaches the school as status only (no insurance result, no internal next step)", `project.js still sends referrals[].${[...seen].join(', ')} to a school (change requested in the E6 report)`);
     else await T.test('a referral reaches the school as status only', async () => assert.eq(seen.size, 0));
   }
-  await T.test('a school cannot touch another school, an outpatient student, or a sent referral; the API asks for the guardian agreement', async () => {
+  await T.test('a school cannot touch another school or a sent referral; the API asks for the guardian agreement', async () => {
     await assert.refused(tryApi('referral.create', { form: { school: 'CC-ES1', client: 'X.Y.', consent_attested: true } }, RB), /own school/i, 403);
     await assert.refused(tryApi('referral.update', { id: 'REF-119', form: {} }, RB), /not from your school/i, 403);
     await assert.refused(tryApi('referral.attach', { id: 'REF-119', key: 'behaviour_report', name: 'x.pdf' }, RB), /not from your school/i, 403);
     await assert.refused(tryApi('school.share', { client: 'MR', text: 'a note about another school' }, RB), /not at your school/i, 403);
-    await assert.refused(tryApi('school.share', { client: 'PG', text: 'about an outpatient student' }, RB), /not in the program/i, 403);
     await assert.refused(tryApi('referral.update', { id: 'REF-118', form: { first_name: 'Changed' } }, RB), /Harvest's record/i, 409);
     await assert.refused(tryApi('referral.create', { form: { school: 'LC-MS2', client: 'A.B., 9', first_name: 'A', last_name: 'B' } }, RB), /agrees|guardian/i, 422);
     await assert.refused(tryApi('request.send', { id: 'R-0416' }, RB), /not allowed/, 403);

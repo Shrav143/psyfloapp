@@ -177,8 +177,9 @@ await T.test('a role switch changes what the API returns (same server, different
   assert.ok(b.referrals.length > 0 && c.referrals.length === 0);
 });
 
-await T.test('service line: outpatient (P.G., R-0377) never appears in the staff state', async () => {
-  for (const id of ['jperez', 'dowens', 'cdiaz']) { const s = await state(id); assert.ok(!s.clients.some(c => c.id === 'PG') && !s.requests.some(r => r.id === 'R-0377'), id); }
+await T.test('Level 1 outpatient (P.G., R-0377) is a client like the others: every staff role sees the client and the request, at Level 1', async () => {
+  for (const id of ['jperez', 'dowens', 'cdiaz']) { const s = await state(id); assert.ok(s.clients.some(c => c.id === 'PG') && s.requests.some(r => r.id === 'R-0377' && r.service === 'Outpatient'), id); }
+  const s = await state('jperez'); assert.eq(s.requests.find(r => r.id === 'R-0377').asam_level, '1', 'the request carries its ASAM level');
 });
 
 await T.test('portal sessions: a guardian sees one child; a school user sees their own school; neither can use staff actions', async () => {
