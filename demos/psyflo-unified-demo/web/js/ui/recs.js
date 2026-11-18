@@ -6,6 +6,7 @@
 //   recDrawer({ title, scope, ref, recs: () => recs, s: () => state, call, chips, laurisHref, onClose, returnFocus, footer, onSubmit })  -> drawer handle (repaints itself after each decision)
 //     footer (R7, Oprox parity) = { submit?:{label,disabled,reason}, refine?:true, context?:true, dismissAll?:true } adds Submit, Refine suggestions, Add clinical context and Dismiss suggestions;
 //     every one is logged with intel.event; onSubmit() opens the owner's send step. Without `footer` the panel is as before.
+//     saveWords:true (Authorizations) adds a "Save my words" button to a card that needs the clinician's own words; it saves the text and includes the card.
 //   recMini(recs, { limit })                                                    a short list for a case page: top suggestions, then a button with [data-rc-open]
 //
 // The pattern comes from reading how a utilization reviewer works through a request: each suggestion is a card you can include or leave out; a card
@@ -38,7 +39,7 @@ function card(r, o, i) {
     <details class="rc__why"><summary>Why this matters</summary><p>${esc(r.why)}</p>${out ? `<p class="rc__out">${esc(String(out.applied))} times applied in the sample · ${esc(String(out.success))}% success. <span class="rc__basis">${esc(OUTCOME_BASIS)}</span></p>` : ''}</details>
     ${text ? `<blockquote class="rc__text" data-label="What goes in">${esc(text)}</blockquote>` : ''}
     ${chips ? `<div class="rc__ev">${chips}</div>` : ''}
-    ${need ? `<div class="rc__need"><label for="${id}-c">${chip('Needs your input', { tone: 'warning', size: 'sm', icon: 'pencil' })} ${esc(r.needsInput.prompt)}</label><textarea class="ui-textarea rc__ctx" id="${id}-c" data-rc-ctx rows="3" maxlength="${CONTEXT_MAX}" placeholder="${esc(r.needsInput.placeholder || 'Your words.')}"${canAct ? '' : ' disabled'}>${esc(own)}</textarea><span class="rc__cnt" aria-live="polite">${own.length} / ${CONTEXT_MAX}</span>${canAct ? `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm rc__save" data-rc-save${own.trim() ? '' : ' disabled'}>Save my words</button>` : ''}</div>` : ''}
+    ${need ? `<div class="rc__need"><label for="${id}-c">${chip('Needs your input', { tone: 'warning', size: 'sm', icon: 'pencil' })} ${esc(r.needsInput.prompt)}</label><textarea class="ui-textarea rc__ctx" id="${id}-c" data-rc-ctx rows="3" maxlength="${CONTEXT_MAX}" placeholder="${esc(r.needsInput.placeholder || 'Your words.')}"${canAct ? '' : ' disabled'}>${esc(own)}</textarea><span class="rc__cnt" aria-live="polite">${own.length} / ${CONTEXT_MAX}</span>${canAct && o.saveWords ? `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm rc__save" data-rc-save${own.trim() ? '' : ' disabled'}>Save my words</button>` : ''}</div>` : ''}
     <div class="rc__row">${lauris}${canAct ? `<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-dismiss>Dismiss</button>${r.custom ? '<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-remove>Remove</button>' : ''}` : ''}</div>
   </li>`;
 }
@@ -121,7 +122,7 @@ export function bindRecPanel(root, { scope, ref, call, onChange, fields, onSubmi
 
 // the drawer: repaints its own body after every decision (the state arrives with the action's refresh)
 export function recDrawer(o) {
-  const build = () => recPanel(o.recs(), { s: o.s ? o.s() : {}, scope: o.scope, ref: o.ref, chips: o.chips, laurisHref: o.laurisHref, canAct: o.canAct, heading: o.heading, empty: o.empty, base: o.base, footer: typeof o.footer === 'function' ? o.footer() : o.footer });
+  const build = () => recPanel(o.recs(), { s: o.s ? o.s() : {}, scope: o.scope, ref: o.ref, chips: o.chips, laurisHref: o.laurisHref, canAct: o.canAct, saveWords: o.saveWords, heading: o.heading, empty: o.empty, base: o.base, footer: typeof o.footer === 'function' ? o.footer() : o.footer });
   let handle;
   const mount = dlg => bindRecPanel(dlg, { scope: o.scope, ref: o.ref, call: o.call, fields: o.fields, onSubmit: o.onSubmit, onChange: async r => { handle.update({ body: build() }); mount(handle.dialog); if (o.onChange) o.onChange(r); } });
   handle = drawer({ title: o.title || 'Suggested by Psyflo', body: build(), returnFocus: o.returnFocus, onClose: o.onClose, onMount: (dlg, h) => { handle = h; mount(dlg); } });

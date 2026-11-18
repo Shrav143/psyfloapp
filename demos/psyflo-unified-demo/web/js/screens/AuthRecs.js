@@ -69,7 +69,7 @@ export function openRecs(screen, id, { opener = null, focusKey = '' } = {}) {
   const me = session.actor; const base = api.config && api.config.laurisURL;
   const name = c0 ? (c0.initials || id) : id;
   const h = ui.recDrawer({
-    title: `Suggested by Psyflo · ${name}`, heading: 'Pick what to include', scope: 'auth', ref: id,
+    title: `Suggested by Psyflo · ${name}`, heading: 'Pick what to include', scope: 'auth', ref: id, saveWords: true,
     recs: () => recsFor(screen.s, id), s: () => screen.s, call: (a, x) => screen.do(a, x), chips: chipsFor(screen, id),
     laurisHref: r => laurisLink(base, me, r.act && r.act.path, { who: name, title: r.act && r.act.label, variant: 'button' }),
     returnFocus: opener, empty: 'Nothing to suggest right now. The record answers what a reviewer usually asks.',
