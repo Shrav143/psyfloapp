@@ -38,7 +38,7 @@ function card(r, o, i) {
     <details class="rc__why"><summary>Why this matters</summary><p>${esc(r.why)}</p>${out ? `<p class="rc__out">${esc(String(out.applied))} times applied in the sample · ${esc(String(out.success))}% success. <span class="rc__basis">${esc(OUTCOME_BASIS)}</span></p>` : ''}</details>
     ${text ? `<blockquote class="rc__text" data-label="What goes in">${esc(text)}</blockquote>` : ''}
     ${chips ? `<div class="rc__ev">${chips}</div>` : ''}
-    ${need ? `<div class="rc__need"><label for="${id}-c">${chip('Needs your input', { tone: 'warning', size: 'sm', icon: 'pencil' })} ${esc(r.needsInput.prompt)}</label><textarea class="ui-textarea rc__ctx" id="${id}-c" data-rc-ctx rows="3" maxlength="${CONTEXT_MAX}" placeholder="${esc(r.needsInput.placeholder || 'Your words.')}"${canAct ? '' : ' disabled'}>${esc(own)}</textarea><span class="rc__cnt" aria-live="polite">${own.length} / ${CONTEXT_MAX}</span></div>` : ''}
+    ${need ? `<div class="rc__need"><label for="${id}-c">${chip('Needs your input', { tone: 'warning', size: 'sm', icon: 'pencil' })} ${esc(r.needsInput.prompt)}</label><textarea class="ui-textarea rc__ctx" id="${id}-c" data-rc-ctx rows="3" maxlength="${CONTEXT_MAX}" placeholder="${esc(r.needsInput.placeholder || 'Your words.')}"${canAct ? '' : ' disabled'}>${esc(own)}</textarea><span class="rc__cnt" aria-live="polite">${own.length} / ${CONTEXT_MAX}</span>${canAct ? `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm rc__save" data-rc-save${own.trim() ? '' : ' disabled'}>Save my words</button>` : ''}</div>` : ''}
     <div class="rc__row">${lauris}${canAct ? `<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-dismiss>Dismiss</button>${r.custom ? '<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-remove>Remove</button>' : ''}` : ''}</div>
   </li>`;
 }
@@ -53,7 +53,8 @@ export function recPanel(recs, o = {}) {
     ${live.length ? `<ul class="rc__list">${live.map((r, i) => card(r, o, i)).join('')}</ul>` : `<p class="rc__empty">${esc(o.empty || 'Nothing to suggest right now. The record answers what a reviewer usually asks.')}</p>`}
     ${gone.length ? `<details class="rc__gone"><summary>${count(gone.length, 'dismissed suggestion', 'dismissed suggestions')}</summary><ul class="rc__gl">${gone.map(r => `<li data-rec="${esc(r.key)}"><span>${esc(r.title)}</span>${canAct ? '<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-reopen>Bring back</button>' : ''}</li>`).join('')}</ul></details>` : ''}
     ${canAct ? `<form class="rc__add" data-rc-addform hidden><label>Title<input class="ui-input" name="title" maxlength="120" placeholder="For example: Mention the safety plan"></label><label>What should go in<textarea class="ui-textarea" name="text" rows="3" maxlength="${CONTEXT_MAX}" placeholder="Your own words. Psyflo does not write this."></textarea></label><div class="rc__row"><button type="submit" class="ui-btn ui-btn--secondary ui-btn--sm">Save</button><button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-addcancel>Cancel</button></div></form>
-    <footer class="rc__foot"><button type="button" class="ui-btn ui-btn--secondary" data-rc-add>${icon('plus', 16)} Add your own</button><button type="button" class="ui-btn ui-btn--primary" data-rc-apply>Apply selected (<span data-rc-n>${live.filter(r => r.state === 'included').length}</span>)</button>${F.submit ? `<button type="button" class="ui-btn ui-btn--primary" data-rc-submit${F.submit.disabled ? ' disabled' : ''}${F.submit.reason ? ` title="${esc(F.submit.reason)}"` : ''}>${esc(F.submit.label || 'Submit to payer')}</button>` : ''}</footer>
+    <footer class="rc__foot"><button type="button" class="ui-btn ui-btn--secondary" data-rc-add>${icon('plus', 16)} Add your own</button><button type="button" class="ui-btn ui-btn--primary" data-rc-apply>Apply selected (<span data-rc-n>${live.filter(r => r.state === 'included').length}</span>)</button>${F.submit ? `<button type="button" class="ui-btn ui-btn--primary" data-rc-submit${F.submit.disabled ? ' disabled' : ''}${F.submit.reason ? ` title="${esc(F.submit.reason)}"` : ''}${F.submit.disabled && F.submit.reason ? ' aria-describedby="rc-sub-r"' : ''}>${esc(F.submit.label || 'Submit to payer')}</button>` : ''}</footer>
+    ${F.submit && F.submit.disabled && F.submit.reason ? `<p class="rc__sreason" id="rc-sub-r" data-rc-reason>${esc(F.submit.reason)}</p>` : ''}
     ${F.refine || F.context || F.dismissAll ? `<div class="rc__more" role="group" aria-label="More actions">${F.refine ? '<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-refine>Refine suggestions</button>' : ''}${F.context ? '<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-context>Add clinical context</button>' : ''}${F.dismissAll && live.length ? '<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-dismissall>Dismiss suggestions</button>' : ''}</div>` : ''}` : ''}
     <p class="rc__safe">${o.footer ? 'Untick a card to leave it out. All decisions are logged with your name. ' : ''}Suggestions only: nothing is sent and nothing is typed into Lauris until a person presses the button.</p>
   </div>`;
@@ -77,6 +78,7 @@ export function bindRecPanel(root, { scope, ref, call, onChange, fields, onSubmi
   panel.querySelectorAll('[data-rc-ctx]').forEach(ta => ta.addEventListener('input', () => {
     const li = ta.closest('[data-rec]'); const chk = li.querySelector('[data-rc-check]'); const has = !!ta.value.trim(); chk.disabled = !has; if (!has) chk.checked = false;
     const c = li.querySelector('.rc__cnt'); if (c) c.textContent = `${ta.value.length} / ${CONTEXT_MAX}`;
+    const sv = li.querySelector('[data-rc-save]'); if (sv) sv.disabled = !has;
   }));
   // "Apply selected (n)" shows how many cards are ticked
   const nEl = panel.querySelector('[data-rc-n]'); const tick = () => { if (nEl) nEl.textContent = String(panel.querySelectorAll('[data-rc-check]:checked').length); };
@@ -96,6 +98,7 @@ export function bindRecPanel(root, { scope, ref, call, onChange, fields, onSubmi
       if (!open.length) return; await log('dismissAll'); await run('recs.decideMany', { items: open });
       return void toast(`${count(open.length, 'suggestion', 'suggestions')} dismissed. Bring them back from the list below.`);
     }
+    if (t.closest('[data-rc-save]')) { const li = t.closest('[data-rec]'); const ta = li.querySelector('[data-rc-ctx]'); if (!ta || !ta.value.trim()) return; return void run('recs.decide', { key: li.dataset.rec, state: 'included', context: ta.value }); }
     if (t.closest('[data-rc-dismiss]')) return void run('recs.decide', { key: keyOf(t), state: 'dismissed' });
     if (t.closest('[data-rc-reopen]')) return void run('recs.decide', { key: keyOf(t), state: 'open' });
     if (t.closest('[data-rc-remove]')) return void run('recs.remove', { key: keyOf(t) });
