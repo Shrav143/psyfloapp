@@ -28,7 +28,7 @@ const page = async who => { if (!ctxs[who]) { const c = await b.newContext({ vie
 // ---- probes: each returns { ok, ev, note } ----
 const R = (hash, who, { text, hashRe, minLen = 40 } = {}) => async () => {
   const p = await page(who); const n0 = p.errs.length; await p.goto(BASE + '/#' + hash); await p.waitForTimeout(1000);
-  const t = (await p.locator('#root').innerText().catch(() => '')).replace(/\s+/g, ' '); const h = await p.evaluate(() => location.hash); const e = p.errs.slice(n0).filter(x => !/LANG_OFF|Parent(Schedule|Progress)/.test(x));
+  const t = ((await p.locator('#root').innerText().catch(() => '')) + ' ' + (await p.locator('.ui-dialog--drawer').allInnerTexts().catch(() => [])).join(' ')).replace(/\s+/g, ' ');   /* R6: a case section opened by ?section= is a side drawer: its text counts */ const h = await p.evaluate(() => location.hash); const e = p.errs.slice(n0).filter(x => !/LANG_OFF|Parent(Schedule|Progress)/.test(x));
   const ok = t.length >= minLen && !/Page not found/.test(t) && !(hashRe && !hashRe.test(h)) && !(text && !text.test(t)) && e.length === 0;
   return { ok, ev: `route ${hash.split('?')[0]} as ${who || 'anonymous'}`, note: ok ? (h !== hash ? 'lands on ' + h : '') : `hash ${h}; ${e.slice(0, 1).join('')} ${text && !text.test(t) ? 'text missing: ' + text : ''}` };
 };

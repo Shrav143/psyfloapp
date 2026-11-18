@@ -163,10 +163,11 @@ try {
     assert.ok(await row('S.B.').locator('[data-asam-due="overdue"] .ui-dateflag--overdue').count(), 'S.B.: the overdue reassessment flag'); assert.ok(await row('S.B.').locator('[data-asam-due] .ui-verify').count(), 'with the rule\'s source icon');
     assert.ok(await row('D.W.').locator('[data-asam-flag="incident"]').count(), 'D.W.: the incident flag');
     assert.eq(await row('M.R.').locator('[data-asam-due]').count(), 0, 'a clock that is not close shows no flag');
+    await p.click('#a-filters'); await p.waitForSelector('.a-fd');   // R6: the Level of care and Reassessment filters are in the Filters drawer
     await p.selectOption('select[data-key="level"]', 'over'); await p.waitForTimeout(400); assert.eq(await p.locator('tbody tr[data-ui-row]').count(), 1); assert.match(await p.evaluate(() => location.hash), /level=over/);
     await p.selectOption('select[data-key="level"]', ''); await p.selectOption('select[data-key="reassess"]', 'overdue'); await p.waitForTimeout(400);
     const od = (await p.locator('tbody tr[data-ui-row]').allInnerTexts()).join('|'); assert.ok(/S\.B\./.test(od) && /L\.V\./.test(od) && !/M\.R\./.test(od), od.replace(/\n/g, ' ')); assert.match(await p.evaluate(() => location.hash), /reassess=overdue/);
-    assert.deepEq(fatal(p), []); await done();
+    await p.keyboard.press('Escape'); assert.deepEq(fatal(p), []); await done();
   });
   await T.test('Authorization case: a Level of care section computed from the assessment: six dimensions with rating, note and date; the reading; the change; the clock with its rule chip; the plan', async () => {
     const p = await open('jperez', '/#/Authorization?id=R-0411&section=level', '#sec-level');
