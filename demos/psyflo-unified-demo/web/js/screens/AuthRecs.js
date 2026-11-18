@@ -16,11 +16,9 @@
 import { esc, ui, api, session } from '../app.js';
 import { can } from '../shared/permissions.js';
 import { listFor, insertsFor } from '../shared/recs.js';
-import { evidenceIndex, evidenceById, chipOpts, DIM_KIND } from '../shared/sel/disputes.js';
-import * as asam from '../shared/asam.js';
+import { evidenceIndex, evidenceById, chipOpts } from '../shared/sel/disputes.js';
+import { criteriaView } from '../shared/sel/auth-intel.js';
 import { byId } from '../shared/model.js';
-import { fmtDate } from '../shared/dates.js';
-import { today as clockToday } from '../shared/clock.js';
 import { laurisLink, laurisHref } from '../shared/lauris-link.js';
 
 export const mayRecs = me => !!me && me.role === 'clinician' && can(me, 'drafts.clinical');
@@ -97,38 +95,11 @@ export function recsCard(screen, id) {
 export function quietCard() { return `<p class="a-quiet" data-recs-quiet>${esc(QUIET)}</p>`; }
 
 // ------------------------------------------------------------------------------------------------ the payer criteria checklist (data)
-const RATE = n => asam.ratingLabel(n);
-// one row each for D1 to D6, the level of care and the reassessment clock; state 'documented' | 'needs'; rec = the key of the suggestion that answers it (or '')
+// one row each for D1 to D6, the level of care and the reassessment clock; state 'documented' | 'needs'; rec = the key of the suggestion that answers it (or '').
+// The reading itself is pure and shared (web/js/shared/sel/auth-intel.js criteriaView), so the platform and the extension panel say the same thing.
 export function criteriaOf(s, id) {
   const r = byId(s.requests || [], id); if (!r) return null;
-  const today = clockToday(s); const X = evidenceIndex(s, null, r); const a = X.assessment; const lvl = asam.requestLevel(r);
-  const ck = asam.levelCheck(a, lvl); const du = asam.dueState(s, a, lvl, today);
-  const need = new Map(X.needs.map(n => [n.key, n])); const recs = recsFor(s, id);
-  const recObj = pred => recs.find(q => pred(q.key) && q.state !== 'dismissed') || null;
-  const recFor = pred => { const x = recObj(pred); return x ? x.key : ''; };
-  const incl = pred => { const x = recObj(pred); return !!x && x.state === 'included'; };   // the clinician included the suggestion that answers this row (the stored record is unchanged, so the pill stays computed)
-  const rows = [];
-  for (const dm of asam.DIMS) {
-    const n = dm.n; const rt = a ? asam.ratingOf(a, n) : null; const nd = need.get('d' + n);
-    const dated = X.usable.filter(e => !e.fromAssessment && e.current && (e.kind === DIM_KIND[n] || (e.kind === 'daily_note' && e.dim === n && (n === 4 || n === 5))));
-    let state, text;
-    if (!a) { state = 'needs'; text = 'No ASAM assessment is on file, so this dimension has no rating.'; }
-    else if (rt == null) { state = 'needs'; text = `Not rated in the assessment of ${fmtDate(a.date)}.`; }
-    else if (nd) { state = 'needs'; text = `Rated ${rt} (${RATE(rt)}) on ${fmtDate(a.date)}. No dated record yet. Still needed: ${nd.label.replace(/^D\d:\s*/, '')}.`; }
-    else { state = 'documented'; text = `Rated ${rt} (${RATE(rt)}) on ${fmtDate(a.date)}. ${dated.length ? `${dated.length} dated record${dated.length === 1 ? '' : 's'} in the last ${X.window} days.` : 'No dated record is needed at this rating.'}`; }
-    rows.push({ key: 'd' + n, label: `${dm.short} · ${dm.label}`, state, text, rec: recFor(k => k.startsWith(`d${n}-`)), included: incl(k => k.startsWith(`d${n}-`)) });
-  }
-  // the level of care against the ratings
-  const lvText = ck.headline || '';
-  const lvState = ck.state === 'match' ? 'documented' : 'needs';
-  rows.push({ key: 'level', label: lvl ? `Level of care · ${asam.levelTag(lvl)}` : 'Level of care', state: lvState, text: ck.state === 'match' ? `${lvText}.` : ck.state === 'none' ? `${lvText}.` : `${lvText}. The reason is the clinician's to give.`, rec: recFor(k => k.startsWith('level-')), included: incl(k => k.startsWith('level-')) });
-  // the reassessment clock
-  // an incident after the last assessment means the ratings may understate current risk: a reassessment is indicated (the same reading the level of care section prints)
-  const inc = a ? (s.incidents || []).filter(i => i.client === r.client && String(i.date).slice(0, 10) > String(a.date).slice(0, 10)).sort((x, y) => String(y.date).localeCompare(String(x.date)))[0] : null;
-  const clockText = du.state === 'none' ? 'No assessment is on file, so no reassessment clock is running.' : du.state === 'overdue' ? `Last assessed ${fmtDate(a.date)}. Reassessment was due ${fmtDate(du.dueDate)}, ${-du.left} day${du.left === -1 ? '' : 's'} ago (${du.limit}-day rule).`
-    : inc ? `An incident on ${fmtDate(inc.date)} came after the assessment of ${fmtDate(a.date)}. The ratings may understate current risk, so a reassessment is indicated. The ${du.limit}-day rule runs to ${fmtDate(du.dueDate)}.` : `Last assessed ${fmtDate(a.date)}. Reassess by ${fmtDate(du.dueDate)} (${du.limit}-day rule).`;
-  rows.push({ key: 'clock', label: 'Reassessment clock', state: du.state === 'none' || du.state === 'overdue' || inc ? 'needs' : 'documented', text: clockText, rec: recFor(k => k === 'assessment' || k === 'reassess'), included: incl(k => k === 'assessment' || k === 'reassess') });
-  return { id, request: r, rows, documented: rows.filter(x => x.state === 'documented').length, total: rows.length };
+  return criteriaView(s, r);
 }
 
 export function criteriaHtml(cr) {
