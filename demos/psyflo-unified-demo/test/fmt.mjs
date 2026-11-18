@@ -10,6 +10,8 @@ const browser = await chromium.launch();
 const open = async (user, width = 1440, height = 1000) => { const ctx = await browser.newContext({ viewport: { width, height } }); const page = await ctx.newPage(); page.errs = errors(page); await login(page, user, { presenter: false }); page.ctx = ctx; return page; };
 const go = async (p, hash, sel) => { await p.goto(BASE + '/#/' + hash); await p.waitForSelector(sel, { timeout: 15000 }); await p.waitForTimeout(300); };
 const hashOf = p => p.evaluate(() => location.hash);
+// R6: the Decision date card (still ui.dateCard) lives in the Filters drawer of Denial Intelligence; the list itself is one search row, Status and a Filters button
+const goDI = async p => { await go(p, 'DenialIntelligence', '.ui-qt__row'); await p.getByRole('button', { name: /^Filters/ }).click(); await p.waitForSelector('[role=dialog] .ui-datecard'); await p.waitForTimeout(200); };
 const shot = (p, name) => p.screenshot({ path: `${SHOTS}/fmt-${name}.png`, fullPage: true });
 // the structure of a card: every element's tag and classes in order (text and values left out)
 const shape = (p, sel) => p.$eval(sel, el => [el, ...el.querySelectorAll('*')].map(e => e.tagName.toLowerCase() + '.' + [...e.classList].filter(c => !/^(is-|ui-hint--)/.test(c)).join('.')));
@@ -18,20 +20,19 @@ const css = (p, sel, props) => p.$eval(sel, (el, props) => { const c = getComput
 
 await reset('canvas');
 
-await T.test('the date cards: "Authorization period" and "Decision date" both come from ui.dateCard: same structure, same size, same place at 1440 px', async () => {
+await T.test('the date cards: "Authorization period" and "Decision date" both come from ui.dateCard: same structure and style (R6: Denial Intelligence keeps its card in the Filters drawer)', async () => {
   const p = await open('jperez');
   await go(p, 'Authorizations', '.ui-datecard'); const a = { shape: await shape(p, '.ui-datecard'), box: await box(p, '.ui-datecard'), n: await p.locator('.ui-datecard').count(), title: await p.locator('.ui-datecard h2').innerText(), chips: await p.locator('.ui-datecard .ui-fchip').allInnerTexts() };
   await shot(p, 'auth-1440');
-  await go(p, 'DenialIntelligence', '.ui-datecard'); const d = { shape: await shape(p, '.ui-datecard'), box: await box(p, '.ui-datecard'), n: await p.locator('.ui-datecard').count(), title: await p.locator('.ui-datecard h2').innerText(), chips: await p.locator('.ui-datecard .ui-fchip').allInnerTexts() };
+  await goDI(p); const d = { shape: await shape(p, '.ui-datecard'), box: await box(p, '.ui-datecard'), n: await p.locator('.ui-datecard').count(), title: await p.locator('.ui-datecard h2').innerText(), chips: await p.locator('.ui-datecard .ui-fchip').allInnerTexts() };
   await shot(p, 'di-1440');
   assert.eq(a.n, 1); assert.eq(d.n, 1); assert.eq(a.title, 'Authorization period'); assert.eq(d.title, 'Decision date');
   assert.deepEq(a.chips, ['Ends in 7 days', 'Ends in 30 days', 'Ends in 60 days']); assert.deepEq(d.chips, ['Today', 'This week', 'Before this week']);
   assert.deepEq(a.shape, d.shape, 'the same DOM structure (tags and classes), only the text differs');
-  assert.deepEq(a.box, d.box, `the same width, height and position in the page header: ${JSON.stringify(a.box)} vs ${JSON.stringify(d.box)}`);
-  assert.ok(a.box.w >= 380 && a.box.w <= 460, 'a fixed card width: ' + a.box.w); assert.ok(a.box.right <= 40, 'top right of the title row: ' + a.box.right);
+    assert.ok(a.box.w >= 380 && a.box.w <= 460, 'a fixed card width: ' + a.box.w); assert.ok(a.box.right <= 40, 'top right of the title row: ' + a.box.right);
   // the same styles: chip, inputs, labels
   for (const sel of ['.ui-datecard', '.ui-datecard .ui-fchip', '.ui-datecard input', '.ui-datecard__l', '.ui-datecard__t']) {
-    const props = ['fontSize', 'fontWeight', 'paddingTop', 'paddingLeft', 'borderRadius', 'minHeight', 'backgroundColor']; await go(p, 'Authorizations', '.ui-datecard'); const x = await css(p, sel, props); await go(p, 'DenialIntelligence', '.ui-datecard'); assert.deepEq(await css(p, sel, props), x, 'the same style for ' + sel);
+    const props = ['fontSize', 'fontWeight', 'paddingTop', 'paddingLeft', 'borderRadius', 'minHeight', 'backgroundColor']; await go(p, 'Authorizations', '.ui-datecard'); const x = await css(p, sel, props); await goDI(p); assert.deepEq(await css(p, sel, props), x, 'the same style for ' + sel);
   }
   assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();
 });
@@ -39,7 +40,7 @@ await T.test('the date cards: "Authorization period" and "Decision date" both co
 await T.test('the date cards behave the same: a date is a from/to param, a quick chip lights, "Clear" empties the card; Authorizations keeps its Ends in mode, Denial Intelligence its ranges', async () => {
   const p = await open('jperez');
   for (const [route, noun] of [['Authorizations', 'authorizations'], ['DenialIntelligence', 'denials']]) {
-    await go(p, route, '.ui-datecard');
+    if (route === 'DenialIntelligence') await goDI(p); else await go(p, route, '.ui-datecard');
     assert.eq(await p.locator('.ui-datecard__x').count(), 0, route + ': no Clear while the card is empty'); assert.match(await p.locator('.ui-datecard__s').innerText(), /Any dates/);
     await p.fill('.ui-datecard [data-ui-dc="from"]', '2026-10-01'); await p.waitForTimeout(400);
     assert.match(await hashOf(p), /from=2026-10-01/, route + ': the date is in the address'); assert.eq(await p.locator('.ui-datecard__x').count(), 1, route + ': Clear appears'); assert.match(await p.locator('.ui-datecard__s').innerText(), /Oct 1.*any/i);
@@ -56,28 +57,28 @@ await T.test('the date cards behave the same: a date is a from/to param, a quick
   await p.fill('.ui-datecard [data-ui-dc="from"]', '2026-10-01'); await p.waitForTimeout(400); assert.noMatch(await hashOf(p), /ends=/, 'typing a date clears the Ends in chip'); assert.match(await hashOf(p), /from=2026-10-01/);
   await p.locator('.ui-datecard__x').click(); await p.waitForTimeout(300);
   // Denial Intelligence: a range chip sets both dates, pressing it again clears them
-  await go(p, 'DenialIntelligence', '.ui-datecard');
+  await goDI(p);
   await p.getByRole('button', { name: 'This week', exact: true }).click(); await p.waitForTimeout(400); assert.match(await hashOf(p), /from=2026-10-26&to=2026-11-01/); assert.eq(await p.locator('.ui-datecard [data-ui-dc="from"]').inputValue(), '2026-10-26', 'the chip fills the dates');
   assert.eq(await p.getByRole('button', { name: 'This week', exact: true }).getAttribute('aria-pressed'), 'true');
   await p.getByRole('button', { name: 'This week', exact: true }).click(); await p.waitForTimeout(400); assert.noMatch(await hashOf(p), /from=/);
   // "Clear all filters" on both lists also empties the card
-  await p.getByRole('button', { name: 'This week', exact: true }).click(); await p.waitForTimeout(300); await p.getByRole('button', { name: /Clear all filters/ }).click(); await p.waitForTimeout(400); assert.noMatch(await hashOf(p), /from=|to=/);
+  await p.getByRole('button', { name: 'This week', exact: true }).click(); await p.waitForTimeout(300); await p.keyboard.press('Escape'); await p.waitForTimeout(250); await p.getByRole('button', { name: /Clear all filters/ }).click(); await p.waitForTimeout(400); assert.noMatch(await hashOf(p), /from=|to=/);
   assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();
 });
 
-await T.test('the two list pages share one page: header (title, maturity or info icon, card top right), one filter grid, one table style, the same cells, the pager at the foot', async () => {
+await T.test('the two list pages share one page: header (title, maturity or info icon), one table style, the same cells, the pager at the foot (R6: the filter grid is Authorizations\', Denial Intelligence has one search row and a Filters drawer)', async () => {
   const p = await open('jperez'); const pages = {};
   for (const route of ['Authorizations', 'DenialIntelligence']) {
     await go(p, route, '.ui-qt__row'); const o = {};
     o.page = await p.$eval('main', m => m.className); assert.match(o.page, /ui-page/, route + ' uses the shared page');
     o.head = await p.$$eval('main > header.ui-phead h1', h => h.length); assert.eq(o.head, 1, route + ': one header with the title');
     o.info = await p.locator('main > header.ui-phead .ui-infobtn').count(); assert.eq(o.info, 1, route + ': the info icon beside the title');
-    assert.eq(await p.locator('main > .ui-fcard.ui-fgrid > .ui-fbar').count(), 1, route + ': the filter card with the shared grid');
-    o.grid = await css(p, '.ui-fgrid .ui-fbar', ['display', 'gridTemplateColumns', 'columnGap', 'rowGap']); assert.eq(o.grid.display, 'grid');
-    o.cols = o.grid.gridTemplateColumns.split(' ').length; assert.eq(o.cols, 5, route + ': five columns at 1440 px');
-    o.label = await css(p, '.ui-fsel__l', ['fontSize', 'fontWeight', 'color']); o.select = await css(p, '.ui-fgrid .ui-select', ['height', 'fontSize', 'borderRadius']); o.search = await css(p, '.ui-fgrid .ui-fsearch .ui-input', ['height', 'paddingLeft']);
-    assert.eq(await p.locator('.ui-fgrid .ui-fsearch').count(), 1, route + ': one search box, first in the grid');
-    o.fcard = await css(p, '.ui-fcard', ['borderRadius', 'paddingTop', 'backgroundColor']);
+    if (route === 'Authorizations') {
+      assert.eq(await p.locator('main > .ui-fcard.ui-fgrid > .ui-fbar').count(), 1, route + ': the filter card with the shared grid');
+      o.grid = await css(p, '.ui-fgrid .ui-fbar', ['display', 'gridTemplateColumns', 'columnGap', 'rowGap']); assert.eq(o.grid.display, 'grid');
+      o.cols = o.grid.gridTemplateColumns.split(' ').length; assert.eq(o.cols, 5, route + ': five columns at 1440 px');
+      assert.eq(await p.locator('.ui-fgrid .ui-fsearch').count(), 1, route + ': one search box, first in the grid');
+    } else { assert.eq(await p.locator('main > .d-qbar .ui-fsearch').count(), 1, route + ': one search box'); assert.eq(await p.locator('main > .d-qbar .ui-fsel').count(), 1, route + ': the Status select'); assert.eq(await p.getByRole('button', { name: /^Filters/ }).count(), 1, route + ': one Filters button'); assert.eq(await p.locator('.ui-fgrid').count(), 0, route + ': no stacked filter grid'); }
     assert.eq(await p.locator('main > .ui-tlist .ui-qt').count(), 1, route + ': the table in the shared list wrapper');
     o.th = await css(p, '.ui-qt__table th', ['fontSize', 'fontWeight', 'paddingTop', 'paddingLeft', 'backgroundColor', 'textTransform']); o.td = await css(p, '.ui-qt__table td', ['paddingTop', 'paddingLeft', 'verticalAlign', 'fontSize']); o.tbl = await css(p, '.ui-qt__table', ['tableLayout']);
     o.chip = await css(p, '.ui-qt__row .ui-chip[data-status]', ['borderRadius', 'fontSize', 'fontWeight', 'paddingTop']);
@@ -85,11 +86,11 @@ await T.test('the two list pages share one page: header (title, maturity or info
     assert.ok((await p.locator('main').innerHTML()).indexOf('ui-pager') > (await p.locator('main').innerHTML()).indexOf('ui-qt__table'), route + ': the pager is under the table');
     o.dl = await p.locator('.ui-qt__row .ui-dlcell .ui-dateflag').count(); assert.ok(o.dl >= 3, route + ': the deadline cell is a dated flag: ' + o.dl);
     assert.ok(await p.locator('.ui-qt__row .ui-dlcell [data-verification]').count() >= 3, route + ': with its source icon');
-    assert.ok(await p.locator('.ui-qt__row .ui-owner').count() >= 3, route + ': the owner cell is the shared one');
+    if (route === 'Authorizations') assert.ok(await p.locator('.ui-qt__row .ui-owner').count() >= 3, route + ': the owner cell is the shared one');
     o.hdr = await box(p, '.ui-phead'); pages[route] = o;
   }
   const a = pages.Authorizations, d = pages.DenialIntelligence;
-  for (const k of ['grid', 'label', 'select', 'search', 'fcard', 'th', 'td', 'chip']) assert.deepEq(a[k], d[k], `the same ${k}: ${JSON.stringify(a[k])} vs ${JSON.stringify(d[k])}`);
+  for (const k of ['th', 'td', 'chip']) assert.deepEq(a[k], d[k], `the same ${k}: ${JSON.stringify(a[k])} vs ${JSON.stringify(d[k])}`);
   assert.deepEq(a.hdr.right, d.hdr.right, 'the header spans the same width'); assert.eq(a.tbl.tableLayout, d.tbl.tableLayout);
   assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();
 });
@@ -138,7 +139,7 @@ await T.test('the case pages share the breadcrumb, the header card and the secti
 await T.test('administrator and supervisor get the same shared pages with their own scope: the date card on both lists; the admin reads the lock icon, never clinical text', async () => {
   for (const user of ['dowens', 'cdiaz']) {
     const p = await open(user);
-    for (const route of user === 'dowens' ? ['Authorizations', 'DenialIntelligence'] : ['Authorizations']) { await go(p, route, '.ui-datecard'); assert.eq(await p.locator('.ui-datecard').count(), 1, `${user} ${route}`); assert.ok(await p.locator('.ui-fgrid').count() === 1); }   // the site supervisor has no Denial Intelligence (unchanged)
+    for (const route of user === 'dowens' ? ['Authorizations', 'DenialIntelligence'] : ['Authorizations']) { if (route === 'DenialIntelligence') { await go(p, route, '.ui-qt__row'); assert.eq(await p.locator('.d-qbar').count(), 1, user + ' ' + route); assert.eq(await p.locator('.d-sug').count(), 0, 'no suggestions for the administrator'); continue; } await go(p, route, '.ui-datecard'); assert.eq(await p.locator('.ui-datecard').count(), 1, `${user} ${route}`); assert.ok(await p.locator('.ui-fgrid').count() === 1); }   // the site supervisor has no Denial Intelligence (unchanged)
     if (user === 'dowens') {
       await go(p, 'DenialCase?id=R-0408&section=weak', '.d-menu'); const labels = await p.$$eval('.ui-lockhint .ui-hint__b', bs => bs.map(b => b.getAttribute('aria-label'))); assert.ok(labels.some(l => /^Needs clinician/.test(l)), 'a lock icon: ' + labels.join('|'));
       assert.ok(!/Piedmont|physical aggression|hospitali/i.test(await p.evaluate(() => document.getElementById('root').textContent)), 'no clinical text in the page, hover text included');
@@ -163,7 +164,13 @@ await T.test('phone width 390: both list pages and both case pages have no horiz
   const p = await open('jperez', 390, 900);
   for (const hash of ['Authorizations', 'DenialIntelligence', 'Authorization?id=R-0402', 'DenialCase?id=R-0402']) {
     await go(p, hash, 'main h1'); const o = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth })); assert.ok(o.sw <= o.cw + 1, `${hash}: scroll width ${o.sw} > ${o.cw}`);
-    if (/^(Authorizations|DenialIntelligence)$/.test(hash)) {
+    if (hash === 'DenialIntelligence') {
+      const fb = await p.getByRole('button', { name: /^Filters/ }).boundingBox(); assert.ok(fb.height >= 44, hash + ': the Filters button is a 44 px target: ' + fb.height); assert.ok(fb.x + fb.width <= 390, hash + ': the toolbar fits');
+      await p.getByRole('button', { name: /^Filters/ }).click(); await p.waitForSelector('[role=dialog] .ui-datecard'); await p.waitForTimeout(300);
+      const small = await p.$$eval('.ui-datecard input, .ui-datecard button, .ui-datecard .ui-hint__b', els => els.filter(e => { const r = e.getBoundingClientRect(); return r.width < 24 || r.height < 24; }).length); assert.eq(small, 0, hash + ': targets in the date card (Filters drawer)');
+      const o2 = await p.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth })); assert.ok(o2.sw <= o2.cw + 1, 'the Filters drawer: no horizontal scroll'); await p.keyboard.press('Escape'); await p.waitForTimeout(200);
+    }
+    if (hash === 'Authorizations') {
       const small = await p.$$eval('.ui-datecard input, .ui-datecard button, .ui-datecard .ui-hint__b', els => els.filter(e => { const r = e.getBoundingClientRect(); return r.width < 24 || r.height < 24; }).length); assert.eq(small, 0, hash + ': targets in the date card');
       const w = await p.$eval('.ui-datecard', e => Math.round(e.getBoundingClientRect().width)); assert.ok(w >= 330 && w <= 390, hash + ': the card fills the phone width: ' + w);
       assert.eq(await p.$eval('.ui-fgrid .ui-fbar', e => getComputedStyle(e).gridTemplateColumns.split(' ').length), 2, hash + ': two filter columns on a phone');

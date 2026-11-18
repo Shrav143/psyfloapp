@@ -1,7 +1,8 @@
 // Denial case workspace (E3, rebuilt in the artifact's layout for R3):
 //   #/DenialCase?id=<requestId>&section=overview|said|evidence|weak|action|docreq|history&action=info|options|p2p|appeal|reconsider
 // One workspace per request that needs a payer-decision response. The old InfoRequest, Partials and PeerBrief screens are replies here
-// (section=action); the old section=decision link opens What the payer said and section=options opens the Overview with "All paths" open. The guardian side of
+// (section=action); the old section=decision link opens What the payer said and section=options lands on the Overview at "All paths" (a side drawer; so is History). R6: the Overview
+// leads with "What Psyflo would do" (the suggestions: DenialRecs.js, the shared card kit) and a Packet card with Preview packet. The guardian side of
 // the appeal stays AppealLetter (E6). Every change goes through a dispute.* action, which calls the existing request.* actions: request.stage
 // stays the only lifecycle. The voice agent is Simulated: a person starts it and records it, nothing is dialled.
 import { register, Screen, raw, ui, M, api, hrefFor, toast, go } from '../app.js';
@@ -12,10 +13,64 @@ import { fmtDate, fmtDateTime } from '../shared/dates.js';
 import { rule } from '../shared/rules.js';
 import { srcHint } from './a-fmt.js';
 import { can } from '../shared/permissions.js';
+import * as R from '../shared/recs.js';
+import { openDenialRecs, REC_PHONE_CSS } from './DenialRecs.js';
 
 const esc = ui.esc;
 const field = (id, label, control, hint) => `<div class="d-f"><label for="${id}">${esc(label)}</label>${control}${hint ? `<span class="d-modal-note">${esc(hint)}</span>` : ''}</div>`;
 const SR = () => window.SpeechRecognition || window.webkitSpeechRecognition;
+
+// R6 overview: What Psyflo would do · Where the case stands · Packet · More, and the drawers that hold the rest. Tokens only (web/css/tokens.css).
+const CASE_CSS = `
+.d-wwd__lead{margin:0 0 2px}
+.d-wwd .rcm__l li{gap:6px 10px;padding:10px 0;flex-wrap:wrap}
+.d-wwd .rcm__l li svg{display:none}
+.d-wwd .rcm__l li:last-child{border-bottom:0}
+.d-wwd__n{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--sand-100);font:600 var(--fs-13)/1 var(--font);font-variant-numeric:tabular-nums}
+.d-wwd li[data-state=included] .d-wwd__n{background:var(--teal-600);color:var(--surface-0)}
+.d-wwd .rcm__t{flex:1 1 240px}
+.d-wwd__go{margin-left:auto}
+.d-wwd__note{margin:0}
+.d-wwd--quiet{padding-top:var(--sp-3);padding-bottom:var(--sp-3)}.d-wwd--quiet .ui-lockline{margin:0}
+.d-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3);align-items:start}
+.d-two>*{min-width:0}
+.d-two:has(>.d-stand:only-child){grid-template-columns:1fr}
+@media (max-width:1180px){.d-two{grid-template-columns:1fr}}
+.d-stand .d-next{margin:0}
+.d-facts{display:flex;flex-direction:column;gap:12px;margin:var(--sp-3) 0 0}
+.d-facts>div{display:flex;flex-direction:column;gap:3px}
+.d-facts dt{font-size:var(--fs-12);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-700)}
+.d-facts dd{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-width:0;line-height:1.5}
+.d-fact__l{display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px 6px}
+.d-pk__c{margin:var(--sp-2) 0}
+.d-pk__l{list-style:none;margin:0 0 var(--sp-3);padding:0}
+.d-pk__r{display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--line-200)}
+.d-pk__r:first-child{border-top:0}
+.d-pk__t{display:flex;flex-direction:column;gap:4px;min-width:0}
+.d-pk__m{display:flex;flex-wrap:wrap;gap:4px 6px}
+.d-tools__l{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 20px}
+.d-tools__i{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.d-menu__x{margin-top:4px;border-top:1px solid var(--line-200);padding-top:6px}
+.d-menu__b{display:flex;flex-direction:column;gap:1px;width:100%;padding:8px 10px;border-radius:var(--r-2);background:none;border:0;border-left:3px solid transparent;text-align:left;font:inherit;color:var(--ink-900);cursor:pointer;min-height:36px;box-sizing:border-box;justify-content:center}
+.d-menu__b b{font-weight:500;font-size:var(--fs-14)}.d-menu__b span{font-size:var(--fs-12);color:var(--muted-700)}
+.d-menu__b:hover{background:var(--sand-50)}
+.d-pv{display:flex;flex-direction:column;gap:var(--sp-3)}
+.d-pv__lead{margin:0}
+.d-pdoc{border:1px solid var(--line-200);border-radius:var(--r-3);padding:12px 14px;background:var(--surface-0);display:flex;flex-direction:column;gap:var(--sp-2);min-width:0}
+.d-pdoc__h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}.d-pdoc__h h3{margin:0;font-size:var(--fs-16)}
+.d-pdoc__n{margin:0;font-size:var(--fs-13)}
+.d-pdoc>.ui-btn{align-self:flex-start}
+.d-psec{padding:8px 0;border-top:1px solid var(--line-200);display:flex;flex-direction:column;gap:6px}
+.d-psec h4{margin:0;font-size:var(--fs-14);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.d-psec .d-sec__t{margin:0}
+.d-psec--rec{border:0;border-left:4px solid var(--teal-600);background:var(--teal-tint);border-radius:0 var(--r-2) var(--r-2) 0;padding:10px 12px;margin:4px 0}
+.d-flat .ui-scard{border:0;padding:0;box-shadow:none;background:none}
+.d-flat .ui-scard__h h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.rc[data-scope=denial] .rc__list{counter-reset:rcn}
+.rc[data-scope=denial] .rc__card{counter-increment:rcn}
+.rc[data-scope=denial] .rc__t::before{content:counter(rcn) ".";margin-right:.4em;font-weight:700;color:var(--teal-700)}
+@media (max-width:760px){.d-menu ul{grid-template-columns:repeat(2,minmax(0,1fr))}.d-menu a,.d-menu__b{min-height:44px}.d-wwd__go,.d-wwd .ui-btn,.d-stand .ui-btn,.d-tools .ui-btn,.d-pk .ui-btn{min-height:44px}.d-pk__r .ui-btn{width:100%}}
+`;
 
 // the Update status menu (a menu button, not a disclosure): closes on a click away, on Escape and when an item is chosen; arrows move between items
 const updClose = (focus) => { const u = document.getElementById('d-upd'); if (!u) return; const p = u.querySelector('.d-upd__p'); const b = u.querySelector('.d-upd__b'); if (p && !p.hidden) { p.hidden = true; b.setAttribute('aria-expanded', 'false'); if (focus) b.focus(); } };
@@ -34,17 +89,22 @@ if (typeof document !== 'undefined' && !window.__dUpdClose) {
 register('DenialCase', class extends Screen {
   init() {
     const e = V.entry(this.params);
-    this.state = { section: e.section, action: e.action, door: 'plain', editing: null, consent: false, rec: false, hist: false, paths: !!e.paths, drTo: null };
+    this.state = { section: e.section, action: e.action, door: 'plain', editing: null, consent: false, rec: false, drTo: null };
+    // old deep links: section=options (no action) meant "All paths open", section=history meant "History open"; both are side drawers now: the link lands on the Overview with that button focused (a page is never opened with a dialog already over it)
+    this._arrive = e.paths ? 'paths' : e.section === 'history' ? 'history' : null;
   }
   get reqId() { return this.params.id; }
+  get css() { return CASE_CSS + REC_PHONE_CSS; }
   // one context per paint: the case view, the evidence index (lazy) and the history (lazy)
   ctx() {
     const s = this.s; const me = this.me; const cv = D.caseView(s, this.reqId, me);
-    let idx = null, hist = null, miss = null;
+    let idx = null, hist = null, miss = null, recs = null;
     const cl = cv.c || {}; const no = cl.lauris_no || cl.harvest_no;
     const laurisUrl = api.config && api.config.laurisURL && me ? `${api.config.laurisURL}/login?as=${encodeURIComponent(me.id || 'jperez')}&next=${encodeURIComponent(no ? `/consumers/${no}` : '/consumers')}` : '';
     return { s, me, cv, ui, M, hrefFor, st: this.state, clinical: D.canReadClinical(me), extUrl: api.config && api.config.extURL || '', laurisUrl, canLauris: !!me && can(me, 'ext.use'),
-      idx: () => idx || (idx = D.evidenceIndex(s, cv.d, cv.r, { read: D.canReadClinical(me) })), missing: () => D.canReadClinical(me) ? (miss || (miss = D.missingItems(s, cv.d, cv.r, idx || (idx = D.evidenceIndex(s, cv.d, cv.r, { read: true }))))) : [], history: () => hist || (hist = D.historyEvents(s, cv.d, cv.r)) };
+      idx: () => idx || (idx = D.evidenceIndex(s, cv.d, cv.r, { read: D.canReadClinical(me) })), missing: () => D.canReadClinical(me) ? (miss || (miss = D.missingItems(s, cv.d, cv.r, idx || (idx = D.evidenceIndex(s, cv.d, cv.r, { read: true }))))) : [], history: () => hist || (hist = D.historyEvents(s, cv.d, cv.r)),
+      // the suggestions (shared/recs.js): the treating clinician only, and only while the case is open (a closed case is write-once)
+      recs: () => recs || (recs = D.canReadClinical(me) && cv.d && cv.open ? R.denialRecsFor(s, cv.d, cv.r, idx || (idx = D.evidenceIndex(s, cv.d, cv.r, { read: true }))) : []) };
   }
   renderVals() {
     const s = this.s; const r = M.byId(s.requests, this.reqId);
@@ -54,7 +114,7 @@ register('DenialCase', class extends Screen {
     if (!cv.d) return empty(ui.emptyState({ title: `${r.id} is ${M.STAGE_LABEL[r.stage] || r.stage}`, body: 'Denial Intelligence works requests that need a payer-decision response: a partial offer, an information request, a peer-to-peer, a denial or an appeal.', action: { label: 'Open the authorization', href: hrefFor('Authorizations.dc.html?id=' + r.id) } }));
     const st = this.state;
     const body = { overview: V.overviewSection, said: V.saidSection, evidence: V.evidenceSection, weak: V.weakSection, action: V.actionSection, docreq: V.docreqSection, history: V.overviewSection }[st.section](c);
-    return { head: raw(V.header(c)), menu: raw(V.menu(c)), body: raw(body), hist: raw(V.historyCard(c)) };
+    return { head: raw(V.header(c)), menu: raw(V.menu(c)), body: raw(body), hist: raw('') };
   }
   after(root) {
     root.querySelectorAll('[data-x]').forEach(el => {
@@ -63,8 +123,9 @@ register('DenialCase', class extends Screen {
       if (x === 'consent') { el.onchange = () => { this.state.consent = el.checked; }; return; }
       el.onclick = ev => { ev.preventDefault(); if (x === 'upd') { const p = document.getElementById('d-upd-p'); const opening = p.hidden; p.hidden = !opening; el.setAttribute('aria-expanded', String(opening)); if (opening) p.querySelector('button').focus(); return; } updClose(false); this.act(x, el.dataset, el); };
     });
-    const h = root.querySelector('#d-hist'); if (h) h.addEventListener('toggle', () => { this.state.hist = h.open; });
-    const pa = root.querySelector('#d-paths'); if (pa) pa.addEventListener('toggle', () => { this.state.paths = pa.open; });
+    // the shared card kit's own "Review suggestions" button opens the full list; it gets a stable id so focus can come back after a repaint
+    root.querySelectorAll('[data-rc-open]').forEach(b => { b.id = 'd-rec-open'; b.onclick = ev => { ev.preventDefault(); this.openRecs(b); }; });
+    if (this._arrive) { const bid = this._arrive === 'paths' ? 'd-t-paths' : 'd-hist-b'; this._arrive = null; setTimeout(() => { const b = document.getElementById(bid); if (b) { b.scrollIntoView({ block: 'center' }); b.focus({ preventScroll: true }); } }, 80); }
     root.querySelectorAll('[name=d-dr-to]').forEach(i => { i.onchange = () => { this.state.drTo = i.value; }; });
     if (this._focus) { const hh = root.querySelector('.d-body h2'); this._focus = false; if (hh) { hh.setAttribute('tabindex', '-1'); hh.focus({ preventScroll: true }); } }
   }
@@ -112,9 +173,39 @@ register('DenialCase', class extends Screen {
       case 'print': return this.print();
       case 'savenotes': return this.saveNotes();
       case 'rec': return this.toggleRec();
+      case 'recopen': return this.openRecs(el, { key: data.key });
+      case 'recadd': return this.openRecs(el, { add: true });
+      case 'packet': return this.openPacket(el);
+      case 'paths': return this.openPaths(el);
+      case 'level': return this.openLevel(el);
+      case 'history': return this.openHistory(el);
       default: return;
     }
   }
+
+  // ---------------------------------------------------------------------------------------------- R6: suggestions, packet preview and the other side drawers
+  // "What Psyflo would do" in full: the shared card kit in a side drawer (DenialRecs.js; the queue opens the same drawer). `key` opens it at that card (the words box
+  // when the card needs them); `add` opens the "Add your own" form. Focus goes back to the opener when it closes and stays on the same control after a decision.
+  openRecs(el, o = {}) { return openDenialRecs({ ref: this.reqId, me: this.me, el, ...o }); }
+  // buttons inside a drawer body (the packet preview, All paths): the drawer closes first, then the action runs from the page; `gen` drafts in place
+  wireDrawer(dlg, handle, opener, refresh) {
+    dlg.addEventListener('click', async ev => {
+      const a = ev.target.closest('a[href^="#/"]'); if (a) { handle.close(); return; }
+      const b = ev.target.closest('[data-x]'); if (!b) return; ev.preventDefault();
+      const x = b.dataset.x; const data = { ...b.dataset };
+      if (x === 'gen' && refresh) { const d = this.d; const res = await this.call('dispute.genDoc', { id: d.id, doc: data.doc }, r => `Draft ready · ${r.sections} section${r.sections === 1 ? '' : 's'} from stored records${r.missing ? ` · ${r.missing} marked Evidence missing` : ''}`); if (res) { refresh(); const t = dlg.querySelector(`.d-pdoc[data-doc="${data.doc}"] h3`); if (t) { t.setAttribute('tabindex', '-1'); t.focus({ preventScroll: true }); } } return; }
+      handle.close(); this.act(x, data, x === 'recopen' ? document.getElementById('d-packet') || opener : opener);
+    });
+  }
+  // Preview packet: each draft with the "Added from recommendations" section highlighted and its evidence chips
+  openPacket(el) {
+    if (!D.canReadClinical(this.me)) return;
+    const body = () => V.packetBody(this.ctx());
+    return ui.drawer({ title: 'Preview packet', body: body(), returnFocus: el, actions: [{ label: 'Close', tone: 'secondary' }], onMount: (dlg, handle) => this.wireDrawer(dlg, handle, el, () => handle.update({ body: body() })) });
+  }
+  openPaths(el) { return ui.drawer({ title: 'All paths', body: V.pathsBody(this.ctx()), returnFocus: el, actions: [{ label: 'Close', tone: 'secondary' }], onMount: (dlg, handle) => this.wireDrawer(dlg, handle, el) }); }
+  openLevel(el) { return ui.drawer({ title: 'Level of care', body: V.levelBody(this.ctx()), returnFocus: el, actions: [{ label: 'Close', tone: 'secondary' }] }); }
+  openHistory(el) { return ui.drawer({ title: 'History', body: V.historyBody(this.ctx()), returnFocus: el, actions: [{ label: 'Close', tone: 'secondary' }] }); }
 
   // ---------------------------------------------------------------------------------------------- the seven recommended steps (slide-over panels)
   async step(k, el) {

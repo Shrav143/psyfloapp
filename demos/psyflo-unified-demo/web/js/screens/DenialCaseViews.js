@@ -1,10 +1,11 @@
 // HTML builders for the Denial case workspace (E3, rebuilt in the artifact's layout for R3): a header card with the process line, a left menu
-// (Review · Respond), the Overview (seven recommended steps, what the payer said against what the chart shows, where the denial is weak),
-// the evidence, the replies (information, decide, peer-to-peer, appeal, reconsideration), the documentation request and a collapsed History.
+// (Review · Respond), the Overview (R6: "What Psyflo would do" first, then where the case stands, the Packet and More; the level card, all paths and
+// History are side drawers), the evidence, the replies (information, decide, peer-to-peer, appeal, reconsideration) and the documentation request.
 // Pure functions of a context { s, me, cv, ui, M, hrefFor, st } that return trusted HTML strings; the controller (DenialCase.js) wires the data-x buttons.
 // Few words: states are chips, detail opens on demand. Nothing here predicts an outcome or writes clinical text: every sentence has a stored source.
 import * as D from '../shared/sel/disputes.js';
 import * as asam from '../shared/asam.js';
+import * as R from '../shared/recs.js';
 import { rule, ruleValue } from '../shared/rules.js';
 import { fmtDate, fmtDateTime, fmtTime, daysBetween, hoursBetween } from '../shared/dates.js';
 import { srcHint, lockHint, lockLine, missHint, ownerControl } from './a-fmt.js';
@@ -26,7 +27,6 @@ const btn = (label, x, o = {}) => `<button type="button" class="ui-btn ui-btn--$
 const link = (label, href, o = {}) => `<a class="ui-btn ui-btn--${o.tone || 'secondary'}${o.sm ? ' ui-btn--sm' : ''}" href="${e(href)}"${o.blank ? ' target="_blank" rel="noopener"' : ''}>${e(label)}${o.blank ? c_icon('external', 14) + '<span class="ui-sr"> (opens in a new tab)</span>' : ''}</a>`;
 let c_icon = () => '';                                   // set from the context (ui.icon) on first use
 const needs = (c, why = 'Needs clinician') => c.me && D.canWork(c.me) ? '' : lockHint(why);   // a lock icon where the button would be; the reason shows on hover
-const STEP_PATH = { appeal: 'appeal', p2p: 'p2p', recon: 'recon' };
 
 // where each kind of "next action" lives
 export function nextTarget(cv) {
@@ -52,8 +52,8 @@ const validAction = (c, a) => {
 const M_now = c => c.M.now(c.s);
 
 // ------------------------------------------------------------------------------------------------------------------ header card
-function deadlineChip(c) {
-  const { cv, ui } = c; const dl = cv.deadline; if (!cv.open || !dl) return '';
+function deadlineChip(c, dl0) {
+  const { cv, ui } = c; const dl = dl0 || cv.deadline; if (!cv.open || !dl) return '';
   const hourly = dl.date && String(dl.date).includes('T'); let rel = '';
   if (dl.date) { const h = hourly ? Math.round(hoursBetween(M_now(c), dl.date)) : null; rel = hourly && Math.abs(h) < 72 ? (h < 0 ? `${-h} h late` : `${h} h left`) : dl.days < 0 ? `${-dl.days} d late` : dl.days === 0 ? 'Today' : `${dl.days} d`; }
   const tone = dl.sev === 'overdue' ? 'danger' : dl.sev === 'soon' ? 'warning' : 'neutral';
@@ -96,7 +96,8 @@ export function header(c) {
 
 // ------------------------------------------------------------------------------------------------------------------ left menu
 export function menu(c) {
-  const { cv, st } = c; const r = cv.r; const d = cv.d; const idx = c.idx(); const res = D.stepResults(c.s, d, r, idx); const done = D.STEP_LIST.filter(([k]) => res[k]).length;
+  const { cv, st } = c; const r = cv.r; const d = cv.d; const idx = c.idx(); const res = D.stepResults(c.s, d, r, idx);
+  const sumR = c.clinical && cv.open ? R.summary(c.s, c.recs()) : null;   // the Overview line: how many suggestions are included (clinicians only)
   const act = st.action || defaultAction(cv);
   const href = (section, action) => `#/DenialCase?id=${e(r.id)}&section=${section}${action ? '&action=' + action : ''}`;
   const item = (label, section, action, sub) => { const on = st.section === section && (section !== 'action' || act === action); return `<li><a href="${href(section, action)}" data-x="tab" data-section="${section}"${action ? ` data-action="${action}"` : ''}${on ? ' aria-current="page"' : ''}><b>${e(label)}</b>${sub ? `<span>${e(sub)}</span>` : ''}</a></li>`; };
@@ -108,23 +109,106 @@ export function menu(c) {
     validAction(c, 'info') ? item(`Reply to ${pf}`, 'action', 'info', doc('info') ? (doc('info').sent ? 'Sent' : doc('info').reviewed ? 'Reviewed' : 'Simulated draft') : '') : '',
     item('Appeal draft', 'action', 'appeal', docSub('appeal')), item('Peer-to-peer script', 'action', 'p2p', docSub('p2p')), item('Reconsideration', 'action', 'reconsider', docSub('recon')),
     item('Documentation request', 'docreq', '', res.docreq || (c.clinical && nMiss ? `${nMiss} to request` : ''))].join('');
-  return `<nav class="d-menu" aria-label="Case sections"><p class="d-menu__g">Review</p><ul>${item('Overview', 'overview', '', `${done} of ${D.STEP_LIST.length} steps done`)}${item(d.issue === 'info' ? `What ${pf} asked` : `What ${pf} said`, 'said', '', '')}${item('Clinical evidence', 'evidence', '', ev)}${item('Where the denial is weak', 'weak', '', c.clinical ? (res.analyze ? `${nW} point${nW === 1 ? '' : 's'}` : 'Not analyzed') : 'Restricted')}</ul><p class="d-menu__g">Respond</p><ul>${respond}</ul></nav>`;
+  return `<nav class="d-menu" aria-label="Case sections"><p class="d-menu__g">Review</p><ul>${item('Overview', 'overview', '', sumR ? `${sumR.included} of ${sumR.total} suggestions included` : '')}${item(d.issue === 'info' ? `What ${pf} asked` : `What ${pf} said`, 'said', '', '')}${item('Clinical evidence', 'evidence', '', ev)}${item('Where the denial is weak', 'weak', '', c.clinical ? (res.analyze ? `${nW} point${nW === 1 ? '' : 's'}` : 'Not analyzed') : 'Restricted')}</ul><p class="d-menu__g">Respond</p><ul>${respond}</ul><ul class="d-menu__x"><li><button type="button" class="d-menu__b" data-x="history" id="d-hist-b"><b>History</b><span>${c.history().length} event${c.history().length === 1 ? '' : 's'}</span></button></li></ul></nav>`;
 }
 
-// ------------------------------------------------------------------------------------------------------------------ Overview: the seven recommended steps
-function stepsCard(c) {
-  const { cv, ui, s } = c; const d = cv.d; const r = cv.r; const idx = c.idx(); const res = D.stepResults(s, d, r, idx); const done = D.STEP_LIST.filter(([k]) => res[k]).length;
-  const nt = cv.open ? nextTarget(cv) : null;
-  const next = cv.open ? `<div class="d-next" role="status"><span class="d-next__l">Next</span><b>${e(cv.next.label)}</b><span class="d-sm ui-muted">${e(cv.owner.name)}</span>${nt && D.canWork(c.me) ? btn(nt.label, 'goto', { tone: 'primary', sm: true, data: { section: nt.section, action: nt.action || '' } }) : nt ? needs(c) : ''}</div>`
+// ------------------------------------------------------------------------------------------------------------------ Overview (R6)
+// The page leads with "What Psyflo would do": the ranked suggestions (ui.recMini, the shared card kit; shared/recs.js builds them from stored records).
+// Next come a short "Where the case stands" strip and the Packet card. What used to stack here (the level card, the seven steps, what the payer said,
+// the weak points, all paths) is one click away in a side drawer or in the left menu. Suggestions are for the treating clinician only.
+function nextBar(c) {
+  const { cv } = c; const d = cv.d; const r = cv.r; const nt = cv.open ? nextTarget(cv) : null;
+  return cv.open ? `<div class="d-next" role="status"><span class="d-next__l">Next</span><b>${e(cv.next.label)}</b><span class="d-sm ui-muted">${e(cv.owner.name)}</span>${nt && D.canWork(c.me) ? btn(nt.label, 'goto', { tone: 'primary', sm: true, data: { section: nt.section, action: nt.action || '' } }) : nt ? needs(c) : ''}</div>`
     : `<div class="d-next d-next--done" role="status"><span class="d-next__l">Outcome</span><b>${e(d.outcome ? d.outcome.text : 'Closed')}</b>${link('Open authorization', c.hrefFor('Authorizations.dc.html?id=' + r.id), { tone: 'primary', sm: true })}</div>`;
-  const rows = D.STEP_LIST.map(([k, label], i) => {
-    const locked = (D.NEEDS_CLINICAL.includes(k) && !c.clinical) || !cv.open; const lockWhy = !cv.open ? 'This case is closed' : 'Clinical record access required'; const res1 = res[k];
-    const dl = STEP_PATH[k] && d.issue !== 'info' ? cv.deadlines.find(x => x.kind === k) : null; const cur = cv.path === STEP_PATH[k] && STEP_PATH[k];
-    const bits = [locked && cv.open ? lockHint('Clinical record access required') : res1 ? `<span class="d-act__ok">${e(res1)}</span>` : '', dl ? `<span class="d-sm ui-muted">Deadline ${e(dl.label)}${dl.date ? ' · ' + e(when(dl.date)) : ''}</span>${srcHint(dl)}` : '', cur ? ui.chip('Current pathway', { tone: 'info', icon: 'dot', size: 'sm' }) : ''].filter(Boolean).join('');
-    return `<li class="d-act${res1 ? ' is-done' : ''}${cur ? ' is-cur' : ''}"><button type="button" class="d-act__b" data-x="step" data-k="${k}"${locked ? ` disabled title="${lockWhy}"` : ''} aria-label="${e(label)}${res1 ? ', ' + e(res1) : ''}"><span class="d-act__n" aria-hidden="true">${res1 ? ui.icon('check', 14) : i + 1}</span><span class="d-act__t"><b>${e(label)}</b>${bits ? `<span class="d-act__r">${bits}</span>` : ''}</span><span class="d-act__go" aria-hidden="true">${locked ? '' : 'Open ›'}</span></button></li>`;
-  }).join('');
-  return `<section class="ui-scard" aria-labelledby="d-h-steps"><div class="ui-scard__h"><h2 id="d-h-steps">Recommended next steps</h2><span class="d-sm ui-muted ui-scard__r">${done} of ${D.STEP_LIST.length} done</span></div>${next}<ol class="d-acts">${rows}</ol></section>`;
 }
+
+// What Psyflo would do: the top five, numbered, then the one primary button. A row opens the full list at that card (Add context when it needs the clinician's words).
+function suggestCard(c) {
+  const { cv, ui } = c;
+  if (!cv.open) return '';
+  if (!c.clinical) return `<section class="ui-scard d-wwd d-wwd--quiet" aria-label="Suggestions">${lockLine('Suggestions are built from clinical records, so they are shown to the treating clinician only. Administrators see the status, units and deadlines of the case.', 'Suggestions are for the treating clinician')}</section>`;
+  const recs = c.recs(); const sum = R.summary(c.s, recs); const shown = recs.filter(r => r.state !== 'dismissed').slice(0, 5);
+  let i = 0;
+  const mini = ui.recMini(recs, { limit: 5, s: c.s }).replace(/<li data-state="(\w+)">([\s\S]*?)<\/li>/g, (m, st, inner) => {
+    const r = shown[i++]; if (!r) return m;
+    const need = !!r.needsInput && !String(r.context || '').trim(); const label = need ? 'Add context' : 'Review';
+    return `<li data-state="${st}" data-rec="${e(r.key)}"><span class="d-wwd__n" aria-hidden="true">${i}</span>${inner}${st === 'included' ? ui.chip('Included', { tone: 'success', size: 'sm', icon: 'check' }) : ''}${need ? ui.chip('Needs your words', { tone: 'warning', size: 'sm', icon: 'pencil' }) : ''}<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm d-wwd__go" data-x="recopen" id="d-rec-row-${e(String(r.key).replace(/[^a-z0-9_-]/gi, '-'))}" data-key="${e(r.key)}" aria-label="${label}: ${e(r.title)}">${label}</button></li>`;
+  });
+  return `<section class="ui-scard d-wwd" aria-labelledby="d-h-wwd"><div class="ui-scard__h"><h2 id="d-h-wwd">What Psyflo would do</h2>${ui.maturity('recs.suggestions')}<span class="ui-scard__r">${btn('Add your own', 'recadd', { sm: true, tone: 'secondary', id: 'd-recadd' })}</span></div>
+  <p class="d-sm ui-muted d-wwd__lead">Ranked from the stored records of this case. Include what you want: it goes into every draft that has not been sent.</p>${mini}
+  <p class="d-sm ui-muted d-wwd__note">The + points are an illustrative sample from the demo data, not a prediction. ${sum.dismissed ? `${sum.dismissed} dismissed. ` : ''}Nothing is sent and nothing is typed into Lauris until a person presses the button.</p></section>`;
+}
+
+// Where the case stands: the next step, then three facts (deadline, level reading, units). Each is read from stored records.
+function standCard(c) {
+  const { cv, ui, s } = c; const r = cv.r; const d = cv.d; const u = cv.units;
+  const dls = cv.open ? cv.deadlines.slice(0, 3) : [];
+  const dl = !cv.open ? `<span class="ui-muted">Closed ${e(fmtDate(d.closed))}</span>` : dls.length ? dls.map(x => `<span class="d-fact__l">${deadlineChip(c, x)}</span>`).join('') : '<span class="ui-muted">No open deadline</span>';
+  let level;
+  if (!c.clinical) level = `<span class="d-fact__l">${lockHint('Needs clinician: the dimension ratings are clinical records, so they are shown to clinicians only.', { label: 'Level of care reading: needs clinician' })}<span class="ui-muted d-sm">Clinicians only</span></span>`;
+  else {
+    const p = asam.profile(s, r.client, asam.requestLevel(r)); const a = p.a;
+    level = !a ? '<span class="ui-muted">No ASAM assessment on file</span>' : `<span class="d-fact__l">${ui.chip(asam.CHECK_LABEL[p.check.state], { tone: asam.CHECK_TONE[p.check.state], icon: p.check.state === 'match' ? 'check' : 'alert' })}</span><span class="d-sm ui-muted">Assessed ${e(fmtDate(a.date))} · ${p.due.days} d ago${p.due.state === 'overdue' ? `, past the ${p.due.limit}-day rule` : ''}</span>${btn('See the ratings', 'level', { sm: true, tone: 'ghost', id: 'd-level' })}`;
+  }
+  const units = d.issue === 'denial' ? `<b>0</b> of ${u.requested} units approved` : d.issue === 'info' || u.current == null ? `<b>${u.requested}</b> units requested`
+    : `<span><b>${u.current}</b> of ${u.requested} units ${u.offered != null ? 'offered' : 'approved'}</span>${u.runOut && d.issue === 'partial' ? `<span class="d-sm ui-muted">Lasts to about ${e(fmtDate(u.runOut))}</span>${srcHint(u.assumption)}` : ''}`;
+  return `<section class="ui-scard d-stand" aria-labelledby="d-h-stand"><div class="ui-scard__h"><h2 id="d-h-stand">Where the case stands</h2></div>${nextBar(c)}
+  <dl class="d-facts"><div><dt>Deadline</dt><dd>${dl}</dd></div><div><dt>Level of care</dt><dd>${level}</dd></div><div><dt>Units</dt><dd>${units}</dd></div></dl></section>`;
+}
+
+// The packet: the reply documents that make sense at this stage, what state each is in, and Preview packet (the drawer shows the draft with the
+// "Added from recommendations" section highlighted). The server keeps that section in step with the included suggestions (x-disputes.js syncRecsSection).
+const DOC_LABEL = { info: 'Reply to the information request', p2p: 'Peer-to-peer talking points', appeal: 'Appeal letter', recon: 'Reconsideration request' };
+const DOC_ACTION = { info: 'info', p2p: 'p2p', appeal: 'appeal', recon: 'reconsider' };
+const docValid = (c, k) => { const r = c.cv.r; const d = c.cv.d; return { info: r.stage === 'info_requested', p2p: ['partial_decide', ...D.P2P_STAGES].includes(r.stage), appeal: r.stage === 'denied' && d.path === 'appeal', recon: ['partial_decide', 'denied'].includes(r.stage) && d.path === 'recon' }[k]; };
+export const packetKinds = c => ['info', 'p2p', 'appeal', 'recon'].filter(k => docValid(c, k) || ((c.cv.d.docs || {})[k] || {}).sections);
+const docState = doc => !doc || !doc.sections ? { text: 'No draft yet', tone: 'neutral', icon: 'pencil' } : doc.sent ? { text: 'Sent', tone: 'info', icon: 'send' } : doc.ready ? { text: 'Ready to upload', tone: 'warning', icon: 'clock' } : doc.reviewed ? { text: 'Reviewed', tone: 'success', icon: 'check' } : { text: doc.seeded ? 'Sample letter' : 'Draft', tone: 'outline', icon: 'pencil' };
+const recsSec = doc => doc && doc.sections ? doc.sections.find(x => x.key === R.RECS_SECTION) : null;
+function packetCard(c) {
+  const { cv, ui } = c;
+  if (!c.clinical || !cv.open) return '';
+  const d = cv.d; const work = D.canWork(c.me); const recs = c.recs(); const inc = R.included(recs).length; const withText = R.insertsFor(recs).length; const kinds = packetKinds(c);
+  const rows = kinds.map(k => {
+    const doc = (d.docs || {})[k]; const has = !!(doc && doc.sections); const stt = docState(doc); const sec = recsSec(doc);
+    const act = !has ? (work ? btn('Draft from records', 'gen', { sm: true, tone: 'primary', data: { doc: k } }) : needs(c)) : btn('Open draft', 'goto', { sm: true, data: { section: 'action', action: DOC_ACTION[k] } });
+    return `<li class="d-pk__r" data-doc="${k}"><div class="d-pk__t"><b>${e(DOC_LABEL[k])}</b><span class="d-pk__m">${ui.chip(stt.text, { tone: stt.tone, icon: stt.icon, size: 'sm' })}${has ? ui.chip('Simulated', { tone: 'outline', size: 'sm', className: 'ui-chip--sim', title: 'Rule-based drafting from stored evidence; no language model is called.' }) : ''}${sec ? ui.chip(sec.basis.replace(/ included by a clinician$/, ' in this draft'), { tone: 'info', size: 'sm', icon: 'sparkle' }) : ''}</span></div><div class="d-pk__a">${act}</div></li>`;
+  }).join('');
+  return `<section class="ui-scard d-pk" aria-labelledby="d-h-pk"><div class="ui-scard__h"><h2 id="d-h-pk">Packet</h2></div>
+  <p class="d-pk__c" role="status"><b>${inc} recommendation${inc === 1 ? '' : 's'} included</b>${inc && inc > withText ? `<span class="d-sm ui-muted"> · ${withText} add${withText === 1 ? 's' : ''} text to the draft</span>` : ''}</p>
+  ${rows ? `<ul class="d-pk__l">${rows}</ul>` : `<p class="d-sm ui-muted">No reply document is open yet. Choose a path in All paths, then draft it here.</p>`}
+  <div class="ui-btnrow">${btn('Preview packet', 'packet', { tone: 'secondary', id: 'd-packet' })}</div></section>`;
+}
+// the Preview packet drawer: each draft as it stands, the included recommendations highlighted in their own section, with the evidence chips
+export function packetBody(c) {
+  const { cv, ui } = c; const d = cv.d; const recs = c.recs(); const idx = c.idx(); const inc = R.included(recs); const work = D.canWork(c.me) && cv.open; const kinds = packetKinds(c);
+  const lead = inc.length ? `<p class="d-pv__lead"><b>${inc.length} recommendation${inc.length === 1 ? '' : 's'} included.</b> They go into every draft that has not been sent, in the section <b>Added from recommendations</b>. Dismissing one, or bringing it back, updates the drafts.</p>`
+    : `<p class="d-pv__lead"><b>No recommendations included yet.</b> Included ones appear here, highlighted, in each draft that has not been sent.</p>`;
+  const docs = kinds.map(k => {
+    const doc = (d.docs || {})[k]; const has = !!(doc && doc.sections); const stt = docState(doc);
+    const head = `<header class="d-pdoc__h"><h3>${e(DOC_LABEL[k])}</h3>${ui.chip(stt.text, { tone: stt.tone, icon: stt.icon, size: 'sm' })}${has ? ui.chip('Simulated', { tone: 'outline', size: 'sm', className: 'ui-chip--sim', title: 'Rule-based drafting from stored evidence; no language model is called.' }) : ''}${doc && doc.stale ? ui.chip('Evidence changed · draft again', { tone: 'warning', icon: 'alert', size: 'sm' }) : ''}</header>`;
+    if (!has) return `<article class="d-pdoc" data-doc="${k}">${head}<p class="ui-muted d-sm">No draft yet. A draft is built from stored records, and carries the included recommendations from the start.</p>${work ? btn('Draft from records', 'gen', { sm: true, tone: 'primary', data: { doc: k } }) : ''}</article>`;
+    const wants = R.insertsFor(recs, k).length > 0; const frozen = !!(doc.sent || doc.ready || doc.seeded);
+    const note = wants && !recsSec(doc) && frozen ? `<p class="d-pdoc__n">${ui.chip(doc.sent ? 'Sent' : doc.ready ? 'Ready to upload' : 'Sample letter', { tone: 'warning', icon: 'alert', size: 'sm' })} ${doc.sent || doc.ready ? 'This document is write-once, so the included recommendations are not added to it.' : 'This is a seeded sample. Draft it again from records to add the included recommendations.'}</p>` : '';
+    const secs = doc.sections.map(sec => {
+      const rec = sec.key === R.RECS_SECTION; const chips = (sec.evidence || []).map(id => D.evidenceById(idx, id)).filter(Boolean).map(it => ui.evidenceChip(D.chipOpts(it)));
+      return `<section class="d-psec${rec ? ' d-psec--rec' : ''}"${rec ? ' data-recs-section' : ''}><h4>${e(sec.title)}${rec ? ' ' + ui.chip(sec.basis.replace(/ by a clinician$/, ''), { tone: 'info', size: 'sm', icon: 'sparkle' }) : ''}</h4><p class="d-sec__t">${marked(sec.text)}</p>${chips.length ? `<div class="d-sec__ev">${chips.join('')}</div>` : ''}</section>`;
+    }).join('');
+    return `<article class="d-pdoc" data-doc="${k}">${head}${note}${secs}<div class="ui-btnrow">${btn('Edit and review in Respond', 'goto', { sm: true, data: { section: 'action', action: DOC_ACTION[k] } })}</div></article>`;
+  }).join('');
+  return `<div class="d-pv">${lead}<div class="ui-btnrow">${btn('Change what is included', 'recopen', { sm: true })}</div>${docs || `<p class="ui-muted">No reply document is open for this case yet. Choose a path first (All paths), then draft it.</p>`}</div>`;
+}
+
+// More: the work that used to be a list of seven steps. Each opens a side drawer (or the section it belongs to).
+function moreCard(c) {
+  const { cv, s } = c; const open = cv.open; const clin = c.clinical && D.canWork(c.me) && open;
+  const res = open ? D.stepResults(s, cv.d, cv.r, c.idx()) : {};
+  const item = (label, x, data, note) => `<li class="d-tools__i">${btn(label, x, { sm: true, data, id: 'd-t-' + (data.k || x) })}${note ? `<span class="d-sm ui-muted">${e(note)}</span>` : ''}</li>`;
+  const items = [clin ? item('Analyze Denial', 'step', { k: 'analyze' }, res.analyze) : '', clin ? item('Identify Missing Evidence', 'step', { k: 'gaps' }, res.gaps) : '', clin ? item('Request Additional Documentation', 'step', { k: 'docreq' }, res.docreq) : '',
+    open ? item('Mark for Clinical Review', 'step', { k: 'review' }, res.review) : '', item('All paths', 'paths', {}), item(`${cv.payer.first} guidance`, 'guidance', {})].join('');
+  return `<section class="ui-scard d-tools" aria-labelledby="d-h-tools"><div class="ui-scard__h"><h2 id="d-h-tools">More</h2></div><ul class="d-tools__l">${items}</ul></section>`;
+}
+// the level of care card as a drawer body (the heading is the drawer's title)
+export const levelBody = c => `<div class="d-flat">${levelCard(c)}</div>`;
 // Level of care: the clinician's stored ASAM ratings read against the level this request asks for (asam.levelCheck), the reassessment clock and what changed
 // since the last assessment. Computed from the stored assessment every time; nothing here is typed in. Clinical, so clinicians only.
 const dimTone = rt => rt == null ? 'neutral' : rt >= 3 ? 'danger' : rt === 2 ? 'warning' : 'success';
@@ -183,7 +267,7 @@ function weakCard(c, limit) {
 }
 
 // ------------------------------------------------------------------------------------------------------------------ All paths (the former Options page): every route this decision can take, each with its rule and source
-function pathsCard(c) {
+export function pathsBody(c) {
   const { cv, ui, hrefFor } = c; const r = cv.r;
   const card = o => {
     const dl = o.deadline;
@@ -193,11 +277,11 @@ function pathsCard(c) {
     return `<li class="d-opt${o.available ? '' : ' d-opt--off'}"><div class="d-opt__b"><h3>${e(o.label)}</h3><p>${e(o.available ? o.sub || '' : o.why || '')}</p><div class="d-opt__m">${chips}${dlLine}</div></div><div class="d-opt__a">${act}</div></li>`;
   };
   const on = cv.options.filter(o => o.available), off = cv.options.filter(o => !o.available);
-  return `<section class="ui-scard"><details class="d-paths" id="d-paths"${c.st.paths ? ' open' : ''}><summary><h2>All paths</h2><span class="d-sm ui-muted">${on.length} available · each with its rule and source</span></summary>${cv.open ? '' : `<p class="ui-muted">This case is closed: ${e(cv.d.outcome ? cv.d.outcome.text : '')}</p>`}
+  return `${cv.open ? "" : `<p class="ui-muted">This case is closed: ${e(cv.d.outcome ? cv.d.outcome.text : "")}</p>`}<p class="d-sm ui-muted">${on.length} available · each with its rule and source</p>
   <ul class="d-opts">${on.map(card).join('')}</ul>
-  ${off.length ? `<details class="d-det"><summary>Not available here (${off.length})</summary><ul class="d-opts">${off.map(card).join('')}</ul></details>` : ''}</details></section>`;
+  ${off.length ? `<details class="d-det"><summary>Not available here (${off.length})</summary><ul class="d-opts">${off.map(card).join('')}</ul></details>` : ''}`;
 }
-export function overviewSection(c) { return levelCard(c) + stepsCard(c) + saidCard(c, { compact: true, id: '-o' }) + weakCard(c, 3) + pathsCard(c); }
+export function overviewSection(c) { return suggestCard(c) + `<div class="d-two">${standCard(c)}${packetCard(c)}</div>` + moreCard(c); }
 export function saidSection(c) { return saidCard(c, { id: '' }) + decisionSection(c); }
 export const weakSection = c => weakCard(c, 0);
 
@@ -251,10 +335,10 @@ export function docreqSection(c) {
   return `<section class="ui-scard" aria-labelledby="d-h-dr"><div class="ui-scard__h"><h2 id="d-h-dr">Documentation request</h2>${ui.maturity('denial.docreq')}${q ? `<span class="d-sm ui-muted">${received} of ${q.items.length} received</span>` : ''}</div>${state}<h3>${q ? 'Still missing' : 'Missing evidence'}</h3>${form}</section>`;
 }
 
-// ------------------------------------------------------------------------------------------------------------------ History (a collapsed card at the foot of the page)
-export function historyCard(c) {
-  const { cv, ui, st } = c; const evs = c.history();
-  return `<details class="d-hist" id="d-hist"${st.hist || st.section === 'history' ? ' open' : ''}><summary><h2>History</h2><span class="d-sm ui-muted">${evs.length} event${evs.length === 1 ? '' : 's'}</span></summary>${ui.timeline(evs, { id: 'dc-tl', label: 'Correspondence and decisions, newest first' })}</details>`;
+// ------------------------------------------------------------------------------------------------------------------ History (a side drawer, opened from the left menu)
+export function historyBody(c) {
+  const { ui } = c; const evs = c.history();
+  return ui.timeline(evs, { id: 'dc-tl', label: 'Correspondence and decisions, newest first' });
 }
 
 // ------------------------------------------------------------------------------------------------------------------ documents (draft, review, edit)

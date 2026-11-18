@@ -286,9 +286,9 @@ async function denial() {
   await ui.getByRole('link', { name: /R-0402/ }).first().click(); await ui.locator('.d-menu').waitFor();
   ok(/D\.W\., 15[\s\S]*Partial approval/.test(await H.main()), 'the D.W. partial approval case opens');
   await ui.getByRole('link', { name: /^Clinical evidence/ }).click(); ok(/Evidence missing — verify what is likely to happen at a lower level of care/.test(await H.main()), 'missing evidence prints "Evidence missing — verify …"');
-  await ui.getByRole('link', { name: /^Overview/ }).click(); await ui.locator('#d-paths > summary').click(); const opt = await H.main();
+  await ui.getByRole('link', { name: /^Overview/ }).click(); await ui.getByRole('button', { name: 'All paths', exact: true }).click(); const opt = (await ui.getByRole('dialog').innerText()).replace(/\s+/g, ' ');   // R6: All paths is a side drawer
   ok(/Accept decision/.test(opt) && /Prepare peer-to-peer/.test(opt) && /Payer rule not verified/.test(opt), 'options: accept, prepare a peer-to-peer; a payer rule is labelled not verified');
-  await ui.locator('#d-paths .d-opt').filter({ hasText: 'Prepare peer-to-peer' }).getByRole('button', { name: 'Open' }).click(); await ui.locator('#d-h-p2p').waitFor();
+  await ui.getByRole('dialog').locator('.d-opt').filter({ hasText: 'Prepare peer-to-peer' }).getByRole('button', { name: 'Open' }).click(); await ui.locator('#d-h-p2p').waitFor();
   await ui.getByRole('button', { name: /Ask Sentara for a peer-to-peer/ }).click(); await ui.getByRole('dialog').getByRole('button', { name: 'Log the request' }).click(); await page.waitForTimeout(600);
   await ui.getByRole('button', { name: 'Draft from records' }).click(); await page.waitForTimeout(600);
   ok(/Evidence missing — verify what is likely to happen at a lower level of care/.test(await H.main()) && /Simulated/.test(await H.main()), 'the call notes draft from records, with a Simulated chip and no invented evidence');

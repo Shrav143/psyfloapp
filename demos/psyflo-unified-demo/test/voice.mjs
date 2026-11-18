@@ -134,7 +134,7 @@ await T.test('screen: an open line runs the scripted call, shows its transcript,
   await dlg.getByRole('button', { name: 'Save the call record' }).click(); await p.waitForTimeout(900);
   const d = await dispute('R-0408'); assert.eq(d.calls.length, 1); assert.eq(d.calls[0].purpose, 'p2p'); assert.eq(d.calls[0].by, 'jperez'); assert.match(d.calls[0].outcome, /Tuesdays and Thursdays/);
   assert.eq(d.status, 'info-req', 'a call does not move the case'); assert.eq((await request('R-0408')).stage, 'info_requested');
-  await p.click('#d-hist summary'); await p.waitForTimeout(300); const t = await txt(p); assert.match(t, /Voice agent call recorded \(Simulated\)/); assert.match(t, /not a payer decision/);
+  await p.click('#d-hist-b'); await p.waitForSelector('[role=dialog]'); await p.waitForTimeout(300); const t = await p.getByRole('dialog').innerText(); assert.match(t, /Voice agent call recorded \(Simulated\)/); assert.match(t, /not a payer decision/); await p.keyboard.press('Escape');   // R6: History is a side drawer
   await p.getByRole('link', { name: /^What Anthem asked/ }).click(); await p.waitForTimeout(300); assert.match(await txt(p), /Payer calls[\s\S]*Reviewer slots are Tuesdays and Thursdays/);
   await p.screenshot({ path: `${SHOTS}/voice-case-1440.png`, fullPage: true });
   assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();

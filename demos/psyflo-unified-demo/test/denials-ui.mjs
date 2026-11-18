@@ -1,4 +1,4 @@
-// Denial Intelligence in the browser (E3): the queue, the redirects of the old routes, scenario S5 by clicking, the K.T. information reply through
+// Denial Intelligence in the browser (E3; R6: simpler queue with a Filters drawer, overview that leads with the suggestions): the queue, the redirects of the old routes, scenario S5 by clicking, the K.T. information reply through
 // the mock Availity page, role limits (admin reads no clinical text), keyboard and dialog basics, no console errors. Screenshots go to $SHOTS.
 // Run: BASE=http://localhost:4840 node test/denials-ui.mjs
 import { suite, assert, login, errors, playwright, reset, state, api, BASE, SHOTS } from './lib/index.mjs';
@@ -17,12 +17,13 @@ await reset('canvas');
 await T.test('queue (artifact layout): nine columns, four open cases sorted by deadline, a source chip on each deadline, rows link to the case, the filters of the artifact, the pager at the foot (no "N of M" at the top)', async () => {
   const p = await open('jperez'); await p.goto(BASE + '/#/DenialIntelligence'); await p.waitForSelector('.ui-qt__row');
   const heads = await p.$$eval('.ui-qt__table th', ths => ths.map(t => t.innerText.trim()));
-  assert.deepEq(heads, ['Denial', 'Consumer', 'Payer', 'Service', 'Decision', 'Status', 'Next step', 'Deadline', 'Owner']);
+  assert.deepEq(heads, ['Case', 'Payer', 'Decision', 'Status', 'Next step', 'Deadline', 'Suggestions']);
   const rows = await p.$$eval('.ui-qt__row', rs => rs.map(r => ({ id: r.dataset.rowId, text: r.innerText, link: (r.querySelector('a') || {}).getAttribute && r.querySelector('a').getAttribute('href'), chips: [...r.querySelectorAll('[data-verification]')].map(c => c.dataset.verification) })));
   assert.eq(rows.length, 4); assert.deepEq(rows.map(r => r.link), ['#/DenialCase?id=R-0408', '#/DenialCase?id=R-0402', '#/DenialCase?id=R-0388', '#/DenialCase?id=R-0384']);
   assert.match(rows[0].text, /DI-0408/); for (const r of rows) assert.ok(r.chips.length >= 1, 'a source chip on the deadline of ' + r.id);
   assert.ok(!/Demo: receive|Advance the clock/i.test(await txt(p)), 'no demo buttons on the screen (the dock has them)');
-  const labels = await p.$$eval('#root .ui-fsel__l', ls => ls.map(l => l.innerText.trim())); assert.deepEq(labels, ['Status', 'Decision type', 'Payer', 'Service', 'Assigned clinician', 'Deadline', 'Next step', 'ASAM dimension']);
+  const labels = await p.$$eval('#root .ui-fsel__l', ls => ls.map(l => l.innerText.trim())); assert.deepEq(labels, ['Status'], 'R6: search, Status and a Filters button on first sight');
+  await p.getByRole('button', { name: 'Filters' }).click(); const fx = p.getByRole('dialog'); await fx.waitFor(); assert.deepEq(await fx.locator('.ui-fsel__l').allInnerTexts(), ['Decision type', 'Payer', 'Service', 'Assigned clinician', 'Deadline', 'Next step', 'ASAM dimension'], 'the other filters are in the Filters drawer'); await p.keyboard.press('Escape'); await fx.waitFor({ state: 'detached' });
   assert.ok(await p.locator('.ui-fsearch').count() === 1, 'search');
   // no "N of M" count at the top; the pager sits under the table with 10, 25, 50, 100
   assert.ok(!(await p.locator('.ui-fcount').count()) || !/\d+ of \d+/.test(await p.locator('.ui-fcount').innerText()), 'no N of M in the filter bar');
@@ -31,16 +32,16 @@ await T.test('queue (artifact layout): nine columns, four open cases sorted by d
   await pg.locator('select').selectOption('10'); await p.waitForTimeout(250); assert.match(await hash(p), /size=10/, 'the page size is in the URL'); assert.match(await pg.innerText(), /Showing 1–4 of 4 denials/);
   await p.getByRole('button', { name: /^Deadline/ }).click(); await p.waitForTimeout(200);
   assert.eq((await p.$$eval('.ui-qt__row', rs => rs[0].dataset.rowId)), 'DI-0384', 'sorting by deadline descending');
-  await p.selectOption('#di-f-decision', 'partial'); await p.waitForTimeout(250);
+  await p.getByRole('button', { name: /^Filters/ }).click(); await fx.waitFor(); await p.selectOption('#di-fx-decision', 'partial'); await p.waitForTimeout(250);
   assert.eq(await p.$$eval('.ui-qt__row', rs => rs.length), 2, 'the Decision type filter'); assert.match(await hash(p), /decision=partial/, 'the filter is in the URL');
-  await p.selectOption('#di-f-decision', ''); await p.waitForTimeout(150);
+  await p.selectOption('#di-fx-decision', ''); await p.waitForTimeout(150);
   // the Decision date card: this week holds three decisions (Oct 27, 27, 28), before this week one (Oct 22), today none
   assert.match(await p.locator('.ui-datecard').innerText(), /Decision date[\s\S]*Any dates/);
   await p.getByRole('button', { name: 'This week', exact: true }).click(); await p.waitForTimeout(250); assert.eq(await p.$$eval('.ui-qt__row', rs => rs.length), 3); assert.match(await hash(p), /from=2026-10-26&to=2026-11-01/);
   await p.getByRole('button', { name: 'Before this week', exact: true }).click(); await p.waitForTimeout(250); assert.deepEq(await p.$$eval('.ui-qt__row', rs => rs.map(r => r.dataset.rowId)), ['DI-0384']);
   await p.getByRole('button', { name: 'Today', exact: true }).click(); await p.waitForTimeout(250); assert.eq(await p.$$eval('.ui-qt__row', rs => rs.length), 0); assert.match(await txt(p), /Nothing matches/); assert.match(await p.locator('.ui-pager').innerText(), /No denials/);
   await p.getByRole('button', { name: 'Today', exact: true }).click(); await p.waitForTimeout(250); assert.eq(await p.$$eval('.ui-qt__row', rs => rs.length), 4, 'pressing the lit range clears it');
-  await shot(p, 'queue-1440'); assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();
+  await p.keyboard.press('Escape'); await shot(p, 'queue-1440'); assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();
 });
 
 await T.test('old routes keep working and hand over: Partials, InfoRequest, PeerBrief -> the case; Partials (no id) -> the queue filtered', async () => {
@@ -57,12 +58,12 @@ await T.test('S5 by clicking: D.W. partial -> what Sentara said, evidence, all p
   await reset('canvas');
   const p = await open('jperez'); await p.goto(BASE + '/#/DenialIntelligence'); await p.waitForSelector('.ui-qt__row');
   await p.getByRole('link', { name: /R-0402/ }).first().click(); await p.waitForSelector('.d-menu');
-  assert.match(await txt(p), /D\.W\., 15[\s\S]*Partial approval/); assert.match(await txt(p), /Recommended next steps[\s\S]*0 of 7 done/);
+  assert.match(await txt(p), /D\.W\., 15[\s\S]*Partial approval/); assert.match(await txt(p), /What Psyflo would do[\s\S]*0 suggestions included of 9/);
   await p.getByRole('link', { name: /^What Sentara said/ }).click(); assert.match(await txt(p), /Decision details[\s\S]*Document[\s\S]*Evidence missing — verify the document reference/);
   await p.getByRole('link', { name: /^Clinical evidence/ }).click(); assert.match(await txt(p), /Evidence missing — verify what is likely to happen at a lower level of care/); assert.match(await txt(p), /Urine drug screen · THC positive/);
-  await p.getByRole('link', { name: /^Overview/ }).click(); await p.locator('#d-paths > summary').click(); const opt = await txt(p);
+  await p.getByRole('link', { name: /^Overview/ }).click(); await p.getByRole('button', { name: 'All paths', exact: true }).click(); const opt = await p.getByRole('dialog').innerText();
   assert.match(opt, /Accept decision/); assert.match(opt, /Prepare peer-to-peer/); assert.match(opt, /Payer rule not verified/); assert.match(opt, /Not available here \(2\)/);
-  await p.locator('#d-paths .d-opt').filter({ hasText: 'Prepare peer-to-peer' }).getByRole('button', { name: 'Open' }).click(); await p.waitForSelector('#d-h-p2p');
+  await p.getByRole('dialog').locator('.d-opt').filter({ hasText: 'Prepare peer-to-peer' }).getByRole('button', { name: 'Open' }).click(); await p.waitForSelector('#d-h-p2p');
   await p.getByRole('button', { name: /Ask Sentara for a peer-to-peer/ }).click(); await p.getByRole('dialog').getByRole('button', { name: 'Log the request' }).click(); await p.waitForTimeout(700);
   await p.getByRole('button', { name: 'Draft from records' }).click(); await p.waitForTimeout(700);
   assert.match(await txt(p), /Evidence missing — verify what is likely to happen at a lower level of care/); assert.match(await txt(p), /Simulated/);
@@ -129,7 +130,7 @@ await T.test('admin: the queue and the case show status and deadlines; no clinic
   await p.goto(BASE + '/#/DenialCase?id=R-0408&section=docreq'); await p.waitForSelector('.d-menu'); assert.ok((await lockLabels(p)).some(l => /^Needs clinician/.test(l)), 'a lock icon says Needs clinician'); assert.eq(await p.getByRole('button', { name: /Record the request/ }).count(), 0);
   await p.goto(BASE + '/#/DenialCase?id=R-0408&section=action&action=info'); await p.waitForSelector('.d-menu'); assert.eq(await p.getByRole('button', { name: 'Draft from records' }).count(), 0, 'no draft button for admin'); assert.ok((await lockLabels(p)).some(l => /^Needs clinician/.test(l)), 'a lock icon says Needs clinician');
   await p.goto(BASE + '/#/DenialCase?id=R-0408'); await p.waitForSelector('.d-menu');
-  for (const n of ['Analyze Denial', 'Identify Missing Evidence', 'Request Additional Documentation', 'Generate Appeal Draft', 'Generate Peer-to-Peer Script', 'Prepare Reconsideration']) assert.ok(await p.getByRole('button', { name: new RegExp('^' + n) }).isDisabled(), n + ' is locked for the administrator');
+  for (const n of ['Analyze Denial', 'Identify Missing Evidence', 'Request Additional Documentation', 'Generate Appeal Draft', 'Generate Peer-to-Peer Script', 'Prepare Reconsideration', 'Preview packet', 'Review suggestions']) assert.eq(await p.getByRole('button', { name: new RegExp('^' + n) }).count(), 0, n + ' is not offered to the administrator (R6: no clinical steps, no suggestions)');
   assert.ok(!(await p.getByRole('button', { name: /^Mark for Clinical Review/ }).isDisabled()), 'marking a case for review is not clinical text');
   await p.getByRole('button', { name: /^Mark for Clinical Review/ }).click(); await p.getByRole('dialog').waitFor(); await p.fill('#d-rvn', 'Please look at this one first.'); await p.getByRole('dialog').getByRole('button', { name: 'Mark for Clinical Review' }).click(); await p.waitForTimeout(800);
   assert.match(await txt(p), /Clinical review · Jordan Perez/); assert.ok(!/Please look at this one first/.test(await p.content()), 'the reviewer note is not in the administrator page');
@@ -151,15 +152,15 @@ await T.test('keyboard and dialogs: tabs and rows are reachable, the dialog trap
   assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();
 });
 
-await T.test('overview (artifact layout): header card with the process line, left menu, seven steps; Analyze opens a slide-over and fills "Where the denial is weak"; the review and the documentation request are saved', async () => {
+await T.test('overview (R6 layout): header card with the process line, left menu, the suggestions first, the strip, the packet and More; Analyze opens a side drawer and fills "Where the denial is weak"; the review and the documentation request are saved', async () => {
   await reset('canvas');
   const p = await open('jperez'); await p.goto(BASE + '/#/DenialCase?id=R-0408'); await p.waitForSelector('.d-menu');
   const hd = await p.locator('.ui-hcard').innerText(); assert.match(hd, /K\.T\., 16/); assert.match(hd, /Information request/); assert.match(hd, /Update status/); assert.match(hd, /Call payer · voice agent/); assert.match(hd, /Open in Authorizations/); assert.match(hd, /Open in Lauris/);
   assert.deepEq(await p.$$eval('.d-steps li b', bs => bs.map(b => b.innerText)), ['Decision received', 'Clinical review', 'Response prepared', 'Submitted', 'Payer response', 'Resolved']); assert.eq(await p.locator('.d-steps [aria-current=step]').count(), 1);
   const menu = await p.locator('.d-menu').innerText(); for (const w of ['REVIEW', 'Overview', 'What Anthem asked', 'Clinical evidence', 'Where the denial is weak', 'RESPOND', 'Reply to Anthem', 'Appeal draft', 'Peer-to-peer script', 'Reconsideration', 'Documentation request']) assert.ok(menu.includes(w), 'menu has ' + w);
-  assert.deepEq(await p.$$eval('.d-act__t b', bs => bs.map(b => b.innerText)), ['Analyze Denial', 'Identify Missing Evidence', 'Request Additional Documentation', 'Generate Appeal Draft', 'Generate Peer-to-Peer Script', 'Prepare Reconsideration', 'Mark for Clinical Review']);
-  assert.match(await txt(p), /What Anthem asked[\s\S]*What the chart shows[\s\S]*Payer correspondence/i); assert.match(await txt(p), /Where the denial is weak[\s\S]*Not analyzed yet/); assert.ok(await p.locator('#d-hist').count() === 1 && !(await p.locator('#d-hist').getAttribute('open')), 'History is collapsed');
-  assert.ok(await p.locator('mark.d-miss, .ui-evidence').count() >= 1, 'the chart facts carry their sources');
+  assert.deepEq(await p.$$eval('.d-tools .ui-btn', bs => bs.map(b => b.innerText)), ['Analyze Denial', 'Identify Missing Evidence', 'Request Additional Documentation', 'Mark for Clinical Review', 'All paths', 'Anthem guidance'], 'the seven steps are a row of More buttons now; drafts are in the Packet card');
+  assert.match(await txt(p), /What Psyflo would do[\s\S]*Where the case stands[\s\S]*Packet[\s\S]*More/); assert.match(await p.locator('.d-menu').innerText(), /Where the denial is weak\s*Not analyzed/); assert.ok(await p.locator('#d-hist-b').count() === 1 && !(await p.locator('[role=dialog]').count()), 'History is a menu button that opens a drawer; nothing is open');
+  await p.getByRole('link', { name: /^What Anthem asked/ }).click(); await p.waitForTimeout(250); assert.match(await txt(p), /What Anthem asked[\s\S]*What the chart shows[\s\S]*Payer correspondence/i); assert.ok(await p.locator('mark.d-miss, .ui-evidence').count() >= 1, 'the chart facts carry their sources'); await p.getByRole('link', { name: /^Overview/ }).click(); await p.waitForTimeout(250);
   await p.getByRole('button', { name: /^Analyze Denial/ }).first().click(); const dr = p.getByRole('dialog'); await dr.waitFor(); assert.match(await dr.innerText(), /Analyze Denial[\s\S]*rule-based[\s\S]*Simulated/); assert.match(await dr.innerText(), /Strong|Gap/);
   await dr.getByRole('button', { name: 'Open the full analysis' }).click(); await p.waitForTimeout(400);
   const w = await txt(p); assert.match(w, /Where the denial is weak[\s\S]*Analyzed Oct 29/); assert.match(w, /Gap[\s\S]*Not documented: D1: a withdrawal screen/); assert.match(w, /Risk[\s\S]*illustrative samples/); assert.match(w, /Strong[\s\S]*The record answers/);
@@ -169,7 +170,7 @@ await T.test('overview (artifact layout): header card with the process line, lef
   assert.match(await txt(p), /Requested from Referral partner[\s\S]*Psyflo sends no message[\s\S]*Requested[\s\S]*D1: a withdrawal screen/);
   await p.getByRole('button', { name: 'Mark received' }).click(); await p.waitForTimeout(500); assert.match(await txt(p), /1 of 1 received[\s\S]*Received/);
   await p.getByRole('link', { name: /^Overview/ }).click(); await p.waitForTimeout(250); await p.getByRole('button', { name: /^Mark for Clinical Review/ }).click(); const rv = p.getByRole('dialog'); await rv.waitFor(); assert.match(await rv.innerText(), /What the reviewer will find[\s\S]*Analyze Denial[\s\S]*Request Additional Documentation/);
-  await rv.getByRole('button', { name: 'Mark for Clinical Review' }).click(); await p.waitForTimeout(700); const o = await txt(p); assert.match(o, /Clinical review · Jordan Perez/); assert.match(o, /3 of 7 done|4 of 7 done/);
+  await rv.getByRole('button', { name: 'Mark for Clinical Review' }).click(); await p.waitForTimeout(700); const o = await txt(p); assert.match(o, /Clinical review · Jordan Perez/); assert.match(o, /Analyzed Oct 29/);
   const hs = await p.locator('.d-steps').innerText(); assert.match(hs, /Oct 28/); await shot(p, 'overview-kt-1440'); assert.deepEq(p.errs, [], p.errs.join('|')); await p.ctx.close();
 });
 
