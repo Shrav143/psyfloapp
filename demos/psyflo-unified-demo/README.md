@@ -79,6 +79,8 @@ Other fixtures: `base-live`, `base-canvas`, `tw-link-submitted`, `tw-eligible`, 
 | Family | `/f/<token>`, `/parent/<token>/<Screen>` | Checklist home, one task per screen, English and Español, signature mode per document |
 | School | school sign-in | "Harvest needs" card, status text only, a four-section referral form |
 
+**Suggested by Psyflo (R6).** Authorizations and Denial Intelligence lead with a short, ranked list of what would make the request or the payer reply stronger, built from stored records only (`web/js/shared/recs.js`; actions `recs.*` in `server/psyflo/actions/x-recs.js`). A clinician includes, dismisses or adds context to each suggestion, and adds their own; Psyflo never writes clinical text, so a suggestion with no stored record asks for the clinician's own words first. Everything beyond the list opens in a side drawer or pop-up (suggestions, payer-criteria check, packet preview, level of care, filters, history), never a new page. The "+n pts", "applied" and "success" figures are an illustrative sample, labelled Simulated. Supervisors and administrators see no suggestion content. The same decisions show in the extension panel (below).
+
 Every historic route id still resolves; 14 redirects send old ids to the new screens, and `legacy=1` on a URL opens the old one. See `docs/deliverables/03-ux-before-and-after.md`.
 
 ## The extension
