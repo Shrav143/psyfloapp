@@ -81,6 +81,14 @@ await T.test('units gate: a daily note that enters units is refused (and kept as
   await reset('canvas');
 });
 
+await T.test('Add Session lists the Payer Reply form (a note-type form: Process Form copies it to the Active File, no signature path; its boxes are typed by a person or by the panel)', async () => {
+  const pick = (await lget('/consumers/4102/session', 'jperez')).text; assert.match(pick, /<a href="\/consumers\/4102\/session\/payer-reply">Payer Reply · appeal or information request<span>payer-reply<\/span><\/a>/);
+  assert.eq(pick.split('<div class="picker">')[1].split('</div>')[0].split('<a ').length - 1, 12, 'twelve forms, the payer reply last');
+  const r = await lpost('/consumers/4102/session/payer-reply', 'jperez', { action: 'process', f2: 'Sentara: 110 of 150 units offered', f3: 'Appeal' }); assert.match(r.loc, /\/consumers\/4102\?tab=active&processed=\d+/);
+  const pg = (await lget(r.loc, 'jperez')).text; assert.eq(flash(pg), 'processed'); assert.match(pg, /Payer Reply · appeal or information request processed[\s\S]*copied to the Active File/); assert.noMatch(pg, /sent to Forms to Approve/);
+  const sess = (await snap()).sessions.filter(x => x.no === 4102 && x.form === 'payer-reply').at(-1); assert.eq(sess.status, 'processed'); assert.ok(!sess.approve); assert.eq(sess.values['Reply type'], 'Appeal');
+  const act = (await lget('/consumers/4102?tab=active', 'jperez')).text; assert.match(act, /Payer Reply · appeal or information request<\/td><td>processed/);
+});
 await T.test('the Lauris pages print the demo clock; a day advance moves Lauris with Psyflo (new pages too)', async () => {
   let s = await state('jperez'); const us = d => d.slice(5, 7) + '/' + d.slice(8) + '/' + d.slice(0, 4);
   for (const p of ['/consumers', '/authorizations', '/time', '/consumers/3310?tab=auth']) assert.match((await lget(p, 'jperez')).text, new RegExp(`id="lauris-clock"[^>]*>${us(s.today)} \\d\\d:\\d\\d`), p);

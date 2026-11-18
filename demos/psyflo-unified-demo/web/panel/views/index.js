@@ -1,5 +1,5 @@
 // The panel view registry (E5). One module per view; web/panel/core.js reads the page, picks a view and paints it.
-// Registered views: home · scribe · review · enhance · authorize · incident · docs. (Track Time was removed on Nov 11.)
+// Registered views: home · scribe · review · enhance · authorize · denial · incident · docs. (Track Time was removed on Nov 11.)
 //
 // A view module default-exports a plain object:
 //
@@ -41,16 +41,20 @@
 //   ctx.ui                  the UI kit (web/js/ui/index.js): chip, statusChip, evidenceChip, draftReview, progress ...
 //   ctx.parts               panel fragments (web/panel/parts.js): banner, tile, box, srcChips, checks, accordion, sourceChips ...
 //
+// "Suggested by Psyflo" (R6): web/panel/lib/recs.js draws the recommendation cards. A view that shows them calls recBlock(ctx, {...}) in html() and spreads
+// recActs / recIns / recChs into its acts / ins / chs (authorize, denial and enhance do). The cards use ctx.st.rb and ctx.st.rbx for their state.
+//
 // Add a new view: write views/<id>.js, import it below, add it to VIEWS. A view is never imported by another view.
 import home from './home.js';
 import scribe from './scribe.js';
 import review from './review.js';
 import enhance from './enhance.js';
 import authorize from './authorize.js';
+import denial from './denial.js';
 import incident from './incident.js';
 import docs from './docs.js';
 
-export const VIEWS = { home, scribe, review, enhance, authorize, incident, docs };
+export const VIEWS = { home, scribe, review, enhance, authorize, denial, incident, docs };
 export const VIEW_IDS = Object.keys(VIEWS);
 export const viewOf = id => VIEWS[id] || null;
 export default VIEWS;

@@ -18,15 +18,15 @@ import { VIEWS } from './views/index.js';
 const { I, banner, legend, FORM_NAME } = parts;
 const root = document.getElementById('panel');
 const statusEl = document.getElementById('px-status');
-export const P = { page: null, event: null, ui: {}, vst: {}, view: null, rec: null, logo: '', seen: null };
+export const P = { page: null, event: null, ui: {}, vst: {}, view: null, rec: null, logo: '', seen: null, link: { ok: null, at: 0, miss: 0 } };   // link: does the page bridge answer? (ping below)
 window.__psyfloPanel = P;
 const framed = window.parent !== window;
 
 // ---------------------------------------------------------------- transport to the page bridge
 let seq = 0; const waiting = new Map();
 function send(msg) { if (framed) window.parent.postMessage(Object.assign({ psyflo: 'panel' }, msg), '*'); }
-export function call(cmd, args = {}) {
-  return new Promise(res => { const id = ++seq; waiting.set(id, res); send(Object.assign({ cmd, id }, args)); setTimeout(() => { if (waiting.has(id)) { waiting.delete(id); res({ error: 'The Lauris page did not answer' }); } }, 20000); });
+export function call(cmd, args = {}, { timeout = 20000 } = {}) {
+  return new Promise(res => { const id = ++seq; waiting.set(id, res); send(Object.assign({ cmd, id }, args)); setTimeout(() => { if (waiting.has(id)) { waiting.delete(id); res({ error: 'The Lauris page did not answer' }); } }, timeout); });
 }
 window.addEventListener('message', e => {
   if (e.source !== window.parent) return;
@@ -46,8 +46,25 @@ function onPresent(d) {
 window.addEventListener('message', e => { if (e.source === window || e.source === window.parent || e.source === window.top) onPresent(e.data); });
 try { new BroadcastChannel('psyflo-present').onmessage = e => onPresent(e.data); } catch (e) { }
 
+// ---------------------------------------------------------------- the link to the page bridge (what "Lauris connected" means)
+// The header and the Lauris top-bar chip say "connected" only while the bridge answers. The panel pings it with a plain `read` every few seconds
+// (the bridge stamps the Lauris page on each answer; server/lauris/site.js turns the stamp into the chip). Two missed pings in a row flip both to
+// "not connected"; the next answer flips them back and re-reads the page. Typing is refused while the bridge is silent.
+const PING_MS = 3000, PING_WAIT = 2200;
+const linkUp = () => P.link.ok !== false;
+async function ping() {
+  if (!framed || document.hidden) return;
+  const r = await call('read', {}, { timeout: PING_WAIT });
+  const ok = !!(r && !r.error && r.url); const was = P.link.ok;
+  if (ok) { P.link = { ok: true, at: Date.now(), miss: 0 }; if (was === false) { const h = await call('hello'); if (h && h.page) onPage(h.page, h.event); else draw(); } }
+  else { P.link.miss = (P.link.miss || 0) + 1; if (P.link.miss >= 2 && was !== false) { P.link.ok = false; draw(); } }
+}
+setInterval(ping, PING_MS);
+const linkHTML = () => linkUp() ? '' : banner('r', '<b>The Lauris page is not answering.</b> Nothing is read or typed until it does. Reload the Lauris tab; if the extension was turned off, turn it on.', { icon: I.no });
+
 // ---------------------------------------------------------------- page, session, identity
 async function onPage(page, event) {
+  P.link = { ok: true, at: Date.now(), miss: 0 };   // the bridge just sent a page: it is answering
   const changed = !P.page || P.page.url !== page.url;
   P.page = page;
   if (event) P.event = event; else if (changed) P.event = null;
@@ -105,7 +122,7 @@ export function canDo(cap, scope) {
 }
 
 // ---------------------------------------------------------------- the view router
-const SESSION_VIEW = { screening: 'scribe', cna: 'scribe', dpn: 'scribe', weekly: 'scribe', collateral: 'scribe', incident: 'incident', isp: 'authorize', 'sra-initial': 'authorize', 'sra-continued': 'authorize', quarterly: 'docs', discharge: 'docs' };
+const SESSION_VIEW = { screening: 'scribe', cna: 'scribe', dpn: 'scribe', weekly: 'scribe', collateral: 'scribe', incident: 'incident', isp: 'authorize', 'sra-initial': 'authorize', 'sra-continued': 'authorize', quarterly: 'docs', discharge: 'docs', 'payer-reply': 'denial' };
 export function autoView(p) {
   if (!p) return 'home';
   switch (p.kind) {
@@ -142,6 +159,7 @@ const openApp = hash => window.open(appURL(hash), '_blank', 'noopener');
 // Type boxes into the open form (yellow) and record what was typed and from which sources (panel.filled). The person presses
 // Process Form. Nothing is typed when the page shows a different student than Psyflo's record (the hard stop).
 export async function fill(boxes, { form, client, sources, animate = true } = {}) {
+  if (!linkUp()) { flash('The Lauris page is not answering. Nothing was typed.', 'r'); return { error: 'not connected' }; }
   if (identityStop()) { flash('Wrong student? Nothing was typed.', 'r'); return { error: 'wrong patient' }; }
   if (notOnCaseload()) { flash('Not on your caseload. Nothing was typed.', 'r'); return { error: 'not on caseload' }; }
   const clean = (boxes || []).filter(b => b && b.value != null && String(b.value) !== '' && !b.missing && !/^Evidence missing/.test(String(b.value)));
@@ -168,9 +186,18 @@ const ctx = {
 export { ctx };
 
 // ---------------------------------------------------------------- chrome
-function header(title, { connected = true } = {}) {
-  const me = meFromPage();
-  return `<header class="ph"><span class="logo">${P.logo}</span><div class="pt"><h1 title="${esc(title)}">${esc(title)}</h1><span><i class="${connected ? '' : 'off'}"></i>${connected ? 'Lauris connected' : 'Waiting for Lauris'}</span></div>${me.role ? `<span class="rolechip">${esc(roleLabel(me.role))}</span>` : ''}</header>`;
+// the name of the Lauris page the bridge read ("Continued stay", "Consumers"): the header says which page the panel is connected to
+const KIND_NAME = { login: 'Sign in', consumers: 'Consumers', record: 'Consumer record', 'pick-form': 'Add Session', approvals: 'Forms to Approve', approval: 'Approval preview', saved: 'Saved Session', rejected: 'Rejected Forms', surveys: 'Surveys', 'new-consumer': 'New consumer', 'portal-form': 'Payer portal', 'portal-confirmation': 'Payer portal' };
+export function pageName(p) {
+  if (!p) return '';
+  if (p.kind === 'session' && p.form) return FORM_NAME[p.form.type] || p.form.title || 'Form';
+  return KIND_NAME[p.kind] || String(p.title || 'Lauris page').replace(/\s*[—-]\s*Lauris Online \(mock\)\s*$/, '');
+}
+// connected: true | false | undefined (undefined = what the ping last saw). The line is a fact: "Lauris connected · <page>" only while the bridge answers.
+function header(title, { connected } = {}) {
+  const me = meFromPage(); const up = connected === undefined ? linkUp() : connected; const nm = pageName(P.page);
+  const line = up ? `Lauris connected${nm ? ' · ' + nm : ''}` : connected === false && !P.page ? 'Waiting for Lauris' : 'Lauris not connected';
+  return `<header class="ph"><span class="logo">${P.logo}</span><div class="pt"><h1 title="${esc(title)}">${esc(title)}</h1><span class="lk" data-link="${up ? 'ok' : 'down'}"><i class="${up ? '' : 'off'}"></i><span class="lk-t">${esc(line)}</span></span></div>${me.role ? `<span class="rolechip">${esc(roleLabel(me.role))}</span>` : ''}</header>`;
 }
 const foot = () => `<div class="foot"><i></i>Demo data · nothing is real · reads only the page you have open</div>`;
 function docStatus(p) {
@@ -186,8 +213,8 @@ function patientBar(p, c) {
   const sch = c ? M.school(S(), c.school) : null;
   return `<div class="pbar" role="group" aria-label="Open student"><b>${esc(k.initials || (c && c.initials) || '')}</b><span class="m">Harvest #${esc(k.no)}</span>${sch && sch.name ? `<span class="m">${esc(sch.name)}</span>` : ''}<span class="m">${esc(k.program || 'TDT')}</span>${p.kind === 'session' && p.form ? `<span class="m">· ${esc(FORM_NAME[p.form.type] || p.form.title || 'form')}</span>` : ''}<span class="st">${docStatus(p)}</span></div>`;
 }
-function page(title, body, { legendOn = false, connected = true, p = null, c = null, back = false } = {}) {
-  return header(title, { connected }) + (p ? patientBar(p, c) : '') + (legendOn ? legend() : '') + (back ? backRow() : '') + `<div class="body">${flashHTML()}${body}</div>` + foot();
+function page(title, body, { legendOn = false, connected, p = null, c = null, back = false } = {}) {
+  return header(title, { connected }) + (p ? patientBar(p, c) : '') + (legendOn ? legend() : '') + (back ? backRow() : '') + `<div class="body">${linkHTML()}${flashHTML()}${body}</div>` + foot();
 }
 const backRow = () => `<div class="back"><button type="button" data-act="__home">${I.back}<span>Home</span></button></div>`;
 
@@ -218,12 +245,12 @@ function viewHTML() {
   const c = clientForPage();
   const vid = activeViewId(); const v = VIEWS[vid];
   if (v.cap && !canDo(v.cap)) {
-    const why = { scanEnhance: 'Scan & Enhance is for licensed clinical staff.', 'drafts.clinical': 'Authorization drafts are for clinicians.', 'notes.own': 'This is for the staff who write the notes.' }[v.cap] || 'Your role does not use this part of the panel.';
+    const why = { scanEnhance: 'Scan & Enhance is for licensed clinical staff.', 'drafts.clinical': 'Authorization drafts are for clinicians.', 'payer.reply': 'Denial packets and suggestions are for the treating clinician.', 'notes.own': 'This is for the staff who write the notes.' }[v.cap] || 'Your role does not use this part of the panel.';
     return page(v.label, banner('n', esc(why), { icon: I.lock }) + (vid !== 'home' ? '<button class="btn o" data-act="__home">Back to home</button>' : ''), { p, c });
   }
   let body = ''; try { body = v.html(ctx) || ''; } catch (e) { console.error(e); body = `<pre style="white-space:pre-wrap;color:var(--danger-fg)">${esc(e.stack || e)}</pre>`; }
   const title = v.title ? v.title(ctx) : v.label;
-  return header(title) + patientBar(p, c) + (v.legend === false ? '' : legend()) + (vid !== 'home' ? backRow() : '') + `<div class="body">${flashHTML()}${body}</div>` + foot();
+  return header(title) + patientBar(p, c) + (v.legend === false ? '' : legend()) + (vid !== 'home' ? backRow() : '') + `<div class="body">${linkHTML()}${flashHTML()}${body}</div>` + foot();
 }
 
 // ---------------------------------------------------------------- one review card open at a time (the 400 px budget: <= 2 screens)
@@ -304,7 +331,7 @@ root.addEventListener('change', e => { const el = e.target.closest('[data-ch]');
 // ---------------------------------------------------------------- boot
 (async function boot() {
   await api.init('');
-  P.logo = (await fetch('/js/logo.svg').then(r => r.text())).replace(/width="\d+" height="\d+"/, 'width="78" height="26"');
+  P.logo = (await fetch('/js/logo.svg').then(r => r.text())).replace(/width="\d+" height="\d+"/, 'width="68" height="23"');
   api.onChange(() => draw());
   if (framed) {
     send({ cmd: 'hello' });

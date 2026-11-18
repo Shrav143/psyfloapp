@@ -207,7 +207,7 @@ for (const g of PHONE) {
 }
 
 // ------------------------------------------------------------------------------------------------ 4. the panel in its in-page mode, 400 px beside the mock Lauris
-const PANEL = [['jperez', '/consumers', 'home'], ['khale', '/consumers', 'home (direct support)'], ['khale', '/consumers/3310/session/dpn', 'daily note'], ['jperez', '/consumers/3310/session/weekly', 'weekly'], ['jperez', '/consumers/3310/session/sra-continued', 'continued stay'], ['jperez', '/approvals', 'forms to approve'], ['khale', '/time', 'lauris time page']];
+const PANEL = [['jperez', '/consumers', 'home'], ['khale', '/consumers', 'home (direct support)'], ['khale', '/consumers/3310/session/dpn', 'daily note'], ['jperez', '/consumers/3310/session/weekly', 'weekly'], ['jperez', '/consumers/3310/session/sra-continued', 'continued stay'], ['jperez', '/approvals', 'forms to approve'], ['khale', '/time', 'lauris time page'], ['jperez', '/consumers/4102/session/sra-continued', 'suggested by psyflo (continued stay)'], ['jperez', '/consumers/4102/session/payer-reply?request=R-0402', 'denial packet']];
 if (on('panel')) {
   const { ctx, page } = await ctxFor({});
   for (const [as, p, name] of PANEL) {

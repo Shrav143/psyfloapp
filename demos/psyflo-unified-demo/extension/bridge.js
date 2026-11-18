@@ -27,7 +27,8 @@
   const FORM_TITLES = {
     'admission screening': 'screening', 'asam multidimensional assessment': 'cna', 'individual treatment plan': 'isp',
     'daily progress note': 'dpn', 'weekly family contact': 'weekly', 'monthly collateral': 'collateral', 'quarterly report': 'quarterly',
-    'incident report': 'incident', 'initial service authorization request': 'sra-initial', 'continued stay request': 'sra-continued', 'discharge summary': 'discharge'
+    'incident report': 'incident', 'initial service authorization request': 'sra-initial', 'continued stay request': 'sra-continued', 'discharge summary': 'discharge',
+    'payer reply': 'payer-reply'
   };
   const formFromTitle = t => { t = lc(t); for (const k in FORM_TITLES) if (t.includes(k)) return FORM_TITLES[k]; return null; };
 
@@ -177,7 +178,15 @@
   }
 
   // ---------- transport ----------
+  // Every answer to the panel stamps the page (data-psyflo-link = the time of the last answer). The Lauris top-bar chip reads the stamp: green
+  // "Psyflo extension · connected" while it is fresh, "not connected" when the bridge stops answering. The panel pings with `read` every few seconds.
+  const stamp = () => { try { document.documentElement.setAttribute('data-psyflo-link', String(Date.now())); } catch (e) { } };
+  // A silence switch for the demo and the tests: with data-psyflo-silent on the page the bridge answers nothing and pushes nothing, which is exactly what a
+  // closed or crashed extension looks like to the panel (its header and the Lauris chip must then say "not connected"). Remove the attribute and it answers again.
+  const silent = () => document.documentElement.hasAttribute('data-psyflo-silent');
   async function handle(msg) {
+    if (silent()) return new Promise(() => { });
+    stamp();
     switch (msg.cmd) {
       case 'read': return readPage();
       case 'hello': last = ''; return { page: readPage(), event: lastEvent };
@@ -206,6 +215,7 @@
 
   let last = ''; let lastEvent = null;
   function announce(extra) {
+    if (silent()) return;
     const page = readPage(); const sig = JSON.stringify(page);
     if (sig === last && !extra) return; last = sig;
     push(Object.assign({ type: 'page', page }, extra || {}));

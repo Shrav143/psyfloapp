@@ -65,4 +65,4 @@ export const pluralize = (n, one, many) => `${n} ${n === 1 ? one : many || one +
 export const usDate = iso => { const [y, m, d] = String(iso).slice(0, 10).split('-'); return `${m}/${d}/${y}`; };
 export const money = n => String(n);
 
-export const FORM_NAME = { screening: 'Admission screening', cna: 'ASAM assessment', isp: 'Treatment plan (ISP)', dpn: 'Daily progress note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'Initial request (SRA)', 'sra-continued': 'Continued stay', discharge: 'Discharge summary', 'new-consumer': 'New consumer', survey: 'Assessment' };
+export const FORM_NAME = { screening: 'Admission screening', cna: 'ASAM assessment', isp: 'Treatment plan (ISP)', dpn: 'Daily progress note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'Initial request (SRA)', 'sra-continued': 'Continued stay', discharge: 'Discharge summary', 'payer-reply': 'Payer reply', 'new-consumer': 'New consumer', survey: 'Assessment' };

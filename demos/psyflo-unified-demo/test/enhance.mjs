@@ -311,18 +311,20 @@ try {
     assert.eq(n1, n0 - 1, 'the excluded row leaves the count');
     const s = await state('jperez'); const m = s.evidence_marks.at(-1); assert.ok(m.excluded && m.by === 'jperez' && m.reason === 'visit with the supervisor');
   });
-  await T.test('Mode A on the open draft: scan, answer in your own words, approve, the changed boxes are typed (yellow)', async () => {
+  await T.test('Mode A on the open draft: scan, the findings are suggestion cards that ask in the clinician\'s own words (a card cannot be included without them, nothing is typed until Apply selected)', async () => {
     await p.goto(`${LAURIS}/login?as=jperez&next=${encodeURIComponent('/consumers/3315/session/dpn')}`); await p.waitForTimeout(1800);
     await p.fill('#lauris-form textarea >> nth=1', 'Observed J.T. in math. He worked well.');         // narrative box
     await p.waitForTimeout(700);
     await panel().getByRole('button', { name: 'Home' }).click();
     await panel().getByText('Scan & Enhance').first().click();
     await panel().getByRole('button', { name: 'Scan the draft' }).click();
-    await panel().getByText(/Finding 1 of/).waitFor();
+    await panel().locator('.prs').waitFor();
     const txt = (await frame().locator('#panel').innerText()).replace(/\s+/g, ' ');
-    assert.match(txt, /"observed" is in the note/); assert.match(txt, /What did you do with J\.T\.\?/i);
+    assert.match(txt, /Suggested by Psyflo/); assert.match(txt, /"observed" is in the note/); assert.match(txt, /What did you do with J\.T\.\?/i);
     await p.locator('#psyflo-slot').screenshot({ path: SHOTS + '/enhance-modeA.png' }).catch(() => { });
-    assert.ok(await panel().getByRole('button', { name: 'Approve and fill' }).isDisabled(), 'approve waits for every decision');
+    assert.ok(await panel().locator('.prc[data-rec="wording-narrative"]').getByRole('button', { name: 'Include' }).isDisabled(), 'a finding needs the clinician\'s own words before it can be included');
+    assert.ok(await panel().getByRole('button', { name: 'Apply selected' }).isDisabled(), 'nothing is typed until something is included and applied');
+    assert.eq(await p.inputValue('#lauris-form textarea >> nth=1'), 'Observed J.T. in math. He worked well.', 'the form is untouched');
   });
   await T.test('S4 in the panel: the request is built from real rows; missing evidence cannot be accepted; household stays out; Approve and fill types the counts', async () => {
     await reset('canvas');

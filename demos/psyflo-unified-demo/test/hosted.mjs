@@ -17,6 +17,7 @@
 //   flowC     ISP, SRA, Process Form, approval, Get Signature, Send
 //   dashboard R4: Patients | Documents | Staff in one page, the old Documentation ids redirect, an item's "Open in Lauris" icon opens the overlay (#vov, Close) at the form with the panel
 //   extension the panel home (Scribe, no Track Time) and the phone without a timer; who gets what
+//   recs      R6: Suggested by Psyflo in the panel (authorization path, Include, Apply selected typed in yellow), the Denial packet and the Payer Reply form, the connection chip
 //   dock      presenter dock: modes, scenario selector, role switcher, simulate, reset
 import { createRequire } from 'node:module'; import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path';
 const { chromium } = createRequire(import.meta.url)(process.env.PW || '/opt/node22/lib/node_modules/playwright/index.js');
@@ -599,7 +600,7 @@ async function extension() {
   const P = H.P();
   // the "psyflo" chip on the Lauris page turns the panel off and on (a virtual cookie and a page load)
   await H.L().locator('#psyflo-toggle').click();
-  ok(await until(async () => (await H.L().locator('#psyflo-frame').count()) === 0 && /off/.test(await H.L().locator('#psyflo-toggle').innerText().catch(() => '')), 10000), 'the psyflo chip hides the panel: the mock Lauris page keeps working without it');
+  ok(await until(async () => (await H.L().locator('#psyflo-frame').count()) === 0 && /not connected/.test(await H.L().locator('#psyflo-toggle').innerText().catch(() => '')), 10000), 'the psyflo chip hides the panel: the mock Lauris page keeps working without it');
   await H.L().locator('#psyflo-toggle').click(); await H.panelReady();
   const t = await P.locator('body').innerText();
   ok(/Scribe/.test(t) && !/Track Time/.test(t) && !/your timer|Confirm \d+ units/.test(t), 'the panel offers Scribe and no Track Time, timer or unit confirmation');
@@ -613,6 +614,36 @@ async function extension() {
   await S2.go('#/ExtHome'); await S2.lwait(null, /lauris\.invalid\/consumers/); await S2.panelReady();
   const st = await S2.P().locator('body').innerText(); ok(!/Track Time/.test(st) && /Scan & Enhance is for licensed clinical staff/.test(st), 'a supervisor sees no Track Time and gets the Scan & Enhance reason');
   S2.noErrors('supervisor'); await S2.close();
+}
+
+// ---------------------------------------------------------------- R6: "Suggested by Psyflo" in the panel beside the mock Lauris (a srcdoc frame over the virtual network), and the connection chip
+async function recs() {
+  console.log('recs · the panel with recommendations, the Payer Reply form and the connection chip');
+  const H = await fresh(); const { ui } = H;
+  await H.signIn('Clinician');
+  await H.go('#/ExtCase?client=DW'); await H.lwait(null, /4102\/session\/sra-continued/); await H.panelReady();
+  const P = H.P(), L = H.L();
+  await P.getByText('Suggested by Psyflo').first().waitFor({ timeout: 25000 });
+  ok(await until(async () => (await L.locator('#psyflo-toggle').innerText().catch(() => '')).trim() === 'Psyflo extension · connected', 15000), 'the Lauris chip says Psyflo extension · connected (the bridge answered a read)');
+  ok(/^Lauris connected · Continued/.test((await P.locator('.ph .lk').innerText()).trim()), 'the panel header names the connected page');
+  await P.locator('.prc[data-rec="level-cite"]').getByRole('button', { name: 'Include' }).click();
+  ok(await until(async () => (await P.locator('.prc[data-rec="level-cite"]').getAttribute('data-state')) === 'included', 10000), 'Include is recorded and the card shows it');
+  ok((await H.state()).rec_decisions.some(x => x.scope === 'auth' && x.ref === 'R-0402' && x.key === 'level-cite' && x.state === 'included'), 'the decision is in the Psyflo state the platform reads');
+  const dump = async () => (await P.locator('#panel').innerText().catch(() => '')).replace(/\s+/g, ' ').slice(0, 700);
+  await P.getByRole('button', { name: 'Apply selected' }).click();
+  const typed = await until(async () => /typed into the form/.test(await P.locator('#px-status').textContent().catch(() => '')), 30000, 300); ok(typed, 'Apply selected types the included sentence (the status line says so)' + (typed ? '' : ': ' + await dump()));
+  ok(/ratings support ASAM Level/.test(await L.locator('#lauris-form label:has-text("Level of care") + textarea').inputValue()) && await L.locator('#lauris-form .in.y').count() >= 1, 'the included sentence is typed into Level of care (yellow); nothing was pressed in Lauris');
+  await H.shot('recs-auth');
+  await P.getByRole('button', { name: 'Home' }).click(); await P.getByRole('button', { name: /Denial packet/ }).click(); await P.getByRole('button', { name: 'Open the Payer Reply form' }).waitFor({ timeout: 15000 });
+  await P.getByRole('button', { name: 'Open the Payer Reply form' }).click(); await H.lwait(null, /payer-reply/); await H.panelReady();
+  await P.getByText(/Denial packet · D\.W\./).first().waitFor({ timeout: 25000 });
+  await P.getByRole('button', { name: /^Draft the / }).click(); await P.getByRole('button', { name: 'Type into Lauris' }).waitFor();
+  ok(await until(async () => await P.getByRole('button', { name: 'Type into Lauris' }).isEnabled(), 15000), 'the packet is drafted from stored records');
+  await P.getByRole('button', { name: 'Type into Lauris' }).click(); await P.getByText(/boxes? typed into the form/).first().waitFor({ timeout: 30000 });
+  ok(/Sentara/.test(await L.locator('#lauris-form label:has-text("Payer decision") + input').inputValue()), 'the Payer Reply form holds the typed payer decision');
+  ok(await L.locator('#lauris-form .in.y').count() >= 3 && await L.locator('#flash, #lauris-flash').count() === 0, 'typed in yellow, nothing saved, nothing processed');
+  await H.shot('recs-denial');
+  H.noErrors(); await H.close();
 }
 
 // ---------------------------------------------------------------- the presenter dock: modes, scenario selector, role switcher, simulate, reset
@@ -665,7 +696,7 @@ async function dock() {
 }
 
 // ---------------------------------------------------------------- run
-const ORDER = [['static', null], ['roles', roles], ['narrow', narrow], ['auth', auth], ['denial', denial], ['analytics', analytics], ['settings', settings], ['referral', referral], ['dashboard', dashboard], ['flowA', flowA], ['flowB', flowB], ['flowC', flowC], ['extension', extension], ['dock', dock]];
+const ORDER = [['static', null], ['roles', roles], ['narrow', narrow], ['auth', auth], ['denial', denial], ['analytics', analytics], ['settings', settings], ['referral', referral], ['dashboard', dashboard], ['flowA', flowA], ['flowB', flowB], ['flowC', flowC], ['extension', extension], ['recs', recs], ['dock', dock]];
 for (const [name, fn] of ORDER) {
   if (ONLY && !ONLY.includes(name)) continue;
   if (name === 'static') { mode = 'file'; await staticChecks(); continue; }

@@ -24,6 +24,23 @@ await T.test('session form: #lauris-form data-form|session|consumer, #session-fo
   assert.ok((h.match(/<label for="f\d+"/g) || []).length >= 8, 'boxes are found by label[for]');
   const t = (await lget('/consumers/3310/session/screening', 'jperez')).text; has(t, /aria-label="Cannabis — Frequency"/, 'table cells are found by aria-label');
 });
+await T.test('the Payer Reply form (R6): #lauris-form data-form="payer-reply", the title the bridge maps, every box found by label[for], a note-type form (no signature path)', async () => {
+  const h = (await lget('/consumers/4102/session/payer-reply', 'jperez')).text;
+  has(h, /<form method="post" id="lauris-form" data-form="payer-reply" data-consumer="4102" data-session="">/); has(h, /id="session-form-title">Payer Reply · appeal or information request/);
+  const esc = t => t.replace(/[/.]/g, '\\$&');
+  for (const l of ['Member', 'Current authorization', 'Payer decision', 'Reply type', 'Reason the payer gave', 'Level of care', 'Dimension 1 — acute intoxication and/or withdrawal potential', 'Dimension 6 — recovery/living environment', 'Added from recommendations', 'What we ask']) has(h, new RegExp(`<label for="f\\d+">${esc(l)}</label>`), 'box ' + l);
+  has(h, /<select class="in" id="f3" name="f3">[\s\S]*Information request reply[\s\S]*Peer-to-peer call[\s\S]*Appeal[\s\S]*Reconsideration request/, 'Reply type is a select');
+  has(h, /class="in g" id="f0" name="f0" value="D\.W\. · Medicaid # on file"/, 'Lauris\'s own boxes are green');
+  assert.match(SRC, /'payer reply':\s*'payer-reply'/, 'the bridge maps the title to the form');
+  const pr = await lpost('/consumers/4102/session/payer-reply', 'jperez', { action: 'process', f3: 'Appeal' }); assert.match(pr.loc, /processed=\d+/);
+  assert.noMatch((await lget('/approvals', 'jperez')).text, /Payer Reply/, 'a payer reply never goes to Forms to Approve');
+});
+await T.test('the Lauris connection chip (R6): rendered "not connected", turned green by the bridge\'s stamp; the bridge stamps on every answer and has a silence switch', async () => {
+  const h = (await lget('/consumers', 'jperez')).text;
+  has(h, /<button class="pchip" id="psyflo-toggle" type="button" data-connected="0"[^>]*><i><\/i><span id="psyflo-chip-t">Psyflo extension · not connected<\/span><\/button>/);
+  has(h, /data-psyflo-link/, 'the page script reads the stamp'); has(h, /Psyflo extension · connected/);
+  has(SRC, /setAttribute\('data-psyflo-link'/, 'the bridge stamps the page when it answers'); has(SRC, /data-psyflo-silent/, 'the silence switch'); has(SRC, /async function handle\(msg\) \{\s*if \(silent\(\)\)/);
+});
 await T.test('PRG redirects and the flash: ?processed= ?saved= ?signed= ?rejected= ?created= with #lauris-flash[data-event|session|form|consumer]', async () => {
   const sv = await lpost('/consumers/3315/session/dpn', 'jperez', { action: 'save', f9: 'x' }); assert.match(sv.loc, /\/consumers\/3315\/session\/dpn\?id=\d+&saved=\d+/);
   has((await lget(sv.loc, 'jperez')).text, /id="lauris-flash" data-event="saved" data-session="\d+" data-form="dpn" data-consumer="3315"/);

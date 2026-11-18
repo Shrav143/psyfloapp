@@ -16,7 +16,9 @@ export function recFor(ctx, client, form) {
 }
 const evidence = src => ({ n: src.n, label: src.label, date: dateLabel(src), quote: src.quote || '', source: src.source || src.label });
 
-// reviewBlock(ctx, rec, { title, st, fillExtra, client, sources }) -> html. `st` is the view's scratch object (holds which box is being edited).
+// reviewBlock(ctx, rec, { title, st, extra, merge, client, sources }) -> html. `st` is the view's scratch object (holds which box is being edited).
+//   merge(boxes) -> { boxes, sources? }   optional: the view adds what a person included in "Suggested by Psyflo" (recs applyToBoxes) to the approved boxes
+//                                         before they are typed. The draft and its stale check are untouched; only what is typed changes.
 export function reviewBlock(ctx, rec, o = {}) {
   const { ui } = ctx; const st = o.st; const client = o.client || ctx.client();
   const processed = rec.lauris_status === 'processed';
@@ -26,8 +28,9 @@ export function reviewBlock(ctx, rec, o = {}) {
   const decide = (item, state, text) => act(() => ctx.do('scribe.decide', { key: rec.key, item, state, text }));
   const approveFill = () => act(async () => {
     const r = await ctx.do('scribe.approve', { key: rec.key });
-    const boxes = (r.boxes || []).concat(o.extra ? o.extra() : []);
-    const res = await ctx.fill(boxes, { form: rec.form, client, sources: o.sources });
+    let boxes = (r.boxes || []).concat(o.extra ? o.extra() : []); let sources = o.sources;
+    if (o.merge) { const m = o.merge(boxes); boxes = m.boxes; if (m.sources && m.sources.length) sources = (sources || []).concat(m.sources); }
+    const res = await ctx.fill(boxes, { form: rec.form, client, sources });
     if (res && !res.error) await ctx.do('scribe.filled', { key: rec.key, labels: res.filled || [] });
   });
   const items = rec.items.map(i => ({

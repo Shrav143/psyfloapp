@@ -12,12 +12,52 @@ import { buildContinuedStay, evidenceIndex, periodPresets, isMissingText } from 
 import { rule } from '../../js/shared/rules.js';
 import { recFor, reviewBlock } from '../lib/review.js';
 import { itemsFromDraft, staffInputs, formValue } from '../lib/items.js';
+import { authRecs, withDecisions, applyToBoxes } from '../../js/shared/recs.js';
+import { evidenceIndex as caseIndex, evidenceById, chipOpts } from '../../js/shared/sel/disputes.js';
+import { recBlock, recActs, recIns, recChs, typableFrom } from '../lib/recs.js';
 
 const STEPS = ['Plan', 'Request', 'Sign-off'];
 // a stored draft is stale when the record it was built from changed (the boxes Psyflo would draft now differ from the original draft)
 const isStale = (rec, boxes) => boxes.length !== rec.items.length || rec.items.some(i => { const b = boxes.find(x => x.label === i.label); return !b || b.value !== (i.history[0] && i.history[0].text); });
 const stepFor = (p) => (p.kind === 'approvals' || p.kind === 'approval') ? 2 : p.form && p.form.type === 'isp' ? 0 : 1;
 const stepper = (ctx, p) => ctx.ui.stepper(STEPS.map(label => ({ label })), { current: stepFor(p), label: 'Authorization steps' });
+
+// ------------------------------------------------------------------ Suggested by Psyflo (R6)
+// The recommendations of this request come from the same engine as the platform (shared/recs.js): every card is built from stored records or asks for the
+// clinician's own words. Include and Dismiss are recorded on the server at once (the platform shows them too). Apply selected types the included text into
+// the open form after what the person already has there (yellow; panel.filled records it). The draft below and its stale check are untouched: what a person
+// included is merged into the boxes only when they are typed (mergeRecs). Nothing is typed or pressed without a person pressing the button.
+const requestFor = (ctx, c, type) => ctx.S().requests.find(r => r.client === c.id && (type === 'initial' ? r.type === 'initial' : r.type === 'continued_stay') && r.stage !== 'closed') || null;
+const liveBoxes = ctx => ((ctx.page.form && ctx.page.form.fields) || []).map(f => ({ label: f.label, value: f.value, tag: f.tag }));
+const AUTH_BOX_FIRST = ['Continued need / risk', 'Reason for the requested level', 'Barriers', 'Care coordination', 'Level of care'];
+function addBoxesFor(ctx) {
+  const text = liveBoxes(ctx).filter(b => b.tag === 'textarea').map(b => b.label);
+  return [...AUTH_BOX_FIRST.filter(l => text.includes(l)), ...text.filter(l => !AUTH_BOX_FIRST.includes(l))];
+}
+function suggestHTML(ctx, c, req, form) {
+  if (!req || !ctx.can('drafts.clinical')) return '';
+  const s = ctx.S(); const X = caseIndex(s, null, req); const recs = withDecisions(s, 'auth', req.id, authRecs(s, req, { idx: X }));
+  const chips = r => { const ev = (r.evidence || []).map(id => evidenceById(X, id)).filter(Boolean); return ev.slice(0, 3).map(e => ctx.ui.evidenceChip(chipOpts(e))).join('') + (ev.length > 3 ? `<span class="hint">+${ev.length - 3} more</span>` : ''); };
+  return recBlock(ctx, { scope: 'auth', ref: req.id, recs, boxes: liveBoxes(ctx).map(b => b.label), addBoxes: addBoxesFor(ctx), chips, limit: 3,
+    applyHint: 'Types the included text into the open form, in yellow. You check it and press Process Form.',
+    apply: (ctx2, inc) => applyIncluded(ctx2, c, form, inc) });
+}
+async function applyIncluded(ctx, c, form, inc) {
+  const live = liveBoxes(ctx); const t = typableFrom(applyToBoxes(live, inc), live); const x = ctx.st.rbx;
+  const lost = [...new Set(t.lost.map(a => a.box))];
+  if (!t.boxes.length) { ctx.flash(lost.length ? `Not on this form: ${lost.join(', ')}. Open the request that has ${lost.length === 1 ? 'that box' : 'those boxes'} to type ${lost.length === 1 ? 'it' : 'them'}.` : 'What you included is already in the form. Nothing new to type.', 'y'); return; }
+  const res = await ctx.fill(t.boxes, { form, client: c, sources: [{ n: 1, kind: 'recs', label: 'Suggested by Psyflo', source: 'Suggestions a clinician included', recs: t.ids }] });
+  if (res && !res.error) { x.typed = [...new Set([...(x.typed || []), ...t.ids])]; if (lost.length) ctx.flash(`${t.boxes.length} box${t.boxes.length === 1 ? '' : 'es'} typed · yellow · check them. Not on this form: ${lost.join(', ')}.`, 'y'); ctx.draw(); }
+}
+// "Approve and fill" of the draft: what a person included is merged into the approved boxes before they are typed (never twice, never into a box the form lacks)
+const mergeRecs = (ctx, req) => boxes => {
+  if (!req || !ctx.can('drafts.clinical')) return { boxes };
+  const s = ctx.S(); const r = applyToBoxes(boxes, withDecisions(s, 'auth', req.id, authRecs(s, req)));
+  const onForm = new Set(liveBoxes(ctx).map(b => b.label)); const had = new Set(boxes.map(b => b.label));
+  const ok = r.applied.filter(a => !a.added || onForm.has(a.box));
+  const out = r.boxes.filter(b => had.has(b.label) || onForm.has(b.label));
+  return { boxes: out, sources: ok.length ? [{ n: 90, kind: 'recs', label: 'Suggested by Psyflo', source: 'Suggestions a clinician included', recs: ok.map(a => a.id) }] : [] };
+};
 
 // ------------------------------------------------------------------ Plan (ISP)
 function planHTML(ctx, c) {
@@ -68,11 +108,12 @@ function requestHTML(ctx, c) {
   const sc = s.screenings.find(x => x.client === c.id);
   h += levelBanner(ctx, d);
   h += `<div class="tile t"><h2>Draft ready · ${esc(c.initials)}</h2><div class="small" style="margin-top:4px">From the screening (${fmtDate(sc?.when)}), the intake${c.timeline?.intake ? ' (' + fmtDate(c.timeline.intake) + ')' : ''}, the plan${c.timeline?.isp ? ' (' + fmtDate(c.timeline.isp) + ')' : ''} and the referral.${req ? ' Tracked as ' + esc(req.id) + '.' : ''}</div></div>`;
+  h += suggestHTML(ctx, c, req, 'sra-initial');
   if (!rec) {
     h += `<button class="btn p blk" data-act="sraDraft">Review ${d.boxes.length} statements</button>`;
   } else {
     if (isStale(rec, d.boxes) && rec.lauris_status !== 'processed') h += banner('y', 'The record changed since this draft.') + `<button class="btn o" data-act="sraDraft">Redraft</button>`;
-    h += reviewBlock(ctx, rec, { title: 'Initial request · ' + c.initials, st, client: c, sources: d.sources });
+    h += reviewBlock(ctx, rec, { title: 'Initial request · ' + c.initials, st, client: c, sources: d.sources, merge: mergeRecs(ctx, req) });
   }
   h += accordion(`Left for you · ${d.blank.length}`, d.blank.map(b => `<div class="box"><div class="l">${esc(b.short || b.label)}</div><div class="v muted">${esc(b.why)}</div></div>`).join(''), { id: 'sra-blank' });
   ctx.pg.lastChecks = d.checks; h += checksBlock(d.checks);
@@ -96,9 +137,12 @@ function continuedHTML(ctx, c) {
   const per = periodFor(ctx, c); const presets = periodPresets(s, c, today);
   const cs = continuedFor(ctx, c, per, req, !!st.household);
   const idx = cs.index; const rec = recFor(ctx, c, 'sra-continued');
-  let h = `<div class="row"><label class="lab" for="cs-per">Period</label><select id="cs-per" class="tog" style="flex:1" data-ch="period">${presets.map(p => `<option value="${p.id}"${p.id === per.preset ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</select></div>
-    <div class="cnts" role="group" aria-label="Evidence counts">${['daily:Daily notes', 'weekly:Weekly calls', 'monthly:Monthly collateral'].map(x => { const [k, l] = x.split(':'); return `<button class="cnt" data-act="openRows" data-k="${k}"><span class="small muted">${l}</span><b>${cs.counts[k]}</b></button>`; }).join('')}</div>
-    <div class="hint">${fmtDate(per.from)} – ${fmtDate(per.to)}${req ? ' · ' + esc(req.id) : ''} · ${cs.counts.excluded} excluded · ${cs.counts.sensitive} sensitive. <a href="#" data-act="openEvidence">Open the evidence</a></div>`;
+  // the evidence period and the three counts are one collapsed row (their detail opens in Scan & Enhance); the page leads with the level, the units and the suggestions
+  const evBody = `<div class="row"><label class="lab" for="cs-per">Period</label><select id="cs-per" class="tog" style="flex:1" data-ch="period">${presets.map(p => `<option value="${p.id}"${p.id === per.preset ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</select></div>
+    <div class="cnts" role="group" aria-label="Evidence counts" style="margin-top:8px">${['daily:Daily notes', 'weekly:Weekly calls', 'monthly:Monthly collateral'].map(x => { const [k, l] = x.split(':'); return `<button class="cnt" data-act="openRows" data-k="${k}"><span class="small muted">${l}</span><b>${cs.counts[k]}</b></button>`; }).join('')}</div>
+    <div class="hint" style="margin-top:6px">${fmtDate(per.from)} – ${fmtDate(per.to)}${req ? ' · ' + esc(req.id) : ''} · ${cs.counts.excluded} excluded · ${cs.counts.sensitive} sensitive. <a href="#" data-act="openEvidence">Open the evidence</a></div>`;
+  const perLabel = (presets.find(p => p.id === per.preset) || {}).label || 'Period';
+  let h = accordion(`Evidence · ${perLabel.replace(/\s*\(.*$/, '').toLowerCase()}`, evBody, { id: 'cs-evidence', count: `${cs.counts.daily} daily note${cs.counts.daily === 1 ? '' : 's'}` });
   h += levelBanner(ctx, cs);
   h += unitsBanner(ctx, c);
   // household context: Not included until a person opts in
@@ -106,10 +150,11 @@ function continuedHTML(ctx, c) {
   h += `<div class="row w" style="justify-content:space-between"><span><b class="small">Household context</b> <span class="chip ${st.household ? 'y' : 'n'}">${st.household ? 'Included by you' : 'Not included'}</span></span><button class="btn ${st.household ? 'o' : 'p'} sm" data-act="household" ${hh.length || st.household ? '' : 'disabled'}>${st.household ? 'Take it out' : 'Include it'}</button></div>
     ${hh.length ? '' : '<div class="hint">No stored note mentions it.</div>'}`;
   const stale = !!rec && isStale(rec, cs.boxes);
+  h += suggestHTML(ctx, c, req, 'sra-continued');
   if (!rec) h += `<button class="btn p blk" data-act="csDraft">Review ${cs.boxes.length} statements</button>`;
   else {
     if (stale && rec.lauris_status !== 'processed') h += banner('y', 'The evidence changed since this draft.') + `<button class="btn o" data-act="csDraft">Redraft from the evidence</button>`;
-    h += reviewBlock(ctx, rec, { title: 'Continued stay · ' + c.initials, st, client: c, sources: cs.sources });
+    h += reviewBlock(ctx, rec, { title: 'Continued stay · ' + c.initials, st, client: c, sources: cs.sources, merge: mergeRecs(ctx, req) });
   }
   if (idx.gaps.length) h += accordion(`Evidence gaps · ${idx.gaps.length}`, idx.gaps.map(g => `<div class="cr">${g.kind === 'missing' ? ctx.I.warn : ctx.I.open}<div>${esc(g.text)}</div></div>`).join(''), { id: 'cs-gaps' });
   ctx.pg.lastChecks = cs.checks; h += checksBlock(cs.checks);
@@ -195,6 +240,7 @@ function html(ctx) {
 }
 
 const acts = {
+  ...recActs,
   goNav(el, ctx) { return ctx.nav(el.dataset.href); },
   ispFill: async (el, ctx) => { const c = ctx.client(); const s = ctx.S(); const d = draftSeeded('isp', { client: c, screening: s.screenings.find(x => x.client === c.id), today: ctx.M.today(s), ...asamSources(s, c.id) }); await ctx.fill(d.boxes, { form: 'isp', client: c, sources: d.sources }); ctx.draw(); },
   ispOne(el, ctx) { ctx.st.one = 0; ctx.draw(); }, ispOneClose(el, ctx) { ctx.st.one = null; ctx.draw(); },
@@ -220,6 +266,7 @@ const acts = {
   approve: async (el, ctx) => { const id = el.dataset.id; await ctx.do('request.approve', { id, comment: ctx.st.apComment || '' }); ctx.st.apComment = ''; ctx.flash(`${id} approved. The licensed person presses Get Signature in Lauris.`); }
 };
 const chs = {
+  ...recChs,
   period: async (el, ctx) => {
     const c = ctx.client(); const s = ctx.S(); const p = periodFor(ctx, c); void p;
     const pr = periodPresets(s, c, ctx.M.today(s)).find(x => x.id === el.value); if (!pr) return;
@@ -228,7 +275,7 @@ const chs = {
     ctx.draw();
   }
 };
-const ins = { apComment(el, ctx) { ctx.st.apComment = el.value; } };
+const ins = { ...recIns, apComment(el, ctx) { ctx.st.apComment = el.value; } };
 
 // the request record the draft needs exists as soon as the form opens
 async function onOpen(ctx) {

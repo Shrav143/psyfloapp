@@ -13,7 +13,8 @@ a{color:#1F6FBF}
 .top .ar{color:#E0A030}.top .r{margin-left:auto;font-weight:400;font-size:11px;color:#C8CFD8;display:flex;gap:10px;align-items:center}
 .top .r a{color:#C8CFD8;text-decoration:none}
 .pchip{display:inline-flex;align-items:center;gap:6px;background:#151B24;color:#fff;border-radius:8px;padding:4px 10px;font:600 12px 'DM Sans',system-ui,sans-serif;border:0;cursor:pointer}
-.pchip i{width:8px;height:8px;border-radius:50%;background:#F0B44C;display:inline-block}
+.pchip i{width:8px;height:8px;border-radius:50%;background:#F0B44C;display:inline-block;flex:0 0 8px}
+.pchip.on i{background:#3DBE8B}
 .wrap{display:flex;height:calc(100% - 38px)}
 .side{flex:0 0 190px;background:#2F3A4A;padding:6px 0;display:flex;flex-direction:column;overflow:auto}
 .lnav{display:flex;align-items:center;gap:9px;padding:8px 14px;font-size:12px;color:#C8CFD8;text-decoration:none}
@@ -89,7 +90,7 @@ function shell(req, { title, nav, body, user }) {
 <body class="${inpage ? 'psyflo-inpage' : ''}" data-lauris-page="${esc(nav || '')}">
 <div class="top"><span class="ar">»</span> Lauris Online <span class="small muted" style="font-weight:400;color:#8E99A6">mock for the Psyflo demo · synthetic data</span> <span id="lauris-clock" class="small" style="font-weight:400;color:#C8CFD8" title="The demo clock: Psyflo and this mock Lauris read the same one">${esc(db.todayUS)} ${esc(lauris.stamp().slice(11, 16))}</span>
 <span class="r">${user ? esc(user.name) + ' ·' : ''} <a href="#classic" onclick="return false" title="Not part of the mock">Switch to Classic</a> · <a href="/logout">Sign Out</a>
-<button class="pchip" id="psyflo-toggle" type="button" title="Show or hide the Psyflo panel (in-page fallback when the extension is not installed)"><i></i>psyflo · ${inpage ? 'on' : 'off'}</button></span></div>
+<button class="pchip" id="psyflo-toggle" type="button" data-connected="0" title="The Psyflo extension reads this page and types into its open form only when you press a button. Green means the extension answered a moment ago. Press to show or hide its panel."><i></i><span id="psyflo-chip-t">Psyflo extension · not connected</span></button></span></div>
 <div class="wrap">
 <nav class="side" aria-label="Lauris menu">
 ${L('/consumers', 'Consumers', 'consumers')}${L('/authorizations', 'Authorizations', 'authorizations')}${L('/approvals', 'Approvals', 'approvals-h')}${L('/add-session', 'Add Session', 'add')}${L('/saved', 'Saved Session', 'saved', saved)}${L('/reports', 'Reports', 'reports')}${L('/user', 'User Information', 'user')}${L('/time', 'Time Tracker', 'time')}
@@ -106,12 +107,28 @@ ${L('/approvals', 'Forms to Approve', 'approvals', toApprove)}${L('/rejected', '
   t.addEventListener('click',function(){var on=!document.body.classList.contains('psyflo-inpage');document.cookie='psyflo_inpage='+(on?'1':'0')+';path=/';location.reload();});
   // The extension's content script marks the page; if it is present, the side panel is used instead.
   function boot(){
-    if(document.documentElement.getAttribute('data-psyflo-extension')){document.body.classList.remove('psyflo-inpage');t.innerHTML='<i></i>psyflo · extension';return;}
+    if(document.documentElement.getAttribute('data-psyflo-extension')){document.body.classList.remove('psyflo-inpage');return;}
     if(!document.body.classList.contains('psyflo-inpage'))return;
     var s=document.createElement('script');s.src=APP+'/panel/bridge.js';s.dataset.mode='inpage';s.dataset.app=APP;document.body.appendChild(s);
     var f=document.createElement('iframe');f.src=APP+'/panel/';f.title='Psyflo panel';f.id='psyflo-frame';f.allow='microphone';document.getElementById('psyflo-slot').appendChild(f);
   }
   setTimeout(boot,60);
+})();
+</script>
+<script>
+// The connection chip. The page bridge (the extension's content script, or its in-page copy) stamps data-psyflo-link on this document each time it
+// answers the Psyflo panel (a read, a fill, a focus). The chip is green while that stamp is fresh and says "not connected" when it goes stale, so
+// the line is a fact about the last answer, never a label. Nothing here talks to Psyflo.
+(function(){
+  var t=document.getElementById('psyflo-toggle'),x=document.getElementById('psyflo-chip-t');if(!t||!x)return;
+  var de=document.documentElement,FRESH=9000;
+  function paint(){
+    var at=+de.getAttribute('data-psyflo-link')||0,on=!!at&&Date.now()-at<FRESH;
+    t.classList.toggle('on',on);t.setAttribute('data-connected',on?'1':'0');
+    var w=on?'Psyflo extension · connected':'Psyflo extension · not connected';if(x.textContent!==w)x.textContent=w;
+  }
+  try{new MutationObserver(paint).observe(de,{attributes:true,attributeFilter:['data-psyflo-link']});}catch(e){}
+  setInterval(paint,1500);paint();
 })();
 </script>
 </body></html>`;

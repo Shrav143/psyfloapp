@@ -34,6 +34,8 @@ export const DIM_LABELS = [
   'Dimension 6 — recovery/living environment'
 ];
 export const RATING_OPTIONS = RATING_LABEL.map((l, i) => `${i} · ${l}`);
+// the "Reply type" box of the Payer Reply form (the panel's Denial packet view types one of these; keyed by the dispute document kind)
+export const REPLY_TYPES = ['Information request reply', 'Peer-to-peer call', 'Appeal', 'Reconsideration request'];
 export const LEVEL_OPTIONS = LEVELS.map(l => `Level ${l.id} · ${l.name}`);
 const dimAreas = rows => DIMS.map(d => ({ label: DIM_LABELS[d.n - 1], type: 'area', rows, w: 4 }));
 
@@ -212,7 +214,24 @@ export const FORMS = {
       { label: 'Services recommended', type: 'area', rows: 2, w: 2 },
       { label: 'Family member notified', type: 'area', rows: 2, w: 2 }
     ]
+  },
+  // A payer reply (an appeal, a reply to a request for information, a peer-to-peer call note, a reconsideration request) is drafted in the EHR too.
+  // It is a note-type form: Process Form files it in the Active File, there is no signature path, and Psyflo never sends it (the payer gets it
+  // from the portal, the fax or the call, by a person). The extension types the packet into these boxes when a person presses the button.
+  'payer-reply': {
+    title: 'Payer Reply · appeal or information request', short: 'Payer Reply',
+    fields: [
+      { label: 'Member', w: 1, prefill: c => c.initials + ' · Medicaid # on file' },
+      { label: 'Current authorization', w: 1, prefill: c => authLine(c) },
+      { label: 'Payer decision', w: 2 },
+      { label: 'Reply type', type: 'select', options: ['', ...REPLY_TYPES], w: 2 },
+      { label: 'Reason the payer gave', type: 'area', rows: 3, w: 4 },
+      { label: 'Level of care', type: 'area', rows: 3, w: 4 },
+      ...dimAreas(3),
+      { label: 'Added from recommendations', type: 'area', rows: 4, w: 4 },
+      { label: 'What we ask', type: 'area', rows: 2, w: 4 }
+    ]
   }
 };
 
-export const FORM_ORDER = ['screening', 'cna', 'isp', 'dpn', 'weekly', 'collateral', 'quarterly', 'incident', 'sra-initial', 'sra-continued', 'discharge'];
+export const FORM_ORDER = ['screening', 'cna', 'isp', 'dpn', 'weekly', 'collateral', 'quarterly', 'incident', 'sra-initial', 'sra-continued', 'discharge', 'payer-reply'];

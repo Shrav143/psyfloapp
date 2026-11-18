@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Psyflo for Lauris (demo)",
-  "version": "0.1.0",
-  "description": "Demo: reads the Lauris page you have open and types into its open form. Targets the mock Lauris on localhost:4001. Synthetic data only.",
+  "version": "0.2.0",
+  "description": "Demo: reads the Lauris page you have open and types into its open form when you press a button. Shows Suggested by Psyflo beside it. The Lauris top bar says Psyflo extension connected while this extension answers. Targets the mock Lauris on localhost:4001. Synthetic data only.",
   "permissions": ["sidePanel", "tabs", "storage"],
   "host_permissions": ["http://localhost:4000/*", "http://localhost:4001/*", "http://localhost:4002/*", "http://127.0.0.1:4001/*", "http://127.0.0.1:4002/*"],
   "background": { "service_worker": "background.js" },

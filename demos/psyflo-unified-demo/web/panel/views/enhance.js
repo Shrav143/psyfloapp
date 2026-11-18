@@ -1,6 +1,9 @@
 // Scan & Enhance (E5). Two modes, decided in review/00-unified-recommendations.md section 3.1:
-//   Mode A  "Review draft"     the CURRENT open draft: findings (questions, evidence, missing information), approve, reject or edit each, compare,
-//                              final review, then fill the open Lauris form with the bridge `fill` command. A person presses Process Form.
+//   Mode A  "Review draft"     the CURRENT open draft: findings (questions, evidence, missing information) scanned from the form. For a clinician each
+//                              finding is a recommendation card ("Suggested by Psyflo", scope note: the question is the card's input, the answer is the clinician's
+//                              own words, Include or Dismiss, Add your own) and Apply selected types the answers into the open Lauris form (applyFindings, ctx.fill).
+//                              recs.* decides what is typed; x-enhance keeps the scan record (enhance.decide / approve / filled follow along). A designated
+//                              supervisor, who holds no recommendations, keeps the one-finding-at-a-time review (legacyA). A person presses Process Form.
 //   Mode B  "Evidence review"  PROCESSED history, READ-ONLY. Reads Psyflo's own captured copies (stored notes, saved versions, the seeded corpus):
 //                              never Lauris. It builds the evidence index for continued stay (period, counts that open their rows, evidence marks),
 //                              finds missing evidence and repeated wording, and flags gaps for FUTURE notes. There is no fill button in this mode,
@@ -9,6 +12,8 @@ import { esc } from '../../js/runtime.js';
 import { fmtDate } from '../../js/shared/dates.js';
 import { evidenceIndex, periodPresets, applyFindings, KIND_LABEL, KIND_ONE, interventionLabel, DATE_MISSING } from '../../js/shared/enhance.js';
 import { ladderIndex } from '../lib/review.js';
+import { noteRecsFor, textOf } from '../../js/shared/recs.js';
+import { recBlock, recActs, recIns, recChs } from '../lib/recs.js';
 
 const LADDER = ['Original', 'PsyFlo draft', 'Clinician edited', 'Approved', 'Synchronized'];
 const CAT = { wording: ['Wording', 'warning'], evidence: ['Evidence', 'danger'], missing: ['Missing', 'warning'], units: ['Units', 'info'], boilerplate: ['Repeated', 'neutral'] };
@@ -24,7 +29,73 @@ function modeSwitch(ctx, m) {
 
 // ================================================================== Mode A
 const recA = (ctx, c) => { const s = ctx.S(); const me = ctx.me(); const f = ctx.page.form && ctx.page.form.type; return (s.doc_versions || []).filter(d => d.mode === 'current' && d.client === c.id && d.form === f && d.by === me.id && d.date === ctx.M.today(s) && d.input && d.input.kind === 'form').at(-1) || null; };
+// ---- the clinician's Mode A: findings as recommendation cards
+const liveFields = ctx => ((ctx.page.form && ctx.page.form.fields) || []).map(f => ({ label: f.label, value: f.value, tag: f.tag }));
+// a decision on a scan finding is for the note it was made on: one from an earlier day is not carried onto today's note of the same kind
+const freshState = (ctx, s) => ({ ...s, rec_decisions: (s.rec_decisions || []).filter(x => x.scope !== 'note' || String(x.at || '').slice(0, 10) >= ctx.M.today(s)) });
+const noteRef = (c, form) => `${c.id}:${form}`;
+// the included cards as findings, for applyFindings: only the clinician's own words, only what is not already in the box
+function asFindings(inc, live) {
+  const val = l => String((live.find(f => f.label === l) || {}).value || '');
+  return inc.filter(r => textOf(r)).map(r => ({ id: r.finding ? r.finding.id : r.key, box: (r.insert && r.insert.box) || '', replaces: r.finding ? r.finding.replaces || '' : '', state: 'accepted', answer: textOf(r), rec: r }))
+    .filter(f => f.box && !val(f.box).includes(f.answer));
+}
+function recsA(ctx, c, rec) {
+  const s = ctx.S(); const form = ctx.page.form.type;
+  return noteRecsFor(freshState(ctx, s), c.id, form, (rec.input && rec.input.fields) || []);
+}
+function noteChips(ctx, r) {
+  const f = r.finding; if (!f) return '';
+  const rule = f.rule ? ctx.ui.sourceChip({ category: f.rule.verification, source: f.rule.source }, {}) : '';
+  const ev = (f.evidence || []).map(e => ctx.ui.evidenceChip({ label: e.label || 'Form', date: e.date ? fmtDate(e.date) : /^form:/.test(e.ref || '') ? fmtDate(ctx.M.today(ctx.S())) : DATE_MISSING, quote: e.quote, source: e.ref })).join('');
+  return `${rule}${f.rule ? `<span class="hint">${esc(f.rule.label)}</span>` : ''}${ev || ctx.ui.evidenceChip({ state: 'missing', label: r.insert.box })}`;
+}
 function htmlA(ctx, c) {
+  if (!ctx.can('drafts.clinical')) return legacyA(ctx, c);
+  const { banner, accordion } = ctx.parts; const p = ctx.page; const st = ctx.st; const s = ctx.S();
+  if (!(p.kind === 'session' && p.form)) return banner('n', 'Open a draft form in Lauris to review it. This reads the form you have open.');
+  if (p.form.type === 'payer-reply') return banner('n', 'Scan & Enhance does not cover the payer reply. The Denial packet has its suggestions.') + `<button class="btn o blk" data-act="goView" data-view="denial">Open Denial packet</button>`;
+  const processed = s.notes.some(n => n.session && String(n.session) === String(p.form.session));
+  if (processed) return banner('n', `<b>This was processed in Lauris.</b> A processed record is not changed from Psyflo: there is no addendum or late entry. Use Evidence review to read it.`) + `<button class="btn o" data-act="setMode" data-m="B">Open Evidence review</button>`;
+  const rec = recA(ctx, c);
+  if (!rec) return `<div class="tile t"><h2>Scan the open ${esc(p.form.title || 'form')}</h2><div class="small muted" style="margin:4px 0 8px">Psyflo reads the boxes on this form and lists what to check as suggestions. It asks; you answer in your own words.</div><button class="btn p blk" data-act="scan">Scan the draft</button></div>`;
+  const recs = recsA(ctx, c, rec); const live = liveFields(ctx); const fields = (rec.input && rec.input.fields) || [];
+  const addBoxes = [...live.filter(f => f.tag === 'textarea'), ...live.filter(f => f.tag === 'input')].map(f => f.label);
+  let h = recBlock(ctx, { scope: 'note', ref: noteRef(c, p.form.type), recs, fields, boxes: live.map(f => f.label), addBoxes, chips: r => noteChips(ctx, r), limit: 3,
+    sub: `${fields.length} filled box${fields.length === 1 ? '' : 'es'} scanned. Each card asks a question about your note: answer in your own words. Numbers marked sample are illustrative.`,
+    applyHint: 'Types your answers into the open form, in yellow. A flagged sentence is replaced by your words. You press Process Form.',
+    apply: (ctx2, inc) => applyNote(ctx2, c, rec, recs, inc) });
+  const inc = asFindings(recs.filter(r => r.state === 'included'), live); const changes = applyFindings(live, inc);
+  h += `<div class="row w"><button class="btn o" data-act="scan">Scan again</button><button class="btn o" data-act="compare">${st.compare ? 'Hide the comparison' : `Compare · ${changes.length} box${changes.length === 1 ? '' : 'es'} would change`}</button></div>`;
+  if (st.compare) h += `<div class="sheet"><h2 class="st">Before · After</h2>${changes.length ? changes.map(x => `<div class="box"><div class="l">${esc(x.label)}</div><div class="small muted">Before</div><div class="v">${esc(x.before) || '<span class="muted">empty</span>'}</div><div class="small muted" style="margin-top:4px">After · your words</div><div class="v">${esc(x.after)}</div></div>`).join('') : '<div class="hint">Nothing would change: no included card has your words yet, or they are already in the form.</div>'}</div>`;
+  if (rec.stages.some(x => x.stage === 'filled')) h += banner('y', '<b>Typed into the open form · yellow.</b> Check the boxes, then press Process Form in Lauris.');
+  return h;
+}
+// Apply selected: type the included answers into the open form. recs.* decided them; the x-enhance scan record follows (best effort, never blocks the typing).
+async function applyNote(ctx, c, rec, recs, inc) {
+  const p = ctx.page; const live = liveFields(ctx); const x = ctx.st.rbx; const fl = asFindings(inc, live); const changes = applyFindings(live, fl);
+  if (!changes.length) { ctx.flash(inc.some(r => textOf(r)) ? 'What you included is already in the form. Nothing new to type.' : 'Nothing to type: an included card needs your own words.', 'y'); return; }
+  const ids = fl.map(f => f.rec.id);
+  await syncScan(ctx, rec, recs);
+  const res = await ctx.fill(changes.map(f => ({ label: f.label, value: f.after })), { form: p.form.type, client: c, sources: [{ n: 1, kind: 'recs', label: 'Suggested by Psyflo', source: 'Answers a clinician gave to the scan', recs: ids }] });
+  if (res && !res.error) {
+    x.typed = [...new Set([...(x.typed || []), ...ids])];
+    if (recs.every(r => !r.finding || r.state !== 'open')) { try { await ctx.do('enhance.approve', { key: rec.key }); await ctx.do('enhance.filled', { key: rec.key, labels: res.filled || [] }); } catch (e) { /* the scan record only */ } }
+    ctx.draw();
+  }
+}
+async function syncScan(ctx, rec, recs) {
+  try {
+    for (const r of recs) {
+      if (!r.finding) continue; const f = (rec.findings || []).find(y => y.id === r.finding.id); if (!f) continue;
+      const want = r.state === 'included' ? 'accepted' : r.state === 'dismissed' ? 'rejected' : 'open'; const ans = r.state === 'included' ? textOf(r) : '';
+      if (f.state !== want || (want === 'accepted' && (f.answer || '') !== ans)) await ctx.do('enhance.decide', { key: rec.key, finding: f.id, state: want, answer: ans });
+    }
+  } catch (e) { /* recs.* is the record of the decision; the scan record is kept in step when it can be */ }
+}
+
+// ---- Mode A for a designated supervisor (holds Scan & Enhance, not recommendations): one finding at a time
+function legacyA(ctx, c) {
   const { banner } = ctx.parts; const p = ctx.page; const st = ctx.st;
   if (!(p.kind === 'session' && p.form)) return banner('n', 'Open a draft form in Lauris to review it. Mode A reads the form you have open.');
   const processed = ctx.S().notes.some(n => n.session && String(n.session) === String(p.form.session));
@@ -116,11 +187,12 @@ function htmlB(ctx, c) {
 // ================================================================== acts
 const logReview = async (ctx, c, per) => { try { await ctx.do('enhance.historical', { client: c.id, from: per.from, to: per.to }); } catch (e) { /* read-only review: a logging refusal never blocks reading */ } };
 const acts = {
+  ...recActs,
   setMode: async (el, ctx) => { const m = el.dataset.m; ctx.st.mode = m; if (m === 'B') { const c = ctx.client(); if (c && ctx.can('notes.view', { clientId: c.id })) await logReview(ctx, c, periodB(ctx, c)); } ctx.draw(); },
   scan: async (el, ctx) => {
     const c = ctx.client(); const p = ctx.page; const fields = (p.form.fields || []).filter(f => String(f.value || '').trim() !== '').map(f => ({ label: f.label, value: f.value }));
     const r = await ctx.do('enhance.scan', { client: c.id, form: p.form.type, session: p.form.session || null, fields });
-    ctx.st.cur = 0; ctx.st.ans = {}; ctx.flash(r.findings ? `${r.findings} finding${r.findings === 1 ? '' : 's'} to review.` : 'No findings on this draft.', r.findings ? 'y' : 'g');
+    ctx.st.cur = 0; ctx.st.ans = {}; if (ctx.st.rbx) ctx.st.rbx.typed = []; ctx.flash(r.findings ? `${r.findings} finding${r.findings === 1 ? '' : 's'} to review.` : 'No findings on this draft.', r.findings ? 'y' : 'g');
   },
   pickOpt(el, ctx) { const c = ctx.client(); const rec = recA(ctx, c); const f = rec.findings.find(x => x.id === el.dataset.f); const o = f.options[+el.dataset.o]; (ctx.st.ans = ctx.st.ans || {})[f.id] = o; ctx.draw(); },
   decide: async (el, ctx) => {
@@ -155,8 +227,9 @@ const acts = {
   useIt(el, ctx) { ctx.go('authorize'); },
   openCont(el, ctx) { const c = ctx.client(); ctx.nav(`/consumers/${c.lauris_no || c.harvest_no}/session/sra-continued`); }
 };
-const ins = { ans(el, ctx) { (ctx.st.ans = ctx.st.ans || {})[el.dataset.f] = el.value; }, exReason(el, ctx) { ctx.st.exReason = el.value; } };
+const ins = { ...recIns, ans(el, ctx) { (ctx.st.ans = ctx.st.ans || {})[el.dataset.f] = el.value; }, exReason(el, ctx) { ctx.st.exReason = el.value; } };
 const chs = {
+  ...recChs,
   period: async (el, ctx) => {
     const c = ctx.client(); const s = ctx.S(); const pr = periodPresets(s, c, ctx.M.today(s)).find(x => x.id === el.value); if (!pr) return;
     ctx.st.period = { from: pr.from, to: pr.to, preset: pr.id }; ctx.st.more = 8;

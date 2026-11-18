@@ -6,9 +6,12 @@ import { fmtDate, fmtTime } from '../../js/shared/dates.js';
 import { now as clockNow } from '../../js/shared/clock.js';
 import { newReferrals, refInfo, refKnown, referralForConsumer } from '../lib/boxes.js';
 import { FORM_NAME } from '../parts.js';
+import { byRequest, isOpen, ISSUE_LABEL } from '../../js/shared/sel/disputes.js';
 
 const NEXT_FORM = { screening: ['cna', 'Open the ASAM assessment'], cna: ['isp', 'Open the treatment plan (ISP)'], isp: ['sra-initial', 'Open the initial request (SRA)'], 'sra-initial': ['/approvals', 'Open Forms to Approve'], 'sra-continued': ['/approvals', 'Open Forms to Approve'] };
 
+// the open payer reply case of a client, if any
+const openCase = (ctx, c) => { const s = ctx.S(); return (s.requests || []).filter(r => r.client === c.id).map(r => ({ r, d: byRequest(s, r.id) })).find(x => x.d && isOpen(x.d)) || null; };
 const hello = ctx => { const s = ctx.S(); const h = +clockNow(s).slice(11, 13); return h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'; };
 function incidentClock(ctx) {
   const s = ctx.S(); const role = ctx.role(); if (!['clinician', 'supervisor'].includes(role)) return null;
@@ -109,6 +112,9 @@ function html(ctx) {
   if (ctx.can('myWork') && (role === 'direct_support' || role === 'clinician' || role === 'supervisor')) h += `<div class="row w"><button class="btn o sm" data-act="openApp" data-href="#/MyWork?section=day">${role === 'direct_support' ? 'My day' : 'Team day'} in Psyflo ↗</button><span class="small muted">notes and what is left today</span></div>`;
   if (!scanOk) h += `<div class="hint">${ctx.I.lock} Scan &amp; Enhance is for licensed clinical staff${role === 'direct_support' && c ? ' on their own caseload' : ''}.</div>`;
   if (role === 'clinician' && ctx.can('drafts.clinical') && c && (p.kind === 'record' || p.kind === 'session')) h += `<button class="btn o blk" data-act="goView" data-view="authorize"><span>Prepare authorization</span></button>`;
+  // the open consumer has an open payer reply case: the Denial packet view (the same suggestions and packet as Denial Intelligence, typed into the Payer Reply form)
+  const dc = role === 'clinician' && ctx.can('payer.reply') && c && (p.kind === 'record' || p.kind === 'session') ? openCase(ctx, c) : null;
+  if (dc) h += `<button class="btn o blk" data-act="goView" data-view="denial"><span>Denial packet</span><span class="chip y">${esc(ISSUE_LABEL[dc.d.issue] || 'Payer reply')} · ${esc(dc.r.id)}</span></button>`;
   // the next task
   const nt = nextTask(ctx);
   if (nt) h += `<section class="next" aria-label="Next task"><div class="row w"><h2 style="flex:1">${esc(nt.title)}</h2>${nt.chip ? `<span class="chip ${nt.chip[0]}">${esc(nt.chip[1])}</span>` : ''}</div>${nt.why ? `<div class="small muted">${esc(nt.why)}</div>` : ''}${nt.nav ? `<button class="btn p blk" data-act="nav" data-href="${esc(nt.nav)}">${esc(nt.label)}</button>` : nt.app ? `<button class="btn p blk" data-act="openApp" data-href="${esc(nt.app)}">${esc(nt.label)}</button>` : ''}</section>`;
