@@ -109,7 +109,7 @@ function overlay(title, build) {
   if (!styled) {
     styled = true;
     const st = document.createElement('style');
-    st.textContent = `#vov{position:fixed;inset:0;z-index:120;background:#F8F6F2;display:flex;flex-direction:column}
+    st.textContent = `#vov{position:fixed;inset:0;z-index:250;background:#F8F6F2;display:flex;flex-direction:column}
 #vov .vov-bar{flex:0 0 auto;display:flex;align-items:center;gap:12px;background:#151B24;color:#fff;padding:8px 14px;font:600 14px 'DM Sans',system-ui,sans-serif}
 #vov .vov-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #vov .vov-b{font:600 13px 'DM Sans',system-ui,sans-serif;min-height:34px;padding:0 14px;border-radius:8px;border:1px solid #3E4652;background:#222A35;color:#fff;cursor:pointer}

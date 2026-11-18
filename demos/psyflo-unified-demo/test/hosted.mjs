@@ -206,13 +206,15 @@ async function auth() {
   console.log('auth · My Work -> Authorizations -> R-0416');
   const H = await fresh(); const { ui, page } = H;
   await H.signIn('Clinician');
-  ok(/Dashboard/.test(await H.root(60)), 'the clinician lands on the Dashboard (patient roster)');
+  ok(await until(async () => /Dashboard/.test(await H.root(60)), 10000), 'the clinician lands on the Dashboard (patient roster)');   // the roster renders a moment after the sign-in click
   // the presenter dock: Scenario 3 (Initial authorization) resets both stores to the canvas snapshot with R-0416 drafted
   await page.keyboard.press('Control+Shift+P'); await ui.locator('[data-dock-menu="scenario"]').waitFor();   // the ribbon is hidden until asked for
   await ui.locator('[data-dock-menu="scenario"]').click();
   await ui.locator('.sh-menu [role=menuitem]', { hasText: 'Initial authorization' }).click();
   ok(await until(async () => /R-0416/.test(await H.hash()), 10000), 'the scenario opens the R-0416 case: ' + await H.hash());
   ok((await stageOf(H, 'R-0416')) === 'draft_ready', 'R-0416 is a draft ready for the packet');
+  // R6: the scenario's deep link (section=submission) opens the Submission side drawer over the case; a person closes it before using the left menu
+  if (await ui.locator('[role=dialog]').count()) { await page.keyboard.press('Escape'); await ui.locator('[role=dialog]').first().waitFor({ state: 'detached', timeout: 5000 }); }
   // the rail: Authorizations, then the row
   await ui.locator('#rail a', { hasText: 'Authorizations' }).click();
   await ui.locator('.ui-qt__row', { hasText: 'R-0416' }).waitFor();
@@ -259,15 +261,26 @@ async function auth() {
   const files = (await H.state()).files.filter(f => f.record === 'R-0416'); const signed = files.find(f => /signed/.test(f.url)), receipt = files.find(f => /fax/.test(f.url));
   ok(!!signed && !!receipt, 'the signed PDF and the fax receipt are stored files: ' + files.map(f => f.kind).join(', '));
   const docSummary = ui.locator('summary', { hasText: 'Documentation' }); if (await docSummary.count()) await docSummary.first().click();   // the case page now shows its cards open
-  await ui.locator(`main a[href="${signed.url}"]:visible`).first().click();
+  // R6: the stored files sit in the case's side drawers (Submission, Documents): open the one that holds the link
+  const fileLink = async url => {
+    const sel = `a[href="${url}"]:visible`; if (await ui.locator(sel).count()) return ui.locator(sel).first();
+    for (const k of ['submission', 'documents']) {
+      const b = ui.locator('#a-more-' + k); if (!(await b.count())) continue;
+      await b.click(); await ui.locator('.ui-dialog--drawer').first().waitFor(); if (await ui.locator(sel).count()) return ui.locator(sel).first();
+      await page.keyboard.press('Escape'); await ui.locator('.ui-dialog--drawer').first().waitFor({ state: 'detached', timeout: 5000 });
+    }
+    return ui.locator(sel).first();
+  };
+  await (await fileLink(signed.url)).click();
   await ui.locator('#vov').waitFor();
   const body = await ui.frameLocator('#vov iframe').locator('body').innerText();
   ok(/Initial Service Authorization Request|TDT Initial SRA/.test(body) && /Electronically signed in Lauris by J\. Perez/.test(body), 'the signed PDF opens as text in the viewer');
   ok((await ui.locator('#vov a, #vov button', { hasText: /Download/i }).count()) === 0, 'the viewer offers no Download');
   await page.keyboard.press('Escape'); await ui.locator('#vov').waitFor({ state: 'detached', timeout: 3000 }); ok(true, 'Escape closes the viewer');
-  await ui.locator(`main a[href="${receipt.url}"]:visible`).first().click(); await ui.locator('#vov').waitFor();
+  await (await fileLink(receipt.url)).click(); await ui.locator('#vov').waitFor();
   ok(/Sfax/i.test(await ui.frameLocator('#vov iframe').locator('body').innerText()), 'the fax receipt opens as text too');
   await ui.locator('#vov .vov-x').click();
+  if (await ui.locator('.ui-dialog--drawer').count()) { await page.keyboard.press('Escape'); await ui.locator('.ui-dialog--drawer').first().waitFor({ state: 'detached', timeout: 5000 }); }   // close the drawer that held the files
   await noDownloads(H, 'after the PDFs');
   // an unauthorised session cannot read the file either (same rule as GET /files/)
   const url = (await H.state()).files.find(f => /signed/.test(f.url)).url;
