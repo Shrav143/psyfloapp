@@ -18,6 +18,7 @@ import { fmtDate } from '../../../web/js/shared/dates.js';
 import { rule } from '../../../web/js/shared/rules.js';
 import { attest } from '../../attest.js';
 import { can } from '../../../web/js/shared/permissions.js';
+import { denialRecsFor, docSection, RECS_SECTION } from '../../../web/js/shared/recs.js';
 import leadExtension from './lead-extension.js';   // static import: in the hosted single-file build every module is evaluated before any action is registered
 import {
   ADVERSE, P2P_STAGES, ISSUE_LABEL, PATH_LABEL, DOC_TITLE, isOpen, byDisputeId, byRequest, issueOfRequest, deriveStatus, derivePath, resolutionOf, buildDoc, docText, docMissing,
@@ -112,12 +113,27 @@ function dispute(s, id, { open = true } = {}) {
 const requestOf = (s, d) => { const r = byId(s.requests, d.request); if (!r) throw new Error('Request not found: ' + d.request); return r; };
 function call(st, s, name, args) { return st.actions[name].call(st, s, args, st.ctx); }
 const log = (st, s, d, what, extra = {}) => { d.history = (d.history || []).concat([{ at: st.now(), by: st.who(), what }]); st.event(what, st.who(), d.request, extra); };
+// Keep the "Added from recommendations" section of every unsent draft in step with the included recommendations (recs.decide calls this).
+// A reviewed draft is un-reviewed: the text changed. A sent or ready-to-upload document is write-once and never touched.
+export function syncRecsSection(s, d, r, st) {
+  let n = 0;
+  for (const kind of DOCS) {
+    const cur = d.docs && d.docs[kind]; if (!cur || !cur.sections || cur.sent || cur.ready || cur.seeded) continue;
+    const next = docSection(denialRecsFor(s, d, r), kind); const had = cur.sections.find(x => x.key === RECS_SECTION);
+    if ((had ? had.text : '') === (next ? next.text : '')) continue;
+    cur.sections = cur.sections.filter(x => x.key !== RECS_SECTION); if (next) cur.sections.push(next);
+    cur.versions = (cur.versions || []).concat([{ at: st.now(), by: st.who(), what: next ? 'Recommendations updated' : 'Recommendations removed', previous: had ? had.text.slice(0, 300) : undefined }]);
+    cur.reviewed = null; n++;
+    if (kind === 'appeal') publishAppeal(s, d, r, st);
+  }
+  return n;
+}
 const needDoc = k => { if (!DOCS.includes(k)) throw new Error('Unknown document: ' + k); return k; };
 
 // The family portal reads state.appeal_drafts[<request id>] (AppealLetter, E6): { en, attached, status: 'draft' | 'ready', prepared_by, prepared_at }.
 // A draft is mirrored as { status: 'draft' } with no text; the letter text is published (status 'ready') only after a clinician reviews it.
 // The seeded sample letter stays as seeded until staff draft their own. E6's projection decides what the guardian sees of it.
-function publishAppeal(s, d, r, st) {
+export function publishAppeal(s, d, r, st) {
   const doc = d.docs.appeal; s.appeal_drafts = s.appeal_drafts || {};
   if (!doc || !doc.sections || doc.seeded) return;
   s.appeal_drafts[r.id] = doc.reviewed
@@ -214,6 +230,7 @@ export default {
     if (cur && cur.sent) refuse(`${DOC_TITLE[kind]} was already sent; a sent document is write-once.`, { record: r.id, code: 'write_once' });
     if (cur && cur.ready) refuse(`${DOC_TITLE[kind]} was already marked ready to upload; the letter the guardian signed is the one that goes.`, { record: r.id, code: 'write_once' });
     const next = buildDoc(s, d, r, kind, this.who());
+    const recSec = docSection(denialRecsFor(s, d, r), kind); if (recSec) next.sections.push(recSec);   // the recommendations a clinician included (recs.js)
     next.versions = (cur ? cur.versions || [] : []).concat([{ at: this.now(), by: this.who(), what: cur ? 'Regenerated from stored evidence' : 'Generated from stored evidence (Simulated)', previous: cur && cur.sections ? docText(cur, kind).slice(0, 400) : undefined }]);
     d.docs[kind] = next;
     log(this, s, d, `Draft ${cur ? 'regenerated' : 'generated'}: ${DOC_TITLE[kind]} · ${next.gen.sources} stored record${next.gen.sources === 1 ? '' : 's'} cited · ${docMissing(next).length} item${docMissing(next).length === 1 ? '' : 's'} marked Evidence missing (rule-based, Simulated)`, { sim: true });

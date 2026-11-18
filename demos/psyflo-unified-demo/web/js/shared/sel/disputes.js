@@ -270,7 +270,7 @@ const spanText = (from, to) => {
   if (ym(from) && ym(to)) return from.slice(0, 4) === to.slice(0, 4) ? `${monthName(from)} to ${monthName(to)} ${to.slice(0, 4)}` : `${monthName(from)} ${from.slice(0, 4)} to ${monthName(to)} ${to.slice(0, 4)}`;
   return `${fmtDate(from, { year: true })} to ${fmtDate(to, { year: true })}`;
 };
-const sentencePrior = (idx) => {
+export const sentencePrior = (idx) => {
   const priors = idx.usable.filter(e => e.kind === 'prior_service');
   if (!priors.length) return { text: missing(PRIOR_NEED), ids: [], miss: [PRIOR_NEED] };
   const miss = [];
@@ -282,7 +282,7 @@ const sentencePrior = (idx) => {
   }).join(' ');
   return { text, ids: priors.map(p => p.id), miss };
 };
-const sentenceCurrent = (idx) => {
+export const sentenceCurrent = (idx) => {
   const svcs = idx.usable.filter(e => e.kind === 'current_service');
   if (!svcs.length) return null;
   const miss = [];
@@ -293,7 +293,7 @@ const sentenceCurrent = (idx) => {
   }).join(' ');
   return { text, ids: svcs.map(x => x.id), miss };
 };
-const sentenceRisk = (idx) => {
+export const sentenceRisk = (idx) => {
   const e = idx.usable.find(x => x.kind === 'placement_risk');
   return e ? { text: `${e.quote}`, ids: [e.id], miss: [] } : { text: missing('what is likely to happen at a lower level of care'), ids: [], miss: ['what is likely to happen at a lower level of care'] };
 };
