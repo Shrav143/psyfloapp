@@ -42,11 +42,11 @@ export function runSteps(host, steps, o = {}) {
 const TONE_CLASS = { teal: 0, amber: 1, navy: 2, red: 3 };
 // trendChart({ labels:[x], series:[{ name, tone, points:[n|null] }], min, max, width, height, title, unit })
 export function trendChart({ labels = [], series = [], min = 0, max = 4, width = 520, height = 210, title = 'Trend', unit = '' } = {}) {
-  const L = 38, R = 14, T = 12, B = 30; const w = width - L - R; const h = height - T - B; const n = Math.max(1, labels.length);
+  const L = 38, R = 26, T = 12, B = 30; const w = width - L - R; const h = height - T - B; const n = Math.max(1, labels.length);
   const x = i => L + (n === 1 ? w / 2 : (w * i) / (n - 1)); const y = v => T + h - ((v - min) / (max - min || 1)) * h;
   const ticks = []; const step = (max - min) / 4; for (let k = 0; k <= 4; k++) ticks.push(Math.round((min + step * k) * 10) / 10);
   const grid = ticks.map(t => `<line class="in-chart__grid" x1="${L}" x2="${width - R}" y1="${y(t)}" y2="${y(t)}"/><text class="in-chart__ax" x="${L - 6}" y="${y(t) + 4}" text-anchor="end">${t}</text>`).join('');
-  const xs = labels.map((lb, i) => `<text class="in-chart__ax" x="${x(i)}" y="${height - 8}" text-anchor="middle">${esc(lb)}</text>`).join('');
+  const xs = labels.map((lb, i) => `<text class="in-chart__ax" x="${x(i)}" y="${height - 8}" text-anchor="${i === labels.length - 1 && labels.length > 1 ? 'end' : i === 0 && labels.length > 1 ? 'start' : 'middle'}">${esc(lb)}</text>`).join('');
   const lines = series.map((s, si) => {
     const c = TONE_CLASS[s.tone] != null ? TONE_CLASS[s.tone] : si % 4; const segs = []; let cur = [];
     (s.points || []).forEach((v, i) => { if (v == null) { if (cur.length) segs.push(cur); cur = []; } else cur.push([x(i), y(v)]); }); if (cur.length) segs.push(cur);

@@ -810,7 +810,7 @@ a.ui-hint__b{cursor:pointer}
 .in-chart{margin:0}
 .in-chart svg{display:block;width:100%;height:auto;max-width:560px}
 .in-chart__grid{stroke:var(--line-200);stroke-width:1}
-.in-chart__ax{fill:var(--muted);font:11px var(--font)}
+.in-chart__ax{fill:var(--muted);font:12px var(--font)}
 .in-chart__ln{stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
 .in-chart__s0{stroke:var(--teal-600);fill:var(--teal-600)}
 .in-chart__s1{stroke:#B77A12;fill:#B77A12}
@@ -825,7 +825,7 @@ a.ui-hint__b{cursor:pointer}
 .in-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0 16px}
 .in-kpi{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border:1px solid var(--line-200);border-radius:var(--r-3);background:var(--surface-0)}
 .in-kpi__l{font:600 var(--fs-12)/1.2 var(--font);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-.in-kpi__v{font:700 var(--fs-20)/1.15 var(--font);color:var(--ink);overflow-wrap:anywhere}
+.in-kpi__v{font:700 20px/1.15 var(--font);color:var(--ink);overflow-wrap:anywhere}
 .in-kpi__c{font:var(--fs-13)/1.3 var(--font);color:var(--muted)}
 .in-kpi--danger{border-color:#E8B7AB;background:var(--danger-bg)}.in-kpi--warning{border-color:#EBD08B;background:var(--warning-bg)}.in-kpi--success{border-color:#B7D5CA;background:var(--success-bg)}
 .in-bars,.in-ovr,.in-acts{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
@@ -857,5 +857,7 @@ a.ui-hint__b{cursor:pointer}
 .rc__save{align-self:flex-start}.rc__sreason{margin:6px 0 0;font:var(--fs-13)/1.4 var(--font);color:var(--muted-700)}
 .in-pulse{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:0 0 12px;padding:8px 12px;border:1px solid #EBD08B;border-radius:var(--r-3);background:var(--warning-bg);color:var(--warning-fg);font:var(--fs-13)/1.4 var(--font)}
 .in-pulse__t{flex:1 1 320px;min-width:0}.in-pulse b{font-weight:600}
+.in-pulse .ui-btn{min-height:32px}
+@media (max-width:480px){.in-pulse .ui-btn{min-height:44px}}
 .in-band th{padding:10px 12px;background:var(--paper-50);font:600 var(--fs-13)/1.3 var(--font);text-align:left;color:var(--ink);border-top:1px solid var(--line-200)}
 .in-band__n{margin-left:6px;font-weight:400;color:var(--muted)}

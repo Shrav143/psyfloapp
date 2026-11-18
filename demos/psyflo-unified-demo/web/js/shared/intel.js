@@ -135,18 +135,24 @@ export const historicalCards = s => (sample(s).historical_cards || []).map(c => 
 // ------------------------------------------------------------------------------------------------ facility insights
 // One decision group = one (scope, ref): "none" when every suggestion was included as written, "partial" when some were dismissed or the
 // clinician changed or added one, "full" when all were dismissed. The sample baseline is added so the screen is not empty on day one.
-export function overridePatterns(s) {
-  const base = sample(s).override_baseline || {}; const groups = new Map();
-  for (const d of (s && s.rec_decisions) || []) { const k = `${d.scope}:${d.ref}`; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(d); }
-  const live = { none: 0, partial: 0, full: 0 };
+// liveOverrides(decisions) -> { none, partial, full }: the clinic's own decisions, counted per (scope, ref) group. The server keeps this aggregate in
+// state.intel_live after every recommendation action (x-recs.js), because supervisors and administrators never receive the decisions themselves.
+export function liveOverrides(decisions) {
+  const groups = new Map(); const live = { none: 0, partial: 0, full: 0 };
+  for (const d of decisions || []) { const k = `${d.scope}:${d.ref}`; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(d); }
   for (const rows of groups.values()) {
     const inc = rows.filter(x => x.state === 'included' && !x.custom).length; const dis = rows.filter(x => x.state === 'dismissed').length; const own = rows.filter(x => x.custom || String(x.context || '').trim()).length;
     if (inc === 0 && dis > 0) live.full++; else if (dis > 0 || own > 0) live.partial++; else if (inc > 0) live.none++;
   }
-  const total = ['none', 'partial', 'full'].reduce((n, k) => n + ((base[k] || {}).count || 0) + live[k], 0) || 1;
-  const row = (key, label) => ({ key, label, count: ((base[key] || {}).count || 0) + live[key], live: live[key], success: (base[key] || {}).success ?? null });
+  return live;
+}
+export function overridePatterns(s) {
+  const base = sample(s).override_baseline || {};
+  const live = (s && s.intel_live) || liveOverrides(s && s.rec_decisions);
+  const total = ['none', 'partial', 'full'].reduce((n, k) => n + ((base[k] || {}).count || 0) + (live[k] || 0), 0) || 1;
+  const row = (key, label) => ({ key, label, count: ((base[key] || {}).count || 0) + (live[key] || 0), live: live[key] || 0, success: (base[key] || {}).success ?? null });
   const rows = [row('none', 'No override needed'), row('partial', 'Partial override'), row('full', 'Full override')];
-  return { rows, total, autonomy: Math.round((rows[0].count / total) * 100), liveTotal: live.none + live.partial + live.full, basis: INTEL_BASIS };
+  return { rows, total, autonomy: Math.round((rows[0].count / total) * 100), liveTotal: (live.none || 0) + (live.partial || 0) + (live.full || 0), basis: INTEL_BASIS };
 }
 
 // insights(s, scope) -> the facility insights. `scope` ('auth'|'denial') only orders what a screen shows first.

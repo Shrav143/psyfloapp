@@ -10,7 +10,7 @@ import { refuse } from '../gates.js';
 import { byId } from '../../../web/js/shared/model.js';
 
 // an older data folder has no sample yet: take it from the seed (a demo reset does the same for every key)
-try { if (store.state && !store.state.intel_sample) store.state.intel_sample = JSON.parse(JSON.stringify(loadSeed().intel_sample || {})); } catch (e) { console.error('intel seed failed:', e); }
+try { if (store.state && !store.state.intel_sample) store.state.intel_sample = JSON.parse(JSON.stringify(loadSeed().intel_sample || {})); if (store.state && !store.state.intel_live) store.state.intel_live = { none: 0, partial: 0, full: 0 }; } catch (e) { console.error('intel seed failed:', e); }
 
 export const authz = { 'intel.event': { any: ['drafts.clinical'] } };
 
@@ -18,7 +18,7 @@ export const authz = { 'intel.event': { any: ['drafts.clinical'] } };
 // no client data. A supervisor or an administrator reads them on the payer line and in Insights (money, due, the pulse and insights are not clinical); without
 // this an undeclared key is clinician-only and those two parts would be empty for them.
 const aggregate = { clinician: true, admin: true, supervisor: true, default: false };
-export const projection = { intel_sample: aggregate, rec_outcomes: aggregate, rec_baseline: aggregate };
+export const projection = { intel_sample: aggregate, intel_live: aggregate, rec_outcomes: aggregate, rec_baseline: aggregate };
 
 const LABEL = {
   refine: 'Suggestions refined against the record',

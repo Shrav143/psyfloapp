@@ -17,6 +17,7 @@ import { byId } from '../../../web/js/shared/model.js';
 import { SCOPES, STATES, CONTEXT_MAX, recId, findRec, textOf } from '../../../web/js/shared/recs.js';
 import { byRequest, isOpen } from '../../../web/js/shared/sel/disputes.js';
 import { syncRecsSection } from './x-disputes.js';
+import { liveOverrides } from '../../../web/js/shared/intel.js';
 
 // an older data folder has no recommendation keys yet: take them from the seed (a demo reset does the same for every key)
 try { if (store.state) { const seed = loadSeed(); for (const k of ['rec_decisions', 'rec_outcomes', 'rec_baseline']) if (!(k in store.state)) store.state[k] = JSON.parse(JSON.stringify(seed[k] ?? (k === 'rec_baseline' ? {} : []))); } } catch (e) { console.error('recs seed failed:', e); }
@@ -39,6 +40,7 @@ const known = (s, scope, ref) => {
   if (scope === 'denial') { const d = byRequest(s, ref); if (!d || !isOpen(d)) refuse(`${ref} has no open payer reply case.`, { status: 409, record: ref, audit: false, code: 'no_case' }); }
   return r;
 };
+const settle = s => { s.intel_live = liveOverrides(s.rec_decisions); };   // the override counts every staff role reads (no client data)
 const upsert = (s, row) => {
   s.rec_decisions = s.rec_decisions || [];
   const i = s.rec_decisions.findIndex(x => x.scope === row.scope && String(x.ref) === String(row.ref) && x.key === row.key);
@@ -69,7 +71,7 @@ export default {
   'recs.decide'(s, { scope, ref, key, state, context, fields }) {
     known(s, scope, ref);
     const row = decideOne(this, s, scope, ref, { key, state, context }, { fields });
-    const saved = upsert(s, row);
+    const saved = upsert(s, row); settle(s);
     const docs = after(this, s, scope, ref);
     this.event(`${labelOf(scope)} ${WHAT[state]} · ${row.title || key}`, this.who(), recordOf(scope, ref), { kind: 'recs' });   // the clinician's context stays in the decision row, not in the audit text
     return { decision: saved, docs };
@@ -79,7 +81,7 @@ export default {
     known(s, scope, ref);
     if (!Array.isArray(items) || !items.length) refuse('Select at least one recommendation.', { status: 422, audit: false, code: 'none' });
     const rows = items.map(x => decideOne(this, s, scope, ref, x, { fields }));   // all validated first: a refusal leaves everything as it was
-    rows.forEach(r => upsert(s, r));
+    rows.forEach(r => upsert(s, r)); settle(s);
     const docs = after(this, s, scope, ref);
     const inc = rows.filter(r => r.state === 'included').length, dis = rows.filter(r => r.state === 'dismissed').length;
     this.event(`${labelOf(scope)}s applied · ${inc} included${dis ? `, ${dis} dismissed` : ''}`, this.who(), recordOf(scope, ref), { kind: 'recs' });
@@ -93,7 +95,7 @@ export default {
     if (body.length < 3) refuse('Write the text that should go into the request or the reply. Psyflo does not write it for you.', { status: 422, audit: false, code: 'text' });
     const n = (s.rec_decisions || []).filter(x => x.custom && x.scope === scope && String(x.ref) === String(ref)).length + 1;
     const key = `custom-${n}-${Math.random().toString(36).slice(2, 6)}`;
-    const row = upsert(s, { scope, ref: String(ref), key, custom: true, title: t, text: body, box: clean(box, 120), dim: +dim || 0, state: 'included', context: '', by: this.who(), at: this.now() });
+    const row = upsert(s, { scope, ref: String(ref), key, custom: true, title: t, text: body, box: clean(box, 120), dim: +dim || 0, state: 'included', context: '', by: this.who(), at: this.now() }); settle(s);
     const docs = after(this, s, scope, ref);
     this.event(`${labelOf(scope)} added by a clinician · ${t}`, this.who(), recordOf(scope, ref), { kind: 'recs' });
     return { decision: row, id: recId(scope, ref, key), docs };
@@ -103,7 +105,7 @@ export default {
     known(s, scope, ref);
     const i = (s.rec_decisions || []).findIndex(x => x.custom && x.scope === scope && String(x.ref) === String(ref) && x.key === key);
     if (i < 0) refuse('Only a recommendation you added can be removed. Dismiss the others.', { status: 409, audit: false, code: 'not_custom' });
-    const [gone] = s.rec_decisions.splice(i, 1);
+    const [gone] = s.rec_decisions.splice(i, 1); settle(s);
     const docs = after(this, s, scope, ref);
     this.event(`${labelOf(scope)} removed · ${gone.title}`, this.who(), recordOf(scope, ref), { kind: 'recs' });
     return { removed: key, docs };

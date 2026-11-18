@@ -1,5 +1,5 @@
 {
- "_about": "Oprox parity (R7). intel_sample is an ILLUSTRATIVE SAMPLE: payer-level approval rates, denial reasons by payer, comparable-case cards, appeal analogues and override patterns that the Authorizations and Denial Intelligence screens show next to the clinic's own records. It is demo data, not Harvest's history and not a prediction; every screen that shows a number from it says so and marks it Simulated. The clinic's own counts (decisions logged, suggestions included or dismissed) are computed live from state.rec_decisions and added to the sample baseline (web/js/shared/intel.js). rate_usd_per_unit is a demo assumption used only for the 'at risk' dollar figures.",
+ "_about": "Oprox parity (R7). intel_sample is an ILLUSTRATIVE SAMPLE: payer-level approval rates, denial reasons by payer, comparable-case cards, appeal analogues and override patterns that the Authorizations and Denial Intelligence screens show next to the clinic's own records. It is demo data, not Harvest's history and not a prediction; every screen that shows a number from it says so and marks it Simulated. The clinic's own counts (decisions logged, suggestions included or dismissed) are computed live from state.rec_decisions and added to the sample baseline (web/js/shared/intel.js). rate_usd_per_unit is a demo assumption used only for the 'at risk' dollar figures. intel_live is the clinic's own override counts (none, partial, full), kept by the recommendation actions so every staff role reads the same autonomy figure; it holds no client data.",
  "intel_sample": {
   "basis": "Illustrative sample from the demo data. It is not Harvest's own history and it is not a prediction.",
   "rate_usd_per_unit": 205,
@@ -34,34 +34,82 @@
    "ffs": 41
   },
   "denial_by_payer": [
-   { "reason": "\"Does not meet ASAM Level 2.1 criteria\"", "payer": "sentara", "count": 74 },
-   { "reason": "\"Can be managed at a lower level of care (outpatient)\"", "payer": "anthem", "count": 61 },
-   { "reason": "\"Assessment is not current\"", "payer": "humana", "count": 48 },
-   { "reason": "\"Co-occurring condition not documented\"", "payer": "uhc", "count": 39 },
-   { "reason": "\"No documented use in the last 30 days\"", "payer": "aetna", "count": 31 },
-   { "reason": "\"Already connected to other services\"", "payer": "anthem", "count": 27 },
-   { "reason": "\"Recovery environment is supportive\"", "payer": "sentara", "count": 22 },
-   { "reason": "\"No withdrawal risk documented\"", "payer": "uhc", "count": 18 },
-   { "reason": "\"Not engaging in treatment\"", "payer": "humana", "count": 14 }
+   {
+    "reason": "\"Does not meet ASAM Level 2.1 criteria\"",
+    "payer": "sentara",
+    "count": 74
+   },
+   {
+    "reason": "\"Can be managed at a lower level of care (outpatient)\"",
+    "payer": "anthem",
+    "count": 61
+   },
+   {
+    "reason": "\"Assessment is not current\"",
+    "payer": "humana",
+    "count": 48
+   },
+   {
+    "reason": "\"Co-occurring condition not documented\"",
+    "payer": "uhc",
+    "count": 39
+   },
+   {
+    "reason": "\"No documented use in the last 30 days\"",
+    "payer": "aetna",
+    "count": 31
+   },
+   {
+    "reason": "\"Already connected to other services\"",
+    "payer": "anthem",
+    "count": 27
+   },
+   {
+    "reason": "\"Recovery environment is supportive\"",
+    "payer": "sentara",
+    "count": 22
+   },
+   {
+    "reason": "\"No withdrawal risk documented\"",
+    "payer": "uhc",
+    "count": 18
+   },
+   {
+    "reason": "\"Not engaging in treatment\"",
+    "payer": "humana",
+    "count": 14
+   }
   ],
   "historical_cards": [
    {
     "kind": "approved",
     "label": "Approved case · high similarity",
     "likelihood": 72,
-    "points": ["Same level of care and the same dimensions rated above Level 1", "Dated records on file for every rated dimension", "Reassessment inside the payer's limit"]
+    "points": [
+     "Same level of care and the same dimensions rated above Level 1",
+     "Dated records on file for every rated dimension",
+     "Reassessment inside the payer's limit"
+    ]
    },
    {
     "kind": "approved",
     "label": "Approved case · similar trajectory",
     "likelihood": 67,
-    "points": ["Similar level and ratings, one dimension with fewer records", "Reason for the level stated beyond the ratings", "Lower level of care already tried and documented"]
+    "points": [
+     "Similar level and ratings, one dimension with fewer records",
+     "Reason for the level stated beyond the ratings",
+     "Lower level of care already tried and documented"
+    ]
    },
    {
     "kind": "denied",
     "label": "Denied case · documentation gap",
     "likelihood": 36,
-    "points": ["Similar level and ratings", "Reassessment older than the payer's limit", "Reason for the level not stated beyond the ratings"]
+    "points": [
+     "Similar level and ratings",
+     "Reassessment older than the payer's limit",
+     "Reason for the level not stated beyond the ratings"
+    ]
    }
   ],
   "appeals": {
@@ -70,17 +118,51 @@
    "p2p_overturn_pct": 62,
    "note": "Analogous cases are an illustrative sample: appeals at this payer for the same reason and the same level of care.",
    "strategies": [
-    { "key": "ratings", "label": "Quote the six ratings against the payer's own level criteria", "success": 78 },
-    { "key": "cooccurring", "label": "Show the co-occurring condition needs this level of care", "success": 72 },
-    { "key": "stepdown", "label": "Show no step-down place is secured yet", "success": 67 },
-    { "key": "reassess", "label": "Reassess, then reply with the new ratings", "success": 66 },
-    { "key": "medication", "label": "Show a medication change is still settling", "success": 57 }
+    {
+     "key": "ratings",
+     "label": "Quote the six ratings against the payer's own level criteria",
+     "success": 78
+    },
+    {
+     "key": "cooccurring",
+     "label": "Show the co-occurring condition needs this level of care",
+     "success": 72
+    },
+    {
+     "key": "stepdown",
+     "label": "Show no step-down place is secured yet",
+     "success": 67
+    },
+    {
+     "key": "reassess",
+     "label": "Reassess, then reply with the new ratings",
+     "success": 66
+    },
+    {
+     "key": "medication",
+     "label": "Show a medication change is still settling",
+     "success": 57
+    }
    ]
   },
   "override_baseline": {
-   "none": { "count": 156, "success": 89 },
-   "partial": { "count": 46, "success": 76 },
-   "full": { "count": 6, "success": 45 }
+   "none": {
+    "count": 156,
+    "success": 89
+   },
+   "partial": {
+    "count": 46,
+    "success": 76
+   },
+   "full": {
+    "count": 6,
+    "success": 45
+   }
   }
+ },
+ "intel_live": {
+  "none": 0,
+  "partial": 0,
+  "full": 0
  }
 }

@@ -67,6 +67,9 @@ await T.test('insights: KPIs, approval by payer, denial reasons by payer (percen
   const l3 = authRecsFor(s0, byId(s0.requests, 'R-0395')); await api('recs.decide', { scope: 'auth', ref: 'R-0395', key: l3[0].key, state: 'dismissed' }, 'jperez');
   const s1 = await state('jperez'); const o1 = overridePatterns(s1); assert.eq(o1.liveTotal, 3); assert.eq(o1.rows[0].count, base[0] + 1, 'no override'); assert.eq(o1.rows[1].count, base[1] + 1, 'partial'); assert.eq(o1.rows[2].count, base[2] + 1, 'full'); assert.eq(o1.rows[0].live, 1);
   assert.ok(o1.autonomy >= 0 && o1.autonomy <= 100);
+  // every staff role reads the same override figures: the aggregate lives in state, the decisions themselves stay clinician-only
+  const sa = await state('dowens'); assert.deepEq(sa.rec_decisions, [], 'the administrator receives no decisions'); assert.deepEq(sa.intel_live, s1.intel_live, 'but the same aggregate');
+  assert.eq(insights(sa).kpis[3].value, insights(s1).kpis[3].value, 'the same autonomy rate for the administrator'); assert.deepEq(overridePatterns(sa).rows.map(r => r.count), o1.rows.map(r => r.count));
 });
 await T.test('the audit entry for a footer action: clinicians only, a known kind and scope, no text copied into the log', async () => {
   const ok = await api('intel.event', { kind: 'refine', scope: 'auth', ref: 'R-0402', note: 'private clinician words' }, 'jperez'); assert.eq(ok.logged, 'refine'); assert.eq(ok.noted, true);
