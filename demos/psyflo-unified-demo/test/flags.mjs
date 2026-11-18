@@ -178,24 +178,27 @@ try {
     await p.getByRole('dialog').getByRole('button', { name: 'Keep the flag' }).click(); await p.waitForTimeout(300);
     await p.locator('#a-fban [data-flag]').click(); await p.getByRole('dialog').getByRole('button', { name: 'Clear flag' }).click(); await p.waitForTimeout(900);
     assert.eq(await p.locator('#a-fban').count(), 0, 'the banner is gone'); assert.eq((await flagsOf('cdiaz')).find(f => f.request === 'R-0391').status, 'cleared');
-    assert.match(await p.locator('.hx__r').first().innerText(), /Flag cleared/); assert.match(await p.locator('.hx__r').first().innerText(), /Staff · C\. Diaz/);
     assert.eq(await p.locator('.ui-hcard [data-flag]').getAttribute('aria-pressed'), 'false');
+    await p.locator('#a-more-history').click(); await p.waitForSelector('.ui-dialog--drawer .hx__r');   // R6: History is a side drawer
+    assert.match(await p.locator('.hx__r').first().innerText(), /Flag cleared/); assert.match(await p.locator('.hx__r').first().innerText(), /Staff · C\. Diaz/);
     assert.deepEq(realErrs(errs), []); await p.context().close();
   });
-  await T.test('case page History: actor tags, a filter by who with counts, a pop-up per row, Add to history; the Simulated chip on stub steps', async () => {
+  await T.test('case page History (a side drawer): actor tags, a filter by who with counts, a pop-up per row, Add to history; the Simulated chip on stub steps', async () => {
     await reset('canvas'); const { p, errs } = await mk('jperez'); await p.goto(BASE + '/#/Authorization?id=R-0399'); await p.waitForTimeout(900);
+    assert.eq(await p.locator('.hx__r').count(), 0, 'R6: History is not on the page'); await p.locator('#a-more-history').click(); await p.waitForSelector('.ui-dialog--drawer .hx__r');
+    const D = p.locator('.ui-dialog--drawer'); const M = p.locator('.ui-dialog[data-kind="modal"]');
     const total = await p.locator('.hx__r').count(); assert.ok(total >= 4, 'rows ' + total);
-    assert.match(await p.locator('.hx__n').innerText(), new RegExp(`${total} events`)); assert.ok(await p.locator('.hx__r', { hasText: 'Simulated' }).locator('.hx__g.k-agent').count() >= 1, 'the Sfax receipt is the Psyflo agent and says Simulated');
+    assert.match(await D.locator('.a-dw__h').innerText(), new RegExp(`${total} events`)); assert.ok(await p.locator('.hx__r', { hasText: 'Simulated' }).locator('.hx__g.k-agent').count() >= 1, 'the Sfax receipt is the Psyflo agent and says Simulated');
     const chips = await p.locator('.hx__c').allInnerTexts(); assert.match(chips[0], new RegExp('^All\\s*' + total)); assert.ok(chips.some(c => /^Staff/.test(c)) && chips.some(c => /^Psyflo agent/.test(c)));
     await p.locator('.hx__c', { hasText: /^Psyflo agent/ }).click(); await p.waitForTimeout(300);
     assert.ok(await p.locator('.hx__r').count() < total, 'filtered'); assert.eq(await p.locator('.hx__r .hx__g:not(.k-agent)').count(), 0, 'only the Psyflo agent'); assert.eq(await p.locator('.hx__c[aria-pressed="true"]').count(), 1);
     await p.locator('.hx__c', { hasText: /^All/ }).click(); await p.waitForTimeout(300); assert.eq(await p.locator('.hx__r').count(), total);
-    await p.locator('.hx__r').first().focus(); await p.keyboard.press('Enter'); await p.waitForSelector('.ui-dialog'); assert.match(await p.locator('.ui-dialog').innerText(), /What[\s\S]*When[\s\S]*Who/); await p.keyboard.press('Escape'); await p.waitForTimeout(300);
-    await p.getByRole('button', { name: /Add to history/ }).click(); await p.getByRole('dialog').getByRole('button', { name: 'Add', exact: true }).click(); await p.waitForTimeout(300);
-    assert.ok(await p.getByRole('dialog').count(), 'an empty entry is refused'); await p.selectOption('#a-h-k', 'payer'); await p.fill('#a-h-t', 'Humana intake says the packet is in review');
-    await p.getByRole('dialog').getByRole('button', { name: 'Add', exact: true }).click(); await p.waitForTimeout(900);
-    assert.eq(await p.locator('.hx__r').count(), total + 1); assert.match(await p.locator('.hx__r').first().innerText(), /Payer contact/); assert.ok(await p.locator('.hx__r').first().locator('.hx__g.k-payer').count(), 'a payer contact is tagged Payer (the artifact tags what the payer said, recorded by staff)');
-    await p.locator('.hx__r').first().click(); await p.waitForSelector('.ui-dialog'); assert.match(await p.locator('.ui-dialog').innerText(), /J\. Perez/, 'the pop-up says who recorded it'); await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+    await p.locator('.hx__r').first().focus(); await p.keyboard.press('Enter'); await p.waitForSelector('.ui-dialog[data-kind="modal"]'); assert.match(await M.innerText(), /What[\s\S]*When[\s\S]*Who/); await p.keyboard.press('Escape'); await p.waitForTimeout(300);
+    await p.getByRole('button', { name: /Add to history/ }).click(); await M.getByRole('button', { name: 'Add', exact: true }).click(); await p.waitForTimeout(300);
+    assert.ok(await M.count(), 'an empty entry is refused'); await p.selectOption('#a-h-k', 'payer'); await p.fill('#a-h-t', 'Humana intake says the packet is in review');
+    await M.getByRole('button', { name: 'Add', exact: true }).click(); await p.waitForTimeout(900);
+    assert.eq(await p.locator('.hx__r').count(), total + 1, 'the open drawer shows the new row'); assert.match(await p.locator('.hx__r').first().innerText(), /Payer contact/); assert.ok(await p.locator('.hx__r').first().locator('.hx__g.k-payer').count(), 'a payer contact is tagged Payer (the artifact tags what the payer said, recorded by staff)');
+    await p.locator('.hx__r').first().click(); await p.waitForSelector('.ui-dialog[data-kind="modal"]'); assert.match(await M.innerText(), /J\. Perez/, 'the pop-up says who recorded it'); await p.keyboard.press('Escape'); await p.waitForTimeout(300);
     assert.ok((await state('jperez')).events.some(e => e.record === 'R-0399' && /^Payer contact · Humana intake says/.test(e.what) && e.who === 'jperez'), 'audited');
     await p.screenshot({ path: process.env.SHOTS ? process.env.SHOTS + '/authorization-history-1440.png' : undefined, fullPage: true }).catch(() => { });
     assert.deepEq(realErrs(errs), []); await p.context().close();

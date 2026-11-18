@@ -28,7 +28,7 @@ async function panelText(as, next, wait = 2300) {
 async function uiText(who, hash, { wait = 1300, presenter = false } = {}) {
   const ctx = await b.newContext({ viewport: { width: 1440, height: 900 } }); const p = await ctx.newPage(); const e = errors(p);
   if (who) await login(p, who, { presenter }); await p.goto(BASE + '/#' + hash); await p.waitForTimeout(wait);
-  const out = { text: (await p.locator('#root').innerText()).replace(/\s+/g, ' '), hash: await p.evaluate(() => location.hash), html: await p.content(), page: p, ctx, errs: e }; return out;
+  const out = { text: ((await p.locator('#root').innerText()) + ' ' + (await p.locator('.ui-dialog--drawer').allInnerTexts()).join(' ')).replace(/\s+/g, ' '),   /* R6: a case section opened by ?section= is a side drawer: its text counts */ hash: await p.evaluate(() => location.hash), html: await p.content(), page: p, ctx, errs: e }; return out;
 }
 
 await reset('live');

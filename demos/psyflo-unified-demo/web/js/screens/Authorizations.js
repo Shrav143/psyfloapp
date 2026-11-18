@@ -1,8 +1,11 @@
 // 29 · Authorizations — the work queue over request.stage (E2), laid out like the artifact's All Authorizations (R3) and formatted like Denial Intelligence (R4:
-// ui.dateCard, the shared page, filter grid, table and cells; sources and lines are icons with a hover definition): a period card, one grid of
-// twelve filters (the last two are the ASAM level of care and the reassessment state), one table (Consumer · Level of care · Payer · Assigned clinician ·
-// Authorization period · Requested · Approved · Remaining · Status · Next action), the pager at the bottom. The Level of care cell holds the service
-// ("IOP day · H0015") with the ASAM level beneath, the match-state chip from the client's latest assessment and the reassessment flag (sel/asam-view.js). Selectors: shared/sel/auth.js. One row per request; the row opens the case.
+// ui.dateCard, the shared page, filter grid, table and cells; sources and lines are icons with a hover definition).
+// R6 · simpler, with a side drawer: the page shows the search, the Status filter and one Filters button; every other filter, the Authorization period card and
+// the sort live in the Filters drawer. The table keeps what decides the order: Consumer · Level of care · Payer · Assigned clinician · Remaining (with what was
+// requested and approved) · Status (with the request type and period) · Next action, and, for the treating clinician only, Suggestions: a small chip "3 · 2 high"
+// that opens the "Suggested by Psyflo" drawer for that row without leaving the list (web/js/screens/AuthRecs.js). The Level of care cell holds the service
+// ("IOP day · H0015") with the ASAM level beneath, the match-state chip from the client's latest assessment and the reassessment flag (sel/asam-view.js).
+// Selectors: shared/sel/auth.js. One row per request; the row opens the case.
 // Also exports small helpers shared by the other request screens (Sent, Info request, Partials, Early discharge, Peer-to-peer)
 // so they read requests the same way. Keep these exports: other screens import them.
 import { register, Screen, M, raw, esc, ui, modal, toast, session, api, canOpen } from '../app.js';
@@ -14,6 +17,7 @@ import { A_CSS } from './a-css.js';
 import { deadlineCell, ownerCell, svcShort } from './a-fmt.js';
 import { ASAM_CSS, levelCell } from './asam-ui.js';
 import { REASSESS_FILTERS } from '../shared/sel/asam-view.js';
+import { mayRecs, recsFor, recChip, openRecs, RECS_CSS } from './AuthRecs.js';
 
 // ---------- shared request helpers ----------
 export const details = (s, id) => (s.request_details && s.request_details[id]) || {};
@@ -90,8 +94,32 @@ const COLS_HELP = 'Sorted by what is most urgent. Click a column to sort.';
 const KEYS = ['q', 'status', 'payer', 'service', 'type', 'owner', 'site', 'school', 'level', 'reassess', 'units', 'due'];
 const KIND = { initial: 'Initial SRA', early_discharge_new_initial: 'Initial SRA', continued_stay: 'Concurrent SRA', concurrent: 'Concurrent SRA' };
 
-// 29 · All Authorizations. Every filter is on the page (nothing behind a "More filters" disclosure). The units are one bar ("110 left of 150", a
-// yellow flag from 75% used); the Next action cell holds the one button, the deadline with its icon, and the flag button.
+// 29 · All Authorizations. First sight: search, Status, one Filters button, the table. Filters drawer: the Authorization period card, ten more filters, the sort.
+// The units are one bar ("110 left of 150", a yellow flag from 75% used); the Next action cell holds the one button, the deadline with its icon, and the flag button.
+const SORTS = [['', 'Most urgent first'], ['case', 'Consumer'], ['level', 'Level of care'], ['payer', 'Payer'], ['owner', 'Assigned clinician'], ['period', 'Authorization period'], ['requested', 'Units requested'], ['approved', 'Units approved'], ['units', 'Units remaining'], ['status', 'Status'], ['deadline', 'Next action date']];
+const LIST_CSS = `
+.a-page .a-fr{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 14px}
+.a-page .a-fr .ui-fbar{display:flex;flex:1 1 360px;grid-template-columns:none;gap:12px 14px;align-items:flex-end}
+.a-page .a-fr .ui-fbar .ui-fsearch{flex:1 1 220px;order:-1}
+.a-page .a-fr .ui-fbar .ui-fsel{flex:0 1 220px;min-width:160px}
+.a-fr__b{flex:0 0 auto;min-height:44px}
+.a-fd{display:flex;flex-direction:column;gap:var(--sp-4)}
+.a-fd .ui-fbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;gap:12px}
+@media (max-width:520px){.a-fd .ui-fbar{grid-template-columns:1fr}}
+.a-fd .ui-fcount{grid-column:1/-1}
+.a-fd .ui-fsel{width:100%}.a-fd .ui-fsel .ui-select{width:100%;max-width:none}
+.a-fd .ui-datecard{width:100%;max-width:none}
+.a-fd__sort{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:12px}
+.a-fd__sort .ui-fsel{margin:0}
+.a-sub-l{display:block;margin-top:2px}
+.a-c-recs{white-space:nowrap}
+.a-owner-l{display:none}
+@media (max-width:1599px){.a-owner-l{display:block}}
+@media (min-width:1600px){.a-c-case{min-width:90px}}
+@media (max-width:1599px){.ui-hide-lt-1600{display:none}}
+.a-recchip--m{display:none;margin-top:6px}
+@media (max-width:767px){.a-recchip--m{display:inline-flex}.a-fd__sort{grid-template-columns:1fr}}
+`;
 register('Authorizations', class extends Screen {
   init() {
     const f = normalizeParams(this.params, this.s.today);
@@ -100,21 +128,27 @@ register('Authorizations', class extends Screen {
     // a v3 link (show= st= exp= range= ) or an old tab link lands on the canonical names; the address says so
     if (LEGACY_KEYS.some(k => this.params[k] != null)) ui.query.writeQuery({ status: f.status, stage: f.stage, ends: f.ends, from: f.from, to: f.to, show: '', st: '', exp: '', range: '', tab: '' });
     this.ends = f.ends || '';
+    this.fd = null;   // the open Filters drawer
   }
-  get css() { return A_CSS + ASAM_CSS; }
+  get css() { return A_CSS + ASAM_CSS + RECS_CSS + LIST_CSS; }
   get me() { return session.actor; }
   filters() { const st = this.state; return { ...st.f, stage: st.stage, ends: this.ends, from: st.range.from, to: st.range.to, sort: st.sort.key === 'priority' ? '' : st.sort.key, dir: st.sort.dir }; }
   setF(next) { this.setState({ f: { ...this.state.f, ...next }, page: 1 }); ui.query.writeQuery({ page: '' }); }
-  renderVals() {
-    const s = this.s; const me = this.me; const st = this.state;
-    const q = authQueue(s, this.filters(), me); const o = queueOptions(s, me);
+  // how many of the filters that live in the drawer are set (the number on the Filters button)
+  hiddenActive() { const st = this.state; return KEYS.filter(k => k !== 'q' && k !== 'status' && st.f[k]).length + (st.stage ? 1 : 0) + (this.ends ? 1 : 0) + (st.range.from || st.range.to ? 1 : 0); }
+  // the Filters drawer: the Authorization period card, the other ten filters and the sort (the same controls, the same address, the same state as before)
+  filtersHtml() {
+    const s = this.s; const st = this.state; const o = queueOptions(s, this.me);
     const opt = (head, list) => [['', head], ...list];
-    const active = KEYS.filter(k => st.f[k]).length + (st.stage ? 1 : 0) + (this.ends ? 1 : 0) + (st.range.from || st.range.to ? 1 : 0);
+    const range = ui.dateCard({
+      id: 'auth-dc', title: 'Authorization period', from: st.range.from, to: st.range.to,
+      hint: 'The dates match any overlap with the authorization period. An Ends in chip matches the date the authorization ends instead.',
+      chips: ['7', '30', '60'].map(d => ({ key: d, label: `Ends in ${d} days`, on: this.ends === d })),
+      onChange: c => { this.onDates(c); this.refreshFilters(); }
+    });
     const bar = ui.filterBar({
-      id: 'auth-f', label: 'Authorization filters', state: st.f,
-      search: { key: 'q', placeholder: 'Initials or Lauris #', label: 'Search authorizations' },
+      id: 'auth-f2', label: 'More authorization filters', state: st.f,
       selects: [
-        { key: 'status', label: 'Status', options: opt('All statuses', CHIPS.map(c => [c.value, c.label])) },
         { key: 'payer', label: 'Payer', options: opt('All payers', o.payers) },
         { key: 'service', label: 'Service type', options: opt('All services', o.services) },
         { key: 'type', label: 'Request type', options: opt('All requests', o.types) },
@@ -126,20 +160,60 @@ register('Authorizations', class extends Screen {
         { key: 'units', label: 'Units remaining', options: [['', 'Any'], ['25', '25% or less'], ['50', '50% or less'], ['warn', 'Flagged (75% used)']] },
         { key: 'due', label: 'Next step due', options: [['', 'Any time'], ['overdue', 'Overdue'], ['today', 'Today'], ['7', 'In 7 days'], ['30', 'In 30 days']] }
       ],
+      onChange: f => { this.setF(f); this.refreshFilters(); }, onClear: f => { this.clearAll(f); this.refreshFilters(); }
+    });
+    const sk = st.sort.key === 'priority' ? '' : st.sort.key;
+    const sort = `<div class="a-fd__sort"><label class="ui-fsel"><span class="ui-fsel__l">Sort by</span><select class="ui-select" id="a-sort-k">${SORTS.map(([v, l]) => `<option value="${esc(v)}"${v === sk ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select></label><label class="ui-fsel"><span class="ui-fsel__l">Order</span><select class="ui-select" id="a-sort-d"><option value="asc"${st.sort.dir !== 'desc' ? ' selected' : ''}>Ascending</option><option value="desc"${st.sort.dir === 'desc' ? ' selected' : ''}>Descending</option></select></label></div>`;
+    return `<div class="a-fd">${range}${bar}${sort}</div>`;
+  }
+  shownCount() { return authQueue(this.s, this.filters(), this.me).shown; }
+  refreshFilters() {
+    const d = this.fd; if (!d || !d.dialog || !d.dialog.isConnected) { this.fd = null; return; }
+    const ae = document.activeElement; const id = ae && ae.id && d.dialog.contains(ae) ? ae.id : '';
+    d.update({ body: this.filtersHtml() });
+    const n = this.shownCount(); const go = d.dialog.querySelector('[data-ui-action="0"]'); if (go) go.textContent = `Show ${n} authorization${n === 1 ? '' : 's'}`;
+    if (id) { const el = d.dialog.querySelector('#' + CSS.escape(id)); if (el) el.focus({ preventScroll: true }); }
+  }
+  openFilters(opener) {
+    if (this.fd) return;
+    const n = this.shownCount();
+    ui.drawer({ title: 'Filters', body: this.filtersHtml(), returnFocus: opener || null, actions: [{ label: `Show ${n} authorization${n === 1 ? '' : 's'}`, tone: 'primary' }],
+      onClose: () => { this.fd = null; },
+      onMount: (dlg, h) => {
+        this.fd = h;
+        dlg.addEventListener('change', e => {
+          if (e.target.id !== 'a-sort-k' && e.target.id !== 'a-sort-d') return;
+          const k = dlg.querySelector('#a-sort-k').value; const dir = dlg.querySelector('#a-sort-d').value;
+          this.setState({ sort: { key: k || 'priority', dir }, page: 1 }); ui.query.writeQuery({ sort: k, dir: k ? dir : '', page: '' });
+          this.refreshFilters();
+        });
+      } });
+  }
+  renderVals() {
+    const s = this.s; const me = this.me; const st = this.state;
+    const q = authQueue(s, this.filters(), me);
+    const opt = (head, list) => [['', head], ...list];
+    const active = KEYS.filter(k => st.f[k]).length + (st.stage ? 1 : 0) + (this.ends ? 1 : 0) + (st.range.from || st.range.to ? 1 : 0);
+    const hidden = this.hiddenActive();
+    const bar = ui.filterBar({
+      id: 'auth-f', label: 'Authorization filters', state: st.f,
+      search: { key: 'q', placeholder: 'Initials or Lauris #', label: 'Search authorizations' },
+      selects: [{ key: 'status', label: 'Status', options: opt('All statuses', CHIPS.map(c => [c.value, c.label])) }],
       onChange: f => this.setF(f), onClear: f => this.clearAll(f)
     });
     const rows = ui.pager.slice(q.rows, { size: st.size, page: st.page });
+    const recs = mayRecs(me);
+    const recsOf = new Map(recs ? rows.map(r => [r.id, recsFor(s, r.id)]) : []);
+    const W = recs ? ['9%', '16%', '10%', '9%', '14%', '14%', '17%', '11%'] : ['10%', '18%', '11%', '9%', '16%', '16%', '20%'];   // column widths: the Suggestions column is the clinician's
     const cols = [
-      { key: 'case', label: 'Consumer', sort: true, primary: true, width: '8%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.initials)}</b></span>${r.lauris ? `<span class="ui-sub ui-nw">Lauris #${esc(r.lauris)}</span>` : ''}` },
-      { key: 'level', label: 'Level of care', sort: true, hideBelow: 768, width: '15%', className: 'a-c-level', render: r => levelCell(r.asam, { svc: `${esc(svcShort(r.serviceLabel))}${r.serviceCode ? ' · ' + esc(r.serviceCode) : ''}` }) },
-      { key: 'payer', label: 'Payer', sort: true, hideBelow: 768, width: '9%', render: r => `<span title="${esc(r.payerFull)}">${esc(r.payerId === 'uhc' ? 'UHC' : r.payer)}</span>` },
-      { key: 'owner', label: 'Assigned clinician', sort: true, hideBelow: 1280, width: '8%', render: r => ownerCell(r.owner.short, r.owner.backup && r.owner.backup.name) },
-      { key: 'period', label: 'Authorization period', sort: true, hideBelow: 1024, width: '10%', render: r => `${r.periodText ? `<span class="ui-nw">${esc(r.periodText)}</span>` : '<span class="ui-muted">—</span>'}<span class="ui-sub">${esc(KIND[r.type] || r.typeLabel)}</span>` },
-      { key: 'requested', label: 'Requested', sort: true, align: 'right', hideBelow: 768, width: '6%', render: r => this.num(r.units.requested) },
-      { key: 'approved', label: 'Approved', sort: true, align: 'right', hideBelow: 768, width: '6%', render: r => r.units.awarded != null ? this.num(r.units.awarded) : r.units.offered != null ? `${this.num(r.units.offered)}<span class="ui-sub">offered</span>` : this.num(null) },
-      { key: 'units', label: 'Remaining', sort: true, width: '12%', className: 'a-c-units', render: r => this.unitsCell(r) },
-      { key: 'status', label: 'Status', sort: true, width: '11%', render: r => ui.statusChip(r.stage) },
-      { key: 'deadline', label: 'Next action', sort: true, width: '16%', className: 'a-c-next', render: r => this.nextCell(r) }
+      { key: 'case', label: 'Consumer', sort: true, primary: true, width: W[0], className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.initials)}</b></span>${r.lauris ? `<span class="ui-sub ui-nw">Lauris #${esc(r.lauris)}</span>` : ''}<span class="ui-sub a-owner-l">${esc(r.owner.short)}</span>` },
+      { key: 'level', label: 'Level of care', sort: true, hideBelow: 768, width: W[1], className: 'a-c-level', render: r => levelCell(r.asam, { svc: `${esc(svcShort(r.serviceLabel))}${r.serviceCode ? ' · ' + esc(r.serviceCode) : ''}` }) },
+      { key: 'payer', label: 'Payer', sort: true, hideBelow: 768, width: W[2], render: r => `<span title="${esc(r.payerFull)}">${esc(r.payerId === 'uhc' ? 'UHC' : r.payer)}</span>` },
+      { key: 'owner', label: 'Assigned clinician', sort: true, hideBelow: 1600, width: W[3], render: r => ownerCell(r.owner.short, r.owner.backup && r.owner.backup.name) },
+      { key: 'units', label: 'Remaining', sort: true, width: W[4], className: 'a-c-units', render: r => this.unitsCell(r) },
+      { key: 'status', label: 'Status', sort: true, width: W[5], render: r => this.statusCell(r) },
+      { key: 'deadline', label: 'Next action', sort: true, width: W[6], className: 'a-c-next', render: r => this.nextCell(r, recs ? recsOf.get(r.id) : null) },
+      ...(recs ? [{ key: 'recs', label: 'Suggestions', hideBelow: 768, width: W[7], className: 'a-c-recs', render: r => recChip(r.id, recsOf.get(r.id) || [], r.initials) }] : [])
     ];
     const table = ui.queueTable({
       id: 'auth', caption: 'Authorizations', columns: cols, rows, rowId: r => r.id, href: r => caseHref(r.id),
@@ -149,38 +223,40 @@ register('Authorizations', class extends Screen {
     const pager = ui.pager({ id: 'auth-pg', total: q.shown, size: st.size, page: st.page, noun: NOUN, label: 'Authorizations pages', onChange: ({ size, page }) => this.setState({ size, page }) });
     const canDraft = !!me && can(me, 'drafts.clinical');
     const action = canDraft ? `<a class="ui-btn ui-btn--primary" href="ExtCase.dc.html">Start continued stay</a>` : '';
-    const dateCard = ui.dateCard({
-      id: 'auth-dc', title: 'Authorization period', from: st.range.from, to: st.range.to,
-      hint: 'The dates match any overlap with the authorization period. An Ends in chip matches the date the authorization ends instead.',
-      chips: ['7', '30', '60'].map(d => ({ key: d, label: `Ends in ${d} days`, on: this.ends === d })),
-      onChange: c => this.onDates(c)
-    });
     const stageNote = st.stage ? `<div class="ui-stagenote" role="status"><span>Stage: <b>${esc(M.STAGE_LABEL[st.stage] || st.stage)}</b></span><button type="button" class="ui-linkbtn" data-x="stage-clear">Clear stage</button></div>` : '';
     const clear = active ? `<div class="ui-fclear"><button type="button" class="ui-linkbtn" data-x="clear-all">Clear all filters (${active})</button></div>` : '';
-    return { bar: raw(bar), stage: raw(stageNote), clear: raw(clear), queue: raw(table), pager: raw(pager), action: raw(action), range: raw(dateCard), maturity: raw(ui.maturity('route.Authorizations')), help: raw(ui.infoPopover({ label: 'About this table', title: 'Authorizations', html: `<p>${esc(COLS_HELP)}</p><p>Remaining shows what is left of the units. It turns yellow once ${esc(String(ruleWarn(s)))}% of the units are used. A warning icon beside a date means due soon or overdue; hover it for the reason. The small icon after a date shows where the number comes from (Officially verified, Payer-specific, Harvest-reported or Unverified demo assumption) when you hover it.</p><p>Level of care shows the service, the ASAM level the request asks for, and a chip for what the client's latest assessment says about it (ratings support it, a step-down is likely, or the ratings point higher). A flag appears when the reassessment is due or overdue, when an incident came after the last assessment, or when the level is above or below what the ratings fit. The ratings are the clinician's; the level the ratings fit is only suggested.</p><p>The flag button marks an authorization for attention. The people who work authorizations see it here and in their notifications (the bell at the top right).</p>` })) };
+    const fbtn = `<button type="button" class="ui-btn ui-btn--secondary a-fr__b" id="a-filters" data-ui-return="a-filters" data-x="filters" aria-haspopup="dialog">${ui.icon('sort', 16)} Filters${hidden ? ` (${hidden})` : ''}</button>`;
+    return { bar: raw(`<div class="a-fr">${bar}${fbtn}</div>`), stage: raw(stageNote), clear: raw(clear), queue: raw(table), pager: raw(pager), action: raw(action), range: raw(''), maturity: raw(ui.maturity('route.Authorizations')), help: raw(ui.infoPopover({ label: 'About this table', title: 'Authorizations', html: `<p>${esc(COLS_HELP)}</p><p>Remaining shows what is left of the units, with what was requested and approved beneath it. It turns yellow once ${esc(String(ruleWarn(s)))}% of the units are used. A warning icon beside a date means due soon or overdue; hover it for the reason. The small icon after a date shows where the number comes from (Officially verified, Payer-specific, Harvest-reported or Unverified demo assumption) when you hover it.</p><p>Level of care shows the service, the ASAM level the request asks for, and a chip for what the client's latest assessment says about it (ratings support it, a step-down is likely, or the ratings point higher). A flag appears when the reassessment is due or overdue, when an incident came after the last assessment, or when the level is above or below what the ratings fit. The ratings are the clinician's; the level the ratings fit is only suggested.</p><p>Status shows the request type and the authorization period. The Filters button opens the Authorization period card, the other filters and the sort.</p>${recs ? `<p>Suggestions (treating clinician only) shows how many suggestions Psyflo has for a request and how many are high impact. It opens the suggestions without leaving the list.</p>` : ''}<p>The flag button marks an authorization for attention. The people who work authorizations see it here and in their notifications (the bell at the top right).</p>` })) };
   }
   num(v) { return v == null ? '<span class="ui-muted" aria-label="Not recorded">—</span>' : `<b class="ui-num">${esc(String(v))}</b>`; }
   clearAll(f) {
     this.state.range = { from: '', to: '' }; this.ends = ''; this.state.stage = '';
     ui.query.writeQuery({ from: '', to: '', ends: '', stage: '', page: '' }); this.setF(f);
   }
+  // Remaining: the bar (or the text) and what was requested and approved beneath it
   unitsCell(r) {
     const u = r.units;
-    if (u.showBar) return ui.unitsBar({ total: u.total, used: u.used, left: u.left, warn: u.warn, warnPct: u.warnPct }, { compact: true });
+    if (u.showBar) return `${ui.unitsBar({ total: u.total, used: u.used, left: u.left, warn: u.warn, warnPct: u.warnPct }, { compact: true })}<span class="ui-sub a-sub-l">${esc(u.text)}</span>`;
     return `<span class="a-muted a-nw">${esc(u.text)}</span>`;
+  }
+  // Status: the chip, then the request type and the authorization period
+  statusCell(r) {
+    const sub = [KIND[r.type] || r.typeLabel, r.periodText].filter(Boolean).join(' · ');
+    return `${ui.statusChip(r.stage)}${sub ? `<span class="ui-sub a-sub-l">${esc(sub)}</span>` : ''}`;
   }
   deadlineLine(r, extra = '') {
     const d = r.deadline; if (d.kind === 'none') return extra ? `<div class="ui-dlcell">${extra}</div>` : '';
     const why = [d.text, d.sub].filter(Boolean).join(' · ');
     return deadlineCell({ date: d.date ? String(d.date).slice(0, 10) : '', sev: d.sev, why, text: d.short ? `${d.short}` : d.text }, d.rule, extra);
   }
-  nextCell(r) {
+  nextCell(r, recs) {
     const n = r.next; const href = n.di && (canOpen('DenialCase') || canOpen('Partials')) ? diHref(r.req) : caseHref(r.id);   // a denial-stage row opens the Denial Intelligence case for every role that may open it
     const btn = !n.allowed
       ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(href)}" title="${esc(n.why || 'Needs another role')}">View<span class="ui-sr"> ${esc(r.initials)}, ${esc(r.id)}. ${esc(n.label)}: ${esc(n.why || 'needs another role')}</span></a>`
       : `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(href)}">${esc(n.label)}<span class="ui-sr"> for ${esc(r.initials)}, ${esc(r.id)}</span></a>`;
     const fl = can(this.me, 'authorizations') ? flagButton({ id: r.id, label: r.label, flag: r.flag }, { label: false }) : '';
-    return `<div class="a-nx"><div class="a-nx__a">${btn}${fl}</div>${this.deadlineLine(r)}${r.flag ? `<div class="a-nx__f" title="Flagged by ${esc(r.flag.byShort || '')} · ${esc(r.flag.reasonLabel || '')}">${esc(r.flag.reasonLabel || 'Flagged')}</div>` : ''}</div>`;
+    const mini = recs ? recChip(r.id, recs, r.initials, { phone: true }) : '';   // phone widths: the Suggestions column is hidden, the chip sits here
+    return `<div class="a-nx"><div class="a-nx__a">${btn}${fl}</div>${this.deadlineLine(r)}${r.flag ? `<div class="a-nx__f" title="Flagged by ${esc(r.flag.byShort || '')} · ${esc(r.flag.reasonLabel || '')}">${esc(r.flag.reasonLabel || 'Flagged')}</div>` : ''}${mini}</div>`;
   }
   onDates({ from, to, chip }) {   // the date card: typing a date clears an Ends in chip; an Ends in chip keeps the dates
     this.state.range = { from, to }; this.ends = chip; this.state.page = 1;
@@ -189,9 +265,11 @@ register('Authorizations', class extends Screen {
   after(root) {
     root.querySelectorAll('[data-x="stage-clear"]').forEach(b => { b.onclick = () => { this.state.stage = ''; this.state.page = 1; ui.query.writeQuery({ stage: '', page: '' }); this.repaint(); }; });
     root.querySelectorAll('[data-x="clear-all"]').forEach(b => { b.onclick = () => this.clearAll(Object.fromEntries(KEYS.map(k => [k, '']))); });
+    root.querySelectorAll('[data-x="filters"]').forEach(b => { b.onclick = () => this.openFilters(b); });
     root.querySelectorAll('[data-flag]').forEach(b => {
       b.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); const row = (this.s.requests || []).find(x => x.id === b.dataset.flag); if (!row) return; const q = authQueue(this.s, {}, this.me).all.find(x => x.id === b.dataset.flag); openFlagDialog(this, { id: row.id, label: q ? q.initials : row.id, flag: q ? q.flag : null }, b); };
     });
+    root.querySelectorAll('[data-recs]').forEach(b => { b.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); if (mayRecs(this.me)) openRecs(this, b.dataset.recs, { opener: b }); }; });
   }
 });
 const ruleWarn = s => ((s.rules || []).find(r => r.key === 'units.warn_used_pct') || {}).value || 75;

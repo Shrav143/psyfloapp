@@ -53,7 +53,7 @@ export const panelFrame = p => p.frames().find(f => f.url().includes('/panel/'))
 export const panel = p => p.frameLocator('#psyflo-frame');
 export const formValues = p => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('#lauris-form label[for]')].map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
 export const yellow = p => p.evaluate(() => document.querySelectorAll('#lauris-form .in.y').length);
-export const mainText = p => p.locator('main').first().innerText();
+export const mainText = async p => [await p.locator('main').first().innerText(), ...(await p.locator('.ui-dialog--drawer').allInnerTexts())].join('\n');   // R6: a case section opened by a ?section= link is a side drawer outside <main>; its text counts as the page's
 export const rootText = p => p.evaluate(() => (document.getElementById('root') || document.body).innerText);
 export async function waitState(pred, { ms = 12000, as = 'jperez', what = 'state' } = {}) {
   const t0 = Date.now(); let s;
