@@ -220,7 +220,7 @@ try {
     const groups = await p.locator('.bell__g').allInnerTexts(); assert.ok(groups.some(g => /^Level of care/.test(g)), groups.join()); assert.match(await p.locator('.bell').innerText(), /D\.W\. · incident Oct 28 after the last assessment/);
     assert.deepEq(fatal(p), []); await done();
     const di = await open('jperez', '/#/DenialIntelligence', '#root .ui-qt__table');
-    assert.ok(await di.locator('[data-asam-dims]').count() >= 1, 'a case row names the dimensions its reason turns on'); const labels = await di.$$eval('#root .ui-fsel__l', ls => ls.map(l => l.innerText.trim())); assert.ok(labels.includes('ASAM dimension'));
+    assert.ok(await di.locator('[data-asam-dims]').count() >= 1, 'a case row names the dimensions its reason turns on'); await di.getByRole('button', { name: 'Filters' }).click(); await di.waitForSelector('[role=dialog] .ui-fsel__l'); const labels = await di.$$eval('[role=dialog] .ui-fsel__l', ls => ls.map(l => l.innerText.trim())); assert.ok(labels.includes('ASAM dimension'), 'R6: the dimension filter is in the Filters drawer');
     const all = await di.locator('tbody tr[data-ui-row]').count(); await di.selectOption('select[data-key="dim"]', 'level'); await di.waitForTimeout(400); const lv = await di.locator('tbody tr[data-ui-row]').count(); assert.ok(lv >= 1 && lv <= all, `level of care filter ${lv} of ${all}`); assert.match(await di.evaluate(() => location.hash), /dim=level/);
     assert.deepEq(fatal(di), []); await done();
   });

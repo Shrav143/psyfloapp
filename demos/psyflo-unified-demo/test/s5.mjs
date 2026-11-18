@@ -58,11 +58,11 @@ async function run(mode) {
     await F.step('2 evidence and options: dated sourced evidence, "Evidence missing — verify …" for what is not stored, only valid options, unverified paths labelled', async () => {
       await desk.goto(BASE + '/#/DenialCase?id=R-0402&section=evidence'); await desk.waitForSelector('.d-menu');
       let t = await rootText(desk); assert.match(t, /Evidence missing — verify what is likely to happen at a lower level of care/); assert.match(t, /Urine drug screen · THC positive/); assert.match(t, /D5 · Relapse and continued use · rated 3/, 'the clinician\'s dimension ratings are listed as evidence');
-      await desk.getByRole('link', { name: /^Overview/ }).click(); await desk.locator('#d-paths > summary').click(); t = await rootText(desk);
+      await desk.getByRole('link', { name: /^Overview/ }).click(); await desk.getByRole('button', { name: 'All paths', exact: true }).click(); t = await desk.getByRole('dialog').innerText();   // R6: All paths is a side drawer
       assert.match(t, /Accept decision/); assert.match(t, /Prepare peer-to-peer/); assert.match(t, /Payer rule not verified/); assert.match(t, /Not available here \(2\)/);
     });
     await F.step('3 choose peer-to-peer: stage peer_to_peer_requested; the page says it is NOT sent to the payer; a next task appears on the Dashboard; owner and deadline stay visible', async () => {
-      await desk.locator('#d-paths .d-opt').filter({ hasText: 'Prepare peer-to-peer' }).getByRole('button', { name: 'Open' }).click(); await desk.waitForSelector('#d-h-p2p');
+      await desk.getByRole('dialog').locator('.d-opt').filter({ hasText: 'Prepare peer-to-peer' }).getByRole('button', { name: 'Open' }).click(); await desk.waitForSelector('#d-h-p2p');
       await desk.getByRole('button', { name: /Ask Sentara for a peer-to-peer/ }).click(); await desk.getByRole('dialog').getByRole('button', { name: 'Log the request' }).click();
       const s = await waitState(x => req(x, 'R-0402').stage === 'peer_to_peer_requested', { what: 'peer_to_peer_requested' });
       assert.eq(req(s, 'R-0402').decision.door, 'p2p'); assert.eq(req(s, 'R-0402').decision.by, 'jperez'); assert.ok(s.events.some(e => e.record === 'R-0402' && /peer-to-peer/i.test(e.what) && e.who === 'jperez'));
