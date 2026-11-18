@@ -4,7 +4,11 @@
 //   recBlock(ctx, o) -> html       the block: heading, counter, cards, Add your own, Apply selected
 //   recActs / recIns / recChs      handlers a view spreads into its own acts / ins / chs (the core router finds them by data-act / data-in / data-ch)
 //
-//   o = { scope, ref, recs, fields?, boxes?, chips?(rec), heading?, sub?, apply(ctx, includedRecs), applyLabel?, applyHint?, canApply?, limit?, empty?, addBoxes? }
+//   o = { scope, ref, recs, fields?, boxes?, chips?(rec), heading?, sub?, apply(ctx, includedRecs), applyLabel?, applyHint?, canApply?, limit?, empty?, addBoxes?, footer?, numbered? }
+//     footer      (R7, Oprox parity) { refine?, context?, dismissAll? } adds Refine suggestions, Add clinical context and Dismiss suggestions under Apply selected (n); each is
+//                 logged with intel.event (kinds refine, context, dismissAll) exactly as the platform's footer logs it. Only the auth and denial scopes take it (intel.event knows
+//                 no other). The panel has no Submit button: it never sends anything.
+//     numbered    number the cards by their place in the full list (the platform's "What Psyflo would do" numbers them the same way)
 //     scope/ref   'auth' + request id · 'denial' + request id · 'note' + "<client>:<form>" (the note scope also sends `fields`, so the server recomputes the same list)
 //     boxes       the labels of the boxes on the open Lauris form (a card whose box is not on this form says so); null when the text goes to a packet
 //     apply       what "Apply selected" does with the included cards (the view knows: type into the form, or put them in the packet)
@@ -24,7 +28,7 @@ const slug = t => String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').repl
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 export const shortBox = label => String(label || '').replace(/^(Dimension \d)\s+[—·-].*$/, '$1');
 const lift = o => (o && o.lift ? `+${o.lift} pts · sample` : '');
-const xs = ctx => (ctx.st.rbx = ctx.st.rbx || { txt: {}, add: false, addTitle: '', addText: '', addBox: '', all: false, typed: [] });
+const xs = ctx => (ctx.st.rbx = ctx.st.rbx || { txt: {}, add: false, addTitle: '', addText: '', addBox: '', all: false, typed: [], ctx: false });
 
 function cardHTML(ctx, r, o) {
   const x = xs(ctx); const key = slug(r.key); const inc = r.state === 'included'; const need = !!r.needsInput;
@@ -58,7 +62,7 @@ function cardHTML(ctx, r, o) {
   const main = inc ? `<button type="button" class="btn o sm" data-act="recReopen" data-k="${esc(r.key)}">Take out</button>`
     : `<button type="button" class="btn p sm" data-act="recInclude" data-k="${esc(r.key)}"${need && !own.trim() ? ' disabled' : ''}>${doneOnly ? 'Mark done' : 'Include'}</button><button type="button" class="btn o sm" data-act="recDismiss" data-k="${esc(r.key)}">Dismiss</button>`;
   return `<li class="prc${inc ? ' inc' : ''}" data-rec="${esc(r.key)}" data-state="${esc(r.state)}"${r.custom ? ' data-custom="1"' : ''}>
-    <h3 class="prc-t">${esc(r.title)}</h3><div class="prc-m">${chips}</div>${more}${ask}
+    <h3 class="prc-t">${o.numbered ? `<span class="prc-n" aria-hidden="true">${(o.recs || []).indexOf(r) + 1}</span> ` : ''}${esc(r.title)}</h3><div class="prc-m">${chips}</div>${more}${ask}
     <div class="row w prc-a">${main}${go}${r.custom ? `<button type="button" class="btn o sm" data-act="recRemove" data-k="${esc(r.key)}">Remove</button>` : ''}</div></li>`;
 }
 
@@ -81,10 +85,13 @@ export function recBlock(ctx, o) {
   const canApply = o.canApply !== undefined ? o.canApply : ready > 0;
   const head = `<div class="row w prs-h"><h2 class="st" id="prs-h" style="flex:1">${esc(o.heading || 'Suggested by Psyflo')}</h2>${chip(sum.total ? `${sum.included} of ${sum.total} included` : 'Nothing to add', sum.included ? 'g' : 'n')}${ctx.ui.maturity({ level: 'simulated', note: OUTCOME_BASIS })}</div>`;
   const sub = `<p class="hint prs-s">${esc(o.sub || 'You decide. Each card uses stored records or your own words. Numbers marked sample are illustrative.')}</p>`;
-  const list = shown.length ? `<ul class="prl" aria-labelledby="prs-h">${shown.map(r => cardHTML(ctx, r, o)).join('')}</ul>` : `<p class="hint">${esc(o.empty || 'Nothing to suggest right now. The record answers what a reviewer usually asks.')}</p>`;
+  const tag = o.numbered ? 'ol' : 'ul';
+  const list = shown.length ? `<${tag} class="prl${o.numbered ? ' prl-n' : ''}" aria-labelledby="prs-h">${shown.map(r => cardHTML(ctx, r, o)).join('')}</${tag}>` : `<p class="hint">${esc(o.empty || 'Nothing to suggest right now. The record answers what a reviewer usually asks.')}</p>`;
   const more = hidden > 0 ? `<button type="button" class="btn o sm" data-act="recMore">Show ${plural(hidden, 'more suggestion', 'more suggestions')}</button>` : x.all && live.length > limit ? `<button type="button" class="btn o sm" data-act="recMore">Show fewer</button>` : '';
   const dismissed = gone.length ? `<details class="acc prs-g" data-acc="prs-gone"><summary><span>${plural(gone.length, 'dismissed suggestion', 'dismissed suggestions')}</span></summary><div>${gone.map(r => `<div class="row w prs-gr" data-rec="${esc(r.key)}"><span style="flex:1">${esc(r.title)}</span><button type="button" class="btn o sm" data-act="recReopen" data-k="${esc(r.key)}">Bring back</button></div>`).join('')}</div></details>` : '';
-  const foot = `<div class="row w prs-f"><button type="button" class="btn o" data-act="recAddOpen" ${x.add ? 'aria-expanded="true"' : 'aria-expanded="false"'}>Add your own</button><button type="button" class="btn p" data-act="recApply" style="flex:1"${canApply ? '' : ' disabled'}>${esc(o.applyLabel || 'Apply selected')}</button></div>${o.applyHint ? `<p class="hint">${esc(o.applyHint)}</p>` : ''}`;
+  const F = o.footer;
+  const moreActs = F ? `<div class="row w prs-m" role="group" aria-label="More actions">${F.refine ? '<button type="button" class="btn o sm" data-act="recRefine">Refine suggestions</button>' : ''}${F.context ? `<button type="button" class="btn o sm" data-act="recContext" aria-expanded="${x.add && x.ctx ? 'true' : 'false'}">Add clinical context</button>` : ''}${F.dismissAll && live.length ? '<button type="button" class="btn o sm" data-act="recDismissAll">Dismiss suggestions</button>' : ''}</div><p class="hint prs-l">All decisions are logged. Nothing is sent from here.</p>` : '';
+  const foot = `<div class="row w prs-f"><button type="button" class="btn o" data-act="recAddOpen" ${x.add ? 'aria-expanded="true"' : 'aria-expanded="false"'}>Add your own</button><button type="button" class="btn p" data-act="recApply" style="flex:1"${canApply ? '' : ' disabled'}>${esc(o.applyLabel || 'Apply selected')} (${ready})</button></div>${o.applyHint ? `<p class="hint">${esc(o.applyHint)}</p>` : ''}${moreActs}`;
   return `<section class="prs" aria-label="Suggested by Psyflo" data-rb data-scope="${esc(o.scope)}">${head}${sub}${list}${more}${dismissed}${x.add ? addHTML(ctx, o) : ''}${foot}</section>`;
 }
 
@@ -95,6 +102,15 @@ async function decide(ctx, key, state, context) {
   const { scope, ref, fields } = ctx.st.rb; const args = { scope, ref, key, state };
   if (context !== undefined) args.context = context; if (fields) args.fields = fields;
   return ctx.do('recs.decide', args);
+}
+// the footer's audit entry (R7): who pressed which button, never the words. A failed log never blocks the decision itself (the platform does the same).
+const logEvent = (ctx, kind) => { const { scope, ref } = ctx.st.rb; return ctx.do('intel.event', { scope, ref, kind }).catch(() => null); };
+const decideMany = (ctx, items) => { const { scope, ref, fields } = ctx.st.rb; return ctx.do('recs.decideMany', { scope, ref, items, ...(fields ? { fields } : {}) }); };
+// a criteria row's "See suggestion": show every card, then bring the one it names into view and put focus on it
+function seeCard(key) {
+  const li = [...document.querySelectorAll('#panel .prc[data-rec]')].find(e => e.dataset.rec === key); if (!li) return;
+  li.scrollIntoView({ block: 'center' }); li.classList.add('prc-focus');
+  const t = li.querySelector('textarea, button:not([disabled]), summary'); if (t) t.focus({ preventScroll: true });
 }
 export const recActs = {
   async recInclude(el, ctx) {
@@ -114,14 +130,33 @@ export const recActs = {
   },
   recGo(el, ctx) { return ctx.nav(el.dataset.path); },
   recApp(el, ctx) { ctx.openApp(el.dataset.href); },
-  recAddOpen(el, ctx) { const x = xs(ctx); x.add = !x.add; ctx.draw(); },
-  recAddCancel(el, ctx) { const x = xs(ctx); x.add = false; ctx.draw(); },
+  recAddOpen(el, ctx) { const x = xs(ctx); x.add = !x.add; x.ctx = false; ctx.draw(); },
+  recAddCancel(el, ctx) { const x = xs(ctx); x.add = false; x.ctx = false; ctx.draw(); },
   async recAddSave(el, ctx) {
     const { scope, ref, boxes, addBoxes } = ctx.st.rb; const x = xs(ctx); const list = addBoxes || boxes;
     const args = { scope, ref, title: x.addTitle, text: x.addText }; if (list && list.length) args.box = x.addBox || list[0];
     await ctx.do('recs.add', args);
-    Object.assign(x, { add: false, addTitle: '', addText: '' }); ctx.flash('Added. It is included; Apply selected puts it in.');
+    const wasContext = x.ctx; Object.assign(x, { add: false, addTitle: '', addText: '', ctx: false });
+    if (wasContext) await logEvent(ctx, 'context');   // logged once the clinician's context is saved, as on the platform
+    ctx.flash('Added. It is included; Apply selected puts it in.');
   },
+  // Add clinical context: the same form as Add your own, titled "Clinical context", with focus in the words box. The words are the clinician's; Psyflo writes none.
+  recContext(el, ctx) { const x = xs(ctx); Object.assign(x, { add: true, ctx: true, addTitle: 'Clinical context' }); ctx.draw(); setTimeout(() => { const t = document.getElementById('pra-x'); if (t) t.focus(); }, 80); },
+  // Refine suggestions: check the list against the record again; a dismissed suggestion comes back (nothing is rewritten)
+  async recRefine(el, ctx) {
+    const back = ((ctx.st.rb && ctx.st.rb.recs) || []).filter(r => r.state === 'dismissed').map(r => ({ key: r.key, state: 'open' }));
+    await logEvent(ctx, 'refine'); if (back.length) await decideMany(ctx, back);
+    ctx.flash(back.length ? `Checked against the record again. ${plural(back.length, 'dismissed suggestion is', 'dismissed suggestions are')} back.` : 'Checked against the record again. Nothing new to suggest.');
+  },
+  // Dismiss suggestions: every suggestion that is not dismissed yet; they stay in "dismissed suggestions" with Bring back
+  async recDismissAll(el, ctx) {
+    const open = ((ctx.st.rb && ctx.st.rb.recs) || []).filter(r => r.state !== 'dismissed').map(r => ({ key: r.key, state: 'dismissed' }));
+    if (!open.length) return;
+    await logEvent(ctx, 'dismissAll'); await decideMany(ctx, open);
+    ctx.flash(`${plural(open.length, 'suggestion', 'suggestions')} dismissed. Bring them back from the list below.`);
+    setTimeout(() => { const t = document.querySelector('#panel [data-act="recRefine"]'); if (t) t.focus(); }, 150);   // the button that was pressed is gone: focus goes to the next one, not to the page
+  },
+  recSee(el, ctx) { const key = el.dataset.k; xs(ctx).all = true; ctx.draw(); setTimeout(() => seeCard(key), 120); },
   async recApply(el, ctx) {
     const rb = ctx.st.rb; const inc = rb.recs.filter(r => r.state === 'included');
     if (!inc.length) { ctx.flash('Nothing is included yet. Include the suggestions you want, then apply them.', 'y'); return; }

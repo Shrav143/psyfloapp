@@ -646,10 +646,29 @@ async function recs() {
   await P.getByRole('button', { name: 'Apply selected' }).click();
   const typed = await until(async () => /typed into the form/.test(await P.locator('#px-status').textContent().catch(() => '')), 30000, 300); ok(typed, 'Apply selected types the included sentence (the status line says so)' + (typed ? '' : ': ' + await dump()));
   ok(/ratings support ASAM Level/.test(await L.locator('#lauris-form label:has-text("Level of care") + textarea').inputValue()) && await L.locator('#lauris-form .in.y').count() >= 1, 'the included sentence is typed into Level of care (yellow); nothing was pressed in Lauris');
+  // R7 (Oprox parity in the panel): the case strip, the two accordions and the footer actions work in the single file too (no server, no network)
+  const strip = await P.locator('[data-px="strip"]').innerText().catch(() => '');
+  ok(/Expected approval/i.test(strip) && /62%\s*→\s*to\s*96%/.test(strip.replace(/\s+/g, ' ')) && /\$8,200 at risk/.test(strip) && /Due tomorrow/.test(strip) && /Simulated/.test(strip) && /Illustrative sample from the demo data/.test(strip) && /Not clinical guidance/.test(strip), 'the case strip: due, dollars at risk, the sample figures with the Simulated chip and basis, decision support: ' + strip.replace(/\s+/g, ' ').slice(0, 160));
+  await P.locator('details[data-acc="px-crit"] > summary').click();
+  ok(/1 item needs strengthening before submission/.test(await P.locator('details[data-acc="px-crit"] [data-crit-status]').innerText()) && await P.locator('details[data-acc="px-crit"] li.pxc').count() === 8, 'Payer criteria opens to the status line and eight rows');
+  await P.locator('details[data-acc="px-traj"] > summary').click();
+  ok(await P.locator('details[data-acc="px-traj"] figure.in-chart svg[role="img"]').count() >= 1 && await P.locator('details[data-acc="px-traj"] figure.in-chart table caption').count() >= 1 && await P.locator('details[data-acc="px-traj"] [data-tj="drivers"] li').count() === 4, 'Clinical trajectory opens to the chart (with its text table) and four key drivers');
+  const n0 = (await H.state()).events.length;
+  await P.getByRole('button', { name: 'Refine suggestions' }).click();
+  ok(await until(async () => (await H.state()).events.slice(n0).some(e => e.what === 'Suggestions refined against the record · R-0402'), 10000), 'Refine suggestions is logged with intel.event in the single file');
+  ok(await P.getByRole('button', { name: /Submit/ }).count() === 0, 'the panel has no Submit: it sends nothing');
   await H.shot('recs-auth');
-  await P.getByRole('button', { name: 'Home' }).click(); await P.getByRole('button', { name: /Denial packet/ }).click(); await P.getByRole('button', { name: 'Open the Payer Reply form' }).waitFor({ timeout: 15000 });
+  // exact: the open trajectory has an evidence chip named "Home environment"
+  await P.getByRole('button', { name: 'Home', exact: true }).click(); await P.getByRole('button', { name: /Denial packet/ }).click(); await P.getByRole('button', { name: 'Open the Payer Reply form' }).waitFor({ timeout: 15000 });
   await P.getByRole('button', { name: 'Open the Payer Reply form' }).click(); await H.lwait(null, /payer-reply/); await H.panelReady();
   await P.getByText(/Denial packet · D\.W\./).first().waitFor({ timeout: 25000 });
+  const fields = (await P.locator('[data-px="fields"]').innerText().catch(() => '')).replace(/\s+/g, ' ');
+  ok(/PAYER Sentara Health Plans/i.test(fields) && /SERVICE IOP · H0015/i.test(fields) && /REQUESTED 150 units/i.test(fields) && /OFFERED 110 units/i.test(fields) && /\$8,200 at risk/.test(fields), 'the parsed fields strip: ' + fields.slice(0, 200));
+  await P.locator('details[data-acc="px-find"] > summary').click();
+  ok(await P.locator('details[data-acc="px-find"] li.pxf[data-sev="critical"]').count() === 3 && await P.locator('details[data-acc="px-find"] li.pxf[data-sev="strong"]').count() === 4, 'findings: three CRITICAL and four STRONG');
+  await P.locator('details[data-acc="px-pattern"] > summary').click();
+  ok(/Simulated/.test(await P.locator('details[data-acc="px-pattern"]').innerText()) && /312/.test(await P.locator('details[data-acc="px-pattern"] [data-px="pattern-sample"]').innerText()), 'the payer pattern sample carries the Simulated chip');
+  ok((await P.locator('ol.prl > .prc .prc-n').allInnerTexts()).join() === '1,2,3', 'the suggestions are numbered');
   await P.getByRole('button', { name: /^Draft the / }).click(); await P.getByRole('button', { name: 'Type into Lauris' }).waitFor();
   ok(await until(async () => await P.getByRole('button', { name: 'Type into Lauris' }).isEnabled(), 15000), 'the packet is drafted from stored records');
   await P.getByRole('button', { name: 'Type into Lauris' }).click(); await P.getByText(/boxes? typed into the form/).first().waitFor({ timeout: 30000 });

@@ -7,6 +7,8 @@ import { now as clockNow } from '../../js/shared/clock.js';
 import { newReferrals, refInfo, refKnown, referralForConsumer } from '../lib/boxes.js';
 import { FORM_NAME } from '../parts.js';
 import { byRequest, isOpen, ISSUE_LABEL } from '../../js/shared/sel/disputes.js';
+import { urgency, atRisk } from '../../js/shared/intel.js';
+import { signalChips } from '../lib/intel.js';
 
 const NEXT_FORM = { screening: ['cna', 'Open the ASAM assessment'], cna: ['isp', 'Open the treatment plan (ISP)'], isp: ['sra-initial', 'Open the initial request (SRA)'], 'sra-initial': ['/approvals', 'Open Forms to Approve'], 'sra-continued': ['/approvals', 'Open Forms to Approve'] };
 
@@ -43,7 +45,7 @@ function nextTask(ctx) {
     const rq = s.requests.filter(r => ['needs_approval', 'draft_ready', 'awaiting_signature', 'signed'].includes(r.stage));
     const pend = rq.find(r => r.stage === 'needs_approval' && ctx.can('approve.sra')) || rq[0];
     if (pend) { const cl = s.clients.find(x => x.id === pend.client); const form = pend.type === 'initial' ? 'sra-initial' : 'sra-continued'; const clk = M.requestClock(s, pend);
-      return { title: `${M.TYPE_LABEL[pend.type]} · ${cl ? cl.initials : pend.client}`, why: `${pend.id} · ${M.STAGE_LABEL[pend.stage]} · ${clk.text}`, label: pend.stage === 'needs_approval' ? 'Review and approve' : pend.stage === 'awaiting_signature' || pend.stage === 'signed' ? 'Open Forms to Approve' : 'Review the draft', nav: pend.stage === 'awaiting_signature' || pend.stage === 'signed' ? '/approvals' : cl && noOf(cl) ? `/consumers/${noOf(cl)}/session/${form}` : '/consumers/new', chip: [clk.sev === 'r' ? 'r' : 'y', pend.id] }; }
+      return { signals: signalChips(ctx, urgency(s, pend), atRisk(s, pend)), title: `${M.TYPE_LABEL[pend.type]} · ${cl ? cl.initials : pend.client}`, why: `${pend.id} · ${M.STAGE_LABEL[pend.stage]} · ${clk.text}`, label: pend.stage === 'needs_approval' ? 'Review and approve' : pend.stage === 'awaiting_signature' || pend.stage === 'signed' ? 'Open Forms to Approve' : 'Review the draft', nav: pend.stage === 'awaiting_signature' || pend.stage === 'signed' ? '/approvals' : cl && noOf(cl) ? `/consumers/${noOf(cl)}/session/${form}` : '/consumers/new', chip: [clk.sev === 'r' ? 'r' : 'y', pend.id] }; }
     if (sc.length) return { title: `Screening call · ${sc.length}`, why: 'Booked in Psyflo', chip: ['n', 'booked'] };
     return { title: 'Nothing waiting', why: 'No referral, request or screening needs you', chip: ['g', 'clear'] };
   }
@@ -114,10 +116,11 @@ function html(ctx) {
   if (role === 'clinician' && ctx.can('drafts.clinical') && c && (p.kind === 'record' || p.kind === 'session')) h += `<button class="btn o blk" data-act="goView" data-view="authorize"><span>Prepare authorization</span></button>`;
   // the open consumer has an open payer reply case: the Denial packet view (the same suggestions and packet as Denial Intelligence, typed into the Payer Reply form)
   const dc = role === 'clinician' && ctx.can('payer.reply') && c && (p.kind === 'record' || p.kind === 'session') ? openCase(ctx, c) : null;
-  if (dc) h += `<button class="btn o blk" data-act="goView" data-view="denial"><span>Denial packet</span><span class="chip y">${esc(ISSUE_LABEL[dc.d.issue] || 'Payer reply')} · ${esc(dc.r.id)}</span></button>`;
+  // X-03 (R7): the open case shows when it is due and what is at risk (no client data: the chips say money and time, nothing clinical)
+  if (dc) { const sg = signalChips(ctx, urgency(s, dc.r), atRisk(s, dc.r)); h += `<button class="btn o blk case" data-act="goView" data-view="denial"><span>Denial packet</span><span class="chip y">${esc(ISSUE_LABEL[dc.d.issue] || 'Payer reply')} · ${esc(dc.r.id)}</span>${sg ? `<span class="case-sig" data-px="signals">${sg}</span>` : ''}</button>`; }
   // the next task
   const nt = nextTask(ctx);
-  if (nt) h += `<section class="next" aria-label="Next task"><div class="row w"><h2 style="flex:1">${esc(nt.title)}</h2>${nt.chip ? `<span class="chip ${nt.chip[0]}">${esc(nt.chip[1])}</span>` : ''}</div>${nt.why ? `<div class="small muted">${esc(nt.why)}</div>` : ''}${nt.nav ? `<button class="btn p blk" data-act="nav" data-href="${esc(nt.nav)}">${esc(nt.label)}</button>` : nt.app ? `<button class="btn p blk" data-act="openApp" data-href="${esc(nt.app)}">${esc(nt.label)}</button>` : ''}</section>`;
+  if (nt) h += `<section class="next" aria-label="Next task"><div class="row w"><h2 style="flex:1">${esc(nt.title)}</h2>${nt.chip ? `<span class="chip ${nt.chip[0]}">${esc(nt.chip[1])}</span>` : ''}</div>${nt.why ? `<div class="small muted">${esc(nt.why)}</div>` : ''}${nt.signals ? `<div class="row w" data-px="signals">${nt.signals}</div>` : ''}${nt.nav ? `<button class="btn p blk" data-act="nav" data-href="${esc(nt.nav)}">${esc(nt.label)}</button>` : nt.app ? `<button class="btn p blk" data-act="openApp" data-href="${esc(nt.app)}">${esc(nt.label)}</button>` : ''}</section>`;
   // a draft the person already started for this student: back to its review
   if (c) {
     const today = ctx.M.today(s);

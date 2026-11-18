@@ -207,14 +207,17 @@ for (const g of PHONE) {
 }
 
 // ------------------------------------------------------------------------------------------------ 4. the panel in its in-page mode, 400 px beside the mock Lauris
-const PANEL = [['jperez', '/consumers', 'home'], ['khale', '/consumers', 'home (direct support)'], ['khale', '/consumers/3310/session/dpn', 'daily note'], ['jperez', '/consumers/3310/session/weekly', 'weekly'], ['jperez', '/consumers/3310/session/sra-continued', 'continued stay'], ['jperez', '/approvals', 'forms to approve'], ['khale', '/time', 'lauris time page'], ['jperez', '/consumers/4102/session/sra-continued', 'suggested by psyflo (continued stay)'], ['jperez', '/consumers/4102/session/payer-reply?request=R-0402', 'denial packet']];
+const PANEL = [['jperez', '/consumers', 'home'], ['khale', '/consumers', 'home (direct support)'], ['khale', '/consumers/3310/session/dpn', 'daily note'], ['jperez', '/consumers/3310/session/weekly', 'weekly'], ['jperez', '/consumers/3310/session/sra-continued', 'continued stay'], ['jperez', '/approvals', 'forms to approve'], ['khale', '/time', 'lauris time page'], ['jperez', '/consumers/4102/session/sra-continued', 'suggested by psyflo (continued stay)'], ['jperez', '/consumers/4102/session/payer-reply?request=R-0402', 'denial packet'],
+  // R7 (Oprox parity in the panel): the same two pages with every accordion open (payer criteria, clinical trajectory with its chart, findings, six dimensions, payer pattern), and the home with an open case
+  ['jperez', '/consumers/4102/session/sra-continued', 'suggested by psyflo, accordions open', true], ['jperez', '/consumers/4102/session/payer-reply?request=R-0402', 'denial packet, accordions open', true], ['jperez', '/consumers/4102', 'home with an open case']];
 if (on('panel')) {
   const { ctx, page } = await ctxFor({});
-  for (const [as, p, name] of PANEL) {
+  for (const [as, p, name, expand] of PANEL) {
     await run(`A11Y-X panel ${as} · ${name} (400)`, async () => {
       await page.goto('about:blank'); await page.goto(`${LAURIS}/login?as=${as}&next=${encodeURIComponent(p)}`, { waitUntil: 'domcontentloaded' });
       let f = null; const t0 = Date.now(); while (Date.now() - t0 < 12000) { f = page.frames().find(x => x.url().includes('/panel/')); if (f && await f.evaluate(() => !!document.querySelector('#panel .body, #panel .mini, #panel .foot')).catch(() => false)) break; await page.waitForTimeout(150); }
       assert.ok(f, 'panel frame');
+      if (expand) { await page.waitForTimeout(1200); await f.evaluate(() => document.querySelectorAll('#panel details').forEach(d => { d.open = true; })); await page.waitForTimeout(500); }
       const w = await page.evaluate(() => document.getElementById('psyflo-slot').getBoundingClientRect().width); assert.ok(Math.abs(w - 400) <= 2, 'panel slot is 400 px wide: ' + w);
       const { issues, c, t } = await screenChecks(page, { min: 24, label: name, shell: false, scope: '#panel', frame: f, walk: 60 });
       await page.locator('#psyflo-slot').screenshot({ path: `${SHOTS}/a11y-panel-${name.replace(/\W+/g, '-')}.png` }).catch(() => { });

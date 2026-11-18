@@ -9,6 +9,7 @@ const errs = errors(p);
 // [as, path, name, must match, must not match, max panel height]
 const pages = [
   ['jperez', '/consumers', 'home', /Scribe[\s\S]*Scan & Enhance[\s\S]*Team day in Psyflo/, /Signed in as|Support staff|\(demo\)/, 1200],
+  ['jperez', '/consumers/4102', 'home-case', /Prepare authorization[\s\S]*Denial packet\s*Partial approval · R-0402\s*Due tomorrow\s*\$8,200 at risk/, /Signed in as|Support staff/, 1300],   // R7 X-03: the open case shows when it is due and what is at risk
   ['khale', '/consumers', 'home-ds', /Scribe[\s\S]*My day in Psyflo/, /Signed in as|Support staff|Authorizations/, 1200],
   ['cdiaz', '/consumers', 'home-sup', /Team day in Psyflo[\s\S]*Scan & Enhance is for licensed clinical staff/, /Track Time|Signed in as/, 1200],
   ['dowens', '/consumers', 'home-admin', /Not permitted/, /Scribe|Scan & Enhance/, 600],
@@ -17,8 +18,8 @@ const pages = [
   ['jperez', '/consumers/3310/session/collateral', 'monthly', /Monthly collateral[\s\S]*Draft it/i, /Illustrative/, 1700],
   ['jperez', '/consumers/4102/session/incident', 'incident', /What happened with D\.W\./, /Level 2 · hospitalization/, 1700],
   ['jperez', '/consumers/3310/session/quarterly', 'quarterly', /Counted from stored notes[\s\S]*Internal quarterly · staff only/, /61 daily|41\/61|11 of 12/, 1700],
-  ['jperez', '/consumers/3310/session/sra-continued', 'case', /Evidence · last 30 days\s*15 daily notes[\s\S]*Household context[\s\S]*Not included[\s\S]*Suggested by Psyflo[\s\S]*Include[\s\S]*Dismiss[\s\S]*Apply selected/, /61 notes|Include\s*Exclude/, 2200],
-  ['jperez', '/consumers/4102/session/payer-reply?request=R-0402', 'denial', /Denial packet · D\.W\.[\s\S]*Lauris connected · Payer reply[\s\S]*Suggested by Psyflo[\s\S]*Apply selected[\s\S]*Packet[\s\S]*Type into Lauris/, /Signed in as|Support staff/, 2200],
+  ['jperez', '/consumers/3310/session/sra-continued', 'case', /Evidence · last 30 days\s*15 daily notes[\s\S]*Household context[\s\S]*Not included[\s\S]*Expected approval[\s\S]*Suggested by Psyflo[\s\S]*Include[\s\S]*Dismiss[\s\S]*Apply selected \(0\)[\s\S]*Refine suggestions[\s\S]*Payer criteria[\s\S]*Clinical trajectory/i, /61 notes|Include\s*Exclude/, 2500],   // R7: the case strip, the footer actions and two collapsed accordions add about 500 px to the authorization path
+  ['jperez', '/consumers/4102/session/payer-reply?request=R-0402', 'denial', /Denial packet · D\.W\.[\s\S]*Lauris connected · Payer reply[\s\S]*Revenue at risk[\s\S]*Why this denial is contestable[\s\S]*Six ASAM dimensions[\s\S]*Payer pattern[\s\S]*Suggested by Psyflo[\s\S]*Apply selected \(0\)[\s\S]*Refine suggestions[\s\S]*Packet[\s\S]*Type into Lauris/i, /Signed in as|Support staff/, 2300],   // R7: the parsed fields, three collapsed accordions and the footer actions
   ['jperez', '/consumers/3310/session/payer-reply', 'denial-none', /No open payer reply for M\.R\./, /Suggested by Psyflo|Type into Lauris/, 700],
   ['cdiaz', '/consumers/4102/session/payer-reply', 'denial-sup', /for the treating clinician/, /Suggested by Psyflo|Type into Lauris|Apply selected/, 700],
   ['jperez', '/consumers/4102/session/discharge', 'discharge', /Discharge summary/, /68 daily notes|14 weekly/, 1700],

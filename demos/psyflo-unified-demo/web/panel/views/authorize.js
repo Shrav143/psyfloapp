@@ -4,6 +4,8 @@
 //   Sign-off  names who must approve and who may sign; shows Pending clinical approval; the approver presses Approve in Psyflo;
 //             the LICENSED person presses Get Signature in Lauris (Psyflo never signs, never presses Process Form, Get Signature or Send)
 // Household context is "Not included" until a person opts in. Counts come from stored notes (evidenceIndex); a missing fact prints "Evidence missing".
+// R7 (Oprox parity, X-01): above the suggestions, the case strip (due, dollars at risk, the sample figures, the historical line); under them the Payer criteria and
+// Clinical trajectory accordions; the suggestions block gains the platform's footer (Refine, Add clinical context, Dismiss suggestions). See lib/intel.js.
 import { esc } from '../../js/runtime.js';
 import { fmtDate, daysBetween, addBusinessDays } from '../../js/shared/dates.js';
 import { draftSeeded, draftInitialSRA, screeningFacts, asamSources, asamContinued, withAsam } from '../../js/shared/draft.js';
@@ -15,6 +17,7 @@ import { itemsFromDraft, staffInputs, formValue } from '../lib/items.js';
 import { authRecs, withDecisions, applyToBoxes } from '../../js/shared/recs.js';
 import { evidenceIndex as caseIndex, evidenceById, chipOpts } from '../../js/shared/sel/disputes.js';
 import { recBlock, recActs, recIns, recChs, typableFrom } from '../lib/recs.js';
+import { authStrip, authDetail } from '../lib/intel.js';
 
 const STEPS = ['Plan', 'Request', 'Sign-off'];
 // a stored draft is stale when the record it was built from changed (the boxes Psyflo would draft now differ from the original draft)
@@ -38,9 +41,15 @@ function suggestHTML(ctx, c, req, form) {
   if (!req || !ctx.can('drafts.clinical')) return '';
   const s = ctx.S(); const X = caseIndex(s, null, req); const recs = withDecisions(s, 'auth', req.id, authRecs(s, req, { idx: X }));
   const chips = r => { const ev = (r.evidence || []).map(id => evidenceById(X, id)).filter(Boolean); return ev.slice(0, 3).map(e => ctx.ui.evidenceChip(chipOpts(e))).join('') + (ev.length > 3 ? `<span class="hint">+${ev.length - 3} more</span>` : ''); };
-  return recBlock(ctx, { scope: 'auth', ref: req.id, recs, boxes: liveBoxes(ctx).map(b => b.label), addBoxes: addBoxesFor(ctx), chips, limit: 3,
-    applyHint: 'Types the included text into the open form, in yellow. You check it and press Process Form.',
-    apply: (ctx2, inc) => applyIncluded(ctx2, c, form, inc) });
+  // R7 (Oprox parity, X-01): the case strip above the cards (dollars, due, the sample figures, the historical line), the footer actions under Apply selected (n)
+  // (Refine suggestions, Add clinical context, Dismiss suggestions: each logged with intel.event; the panel has no Submit and sends nothing), and the Payer
+  // criteria and Clinical trajectory accordions under the cards. The selectors are the platform's own (shared/sel/auth-intel.js); see lib/intel.js.
+  return authStrip(ctx, req)
+    + recBlock(ctx, { scope: 'auth', ref: req.id, recs, boxes: liveBoxes(ctx).map(b => b.label), addBoxes: addBoxesFor(ctx), chips, limit: 3,
+      footer: { refine: true, context: true, dismissAll: true },
+      applyHint: 'Types the included text into the open form, in yellow. You check it and press Process Form.',
+      apply: (ctx2, inc) => applyIncluded(ctx2, c, form, inc) })
+    + authDetail(ctx, req, X);
 }
 async function applyIncluded(ctx, c, form, inc) {
   const live = liveBoxes(ctx); const t = typableFrom(applyToBoxes(live, inc), live); const x = ctx.st.rbx;

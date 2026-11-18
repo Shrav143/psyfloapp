@@ -6,6 +6,8 @@
 //   Type into Lauris      types the packet into the open Payer Reply form (yellow; panel.filled records it). A box whose text still holds an
 //                         "Evidence missing" placeholder is left for the clinician. Psyflo never presses Process Form and never sends the reply.
 // Clinician only (payer.reply). Opened from home, or by landing on the Payer Reply form (core.js autoView); `?request=R-0402` on the Lauris page names the case.
+// R7 (Oprox parity, X-02): the case tile carries the parsed decision fields; Why this denial is contestable (CRITICAL / STRONG findings), the six ASAM dimensions and the
+// payer pattern are collapsed accordions between the tile and the suggestions; the suggestions are numbered and carry the platform's footer. See lib/intel.js.
 import { esc } from '../../js/runtime.js';
 import { fmtDate } from '../../js/shared/dates.js';
 import * as asam from '../../js/shared/asam.js';
@@ -13,6 +15,7 @@ import { DIM_BOX } from '../../js/shared/enhance.js';
 import { denialRecs, withDecisions, docSection, RECS_SECTION } from '../../js/shared/recs.js';
 import { evidenceIndex as caseIndex, evidenceById, chipOpts, byRequest, isOpen, ISSUE_LABEL, VIA_LABEL, P2P_STAGES, payerName, unitsView, deadlinesOf, primaryDeadline, sentenceLevel, sentenceDim } from '../../js/shared/sel/disputes.js';
 import { recBlock, recActs, recIns, recChs } from '../lib/recs.js';
+import { denialParts } from '../lib/intel.js';
 
 const KIND_LABEL = { info: 'Information request reply', p2p: 'Peer-to-peer call', appeal: 'Appeal', recon: 'Reconsideration request' };   // the Reply type box of the Lauris form
 const PLACEHOLDER = /\[Evidence missing/;
@@ -57,11 +60,12 @@ export function replyBoxes(ctx, c, r, d, kind, recs) {
 
 // ---------------------------------------------------------------- html
 const sevTone = sev => ({ overdue: 'r', soon: 'y', ok: 'g' }[sev] || 'n');
-function caseTile(ctx, s, r, d) {
+// `strip` (R7, X-02) is the parsed decision fields (payer, service, requested, offered, revenue at risk, decision, rationale): it says the units, so the line above it does not
+function caseTile(ctx, s, r, d, strip = '') {
   const u = unitsView(s, d, r); const n = d.notice || {}; const dl = primaryDeadline(deadlinesOf(s, d, r));
   const units = d.issue === 'partial' ? `${u.offered != null ? u.offered : u.current} of ${u.requested} units offered` : d.issue === 'denial' ? `${u.requested} units requested` : '';
   return `<div class="tile t"><div class="row w"><h2 style="flex:1">${esc(payerName(s, r.payer))} · ${esc(ISSUE_LABEL[d.issue] || 'Payer reply')}</h2>${dl ? `<span class="chip ${sevTone(dl.sev)}">${esc(dl.label)}${dl.date ? ': ' + esc(fmtDate(dl.date)) : ''}</span>` : ''}</div>
-    <div class="small muted" style="margin-top:4px">${esc(r.id)} · ${esc(ctx.M.TYPE_LABEL[r.type] || r.type)}${n.date ? ` · notice ${esc(fmtDate(n.date))}${n.via && VIA_LABEL[n.via] ? ' by ' + esc(VIA_LABEL[n.via].toLowerCase()) : ''}` : ''}${units ? ' · ' + esc(units) : ''}</div></div>`;
+    <div class="small muted" style="margin-top:4px">${esc(r.id)} · ${esc(ctx.M.TYPE_LABEL[r.type] || r.type)}${n.date ? ` · notice ${esc(fmtDate(n.date))}${n.via && VIA_LABEL[n.via] ? ' by ' + esc(VIA_LABEL[n.via].toLowerCase()) : ''}` : ''}${units && !strip ? ' · ' + esc(units) : ''}</div>${strip}</div>`;
 }
 function sectionHTML(ctx, X, sec) {
   const hl = sec.key === RECS_SECTION; const ev = (sec.evidence || []).map(id => evidenceById(X, id)).filter(Boolean);
@@ -102,8 +106,13 @@ function html(ctx) {
   const chips = rec => { const ev = (rec.evidence || []).map(id => evidenceById(X, id)).filter(Boolean); return ev.slice(0, 3).map(e => ctx.ui.evidenceChip(chipOpts(e))).join('') + (ev.length > 3 ? `<span class="hint">+${ev.length - 3} more</span>` : ''); };
   let h = '';
   if (cases.length > 1) h += `<div class="row"><label class="lab" for="den-c">Case</label><select id="den-c" class="tog" style="flex:1" data-ch="denCase">${cases.map(x => `<option value="${esc(x.r.id)}"${x.r.id === r.id ? ' selected' : ''}>${esc(x.r.id)} · ${esc(ISSUE_LABEL[x.d.issue] || '')}</option>`).join('')}</select></div>`;
-  h += caseTile(ctx, s, r, d);
-  h += recBlock(ctx, { scope: 'denial', ref: r.id, recs, boxes: null, chips, limit: 3, heading: 'Suggested by Psyflo', applyLabel: 'Apply selected',
+  // R7 (Oprox parity, X-02): the parsed fields in the tile; then why the denial is contestable (CRITICAL / STRONG findings), the six ASAM dimensions and the payer pattern
+  // (collapsed); then the numbered suggestions with the same footer as the platform (Refine, Add clinical context, Dismiss suggestions; the panel never sends)
+  const an = denialParts(ctx, s, d, r, X, recs);
+  h += caseTile(ctx, s, r, d, an ? an.strip : '');
+  if (an) h += an.body;
+  h += recBlock(ctx, { scope: 'denial', ref: r.id, recs, boxes: null, chips, limit: 3, heading: 'Suggested by Psyflo', applyLabel: 'Apply selected', numbered: true,
+    footer: { refine: true, context: true, dismissAll: true },
     applyHint: 'Adds the included suggestions to the packet. Typing it into Lauris is the next step.',
     apply: (ctx2, inc) => applyToPacket(ctx2, r, d, kind, inc) });
   h += packetHTML(ctx, s, c, r, d, kind, X, recs);
