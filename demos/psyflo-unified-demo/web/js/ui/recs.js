@@ -3,7 +3,9 @@
 //
 //   recPanel(recs, { s, scope, ref, chips, laurisHref, canAct, heading, base })  -> HTML (a drawer body, a modal body or a card)
 //   bindRecPanel(root, { scope, ref, call, onChange, fields })                   wires the buttons inside a rendered panel
-//   recDrawer({ title, scope, ref, recs: () => recs, s: () => state, call, chips, laurisHref, onClose, returnFocus })  -> drawer handle (repaints itself after each decision)
+//   recDrawer({ title, scope, ref, recs: () => recs, s: () => state, call, chips, laurisHref, onClose, returnFocus, footer, onSubmit })  -> drawer handle (repaints itself after each decision)
+//     footer (R7, Oprox parity) = { submit?:{label,disabled,reason}, refine?:true, context?:true, dismissAll?:true } adds Submit, Refine suggestions, Add clinical context and Dismiss suggestions;
+//     every one is logged with intel.event; onSubmit() opens the owner's send step. Without `footer` the panel is as before.
 //   recMini(recs, { limit })                                                    a short list for a case page: top suggestions, then a button with [data-rc-open]
 //
 // The pattern comes from reading how a utilization reviewer works through a request: each suggestion is a card you can include or leave out; a card
@@ -44,15 +46,16 @@ function card(r, o, i) {
 export function recPanel(recs, o = {}) {
   const sum = summary(o.s || {}, recs, o.base != null ? { base: o.base } : {});
   const live = recs.filter(r => r.state !== 'dismissed'); const gone = recs.filter(r => r.state === 'dismissed');
-  const canAct = o.canAct !== false;
+  const canAct = o.canAct !== false; const F = o.footer || {};
   const meter = sum.total ? `<div class="rc__meter" title="${esc(OUTCOME_BASIS)}"><span class="rc__ml">Expected approval</span><b>${sum.base}% <span aria-hidden="true">→</span><span class="ui-sr"> to </span> ${sum.expected}%</b>${maturity({ level: 'simulated', note: OUTCOME_BASIS })}</div>` : '';
   return `<div class="rc" data-rc data-scope="${esc(o.scope || '')}" data-ref="${esc(o.ref || '')}">
     <header class="rc__sum"><div><h3 class="rc__h">${esc(o.heading || 'Pick what to include')}</h3><p class="rc__sub" data-rc-count>${count(sum.included, 'suggestion', 'suggestions')} included of ${sum.total}${sum.needInput ? ` · ${count(sum.needInput, 'needs', 'need')} your words` : ''}</p></div>${meter}</header>
     ${live.length ? `<ul class="rc__list">${live.map((r, i) => card(r, o, i)).join('')}</ul>` : `<p class="rc__empty">${esc(o.empty || 'Nothing to suggest right now. The record answers what a reviewer usually asks.')}</p>`}
     ${gone.length ? `<details class="rc__gone"><summary>${count(gone.length, 'dismissed suggestion', 'dismissed suggestions')}</summary><ul class="rc__gl">${gone.map(r => `<li data-rec="${esc(r.key)}"><span>${esc(r.title)}</span>${canAct ? '<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-reopen>Bring back</button>' : ''}</li>`).join('')}</ul></details>` : ''}
     ${canAct ? `<form class="rc__add" data-rc-addform hidden><label>Title<input class="ui-input" name="title" maxlength="120" placeholder="For example: Mention the safety plan"></label><label>What should go in<textarea class="ui-textarea" name="text" rows="3" maxlength="${CONTEXT_MAX}" placeholder="Your own words. Psyflo does not write this."></textarea></label><div class="rc__row"><button type="submit" class="ui-btn ui-btn--secondary ui-btn--sm">Save</button><button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-addcancel>Cancel</button></div></form>
-    <footer class="rc__foot"><button type="button" class="ui-btn ui-btn--secondary" data-rc-add>${icon('plus', 16)} Add your own</button><button type="button" class="ui-btn ui-btn--primary" data-rc-apply>Apply selected</button></footer>` : ''}
-    <p class="rc__safe">Suggestions only: nothing is sent and nothing is typed into Lauris until a person presses the button. Every decision is logged with your name.</p>
+    <footer class="rc__foot"><button type="button" class="ui-btn ui-btn--secondary" data-rc-add>${icon('plus', 16)} Add your own</button><button type="button" class="ui-btn ui-btn--primary" data-rc-apply>Apply selected (<span data-rc-n>${live.filter(r => r.state === 'included').length}</span>)</button>${F.submit ? `<button type="button" class="ui-btn ui-btn--primary" data-rc-submit${F.submit.disabled ? ' disabled' : ''}${F.submit.reason ? ` title="${esc(F.submit.reason)}"` : ''}>${esc(F.submit.label || 'Submit to payer')}</button>` : ''}</footer>
+    ${F.refine || F.context || F.dismissAll ? `<div class="rc__more" role="group" aria-label="More actions">${F.refine ? '<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-refine>Refine suggestions</button>' : ''}${F.context ? '<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-context>Add clinical context</button>' : ''}${F.dismissAll && live.length ? '<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-rc-dismissall>Dismiss suggestions</button>' : ''}</div>` : ''}` : ''}
+    <p class="rc__safe">${o.footer ? 'Untick a card to leave it out. All decisions are logged with your name. ' : ''}Suggestions only: nothing is sent and nothing is typed into Lauris until a person presses the button.</p>
   </div>`;
 }
 
@@ -65,7 +68,7 @@ export function recMini(recs, o = {}) {
 }
 
 // wiring: includes, dismissals and "Apply selected" call the actions; the owner repaints in onChange
-export function bindRecPanel(root, { scope, ref, call, onChange, fields }) {
+export function bindRecPanel(root, { scope, ref, call, onChange, fields, onSubmit }) {
   const panel = root.querySelector('[data-rc]'); if (!panel) return;
   const extra = fields ? { fields } : {};
   const run = async (action, args) => { try { const r = await call(action, { scope, ref, ...extra, ...args }); if (onChange) await onChange(r); return r; } catch (e) { return null; } };
@@ -75,8 +78,24 @@ export function bindRecPanel(root, { scope, ref, call, onChange, fields }) {
     const li = ta.closest('[data-rec]'); const chk = li.querySelector('[data-rc-check]'); const has = !!ta.value.trim(); chk.disabled = !has; if (!has) chk.checked = false;
     const c = li.querySelector('.rc__cnt'); if (c) c.textContent = `${ta.value.length} / ${CONTEXT_MAX}`;
   }));
+  // "Apply selected (n)" shows how many cards are ticked
+  const nEl = panel.querySelector('[data-rc-n]'); const tick = () => { if (nEl) nEl.textContent = String(panel.querySelectorAll('[data-rc-check]:checked').length); };
+  panel.addEventListener('change', e => { if (e.target.closest('[data-rc-check]')) tick(); });
+  const log = kind => call('intel.event', { scope, ref, kind }).catch(() => null);
   panel.addEventListener('click', async e => {
     const t = e.target;
+    if (t.closest('[data-rc-submit]')) { await log('submit'); return void (onSubmit && onSubmit()); }
+    if (t.closest('[data-rc-refine]')) {
+      const back = [...panel.querySelectorAll('.rc__gl [data-rec]')].map(li => ({ key: li.dataset.rec, state: 'open' }));
+      await log('refine'); if (back.length) await run('recs.decideMany', { items: back }); else if (onChange) await onChange({});
+      return void toast(back.length ? `Checked against the record again. ${count(back.length, 'dismissed suggestion is', 'dismissed suggestions are')} back.` : 'Checked against the record again. Nothing new to suggest.');
+    }
+    if (t.closest('[data-rc-context]')) { const f = panel.querySelector('[data-rc-addform]'); if (!f) return; f.hidden = false; f.dataset.ctx = '1'; f.elements.title.value = 'Clinical context'; f.elements.text.focus(); return; }
+    if (t.closest('[data-rc-dismissall]')) {
+      const open = [...panel.querySelectorAll('.rc__card')].filter(li => li.dataset.state !== 'dismissed').map(li => ({ key: li.dataset.rec, state: 'dismissed' }));
+      if (!open.length) return; await log('dismissAll'); await run('recs.decideMany', { items: open });
+      return void toast(`${count(open.length, 'suggestion', 'suggestions')} dismissed. Bring them back from the list below.`);
+    }
     if (t.closest('[data-rc-dismiss]')) return void run('recs.decide', { key: keyOf(t), state: 'dismissed' });
     if (t.closest('[data-rc-reopen]')) return void run('recs.decide', { key: keyOf(t), state: 'open' });
     if (t.closest('[data-rc-remove]')) return void run('recs.remove', { key: keyOf(t) });
@@ -93,15 +112,15 @@ export function bindRecPanel(root, { scope, ref, call, onChange, fields }) {
   });
   panel.addEventListener('submit', async e => {
     const f = e.target.closest('[data-rc-addform]'); if (!f) return; e.preventDefault();
-    const r = await run('recs.add', { title: f.elements.title.value, text: f.elements.text.value }); if (r) f.reset();
+    const r = await run('recs.add', { title: f.elements.title.value, text: f.elements.text.value }); if (r) { if (f.dataset.ctx) { delete f.dataset.ctx; await log('context'); } f.reset(); }
   });
 }
 
 // the drawer: repaints its own body after every decision (the state arrives with the action's refresh)
 export function recDrawer(o) {
-  const build = () => recPanel(o.recs(), { s: o.s ? o.s() : {}, scope: o.scope, ref: o.ref, chips: o.chips, laurisHref: o.laurisHref, canAct: o.canAct, heading: o.heading, empty: o.empty, base: o.base });
+  const build = () => recPanel(o.recs(), { s: o.s ? o.s() : {}, scope: o.scope, ref: o.ref, chips: o.chips, laurisHref: o.laurisHref, canAct: o.canAct, heading: o.heading, empty: o.empty, base: o.base, footer: typeof o.footer === 'function' ? o.footer() : o.footer });
   let handle;
-  const mount = dlg => bindRecPanel(dlg, { scope: o.scope, ref: o.ref, call: o.call, fields: o.fields, onChange: async r => { handle.update({ body: build() }); mount(handle.dialog); if (o.onChange) o.onChange(r); } });
+  const mount = dlg => bindRecPanel(dlg, { scope: o.scope, ref: o.ref, call: o.call, fields: o.fields, onSubmit: o.onSubmit, onChange: async r => { handle.update({ body: build() }); mount(handle.dialog); if (o.onChange) o.onChange(r); } });
   handle = drawer({ title: o.title || 'Suggested by Psyflo', body: build(), returnFocus: o.returnFocus, onClose: o.onClose, onMount: (dlg, h) => { handle = h; mount(dlg); } });
   return handle;
 }

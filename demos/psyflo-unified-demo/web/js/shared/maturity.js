@@ -76,6 +76,8 @@ export const MATURITY = {
   'route.PayerPlaybook': f('future', 'Payer playbook', 'Deprioritised; lives as payer guidance in Analytics.', ['PayerPlaybook', 'Analytics']),
   'recs.suggestions': f('simulated', 'Suggested by Psyflo', 'Every suggestion is computed from stored records; the text is the record\'s or the clinician\'s own. No language model.', ['Authorizations', 'Authorization', 'DenialIntelligence', 'DenialCase']),
   'recs.outcomes': f('simulated', 'Applied and success numbers', 'An illustrative sample from the demo data, not Harvest history and not a prediction.', ['Authorizations', 'Authorization', 'DenialIntelligence', 'DenialCase']),
+  'intel.sample': f('simulated', 'Sample figures', 'Payer rates, comparable cases, appeal analogues and override patterns are an illustrative sample from the demo data, not Harvest history and not a prediction.', ['Authorizations', 'Authorization', 'DenialIntelligence', 'DenialCase']),
+  'intel.analysis': f('simulated', 'Case analysis', 'The steps are a simulated progress display; the findings are computed from stored records and the clinician\'s own words.', ['Authorizations', 'Authorization', 'DenialIntelligence', 'DenialCase']),
   'route.DenialIntelligence': f('working', 'Denial Intelligence', 'Queue of cases that need a payer-decision response.', ['DenialIntelligence']),
   'route.DenialCase': f('working', 'Denial case', 'Overview, what the payer said, evidence, weak points, replies, documentation request and history.', ['DenialCase']),
   'route.Analytics': f('future', 'Analytics', 'Pilot scorecard is Working; outcomes, payer and population views are Future.', ['Analytics']),
