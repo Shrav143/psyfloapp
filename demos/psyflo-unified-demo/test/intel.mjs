@@ -57,7 +57,9 @@ await T.test('insights: KPIs, approval by payer, denial reasons by payer (percen
   assert.eq(d0.kpis.length, 4); assert.deepEq(d0.kpis.map(k => k.key), ['approval', 'cause', 'impact', 'autonomy']); assert.deepEq(d0.sections, ['approval', 'actions', 'reasons', 'overrides']);
   assert.deepEq(insights(s0, 'denial').sections, ['reasons', 'actions', 'approval', 'overrides']);
   assert.ok(d0.denialReasons.length === 9 && Math.abs(d0.denialReasons.reduce((n, x) => n + x.pct, 0) - 100) <= 5, 'percent of denials');
-  assert.ok(d0.actions.length === 4 && d0.actions[0].applied >= d0.actions[1].applied, 'ordered by how often applied'); assert.ok(d0.approvalByPayer[0].pct >= d0.approvalByPayer[1].pct);
+  assert.ok(d0.actions.length === 4 && d0.actions[0].applied >= d0.actions[1].applied, 'ordered by how often applied');
+  const dd = insights(s0, 'denial'); for (const a of [...d0.actions, ...dd.actions]) assert.ok(!a.family.startsWith('note-'), 'no notes-tool family: ' + a.family);
+  assert.ok(d0.actions.some(a => a.family === 'renewal') && !d0.actions.some(a => a.family === 'window'), 'Authorizations shows its own kinds'); assert.ok(dd.actions.some(a => a.family === 'window' || a.family === 'cite-asam') && !dd.actions.some(a => a.family === 'renewal'), 'Denial Intelligence shows its own'); assert.ok(d0.approvalByPayer[0].pct >= d0.approvalByPayer[1].pct);
   assert.eq(d0.overrides.liveTotal, 0); const base = d0.overrides.rows.map(r => r.count);
   // a clinician includes every suggestion on one request (no override) and dismisses one on another (partial)
   const r = byId(s0.requests, 'R-0402'); const list = authRecsFor(s0, r); const free = list.filter(x => !x.needsInput);

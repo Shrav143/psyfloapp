@@ -86,6 +86,9 @@ try {
     await openAcc('px-crit'); const d = acc('px-crit');
     assert.eq(await text(d.locator('[data-crit-status]')), cv.status.text); assert.eq(cv.status.text, '1 item needs strengthening before submission');
     assert.match(await text(d.locator('[data-crit-sum]')), /7 of 8 documented/);
+    // the sources and the three tiles of the platform's criteria view, in compact form (sample tiles carry the Simulated chip)
+    assert.eq(await d.locator('[data-crit-sources] .ui-chip').count(), cv.sources.length, 'the source chips'); assert.eq(await d.locator('[data-crit-tiles] [data-tile]').count(), cv.tiles.length, 'the tiles');
+    assert.match(await text(d.locator('[data-crit-tiles]')), /Chart-to-criteria match[\s\S]*7\/8[\s\S]*Historical approval rate/i); assert.ok(await d.locator('[data-crit-tiles] [data-tile=approval] .ui-maturity, [data-crit-tiles] .ui-maturity').count() >= 1, 'a sample tile carries the Simulated chip');
     assert.eq(await d.locator('li.pxc').count(), cv.rows.length);
     for (const x of cv.rows) {
       const li = d.locator(`li.pxc[data-crit="${x.key}"]`); assert.eq(await li.count(), 1, x.key); assert.eq(await li.getAttribute('data-state'), x.state);

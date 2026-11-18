@@ -59,6 +59,7 @@ export function authStrip(ctx, req) {
   return `<section class="pxs" aria-label="Case signals" data-px="strip">
     ${U.decisionSupport()}
     ${sigs ? `<div class="pxs-sig" data-px="signals">${sigs}</div>` : ''}
+    ${h.rankedFirst ? '<p class="hint" data-ranked>Psyflo ranked this case first because of the dollars at risk and the clock.</p>' : ''}
     <div class="pxs-g" data-px="sample">${item('expected', 'Expected approval', `<b>${h.expected.base}%</b><span aria-hidden="true">→</span><span class="ui-sr"> to </span><b>${h.expected.expected}%</b>`)}${item('confidence', 'Model confidence', `<b>${h.confidence.value.toFixed(2)}</b>`, h.confidence.text)}${item('comparable', 'Comparable cases', `<b>${h.comparable.count}</b>`, h.comparable.payer)}</div>
     <div class="pxs-h" data-px="historical"><span class="pxs-l">Historical outcomes</span>
       <p class="pxs-al" data-tone="${esc(it.tone)}">${U.icon(it.tone === 'success' ? 'check' : 'alert', 16)}<span><b>Current historical alignment:</b> ${esc(it.label)}</span></p>
@@ -74,7 +75,10 @@ function critBody(ctx, cv) {
   const stateChip = x => x.state === 'included' ? U.chip('Included', { tone: 'success', icon: 'check', size: 'sm' }) : x.needsInput ? U.chip('Needs your words', { tone: 'warning', icon: 'pencil', size: 'sm' }) : U.chip('Open', { tone: 'neutral', size: 'sm' });
   const why = `<p class="pxc-x">${esc(w.tends ? `${w.payer} tends to ask: ${String(w.tends).replace(/\.$/, '')}.` : `No payer note is on file for ${w.payer}.`)}</p>${w.reasons.length ? `<ul class="pxc-rs">${w.reasons.map(x => `<li>${esc(x.reason)} <span class="hint">${x.count} denials in the sample, ${x.pct}% of the sample</span></li>`).join('')}</ul>${U.basisLine(w.basis)}` : ''}`;
   const incl = m.include.length ? `<ul class="pxc-inc">${m.include.map(x => `<li data-inc="${esc(x.key)}"><span class="pxc-it">${esc(x.title)}</span>${stateChip(x)}${seeBtn(x.key, x.title)}</li>`).join('')}</ul>` : '<p class="hint">Nothing to add: the record answers what a reviewer usually asks.</p>';
-  return `<p class="pxc-st" data-crit-status data-tone="${esc(cv.status.tone)}">${U.icon(cv.status.tone === 'success' ? 'check' : 'alert', 16)}<span>${esc(cv.status.text)}</span></p>
+  const srcs = cv.sources && cv.sources.length ? `<p class="pxc-src" data-crit-sources>${cv.sources.map(x => U.chip(x, { tone: 'neutral', size: 'sm' })).join('')}</p>` : '';
+  const tiles = cv.tiles && cv.tiles.length ? `<div class="pxc-tiles" data-crit-tiles>${cv.tiles.map(t => `<div class="pxc-tile" data-tile="${esc(t.key)}"><span class="pxc-tl">${esc(t.label)}</span><b>${esc(String(t.value))}</b><small>${esc(t.caption || '')}</small>${t.sample ? U.sampleChip() : ''}</div>`).join('')}</div>` : '';
+  return `${srcs}<p class="pxc-st" data-crit-status data-tone="${esc(cv.status.tone)}">${U.icon(cv.status.tone === 'success' ? 'check' : 'alert', 16)}<span>${esc(cv.status.text)}</span></p>
+    ${tiles}
     <p class="pxc-sum" data-crit-sum><b>${cv.documented} of ${cv.total}</b> documented</p>
     <ol class="pxc-l">${cv.rows.map(row).join('')}</ol>
     <section class="pxsec" data-crit-max><h3 class="pxh">To maximize approval probability</h3><h4 class="pxh2">Why this matters for ${esc(w.payer)}</h4>${why}<h4 class="pxh2">What to include in your submission</h4>${incl}</section>

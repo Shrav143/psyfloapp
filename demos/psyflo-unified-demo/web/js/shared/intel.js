@@ -157,13 +157,16 @@ export function overridePatterns(s) {
 
 // insights(s, scope) -> the facility insights. `scope` ('auth'|'denial') only orders what a screen shows first.
 export function insights(s, scope = 'auth') {
-  const sm = sample(s); const outs = ((s && s.rec_outcomes) || []).slice().sort((a, b) => b.applied - a.applied);
+  // the notes tool (Scan & Enhance) has its own families (note-...); Authorizations and Denial Intelligence show their own kinds of suggestion
+  const DENIAL_ONLY = ['window', 'cite-asam', 'answer-reason', 'units', 'p2p']; const AUTH_ONLY = ['renewal'];
+  const mine = f => !String(f).startsWith('note-') && !(scope === 'denial' ? AUTH_ONLY : DENIAL_ONLY).includes(f);
+  const sm = sample(s); const all = ((s && s.rec_outcomes) || []).filter(o => !String(o.family).startsWith('note-')); const outs = all.filter(o => mine(o.family)).sort((a, b) => b.applied - a.applied);
   const ap = Object.entries(sm.approval_by_payer || {}).map(([id, pct]) => ({ payer: id, name: payerName(s, id), pct })).sort((a, b) => b.pct - a.pct);
   const reasonsTotal = (sm.denial_by_payer || []).reduce((n, x) => n + x.count, 0) || 1;
   const reasons = (sm.denial_by_payer || []).map(x => ({ ...x, name: payerName(s, x.payer), pct: Math.round((x.count / reasonsTotal) * 100) })).sort((a, b) => b.count - a.count);
   const ov = overridePatterns(s);
-  const appliedTotal = outs.reduce((n, o) => n + o.applied, 0) || 1;
-  const impact = Math.round(outs.reduce((n, o) => n + o.success * o.applied, 0) / appliedTotal);
+  const appliedTotal = all.reduce((n, o) => n + o.applied, 0) || 1;
+  const impact = Math.round(all.reduce((n, o) => n + o.success * o.applied, 0) / appliedTotal);
   const kpi = sm.kpi || {};
   const kpis = [
     { key: 'approval', label: 'Average approval rate', value: `${kpi.avg_approval ?? Math.round(ap.reduce((n, x) => n + x.pct, 0) / (ap.length || 1))}%`, caption: kpi.avg_approval_delta != null ? `+${kpi.avg_approval_delta}% ${kpi.delta_note || ''}`.trim() : '' },
