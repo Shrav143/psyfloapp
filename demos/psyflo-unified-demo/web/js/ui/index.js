@@ -7,6 +7,7 @@ import * as tableMod from './queue-table.js';
 import * as overlayMod from './overlay.js';
 import * as timelineMod from './timeline.js';
 import * as drMod from './draft-review.js';
+import * as recsMod from './recs.js';
 import * as miscMod from './misc.js';
 import * as glanceMod from './glance.js';
 import { pager as pagerFn } from './pager.js';
@@ -30,6 +31,8 @@ export const ui = {
   filterBar: filterMod.filterBar, queueTable: tableMod.queueTable, sortRows: tableMod.sortRows,
   timeline: timelineMod.timeline, history: timelineMod.history, eventDetailHtml: timelineMod.eventDetailHtml,
   draftReview: drMod.draftReview,
+  // recommendations (R6): cards in a drawer or modal, a short list for a case page, the drawer that repaints itself
+  recPanel: recsMod.recPanel, bindRecPanel: recsMod.bindRecPanel, recDrawer: recsMod.recDrawer, recMini: recsMod.recMini,
   // overlays
   overlay: overlayMod.overlay, modal: overlayMod.modal, drawer: overlayMod.drawer, popover: overlayMod.popover, confirm: overlayMod.confirm,
   tooltip: overlayMod.tooltip, dialogHtml: overlayMod.dialogHtml,

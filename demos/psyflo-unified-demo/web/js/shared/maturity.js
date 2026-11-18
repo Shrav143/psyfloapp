@@ -74,6 +74,8 @@ export const MATURITY = {
   'route.ExtDischarge': f('future', 'Discharge summary', 'Working preview outside the pilot.', ['ExtDischarge']),
   'route.PeerBrief': f('working', 'Peer-to-peer brief', 'Assembled from the request; call date and outcome logged by a person.', ['PeerBrief', 'DenialCase']),
   'route.PayerPlaybook': f('future', 'Payer playbook', 'Deprioritised; lives as payer guidance in Analytics.', ['PayerPlaybook', 'Analytics']),
+  'recs.suggestions': f('simulated', 'Suggested by Psyflo', 'Every suggestion is computed from stored records; the text is the record\'s or the clinician\'s own. No language model.', ['Authorizations', 'Authorization', 'DenialIntelligence', 'DenialCase']),
+  'recs.outcomes': f('simulated', 'Applied and success numbers', 'An illustrative sample from the demo data, not Harvest history and not a prediction.', ['Authorizations', 'Authorization', 'DenialIntelligence', 'DenialCase']),
   'route.DenialIntelligence': f('working', 'Denial Intelligence', 'Queue of cases that need a payer-decision response.', ['DenialIntelligence']),
   'route.DenialCase': f('working', 'Denial case', 'Overview, what the payer said, evidence, weak points, replies, documentation request and history.', ['DenialCase']),
   'route.Analytics': f('future', 'Analytics', 'Pilot scorecard is Working; outcomes, payer and population views are Future.', ['Analytics']),
