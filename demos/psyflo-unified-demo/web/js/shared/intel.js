@@ -173,6 +173,12 @@ export function insights(s, scope = 'auth') {
   };
 }
 
+
+// urgency filter (URL key `urg`): '' all · 'overdue' · '24h' · 'week'. `u` is urgency(s, r).
+export const URGENCY_FILTERS = [['', 'All urgency'], ['overdue', 'Overdue'], ['24h', 'Due within 24 hours'], ['week', 'Due this week']];
+export const urgencyFilterOk = v => URGENCY_FILTERS.some(x => x[0] === v);
+export const urgencyMatch = (u, key) => !key || (u && u.hours != null && (key === 'overdue' ? u.hours < 0 : key === '24h' ? u.hours <= 24 : u.hours <= 24 * 7));
+
 // helpers the screens share
 export const dayWord = n => (n === 0 ? 'today' : n === 1 ? 'tomorrow' : `in ${n} days`);
 export { daysBetween, clockToday, ruleValue };

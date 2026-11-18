@@ -71,6 +71,12 @@ export const decisionSupport = () => `<p class="in-ds" role="note">${icon('info'
 export const sampleChip = () => maturity('intel.sample');
 export const basisLine = (text = INTEL_BASIS) => `<p class="in-basis">${sampleChip()} <span>${esc(text)}</span></p>`;
 
+
+// the payer intelligence line above a queue: pulse = payerPulse(s); onSee is wired by the screen through [data-pulse-see]; the screen remembers the dismissal
+export const pulseStrip = pulse => (pulse ? `<div class="in-pulse" role="note" data-pulse><span class="in-pulse__new">${chip('New', { tone: 'warning', size: 'sm' })}</span><span class="in-pulse__t"><b>${esc(pulse.text)}</b> · ${esc(pulse.detail)} · Suggestion lift ${pulse.lift_from}% to ${pulse.lift_to}% · about ${esc(pulse.exposure)} at risk</span>${sampleChip()}<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-pulse-see>See why</button><button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-pulse-x aria-label="Dismiss this update">${icon('close', 14)}</button></div>` : '');
+// a group heading row for a queue table: bandRow({ label, count, cols }) -> <tr>
+export const bandRow = ({ label, count, cols = 1, key = '' }) => `<tr class="in-band" data-band="${esc(key)}"><th scope="colgroup" colspan="${cols}">${esc(label)} <span class="in-band__n">${count} ${count === 1 ? 'case' : 'cases'}</span></th></tr>`;
+
 // ------------------------------------------------------------------------------------------------ insights drawer
 function section(key, d) {
   if (key === 'approval') return `<section class="in-sec" data-sec="approval"><h3>Approval rate by payer</h3><ul class="in-bars">${d.approvalByPayer.map(a => barRow({ label: a.name, pct: a.pct })).join('')}</ul></section>`;

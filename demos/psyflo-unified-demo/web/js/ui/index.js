@@ -37,7 +37,7 @@ export const ui = {
   // Oprox parity (R7): streaming steps, trend chart, severity tags, KPI tiles, bars, money and due chips, the insights drawer
   stepsHTML: intelMod.stepsHTML, runSteps: intelMod.runSteps, trendChart: intelMod.trendChart, sevTag: intelMod.sevTag, statusPill: intelMod.statusPill, kpiTile: intelMod.kpiTile, barRow: intelMod.barRow,
   moneyChip: intelMod.moneyChip, dueChip: intelMod.dueChip, needsInputBadge: intelMod.needsInputBadge, decisionSupport: intelMod.decisionSupport, sampleChip: intelMod.sampleChip, basisLine: intelMod.basisLine,
-  insightsHTML: intelMod.insightsHTML, insightsDrawer: intelMod.insightsDrawer,
+  insightsHTML: intelMod.insightsHTML, insightsDrawer: intelMod.insightsDrawer, pulseStrip: intelMod.pulseStrip, bandRow: intelMod.bandRow,
   // overlays
   overlay: overlayMod.overlay, modal: overlayMod.modal, drawer: overlayMod.drawer, popover: overlayMod.popover, confirm: overlayMod.confirm,
   tooltip: overlayMod.tooltip, dialogHtml: overlayMod.dialogHtml,
