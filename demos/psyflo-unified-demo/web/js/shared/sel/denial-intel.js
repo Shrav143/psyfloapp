@@ -95,7 +95,7 @@ const statedReasons = d => (d.concerns || []).filter(x => x && x.text && !/not r
 const NO_REASON = "No reason on file. Read the payer's notice and add it before replying.";
 
 export function denialFields(s, d, r, { clinical = true } = {}) {
-  const pf = D.payerFirst(s, r.payer); const u = D.unitsView(s, d, r); const c = clientOf(s, r.client); const svc = serviceOf(r); const risk = atRisk(s, r);
+  const pf = D.payerFirst(s, r.payer); const u = D.unitsView(s, d, r); const c = clientOf(s, r.client); const svc = serviceOf(r); const open = D.isOpen(d); const risk = open ? atRisk(s, r) : null;   // a closed case has nothing left at risk
   const dn = D.decisionView(s, d, r); const items = statedReasons(d);
   const approved = d.issue === 'info' ? { units: null, kind: 'none', text: 'Not decided yet' }
     : d.issue === 'denial' ? { units: 0, kind: 'approved', text: '0 units approved' }
@@ -118,7 +118,7 @@ export function denialFields(s, d, r, { clinical = true } = {}) {
     { key: 'decision', label: 'Decision', value: text },
     ...(clinical ? [{ key: 'rationale', label: 'Rationale', value: rationale.text, clinical: true }] : [])
   ];
-  return { payer: { id: r.payer, name: D.payerName(s, r.payer), first: pf }, consumer: c.initials, request: r.id, case: d.id, service: svc, requested: { units: u.requested, text: `${u.requested} units` }, approved, risk, due: urgency(s, r), decision, rationale, rows };
+  return { payer: { id: r.payer, name: D.payerName(s, r.payer), first: pf }, consumer: c.initials, request: r.id, case: d.id, service: svc, requested: { units: u.requested, text: `${u.requested} units` }, approved, risk, due: open ? urgency(s, r) : null, decision, rationale, rows };
 }
 
 // ------------------------------------------------------------------------------------------------ D-07 the payer pattern
@@ -176,7 +176,7 @@ export function appealAnalysis(s, d, r, { idx = null, recs = null } = {}) {
     const text = w.kind === 'gap' ? (m && /^d[1-6]$/.test(m.key) ? `No dated record on file for D${m.dim}. Add one before replying.` : missingLine(m ? m.label : w.title.replace(/^Not documented:\s*/, '')))
       : w.kind === 'clarify' ? (w.k === 'c-none' ? NO_REASON : 'The stored records do not answer this yet. Ask the payer which criterion applied, or add the record before replying.')
         : plainMissing(w.text || '');
-    findings.push({ key: w.k, sev, kind: w.kind, title: w.title.replace(/^Not documented:\s*/, 'Not documented · '), text, ids: w.ids || [], evidence: evidenceItems(X, w.ids), fix: w.fix, dims: m && /^d[1-6]$/.test(m.key) ? [m.dim] : dims, lauris: !!w.lauris });
+    findings.push({ key: w.k, sev, kind: w.kind, title: w.title.replace(/^Not documented:\s*/, 'Not documented · '), text, ids: w.ids || [], evidence: evidenceItems(X, w.ids), fix: String(w.fix || '').replace(/\. Drafts print it as Evidence missing$/, '.'), dims: m && /^d[1-6]$/.test(m.key) ? [m.dim] : dims, lauris: !!w.lauris });
   }
   findings.sort((x, y) => (x.sev === y.sev ? 0 : x.sev === 'critical' ? -1 : 1));
   // 4. all six dimensions, each from its stored rating and the dated records filed under it

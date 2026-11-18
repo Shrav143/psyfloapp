@@ -14,6 +14,12 @@ try { if (store.state && !store.state.intel_sample) store.state.intel_sample = J
 
 export const authz = { 'intel.event': { any: ['drafts.clinical'] } };
 
+// The sample (payer approval rates, comparable counts, appeal analogues, the pulse, the override baseline) and the outcome numbers behind "applied N times" hold
+// no client data. A supervisor or an administrator reads them on the payer line and in Insights (money, due, the pulse and insights are not clinical); without
+// this an undeclared key is clinician-only and those two parts would be empty for them.
+const aggregate = { clinician: true, admin: true, supervisor: true, default: false };
+export const projection = { intel_sample: aggregate, rec_outcomes: aggregate, rec_baseline: aggregate };
+
 const LABEL = {
   refine: 'Suggestions refined against the record',
   context: 'Clinical context added',

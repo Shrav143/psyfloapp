@@ -176,4 +176,16 @@ await T.test('a clinician\'s included suggestion shows in the analysis as includ
   assert.eq(a.actions.filter(y => y.state === 'included').length, 1);
 });
 
+await T.test('a closed case has nothing at risk and no due date; the decision it closed on is still read from the stored record', async () => {
+  await api('dispute.choose', { id: 'R-0384', path: 'accept', plan: { mode: 'denial' } }, 'jperez');
+  const s3 = await state('jperez'); const d = D.byRequest(s3, 'R-0384'); const r = s3.requests.find(x => x.id === 'R-0384'); assert.ok(d.closed, 'the case is closed');
+  const f = denialFields(s3, d, r); assert.eq(f.risk, null); assert.eq(f.due, null); assert.eq(val(f, 'risk'), 'None'); assert.eq(val(f, 'decision'), 'Denied · 0 of 90 units approved');
+});
+
+await T.test('hosted-safe: the module reads no Node-only API and no screen or DOM code', async () => {
+  const fs = await import('node:fs'); const src = fs.readFileSync(new URL('../web/js/shared/sel/denial-intel.js', import.meta.url), 'utf8').replace(/\/\/.*$/gm, '');
+  assert.ok(!/node:|require\(|process\.|Buffer|document\.|window\.|localStorage|fetch\(/.test(src), 'no Node-only or browser-only calls: ' + (src.match(/node:|require\(|process\.|Buffer|document\.|window\.|localStorage|fetch\(/) || [''])[0]);
+  const imports = [...src.matchAll(/from '([^']+)'/g)].map(m => m[1]); assert.ok(imports.every(x => /^\.\.?\//.test(x) && !/screens|ui\/|app\.js/.test(x)), 'only shared modules: ' + imports.join(', '));
+});
+
 await T.done();

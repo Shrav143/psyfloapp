@@ -15,6 +15,7 @@ import { srcHint } from './a-fmt.js';
 import { can } from '../shared/permissions.js';
 import * as R from '../shared/recs.js';
 import { openDenialRecs, REC_PHONE_CSS } from './DenialRecs.js';
+import { INTEL_CSS, openAnalysis } from './DenialIntelDoc.js';
 
 const esc = ui.esc;
 const field = (id, label, control, hint) => `<div class="d-f"><label for="${id}">${esc(label)}</label>${control}${hint ? `<span class="d-modal-note">${esc(hint)}</span>` : ''}</div>`;
@@ -94,7 +95,7 @@ register('DenialCase', class extends Screen {
     this._arrive = e.paths ? 'paths' : e.section === 'history' ? 'history' : null;
   }
   get reqId() { return this.params.id; }
-  get css() { return CASE_CSS + REC_PHONE_CSS; }
+  get css() { return CASE_CSS + REC_PHONE_CSS + INTEL_CSS; }
   // one context per paint: the case view, the evidence index (lazy) and the history (lazy)
   ctx() {
     const s = this.s; const me = this.me; const cv = D.caseView(s, this.reqId, me);
@@ -186,7 +187,8 @@ register('DenialCase', class extends Screen {
   // ---------------------------------------------------------------------------------------------- R6: suggestions, packet preview and the other side drawers
   // "What Psyflo would do" in full: the shared card kit in a side drawer (DenialRecs.js; the queue opens the same drawer). `key` opens it at that card (the words box
   // when the card needs them); `add` opens the "Add your own" form. Focus goes back to the opener when it closes and stays on the same control after a decision.
-  openRecs(el, o = {}) { return openDenialRecs({ ref: this.reqId, me: this.me, el, ...o }); }
+  // R7 (D-08): the drawer's footer has "Open the send step" (disabled, with its reason, until a reviewed draft is ready); it opens the case's own send dialog
+  openRecs(el, o = {}) { return openDenialRecs({ ref: this.reqId, me: this.me, el, onSubmit: (doc, opener) => this.sendFlow(doc, opener), ...o }); }
   // buttons inside a drawer body (the packet preview, All paths): the drawer closes first, then the action runs from the page; `gen` drafts in place
   wireDrawer(dlg, handle, opener, refresh) {
     dlg.addEventListener('click', async ev => {
@@ -222,6 +224,7 @@ register('DenialCase', class extends Screen {
     if (k === 'review') return this.panel('review', el);
   }
   panel(k, el) {
+    if (k === 'analyze') return openAnalysis({ ref: this.reqId, me: this.me, el });   // R7 (D-05): the appeal analysis document, in a side drawer
     const c = this.ctx(); const d = c.cv.d; const title = { analyze: 'Analyze Denial', gaps: 'Identify Missing Evidence', review: 'Mark for Clinical Review' }[k];
     const review = k === 'review';
     const h = ui.drawer({ title, body: V.panelBody(c, k), returnFocus: el, initialFocus: review ? '#d-rv' : undefined,

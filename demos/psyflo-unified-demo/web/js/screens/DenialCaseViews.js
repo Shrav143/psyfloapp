@@ -6,6 +6,9 @@
 import * as D from '../shared/sel/disputes.js';
 import * as asam from '../shared/asam.js';
 import * as R from '../shared/recs.js';
+import * as I from '../shared/sel/denial-intel.js';
+import { atRisk } from '../shared/intel.js';
+import { fieldsStrip } from './DenialIntelDoc.js';
 import { rule, ruleValue } from '../shared/rules.js';
 import { fmtDate, fmtDateTime, fmtTime, daysBetween, hoursBetween } from '../shared/dates.js';
 import { srcHint, lockHint, lockLine, missHint, ownerControl } from './a-fmt.js';
@@ -82,11 +85,12 @@ export function header(c) {
   const upd = items.length ? `<div class="d-upd" id="d-upd"><button type="button" class="ui-btn ui-btn--secondary ui-btn--sm d-upd__b" id="d-upd-b" data-x="upd" aria-haspopup="menu" aria-expanded="false" aria-controls="d-upd-p">Update status</button><ul class="d-upd__p" id="d-upd-p" role="menu" aria-labelledby="d-upd-b" hidden>${items.map(it => `<li role="none"><button type="button" role="menuitem" data-x="${it.x}"${Object.entries(it.data || {}).map(([k, v]) => ` data-${k}="${e(v)}"`).join('')}>${e(it.label)}</button></li>`).join('')}</ul></div>` : '';
   const voice = cv.open ? (work ? `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" data-x="call" id="d-call">${ui.icon('phone', 14)} Call payer · voice agent</button>` : `<button type="button" class="ui-btn ui-btn--secondary ui-btn--sm" disabled title="Needs clinician: a clinician starts and records every payer call">${ui.icon('phone', 14)} Call payer · voice agent</button>`) : '';
   const lauris = c.laurisUrl && c.canLauris ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${e(c.laurisUrl)}" target="_blank" rel="noopener">Open in Lauris${ui.icon('external', 14)}<span class="ui-sr"> (opens Lauris in a new tab)</span></a>` : '';
-  const chips = [ui.statusChip(cv.status, { kind: 'dispute' }), deadlineChip(c), !cv.open ? ui.chip(`Closed ${fmtDate(d.closed)}`, { tone: 'neutral', icon: 'lock' }) : '',
+  const risk = cv.open ? atRisk(c.s, r) : null;   // R7 (D-09): the revenue at risk, with its basis on hover (every role: units and a demo rate only)
+  const chips = [ui.statusChip(cv.status, { kind: 'dispute' }), deadlineChip(c), ui.moneyChip(risk), !cv.open ? ui.chip(`Closed ${fmtDate(d.closed)}`, { tone: 'neutral', icon: 'lock' }) : '',
     `<span class="d-auth"><span class="ui-muted">Authorization</span> ${ui.statusChip(r.stage)}</span>`, ownerControl(cv.owner.short, cv.backup && cv.backup.name)].join('');
-  const u = cv.units; const svc = (r.service || '').split(' · ')[0];
-  const lvlTag = asam.requestLevel(r) ? asam.levelTag(asam.requestLevel(r)) : '';
-  const line = [cv.payer.name, svc, lvlTag, `Request ${r.id}`, `${u.requested} units requested`, `Sent by ${cv.channel.label}`, d.id].filter(Boolean).map(e).join(' · ');
+  const u = cv.units; const svc = I.serviceOf(r);   // R7: the service is read from the request's ASAM level (IOP · H0015), not from older service text
+  const lvlTag = svc.level ? `ASAM Level ${svc.level}` : '';
+  const line = [cv.payer.name, svc.text, lvlTag, `Request ${r.id}`, `${u.requested} units requested`, `Sent by ${cv.channel.label}`, d.id].filter(Boolean).map(e).join(' · ');
   const tl = D.timelineOf(c.s, d, r, cv.status);
   const steps = `<ol class="d-steps" aria-label="Where this decision is">${tl.labels.map((l, i) => `<li class="${i < tl.step ? 'is-done' : i === tl.step ? 'is-now' : ''}"${i === tl.step ? ' aria-current="step"' : ''}><span class="d-steps__dot" aria-hidden="true">${i < tl.step ? ui.icon('check', 12) : i + 1}</span><b>${e(l)}</b><span class="d-steps__d">${i <= tl.step ? e(tl.dates[i]) : ''}</span></li>`).join('')}</ol>`;
   return `<nav class="ui-crumb" aria-label="Breadcrumb"><a href="#/DenialIntelligence">Denial Intelligence</a><span aria-hidden="true">/</span><span aria-current="page">${e(cv.c.initials)}</span></nav>
@@ -150,10 +154,18 @@ function standCard(c) {
     const p = asam.profile(s, r.client, asam.requestLevel(r)); const a = p.a;
     level = !a ? '<span class="ui-muted">No ASAM assessment on file</span>' : `<span class="d-fact__l">${ui.chip(asam.CHECK_LABEL[p.check.state], { tone: asam.CHECK_TONE[p.check.state], icon: p.check.state === 'match' ? 'check' : 'alert' })}</span><span class="d-sm ui-muted">Assessed ${e(fmtDate(a.date))} · ${p.due.days} d ago${p.due.state === 'overdue' ? `, past the ${p.due.limit}-day rule` : ''}</span>${btn('See the ratings', 'level', { sm: true, tone: 'ghost', id: 'd-level' })}`;
   }
-  const units = d.issue === 'denial' ? `<b>0</b> of ${u.requested} units approved` : d.issue === 'info' || u.current == null ? `<b>${u.requested}</b> units requested`
-    : `<span><b>${u.current}</b> of ${u.requested} units ${u.offered != null ? 'offered' : 'approved'}</span>${u.runOut && d.issue === 'partial' ? `<span class="d-sm ui-muted">Lasts to about ${e(fmtDate(u.runOut))}</span>${srcHint(u.assumption)}` : ''}`;
+  // R7: the units (requested, offered, revenue at risk) moved up into the Decision details strip, so they are not said twice
+  const lasts = d.issue === 'partial' && u.runOut ? `<div><dt>Units last</dt><dd><span class="d-sm ui-muted">To about ${e(fmtDate(u.runOut))}</span>${srcHint(u.assumption)}</dd></div>` : '';
   return `<section class="ui-scard d-stand" aria-labelledby="d-h-stand"><div class="ui-scard__h"><h2 id="d-h-stand">Where the case stands</h2></div>${nextBar(c)}
-  <dl class="d-facts"><div><dt>Deadline</dt><dd>${dl}</dd></div><div><dt>Level of care</dt><dd>${level}</dd></div><div><dt>Units</dt><dd>${units}</dd></div></dl></section>`;
+  <dl class="d-facts"><div><dt>Deadline</dt><dd>${dl}</dd></div><div><dt>Level of care</dt><dd>${level}</dd></div>${lasts}</dl></section>`;
+}
+
+// R7 (D-06, D-09): Decision details, the Oprox "parsed fields" as one compact strip at the top of the Overview: payer, service, requested, offered or approved,
+// revenue at risk (hover for its basis) and the decision; the payer's reason below it for the treating clinician only. Computed from stored records (sel/denial-intel.js).
+function decisionCard(c) {
+  const { cv, ui } = c; const f = I.denialFields(c.s, cv.d, cv.r, { clinical: c.clinical });
+  const quiet = c.clinical ? '' : lockLine("Clinical text is for the treating clinician: the payer's reason and the analysis quote clinical records.", "The payer's reason is for the treating clinician");
+  return `<section class="ui-scard d-dd" aria-labelledby="d-h-dd" data-decision-details><div class="ui-scard__h"><h2 id="d-h-dd">Decision details</h2><span class="ui-scard__r">${btn('More detail', 'tab', { sm: true, tone: 'ghost', data: { section: 'said' }, id: 'd-dd-more' })}</span></div>${fieldsStrip(f, { clinical: c.clinical, ui })}${quiet}</section>`;
 }
 
 // The packet: the reply documents that make sense at this stage, what state each is in, and Preview packet (the drawer shows the draft with the
@@ -281,7 +293,7 @@ export function pathsBody(c) {
   <ul class="d-opts">${on.map(card).join('')}</ul>
   ${off.length ? `<details class="d-det"><summary>Not available here (${off.length})</summary><ul class="d-opts">${off.map(card).join('')}</ul></details>` : ''}`;
 }
-export function overviewSection(c) { return suggestCard(c) + `<div class="d-two">${standCard(c)}${packetCard(c)}</div>` + moreCard(c); }
+export function overviewSection(c) { return decisionCard(c) + suggestCard(c) + `<div class="d-two">${standCard(c)}${packetCard(c)}</div>` + moreCard(c); }
 export function saidSection(c) { return saidCard(c, { id: '' }) + decisionSection(c); }
 export const weakSection = c => weakCard(c, 0);
 
