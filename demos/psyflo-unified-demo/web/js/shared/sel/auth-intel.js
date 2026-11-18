@@ -2,7 +2,7 @@
 // extension panel read the same functions, so the platform and the panel say the same thing.
 //
 // Everything here is computed from stored records: the clinician's ASAM ratings and notes, the dated evidence, the incidents, the authorization, the clock, the payer's
-// stored behaviour. Psyflo writes no clinical claim of its own. A line that has no record behind it says what is missing ("No dated record on file for D4. Still needed: ...").
+// stored notes. Psyflo writes no clinical claim of its own. A line that has no record behind it says what is missing ("No dated record on file for D4. Still needed: ...").
 // Numbers that come from seed `intel_sample` or `rec_outcomes` (payer rates, comparable cases, modeled likelihoods, model confidence, expected approval, lift) are an
 // ILLUSTRATIVE SAMPLE: their objects carry `sample: true` and `basis` (INTEL_BASIS); a screen that shows them says so and marks them Simulated.
 // Clinical views (trajectory, criteria rows, historical outcomes, packet and lift lines) are for the treating clinician. The supervisor and the administrator read only
@@ -170,7 +170,7 @@ export function trajectoryOf(s, r) {
 }
 
 // ------------------------------------------------------------------------------------------------ A-14 payer criteria
-// the rows are the old checklist (six dimensions, the level of care, the reassessment clock); the tiles and "to maximize" come from the same record, the payer's stored behaviour and the sample
+// the rows are the old checklist (six dimensions, the level of care, the reassessment clock); the tiles and "to maximize" come from the same record, the payer's stored notes and the sample
 export function criteriaView(s, r) {
   const today = clockToday(s); const X = evidenceIndex(s, null, r); const a = X.assessment; const lvl = asam.requestLevel(r);
   const ck = asam.levelCheck(a, lvl); const du = asam.dueState(s, a, lvl, today);
