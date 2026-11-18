@@ -249,7 +249,7 @@ V-056,Today list and entries,Remove: removed by feedback Nov 11 (Track Time),DRO
 V-057,Recorded vs billable,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite scribe PASS, enhance PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
 V-058,Send to Lauris time tracker,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite scribe PASS, enhance PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
 V-059,Scan & Enhance: pick and scan,REFACTOR (Mode A),MOVED,"action enhance.scan registered with a capability entry · suite scribe PASS, enhance PASS",
-V-060,Recommendation cards,PORT → findings schema,MOVED,"code: findings schema · suite scribe PASS, enhance PASS",web/js/shared/analytics/ask.js web/js/shared/enhance.js
+V-060,Recommendation cards,PORT → findings schema,MOVED,"code: findings schema · suite scribe PASS, enhance PASS",web/js/screens/AuthIntelWizard.js web/js/screens/DenialIntelDoc.js
 V-061,Original vs enhanced and approve,PORT,MOVED,"action enhance.decide, enhance.approve registered with a capability entry · suite scribe PASS, enhance PASS",
 V-062,CNA scan,PORT,MOVED,"code: CNA scan · suite scribe PASS, enhance PASS",web/js/ext-composite.js web/js/registry.js
 V-063,SRA required fields to submission,Replace submit with master human Send; keep validation,REPLACED-BY,"action request.send registered with a capability entry · code: human Send · suite scribe PASS, enhance PASS",web/js/screens/Authorization.js web/js/screens/SettingsData.js
@@ -266,10 +266,10 @@ V-073,"Daily note (`lauris-dpn`), admission screening, CNA, ISP, collateral, mon
 V-074,"DMAS initial and continued-stay forms (`lauris-dmas`, alias `lauris-case`)",Drop; PORT field list to master `forms.js`,DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-075,Case hub content,Evidence/Documentation seed,MOVED,code: evidence seed · suite ui-kit PASS,web/js/screens/Authorization.js web/js/screens/DenialCase.js
 V-076,Case record excerpts,Evidence seed,MOVED,state key dispute_evidence · suite ui-kit PASS,
-V-077,Citation viewer,PORT → source chips,MOVED,code: citation viewer · suite ui-kit PASS,web/js/screens/AuthRecs.js web/js/screens/Authorization.js
+V-077,Citation viewer,PORT → source chips,MOVED,code: citation viewer · suite ui-kit PASS,web/js/screens/AuthIntel.js web/js/screens/AuthRecs.js
 V-078,Evidence labels,PORT (maturity and provenance chips),MOVED,code: maturity chips · code: provenance chips · suite ui-kit PASS,web/js/screens/Analytics.js web/js/screens/AnalyticsParts.js; web/js/screens/Analytics.js web/js/screens/AnalyticsParts.js
 V-079,Filter bar and date range,PORT → `ui/filterbar.js`,MOVED,code: filter bar · suite ui-kit PASS,web/js/screens/Analytics.js web/js/screens/Authorizations.js
-V-080,Dash helpers,REFACTOR → selectors,MOVED,code: selectors · suite ui-kit PASS,web/js/screens/AppealLetter.js web/js/screens/AuthRecs.js
+V-080,Dash helpers,REFACTOR → selectors,MOVED,code: selectors · suite ui-kit PASS,web/js/screens/AppealLetter.js web/js/screens/AuthIntel.js
 V-081,Theme remap,PORT (cheap re-skin of 46 templates),MOVED,code: theme remap · suite ui-kit PASS,web/css/tokens.css
 V-082,Platform CSS patterns,PORT → `components.css`,MOVED,file web/css/components.css · suite ui-kit PASS,
 V-083,Build script,Drop,DROPPED-WITH-REASON,suite ui-kit PASS,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
