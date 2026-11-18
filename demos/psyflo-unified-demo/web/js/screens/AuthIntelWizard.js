@@ -110,7 +110,7 @@ export function openAnalyze(screen, opener) {
   const paintRecs = () => {
     const r = reqOf(); const host = h.dialog.querySelector('#aw-recs'); if (!r || !host) return;
     const s = S(); const ch = chipper(s, r);
-    host.innerHTML = ui.recPanel(recsFor(s, r.id), { s, scope: 'auth', ref: r.id, chips: x => ch(x.evidence), canAct: true, heading: 'Denial-prevention actions',
+    host.innerHTML = ui.recPanel(recsFor(s, r.id), { s, scope: 'auth', ref: r.id, chips: x => ch(x.evidence), canAct: true, saveWords: true, heading: 'Denial-prevention actions',
       footer: (() => { const x = submitOf(s, r, recsFor(s, r.id)); return { submit: { label: x.label, disabled: !x.ok, reason: x.reason }, refine: true, context: true, dismissAll: true }; })() });
     ui.bindRecPanel(host, { scope: 'auth', ref: r.id, call: (a, x) => screen.do(a, x), onChange: async () => { paintRecs(); if (screen.afterRecs) screen.afterRecs(); },
       onSubmit: () => { h.close('submit'); if (screen.onSubmit) screen.onSubmit(r.id); else screen.go('Authorization', { id: r.id, section: 'submission' }); } });

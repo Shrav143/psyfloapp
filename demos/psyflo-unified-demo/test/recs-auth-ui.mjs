@@ -31,7 +31,7 @@ try {
     assert.match(await p.locator('#sec-recs h2').innerText(), /^Suggested by Psyflo$/);
     const mini = await p.locator('#sec-recs .rcm__t').allInnerTexts(); assert.deepEq(mini, recs.slice(0, 3).map(r => r.title), 'the top three, in the engine\'s order');
     for (const n of ['Suggested actions', 'Clinical trajectory', 'Payer criteria', 'Historical outcomes']) assert.ok(await p.getByRole('button', { name: n, exact: true }).count() === 1, n);
-    const top = await p.evaluate(() => document.querySelector('#sec-recs').getBoundingClientRect().top); assert.ok(top < 700, 'near the top of the page, under Next step: ' + top);
+    const top = await p.evaluate(() => document.querySelector('#sec-recs').getBoundingClientRect().top); assert.ok(top < 900, 'on the first screen, under the signals strip and Next step: ' + top);
     await p.click('#a-rc-open'); await p.waitForSelector('.ui-dialog--drawer .rc__card');
     const keys = await p.locator('.ui-dialog--drawer .rc__card').evaluateAll(els => els.map(e => e.dataset.rec)); assert.deepEq(keys, recs.map(r => r.key), 'one card for each suggestion');
     assert.match(await p.locator('.ui-dialog--drawer .ui-dialog__t').innerText(), /Suggested by Psyflo · D\.W\./);

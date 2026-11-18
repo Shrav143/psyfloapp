@@ -4,6 +4,9 @@
 // R6 · simpler, with side drawers: the page keeps the header, the one primary panel (Next step), "Suggested by Psyflo" (clinician only: the top three suggestions,
 // a drawer with the cards, and the payer criteria checklist), the units and the deadlines. Everything else is one "More" row of buttons, each opening the
 // section in a side drawer. The section bodies are unchanged; a drawer carries the same ids (#sec-evidence ...) so a link or a test finds them.
+// R7 · Oprox parity: under the header a strip carries the clock and the dollars at risk (every role) and, for the clinician, expected approval, model confidence and comparable
+// cases (a sample, marked Simulated). The Suggested by Psyflo card has the decision-support line and four buttons: Suggested actions (the drawer, with Submit, Refine, Add clinical
+// context and Dismiss suggestions), Clinical trajectory, Payer criteria and Historical outcomes (AuthIntel.js, AuthRecs.js; selectors shared/sel/auth-intel.js).
 // One primary panel says what must happen next (Review packet -> Approve -> Sign in Lauris -> Send), each step done by a person who holds the
 // capability. Psyflo drafts and records. It never signs, never stores credentials and never sends unattended:
 // "processed" and "signed" are set only by the page bridge, "Sent" only after the send stub returned a reference. Selectors: shared/sel/auth.js.
