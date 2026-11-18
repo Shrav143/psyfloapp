@@ -17,6 +17,7 @@ import { A_CSS } from './a-css.js';
 import { openFlagDialog, flagButton } from './a-flag.js';
 import { ASAM_CSS, levelSection } from './asam-ui.js';
 import { mayRecs, recsCard, quietCard, openRecs, openCriteria, RECS_CSS } from './AuthRecs.js';
+import { headerStrip, openTrajectory, openHistorical } from './AuthIntel.js';
 
 const TITLES = { level: 'Level of care', documents: 'Clinical documentation', evidence: 'Evidence', submission: 'Submission', units: 'Requested vs approved', payer: 'Payer decision', tasks: 'Related tasks', transition: 'Transition', details: 'Request details', history: 'History' };
 const DRAWERS = ['level', 'documents', 'evidence', 'tasks', 'submission', 'payer', 'details', 'transition', 'history'];   // open a side drawer (the "More" row)
@@ -76,7 +77,7 @@ register('Authorization', class extends Screen {
     if (!c) return { body: raw(`<div class="a-case"><h1 class="a-h1">Case not found</h1>${ui.emptyState({ tone: 'error', title: `${id} is not in the tracker`, body: 'It may belong to a service line this role does not see.', action: { label: 'Back to Authorizations', href: '#/Authorizations' } })}</div>`) };
     this.c = c;
     const recs = mayRecs(this.me) ? recsCard(this, id) : this.me && (this.me.role === 'supervisor' || this.me.role === 'admin') ? quietCard() : '';   // clinician: the card; supervisor and administrator: one quiet line; no suggestion content
-    return { body: raw(`<div class="a-case">${this.crumb(c)}${this.header(c)}${this.flagBanner(c)}${this.nextPanel(c)}${recs}<div class="a-grid2"><div class="a-col">${this.unitsCard(c)}</div><div class="a-col">${this.deadlinesCard(c)}</div></div>${this.moreRow(c)}</div>`) };
+    return { body: raw(`<div class="a-case">${this.crumb(c)}${this.header(c)}${headerStrip(s, c.req, this.me)}${this.flagBanner(c)}${this.nextPanel(c)}${recs}<div class="a-grid2"><div class="a-col">${this.unitsCard(c)}</div><div class="a-col">${this.deadlinesCard(c)}</div></div>${this.moreRow(c)}</div>`) };
   }
   // the "More" row: one button per section, each opens the section in a side drawer (focus returns to the button when it closes)
   moreRow(c) {
@@ -345,7 +346,7 @@ register('Authorization', class extends Screen {
   wire(root) {
     const H = {
       assign: () => this.assign(), approve: () => this.approve(), send: () => this.send(), portal: () => this.portalAgain(), 'log-call': () => this.logCall(), 'record-decision': () => this.decide(),
-      notice: () => this.notice(), resend: () => this.resend(), plan: () => this.setPlan(), 'hist-add': b => this.histAdd(b), criteria: b => openCriteria(this, this.c.id, b),
+      notice: () => this.notice(), resend: () => this.resend(), plan: () => this.setPlan(), 'hist-add': b => this.histAdd(b), criteria: b => openCriteria(this, this.c.id, b), trajectory: b => openTrajectory(this, this.c.id, b), historical: b => openHistorical(this, this.c.id, b),
       'open-sec': b => this.openSec(b.dataset.sec, b)
     };
     root.querySelectorAll('[data-x]').forEach(b => { b.onclick = () => { const fn = H[b.dataset.x]; if (fn) fn(b); }; });
@@ -356,6 +357,8 @@ register('Authorization', class extends Screen {
   }
   // the suggestions drawer (scope auth) over the case; the page repaints when it closes
   openRecs(opener, focusKey = '') { if (this.c && mayRecs(this.me)) openRecs(this, this.c.id, { opener, focusKey }); }
+  // Submit to payer in that drawer: the existing send step. A signed packet opens the send form (or the portal); otherwise the Submission drawer says where it stands.
+  onSubmit() { const c = this.c; if (!c) return; if (c.stage === 'signed' && c.caps.send) { this.send(); return; } this.openSec('submission', document.getElementById('a-more-submission')); }
   // a section in a side drawer. Focus goes back to the button that opened it; an action inside (log a call, record a decision) refreshes the body
   openSec(key, opener) {
     const c = this.c; if (!c || !DRAWERS.includes(key)) return null;

@@ -54,7 +54,7 @@ export function trendChart({ labels = [], series = [], min = 0, max = 4, width =
     return `${segs.map(sg => `<polyline class="in-chart__ln in-chart__s${c}" fill="none" points="${sg.map(p => p.join(',')).join(' ')}"/>`).join('')}${dots}`;
   }).join('');
   const legend = `<ul class="in-chart__legend">${series.map((s, si) => { const c = TONE_CLASS[s.tone] != null ? TONE_CLASS[s.tone] : si % 4; const last = [...(s.points || [])].reverse().find(v => v != null); return `<li><i class="in-chart__sw in-chart__s${c}"></i>${esc(s.name)}${last != null ? ` <b>${esc(String(last))}${esc(unit)}</b>` : ''}</li>`; }).join('')}</ul>`;
-  const table = `<table class="ui-sr"><caption>${esc(title)}</caption><thead><tr><th>Point</th>${series.map(s => `<th>${esc(s.name)}</th>`).join('')}</tr></thead><tbody>${labels.map((lb, i) => `<tr><th>${esc(lb)}</th>${series.map(s => `<td>${(s.points || [])[i] == null ? '—' : esc(String(s.points[i]))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const table = `<table class="ui-sr"><caption>${esc(title)}</caption><thead><tr><th>Point</th>${series.map(s => `<th>${esc(s.name)}</th>`).join('')}</tr></thead><tbody>${labels.map((lb, i) => `<tr><th>${esc(lb)}</th>${series.map(s => `<td>${(s.points || [])[i] == null ? 'No score' : esc(String(s.points[i]))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
   return `<figure class="in-chart"><svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(title)}" preserveAspectRatio="xMidYMid meet">${grid}${xs}${lines}</svg>${legend}${table}</figure>`;
 }
 

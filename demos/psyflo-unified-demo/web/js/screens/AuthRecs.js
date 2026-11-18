@@ -16,13 +16,16 @@
 import { esc, ui, api, session } from '../app.js';
 import { can } from '../shared/permissions.js';
 import { listFor, insertsFor } from '../shared/recs.js';
+import { packetLine } from '../shared/intel.js';
 import { evidenceIndex, evidenceById, chipOpts } from '../shared/sel/disputes.js';
-import { criteriaView } from '../shared/sel/auth-intel.js';
+import { criteriaView, submitOf } from '../shared/sel/auth-intel.js';
+import { AIN_CSS } from './AuthIntel.js';
 import { byId } from '../shared/model.js';
+import * as asam from '../shared/asam.js';
 import { laurisLink, laurisHref } from '../shared/lauris-link.js';
 
 export const mayRecs = me => !!me && me.role === 'clinician' && can(me, 'drafts.clinical');
-export const QUIET = 'Suggestions are for the treating clinician.';
+export const QUIET = 'Clinical views and suggestions are for the treating clinician.';
 
 export function recsFor(s, id) { try { return id && byId(s.requests || [], id) ? listFor(s, 'auth', id) : []; } catch (e) { console.error('suggestions', e); return []; } }
 export function counts(recs) {
@@ -70,7 +73,10 @@ export function openRecs(screen, id, { opener = null, focusKey = '' } = {}) {
     recs: () => recsFor(screen.s, id), s: () => screen.s, call: (a, x) => screen.do(a, x), chips: chipsFor(screen, id),
     laurisHref: r => laurisLink(base, me, r.act && r.act.path, { who: name, title: r.act && r.act.label, variant: 'button' }),
     returnFocus: opener, empty: 'Nothing to suggest right now. The record answers what a reviewer usually asks.',
-    onChange: () => { if (screen.afterRecs) screen.afterRecs(); }
+    onChange: () => { if (screen.afterRecs) screen.afterRecs(); },
+    // the footer actions (Oprox parity): Submit to payer opens the existing send step and stays off, with the reason, until the packet is ready
+    footer: () => { const r = byId(screen.s.requests || [], id); const x = r ? submitOf(screen.s, r, recsFor(screen.s, id)) : { ok: false, label: 'Open the send step', reason: 'The request is not in the tracker.' }; return { submit: { label: x.label, disabled: !x.ok, reason: x.reason }, refine: true, context: true, dismissAll: true }; },
+    onSubmit: () => { h.close('submit'); if (screen.onSubmit) screen.onSubmit(id); else screen.go('Authorization', { id, section: 'submission' }); }
   });
   // the footer: how a clinician continues in the EHR (the panel in Lauris shows the same cards and types the included text into the form)
   const href = laurisHref(base, me, laurisFormPath(screen.s, id));
@@ -85,12 +91,14 @@ export function openRecs(screen, id, { opener = null, focusKey = '' } = {}) {
 // ------------------------------------------------------------------------------------------------ the case page card
 export function recsCard(screen, id) {
   const s = screen.s; const recs = recsFor(s, id); const c = counts(recs);
-  const typed = typedInLauris(s, id, recs);
+  const typed = typedInLauris(s, id, recs); const inputs = packetLine(recs).inputs;
   const line = c.included ? `${c.included} included${typed ? ` · typed in Lauris: ${typed}` : ''}` : `${c.live} to review`;
-  return `<section class="ui-scard a-recs" id="sec-recs" data-sec="recs" aria-labelledby="a-recs-h"><div class="ui-scard__h"><h2 id="a-recs-h">Suggested by Psyflo</h2><span class="ui-scard__r" data-recs-line>${esc(recs.length ? line : 'Nothing to suggest')}</span></div>
-    <p class="a-sub a-recs__s">Built from the stored record. You decide what goes into the request; nothing is sent or typed without a person pressing a button.</p>
-    ${ui.recMini(recs, { s, limit: 3 }).replace('data-rc-open', 'id="a-rc-open" data-ui-return="a-rc-open" data-rc-open')}
-    <div class="a-btnrow"><button type="button" class="ui-btn ui-btn--secondary" id="a-criteria" data-ui-return="a-criteria" data-x="criteria">Check against payer criteria</button></div></section>`;
+  const mini = ui.recMini(recs, { s, limit: 3 }).replace(/<button[^>]*data-rc-open[^>]*>Review suggestions<\/button>/, '');   // the case card has its own row of four buttons
+  const b = (id2, label, x, tone = 'secondary', extra = '') => `<button type="button" class="ui-btn ui-btn--${tone}" id="${id2}" data-ui-return="${id2}" ${extra}${x ? ` data-x="${x}"` : ''}>${esc(label)}</button>`;
+  return `<section class="ui-scard a-recs" id="sec-recs" data-sec="recs" aria-labelledby="a-recs-h"><div class="ui-scard__h"><h2 id="a-recs-h">Suggested by Psyflo</h2>${ui.needsInputBadge(inputs)}<span class="ui-scard__r" data-recs-line>${esc(recs.length ? line : 'Nothing to suggest')}</span></div>
+    ${ui.decisionSupport()}
+    ${mini}
+    <div class="ai-intel" role="group" aria-label="Case intelligence">${b('a-rc-open', 'Suggested actions', '', 'primary', 'data-rc-open')}${b('a-traj', 'Clinical trajectory', 'trajectory')}${b('a-criteria', 'Payer criteria', 'criteria')}${b('a-hist', 'Historical outcomes', 'historical')}</div></section>`;
 }
 export function quietCard() { return `<p class="a-quiet" data-recs-quiet>${esc(QUIET)}</p>`; }
 
@@ -103,14 +111,24 @@ export function criteriaOf(s, id) {
 }
 
 export function criteriaHtml(cr) {
-  const row = x => `<li class="a-crit" data-crit="${esc(x.key)}" data-state="${esc(x.state)}"><div class="a-crit__h"><b class="a-crit__t">${esc(x.label)}</b>${x.state === 'documented' ? ui.chip('Documented', { tone: 'success', icon: 'check', size: 'sm' }) : ui.chip('Needs strengthening', { tone: 'warning', icon: 'alert', size: 'sm' })}${x.included ? ui.chip('Suggestion included', { tone: 'info', icon: 'check', size: 'sm' }) : ''}</div><p class="a-crit__x">${esc(x.text)}</p>${x.rec ? `<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-see="${esc(x.rec)}">See suggestion</button>` : ''}</li>`;
-  return `<div class="a-critw"><p class="a-crit__sum" data-crit-sum><b>${cr.documented} of ${cr.total}</b> documented</p><ol class="a-critl">${cr.rows.map(row).join('')}</ol>
+  const row = x => `<li class="a-crit" data-crit="${esc(x.key)}" data-state="${esc(x.state)}"><div class="a-crit__h"><b class="a-crit__t">${esc(x.label)}</b>${x.state === 'documented' ? ui.statusPill('documented', 'Documented') : ui.statusPill('needs', 'Needs strengthening')}${x.included ? ui.chip('Suggestion included', { tone: 'info', icon: 'check', size: 'sm' }) : ''}</div><p class="a-crit__x">${esc(x.text)}</p>${x.rec ? `<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-see="${esc(x.rec)}">See suggestion</button>` : ''}</li>`;
+  const tile = t => ui.kpiTile({ label: t.label, value: t.value, caption: t.caption, tone: t.key === 'match' ? (cr.needs ? 'warning' : 'success') : '' }).replace('</div>', `${t.sample ? ui.sampleChip() : ''}</div>`);
+  const m = cr.maximize; const w = m.why;
+  const stateChip = x => x.state === 'included' ? ui.chip('Included', { tone: 'success', icon: 'check', size: 'sm' }) : x.needsInput ? ui.chip('Needs your words', { tone: 'warning', icon: 'pencil', size: 'sm' }) : ui.chip('Open', { tone: 'neutral', size: 'sm' });
+  const why = `<p class="a-crit__x">${esc(w.tends ? `${w.payer} tends to ask: ${String(w.tends).replace(/\.$/, '')}.` : `No payer note is on file for ${w.payer}.`)}</p>${w.reasons.length ? `<ul class="a-crit__rs">${w.reasons.map(x => `<li>${esc(x.reason)} <span class="a-sub">${x.count} denials in the sample, ${x.pct}% of the sample</span></li>`).join('')}</ul>${ui.basisLine(w.basis)}` : ''}`;
+  const incl = m.include.length ? `<ul class="a-crit__inc">${m.include.map(x => `<li data-inc="${esc(x.key)}"><span>${esc(x.title)}</span>${stateChip(x)}<button type="button" class="ui-btn ui-btn--ghost ui-btn--sm" data-see="${esc(x.key)}">See suggestion</button></li>`).join('')}</ul>` : '<p class="a-sub">Nothing to add: the record answers what a reviewer usually asks.</p>';
+  return `<div class="a-critw"><p class="a-crit__lede">${esc(cr.payer.name)}${cr.level ? ` · ${esc(asam.levelTag(cr.level))}` : ''}. What this payer looks for, read from the stored record.</p>
+    <ul class="a-crit__src" aria-label="Where this comes from">${cr.sources.map(x => `<li>${ui.chip(x, { tone: 'outline', size: 'sm' })}</li>`).join('')}</ul>
+    <p class="a-crit__status" data-crit-status data-tone="${esc(cr.status.tone)}">${ui.icon(cr.status.tone === 'success' ? 'check' : 'alert', 16)}<span>${esc(cr.status.text)}</span></p>
+    <div class="in-kpis a-crit__tiles" data-crit-tiles>${cr.tiles.map(tile).join('')}</div>
+    <p class="a-crit__sum" data-crit-sum><b>${cr.documented} of ${cr.total}</b> documented</p><ol class="a-critl">${cr.rows.map(row).join('')}</ol>
+    <section class="a-crit__max" data-crit-max><h3>To maximize approval probability</h3><h4>Why this matters for ${esc(w.payer)}</h4>${why}<h4>What to include in your submission</h4>${incl}</section>
     <p class="a-sub">Read from the stored record: the six ASAM dimensions, the level of care on the request and the reassessment rule. Each payer applies its own policy, so confirm on the payer's own notice.</p></div>`;
 }
 export function openCriteria(screen, id, opener) {
   const s = screen.s; const cr = criteriaOf(s, id); if (!cr) return null;
   const c = byId(s.clients || [], cr.request.client); const name = c ? (c.initials || id) : id;
-  const h = ui.modal({ title: `Payer criteria · ${name}`, size: 'md', returnFocus: opener, body: criteriaHtml(cr), className: 'a-critmodal', actions: [{ label: 'Close', tone: 'secondary' }] });
+  const h = ui.modal({ title: `Payer criteria · ${name}`, size: 'lg', returnFocus: opener, body: criteriaHtml(cr), className: 'a-critmodal', actions: [{ label: 'Close', tone: 'secondary' }] });
   h.dialog.addEventListener('click', e => {
     const b = e.target.closest('[data-see]'); if (!b) return;
     const key = b.dataset.see; h.close('see');
@@ -120,7 +138,7 @@ export function openCriteria(screen, id, opener) {
 }
 
 // ------------------------------------------------------------------------------------------------ CSS (joined to the screens' css getter)
-export const RECS_CSS = `
+export const RECS_CSS = AIN_CSS + `
 .a-recs .a-recs__s{margin:0 0 var(--sp-3)}
 .a-recs .rcm{margin-bottom:var(--sp-3)}
 .a-quiet{margin:0;color:var(--muted-700);font-size:var(--fs-13)}
@@ -139,4 +157,15 @@ export const RECS_CSS = `
 .a-crit__h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
 .a-crit__t{font-size:var(--fs-14)}
 .a-crit__x{margin:0;color:var(--ink-700,inherit);font-size:var(--fs-13);line-height:var(--lh-13);overflow-wrap:anywhere}
+.a-crit__lede{margin:0;font-size:var(--fs-14)}
+.a-crit__src{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.a-crit__status{display:flex;gap:8px;align-items:center;margin:0;padding:8px 12px;border-radius:var(--r-2);border:1px solid #EBD08B;background:var(--warning-bg);color:var(--warning-fg);font-size:var(--fs-14);font-weight:600}
+.a-crit__status[data-tone=success]{border-color:#B7D5CA;background:var(--success-bg);color:var(--success-fg)}
+.a-crit__tiles{margin:0}.a-crit__tiles .in-kpi{gap:6px}.a-crit__tiles .in-kpi .ui-chip{align-self:flex-start}.a-crit__tiles .in-kpi__v{font-size:var(--fs-18)}
+.a-crit__max h3{margin:0 0 6px;font:600 var(--fs-16)/1.3 var(--font)}.a-crit__max h4{margin:var(--sp-3) 0 4px;font:600 var(--fs-12)/1.3 var(--font);letter-spacing:.05em;text-transform:uppercase;color:var(--muted-700)}
+.a-crit__rs{margin:6px 0;padding-left:18px;font-size:var(--fs-13);display:flex;flex-direction:column;gap:3px}
+.a-crit__inc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.a-crit__inc li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 0;border-top:1px solid var(--line-200);font-size:var(--fs-13)}.a-crit__inc li:first-child{border-top:0}
+.a-crit__inc li>span:first-child{flex:1 1 220px;min-width:0;overflow-wrap:anywhere}
+@media (max-width:767px){.a-crit__inc .ui-btn{min-height:44px}}
 `;

@@ -14,6 +14,11 @@ try { if (store.state && !store.state.intel_sample) store.state.intel_sample = J
 
 export const authz = { 'intel.event': { any: ['drafts.clinical'] } };
 
+// The sample (payer rates, the payer line, comparable counts, denial reasons by payer, the historical cards) and the outcome table hold no client data. The payer line and the
+// facility insights are for every role that opens Authorizations or Denial Intelligence (R7), so the supervisor and the administrator read them; everyone else gets them empty.
+const STAFF = { clinician: true, supervisor: true, admin: true, default: false };
+export const projection = { intel_sample: STAFF, rec_outcomes: STAFF, rec_baseline: STAFF };
+
 const LABEL = {
   refine: 'Suggestions refined against the record',
   context: 'Clinical context added',

@@ -25,12 +25,12 @@ const fits = async p => p.evaluate(() => ({ page: document.documentElement.scrol
 try {
   // ------------------------------------------------------------------ the clinician: the card and the drawer
   await reset('canvas');
-  await T.test('clinician: the case page carries "Suggested by Psyflo" (the top three, one button to the drawer, Check against payer criteria); the drawer shows every card, labels the sample and links to Lauris with the panel; Escape returns focus', async () => {
+  await T.test('clinician: the case page carries "Suggested by Psyflo" (the top three, four buttons: Suggested actions, Clinical trajectory, Payer criteria, Historical outcomes); the drawer shows every card, labels the sample and links to Lauris with the panel; Escape returns focus', async () => {
     const { p, errs } = await mk('jperez'); await openCase(p, 'R-0402'); await p.waitForSelector('#sec-recs');
     const recs = await recsOf('R-0402'); assert.ok(recs.length >= 4 && recs.length <= 6, 'a short list: ' + recs.length);
     assert.match(await p.locator('#sec-recs h2').innerText(), /^Suggested by Psyflo$/);
     const mini = await p.locator('#sec-recs .rcm__t').allInnerTexts(); assert.deepEq(mini, recs.slice(0, 3).map(r => r.title), 'the top three, in the engine\'s order');
-    assert.ok(await p.getByRole('button', { name: 'Check against payer criteria' }).count() === 1); assert.ok(await p.getByRole('button', { name: 'Review suggestions' }).count() === 1);
+    for (const n of ['Suggested actions', 'Clinical trajectory', 'Payer criteria', 'Historical outcomes']) assert.ok(await p.getByRole('button', { name: n, exact: true }).count() === 1, n);
     const top = await p.evaluate(() => document.querySelector('#sec-recs').getBoundingClientRect().top); assert.ok(top < 700, 'near the top of the page, under Next step: ' + top);
     await p.click('#a-rc-open'); await p.waitForSelector('.ui-dialog--drawer .rc__card');
     const keys = await p.locator('.ui-dialog--drawer .rc__card').evaluateAll(els => els.map(e => e.dataset.rec)); assert.deepEq(keys, recs.map(r => r.key), 'one card for each suggestion');
@@ -118,10 +118,10 @@ try {
     assert.eq(await p.locator('tbody a[href^="#/Authorization?id=R-0402"]').count() >= 1, true, 'the row still opens the case');
     assert.deepEq(realErrs(errs), []); await p.context().close();
   });
-  await T.test('list: first sight is the search, Status and one Filters button; the Filters drawer holds the period card, ten filters and the sort; focus returns to the button; the sort works from the drawer', async () => {
+  await T.test('list: first sight is the search, Status and one Filters button; the Filters drawer holds the period card, eleven filters and the sort; focus returns to the button; the sort works from the drawer', async () => {
     await reset('canvas'); const { p, errs } = await mk('jperez'); await p.goto(BASE + '/#/Authorizations'); await p.waitForSelector('tbody tr[data-ui-row]');
     assert.eq(await p.locator('.ui-fbar select').count(), 1, 'only Status on the page'); assert.eq(await p.locator('.ui-datecard').count(), 0);
-    await p.click('#a-filters'); await p.waitForSelector('.a-fd'); assert.eq(await p.locator('.ui-dialog--drawer .ui-fbar select').count(), 10); assert.eq(await p.locator('.ui-dialog--drawer .ui-datecard').count(), 1);
+    await p.click('#a-filters'); await p.waitForSelector('.a-fd'); assert.eq(await p.locator('.ui-dialog--drawer .ui-fbar select').count(), 11); assert.eq(await p.locator('.ui-dialog--drawer .ui-datecard').count(), 1);
     await p.selectOption('#a-sort-k', 'units'); await p.waitForTimeout(400); assert.match(await p.evaluate(() => location.hash), /sort=units/); assert.eq(await p.locator('th[aria-sort="ascending"]').count(), 1);
     await p.selectOption('select[data-key="payer"]', 'anthem'); await p.waitForTimeout(400); assert.match(await p.locator('.ui-dialog--drawer [data-ui-action="0"]').innerText(), /^Show \d+ authorizations?$/);
     const shown = await p.locator('tbody tr[data-ui-row]').count(); assert.ok(shown >= 1 && shown < (await state('jperez')).requests.length, 'the list follows the drawer: ' + shown);
@@ -174,9 +174,9 @@ try {
     await reset('canvas'); await api('recs.decide', { scope: 'auth', ref: 'R-0402', key: 'level-cite', state: 'included' }, 'jperez');
     for (const who of ['cdiaz', 'dowens']) {
       const { p, errs } = await mk(who); await openCase(p, 'R-0402'); await p.waitForSelector('[data-recs-quiet]');
-      assert.eq((await p.locator('[data-recs-quiet]').innerText()).trim(), 'Suggestions are for the treating clinician.', who);
+      assert.eq((await p.locator('[data-recs-quiet]').innerText()).trim(), 'Clinical views and suggestions are for the treating clinician.', who);
       assert.eq(await p.locator('#sec-recs, .rcm, .rc, #a-rc-open, #a-criteria').count(), 0, who + ': no card, no button'); const html = await p.content();
-      assert.noMatch(html, /Suggested by Psyflo|Review suggestions|Check against payer criteria|Lead with why the ratings support|dated records behind|Illustrative sample|Added from recommendations/, who + ': no suggestion content in the page');
+      assert.noMatch(html, /Suggested by Psyflo|Suggested actions|Clinical trajectory|Historical outcomes|Review suggestions|Check against payer criteria|Lead with why the ratings support|dated records behind|Illustrative sample|Added from recommendations/, who + ': no suggestion content in the page');
       await p.goto(BASE + '/#/Authorizations'); await p.waitForSelector('tbody tr[data-ui-row]'); assert.eq(await p.locator('.a-recchip').count(), 0); assert.ok(!(await p.locator('thead').innerText()).includes('Suggestions'), who + ': no column');
       await p.goto(BASE + '/#/Authorization?id=R-0402&section=recs'); await p.waitForTimeout(500); assert.eq(await p.locator('.ui-dialog').count(), 0, who + ': the suggestions deep link opens nothing');
       assert.deepEq((await state(who)).rec_decisions, [], who + ' reads no decisions'); await assert.refused(tryApi('recs.decide', { scope: 'auth', ref: 'R-0402', key: 'level-cite', state: 'dismissed' }, who), /not allowed/i, 403);
