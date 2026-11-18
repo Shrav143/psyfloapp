@@ -120,6 +120,12 @@ export function authRecs(s, r, { idx = null } = {}) {
 const RANK = { high: 0, medium: 1, low: 2 };
 const byImpact = (x, y) => (RANK[x.impact] - RANK[y.impact]) || ((x.kind === 'timing' ? 0 : 1) - (y.kind === 'timing' ? 0 : 1));
 
+// "Send the reply by tomorrow", "Appeal window closes in 3 days": a deadline as something to act on, not a label with a colon
+const windowTitle = win => {
+  const n = win.days, ago = `${-n} day${n === -1 ? '' : 's'} ago`;
+  if (win.kind === 'reply') return n < 0 ? `The reply date passed ${ago}` : n === 0 ? 'Send the reply today' : n === 1 ? 'Send the reply by tomorrow' : `Send the reply within ${n} days`;
+  return n < 0 ? `${String(win.label).replace(/ closes$/, ' closed')} ${ago}` : `${win.label} ${n === 0 ? 'today' : n === 1 ? 'tomorrow' : 'in ' + n + ' days'}`;
+};
 // ------------------------------------------------------------------------------------------------ Denial Intelligence
 // denialRecs(s, d, r, idx) -> Rec[]: what would make the reply stronger. Built from the same weak points and records the workspace shows.
 export function denialRecs(s, d, r, idx = null) {
@@ -128,7 +134,7 @@ export function denialRecs(s, d, r, idx = null) {
   const add = o => out.push(withOutcome(s, { scope: 'denial', ref: r.id, evidence: [], insert: null, needsInput: null, act: null, dim: 0, impact: 'medium', ...o, id: recId('denial', r.id, o.key) }));
   const du = asam.dueState(s, a, lvl, clockToday(s)); const dl = deadlinesOf(s, d, r); const win = dl.find(x => x.date);
   // 1. the clock first: a reply that misses its window loses every other improvement
-  if (win && win.days != null && win.days <= 7) add({ key: 'window', family: 'window', kind: 'timing', title: win.days < 0 ? `${win.label} passed ${-win.days} day${win.days === -1 ? '' : 's'} ago` : `${win.label}: ${win.days === 0 ? 'today' : win.days === 1 ? 'tomorrow' : 'in ' + win.days + ' days'}`, why: `Every other improvement depends on getting the reply in on time. Confirm the date on the payer's own notice.`, impact: 'high', act: { kind: 'denial', label: 'Open the case' } });
+  if (win && win.days != null && win.days <= 7) add({ key: 'window', family: 'window', kind: 'timing', title: windowTitle(win), why: `Every other improvement depends on getting the reply in on time. Confirm the date on the payer's own notice.`, impact: 'high', act: { kind: 'denial', label: 'Open the case' } });
   // 2. lead with the ratings that support the level, or fix the ones that do not
   if (a && ck.state === 'match') { const l = sentenceLevel(X, r); add({ key: 'cite-asam', family: 'cite-asam', kind: 'appeal', title: `Cite the ASAM dimensions that support Level ${lvl}`, why: `${pf}'s reviewer applies its own criteria. Name the dimensions that are above the next lower level and say that the ratings are the clinician's.`, impact: 'high', evidence: l.ids, insert: { doc: 'all', text: l.text } }); }
   else if (a && ck.state === 'over') add({ key: 'level-reason', family: 'level-reason', kind: 'appeal', title: `Say why Level ${lvl} is needed beyond what the ratings alone fit (Level ${ck.lowest})`, why: `${pf} can point to the ratings to step the level down. The reason beyond the ratings has to come from the clinician.`, impact: 'high', evidence: [`EV-ASM-${a.id}`], insert: { doc: 'all', text: '' }, needsInput: { prompt: `Why does ${c.initials || 'the client'} need Level ${lvl}?`, placeholder: 'Safety, a lower level that failed, the home. Your words, with dates.' } });

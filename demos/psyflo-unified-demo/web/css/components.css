@@ -785,7 +785,7 @@ a.ui-hint__b{cursor:pointer}
 .rc__add[hidden]{display:none}
 .rc__add label{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:var(--fs-13)}
 .rc__add .ui-input{width:100%}.rc__add .ui-textarea{width:100%;padding:8px 12px}
-.rc__foot{position:sticky;bottom:0;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:12px 0 4px;background:linear-gradient(to top,var(--surface-0) 70%,transparent)}
+.rc__foot{position:sticky;bottom:0;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:12px 0 8px;background:var(--surface-0);border-top:1px solid var(--line-200)}
 .rc__safe{margin:0;color:var(--muted-700);font-size:var(--fs-12);line-height:var(--lh-12)}
 .rc__empty{margin:0;padding:12px;background:var(--sand-100);border-radius:var(--r-3);color:var(--muted-700);font-size:var(--fs-13)}
 /* the short list on a case page */

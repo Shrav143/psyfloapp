@@ -47,7 +47,7 @@ await T.test('the full list opens in a side drawer from the button and from a ro
   const p = await open('jperez'); await goCase(p, 'R-0402');
   await p.getByRole('button', { name: 'Review suggestions' }).click(); const dlg = dialog(p); await dlg.waitFor();
   assert.match(await dlg.locator('.ui-dialog__t').innerText(), /What Psyflo would do/); assert.eq(await dlg.locator('.rc__card').count(), 9, 'all nine suggestions');
-  const first = await dlg.locator('.rc__card .rc__t').first().evaluate(el => getComputedStyle(el, '::before').content); assert.match(first, /counter\(rcn\)/, 'numbered by a CSS counter'); assert.match(await dlg.locator('.rc__card .rc__t').first().innerText(), /Reply by/);
+  const first = await dlg.locator('.rc__card .rc__t').first().evaluate(el => getComputedStyle(el, '::before').content); assert.match(first, /counter\(rcn\)/, 'numbered by a CSS counter'); assert.match(await dlg.locator('.rc__card .rc__t').first().innerText(), /Send the reply (today|by tomorrow|within \d+ days)|reply date passed/);
   await card(p, 'cite-asam').locator('summary').click(); const why = await card(p, 'cite-asam').innerText(); assert.match(why, /Why this matters[\s\S]*times applied in the sample · \d+% success[\s\S]*Illustrative sample/); assert.match(why, /High impact/);
   assert.ok(await card(p, 'cite-asam').locator('.ui-evidence').count() >= 2, 'the sentence carries its evidence chips'); assert.match(await dlg.innerText(), /Expected approval[\s\S]*Simulated/);
   await shot(p, 'drawer-0402-1440'); await p.keyboard.press('Escape'); await dlg.waitFor({ state: 'detached' });
