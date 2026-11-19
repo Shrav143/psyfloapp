@@ -1,4 +1,13 @@
-# Psyflo prior-auth demo
+# Psyflo prior-auth demo with Lauris (EHR round)
+
+This is the Oct 24 "Psyflo Prior Auth" demo (commit `4fa4038b`, the page published as artifact `9X3xYEndKX4pZ86vTcBgwH`) with two changes: the **prior authorization is edited in Lauris**, the clinic's EHR, with the **Psyflo browser extension** docked in it,
+and the whole UI is recolored to the **Unified demo palette** (navy rail, teal, paper, DM Sans). The original demo and its artifact are untouched. The contract for the EHR round is in `EHR-ROUND.md`.
+
+**The rule.** Wherever the Authorizations tab or the Denial Intelligence tab needs the person to edit the authorization form or add recommendations, a button takes them to Lauris (`/lauris/case/:id`, a separate app in its own browser tab).
+There the Psyflo extension suggests the recommendations and types them into Lauris's own form (yellow = Psyflo typed it, check it; green = already in Lauris); the person saves in Lauris. **Add in Lauris** is the main button on the case page;
+**Apply here in Psyflo** still works and ends in the same state. A denied authorization that is re-edited goes back to Lauris too (**Edit authorization in Lauris**, **Fix in Lauris**). **Appeal letters stay in Psyflo** (Draft the appeal, Appeal letter).
+Psyflo types only what its case model already holds (stored records and the person's own words) and never presses Save in Lauris.
+
 
 A clickable, interactive front-end demo of **Psyflo**: AI-native prior authorization, utilization review, documentation and denials for behavioral-health and SUD programs. All data is invented, and no clinic is named. Nothing is sent anywhere.
 
@@ -7,7 +16,7 @@ Stack: Vite 8, React 19, TypeScript (strict), Tailwind CSS v4, react-router-dom 
 ## Run it
 
 ```bash
-cd demos/prior-auth-demo
+cd demos/psyflo-prior-auth-ehr-demo
 bun install            # or npm install
 bun run dev            # http://localhost:5173
 bun run build          # typecheck + build to dist/index.html (open it by double-click)
@@ -46,11 +55,15 @@ Every case belongs to a site. `siteOf(caseId)` in `src/data/sites.ts` places it,
 7. Analytics: click Cardinal in the scorecard, then a cell in the case-mix heatmap, then a case.
 8. Payers: Cardinal, History & Changes, Acknowledge change, Review & apply changes. Summit, Workflow Builder, open "Summit initial authorization, residential", drag in a step, Test, Publish. Test Workflow, preset "Treatment plan missing". New Case with Summit Medicaid and Residential 3.5 shows the workflow in use under the stepper.
 
-## Workflow diagrams
+## Lauris and the extension
 
-The diagrams also found places where the demo did less than its screens suggested. Those were fixed, and `workflows/DEMO-GAPS.md` lists each one and what it does now.
-
-`workflows/` maps every screen, click and decision of the demo as flow diagrams, one menu tab and sub tab at a time, with one set of shapes and colours. Open `workflows/out/Psyflo-workflow-diagrams.html`, or read `workflows/README.md`.
+| Where | What |
+|---|---|
+| Case page, Recommended actions | **Add in Lauris (n)** opens the authorization form in Lauris with the extension on the case's suggestions. **Apply here in Psyflo (n)** is the old path. |
+| Case page header, Clinical picture & draft | **Edit in Lauris** (the draft's sections are the form's text boxes). **Edit here** edits in Psyflo. |
+| Denial page header | **Edit authorization in Lauris** opens the denied authorization with the extension on the corrections. |
+| Denial page, Where the denial is weak | **Fix in Lauris** per finding; **Add to the appeal evidence** puts it in the appeal letter, which is written in Psyflo. |
+| `/lauris`, `/lauris/authorizations`, `/lauris/case/:id` | The mock Lauris (`src/ehr/lauris`) with the Psyflo extension panel docked (`src/ehr/panel`): home, suggestions for the form, denial corrections. |
 
 ## Code map
 
@@ -65,12 +78,13 @@ src/
   components/ui/             the design kit (Button, Card, Dropdown, Drawer, Table, charts, ...)
   components/layout/         sidebar, top bar, Ask panel, notifications, shell
   pages/<module>/            one folder per module
+  ehr/                       the EHR round: model.ts (shared), lauris/ (mock Lauris), panel/ (the Psyflo extension)
 CONVENTIONS.md              the rules the modules were built to
 scripts/shot.mjs            screenshot a route of a build
 ```
 
 State: one store. The Dashboard's requests are the shared spine; other modules create and change them through `submitCase`, `simulateReply`, `updateRequest` and `addEvent`. "Reset demo data" restores every slice.
 
-## Hosted preview
+## Hosted preview (how the artifact is made)
 
 `VITE_HOSTED=1 bun run build` makes a build for hosting inside a page that blocks downloads, printing and an address bar of its own. It keeps the route in memory (no `#/path` in the URL), and Export CSV, Download report, Print and Copy link say they are off in the preview instead of doing nothing. The normal build is unchanged.
