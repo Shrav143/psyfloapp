@@ -49,7 +49,7 @@ function Month({ month, from, to, hover, min, max, focus, onPick, onHover, onFoc
           const isEnd = d === from || d === to;
           const inside = !!lo && !!hi && d > lo && d < hi;
           return (
-            <span key={d} role="gridcell" className={cn("grid h-9 place-items-center", inside && "bg-[#EAF1EC]", d === lo && hi !== lo && "rounded-l-full bg-[#EAF1EC]", d === hi && hi !== lo && "rounded-r-full bg-[#EAF1EC]")}>
+            <span key={d} role="gridcell" className={cn("grid h-9 place-items-center", inside && "bg-[#E6F1F0]", d === lo && hi !== lo && "rounded-l-full bg-[#E6F1F0]", d === hi && hi !== lo && "rounded-r-full bg-[#E6F1F0]")}>
               <button
                 type="button"
                 data-day={d}
@@ -60,7 +60,7 @@ function Month({ month, from, to, hover, min, max, focus, onPick, onHover, onFoc
                 onClick={() => onPick(d)}
                 onMouseEnter={() => onHover(d)}
                 onFocus={() => onFocusDay(d)}
-                className={cn("grid h-9 w-9 place-items-center rounded-full text-sm", isEnd ? "bg-forest font-semibold text-white" : off ? "text-faint" : "hover:bg-[#DCE8E0]")}
+                className={cn("grid h-9 w-9 place-items-center rounded-full text-sm", isEnd ? "bg-forest font-semibold text-white" : off ? "text-faint" : "hover:bg-[#DCEBE8]")}
               >
                 {Number(d.slice(8))}
               </button>
@@ -141,7 +141,7 @@ export function DateRangePicker({ value, onChange, defaultValue, min, max, prese
         aria-controls={id}
         aria-label={`${ariaLabel}: ${rangeLabel(value)}`}
         onClick={() => (open ? setOpen(false) : show())}
-        className={cn("flex h-[38px] items-center gap-2 rounded-xl border bg-white px-3 text-sm text-ink transition-colors hover:bg-tile", active ? "border-forest bg-[#F3F7F4] font-semibold" : "border-field")}
+        className={cn("flex h-[38px] items-center gap-2 rounded-xl border bg-white px-3 text-sm text-ink transition-colors hover:bg-tile", active ? "border-forest bg-[#EEF6F5] font-semibold" : "border-field")}
       >
         <CalendarDays size={16} className="ico text-muted" />
         {rangeLabel(value)}
@@ -152,7 +152,7 @@ export function DateRangePicker({ value, onChange, defaultValue, min, max, prese
             <ul className="flex w-[150px] flex-col gap-0.5 border-r border-line p-2.5">
               {presets.map((p) => (
                 <li key={p.label}>
-                  <button type="button" onClick={() => apply(p.range)} className={cn("w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-tile", same(p.range, value) && "bg-[#F3F7F4] font-semibold text-forest")}>
+                  <button type="button" onClick={() => apply(p.range)} className={cn("w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-tile", same(p.range, value) && "bg-[#EEF6F5] font-semibold text-forest")}>
                     {p.label}
                   </button>
                 </li>

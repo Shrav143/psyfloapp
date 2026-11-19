@@ -40,7 +40,7 @@ export function NotificationsPanel() {
                 setOpen(false);
                 if (n.to) nav(n.to);
               }}
-              className={cn("flex w-full items-start gap-3 rounded-2xl border p-3.5 text-left hover:bg-tile", n.read ? "border-edge bg-white" : "border-mid-edge bg-[#FFFBF0]")}
+              className={cn("flex w-full items-start gap-3 rounded-2xl border p-3.5 text-left hover:bg-tile", n.read ? "border-edge bg-white" : "border-mid-edge bg-[#FDF7E6]")}
             >
               {n.agent === "system" ? <ActorBadge actor="system" size={32} /> : <AgentBadge agent={n.agent} size={32} />}
               <div className="min-w-0 flex-1">

@@ -77,7 +77,7 @@ export function Dropdown<T extends string>({ value, options, onChange, defaultVa
         className={cn(
           "flex h-[38px] items-center gap-2 rounded-xl border bg-white px-3 text-left text-sm text-ink transition-colors hover:bg-tile disabled:opacity-50",
           variant === "field" ? "w-full" : "min-w-0",
-          active ? "border-forest bg-[#F3F7F4] font-semibold" : "border-field",
+          active ? "border-forest bg-[#EEF6F5] font-semibold" : "border-field",
         )}
       >
         <span className="truncate">{current?.label ?? placeholder ?? "Select"}</span>
@@ -98,7 +98,7 @@ export function Dropdown<T extends string>({ value, options, onChange, defaultVa
               aria-selected={o.value === value}
               onMouseEnter={() => setCursor(i)}
               onClick={() => pick(o.value)}
-              className={cn("flex w-full items-center gap-2.5 rounded-[10px] px-3 py-[9px] text-left text-sm", o.value === value ? "bg-[#F3F7F4] font-semibold" : "", i === cursor && o.value !== value ? "bg-tile" : "")}
+              className={cn("flex w-full items-center gap-2.5 rounded-[10px] px-3 py-[9px] text-left text-sm", o.value === value ? "bg-[#EEF6F5] font-semibold" : "", i === cursor && o.value !== value ? "bg-tile" : "")}
             >
               <span className="grid w-4 place-items-center text-forest">{o.value === value ? <Check size={16} className="ico" /> : null}</span>
               <span className="flex-1">{o.label}</span>

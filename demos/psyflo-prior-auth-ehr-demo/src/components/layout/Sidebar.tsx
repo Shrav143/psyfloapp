@@ -24,7 +24,7 @@ interface Item {
   subs?: Item[];
 }
 
-const link = "flex h-[42px] items-center gap-3 rounded-xl px-3 text-[14px] font-medium text-ink2 transition-colors hover:bg-[#EADFD0]";
+const link = "flex h-[42px] items-center gap-3 rounded-xl px-3 text-[14px] font-medium text-on-navy-muted transition-colors hover:bg-navy-2 hover:text-on-navy";
 
 function NavItem({ item, depth = 0 }: { item: Item; depth?: number }) {
   const { pathname } = useLocation();
@@ -77,7 +77,7 @@ function GroupItem({ item }: { item: Item }) {
           aria-label={`${open ? "Collapse" : "Expand"} ${item.label}`}
           title={open ? "Collapse" : "Expand"}
           onClick={() => setOpen((o) => !o)}
-          className={cn("relative z-10 -ml-2 grid h-7 w-7 place-items-center rounded-md opacity-70 hover:opacity-100", lit ? "hover:bg-white/15" : "hover:bg-black/5")}
+          className={cn("relative z-10 -ml-2 grid h-7 w-7 place-items-center rounded-md opacity-70 hover:opacity-100", lit ? "hover:bg-white/15" : "hover:bg-white/10")}
         >
           <Chevron size={15} className="ico" />
         </button>
@@ -139,45 +139,45 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="sticky top-0 flex h-screen w-[256px] shrink-0 flex-col gap-[22px] border-r border-[#EADFD2] bg-side px-3.5 pt-6 pb-3.5">
+    <aside className="sticky top-0 flex h-screen w-[256px] shrink-0 flex-col gap-[22px] border-r border-navy-line bg-side px-3.5 pt-6 pb-3.5 on-navy">
       <div className="px-2">
-        <div className="font-serif text-[24px] leading-none font-semibold tracking-[-0.4px] text-[#1C473B]">
-          psyflo<i className="not-italic text-sage">.</i>
+        <div className="text-[24px] leading-none font-bold tracking-[-0.6px] text-on-navy">
+          psyflo<i className="not-italic text-marigold">.</i>
         </div>
-        <div className="mt-[5px] text-[11px] tracking-[0.12em] text-muted uppercase">Prior auth &amp; UR</div>
+        <div className="mt-[5px] text-[11px] tracking-[0.12em] text-on-navy-muted uppercase">Prior auth &amp; UR</div>
       </div>
       <nav aria-label="Main" className="flex flex-1 flex-col gap-[3px] overflow-y-auto">
-        <div className="px-3 pb-1 text-[11px] tracking-[0.12em] text-muted uppercase">Main</div>
+        <div className="px-3 pb-1 text-[11px] tracking-[0.12em] text-on-navy-muted uppercase">Main</div>
         {main.map((i) => (
           <NavItem key={i.label} item={i} />
         ))}
-        <div className="mt-3.5 px-3 pb-1 text-[11px] tracking-[0.12em] text-muted uppercase">Connections</div>
+        <div className="mt-3.5 px-3 pb-1 text-[11px] tracking-[0.12em] text-on-navy-muted uppercase">Connections</div>
         {conn.map((i) => (
           <NavItem key={i.label} item={i} />
         ))}
       </nav>
       <div className="flex flex-col gap-0.5">
-        <div className="mb-2 flex items-center gap-2.5 rounded-xl border border-[#EADFD2] bg-[#FBF8F3] px-3 py-2.5 text-[12px] text-ink2">
-          <FlaskConical size={16} className="ico text-muted" />
+        <div className="mb-2 flex items-center gap-2.5 rounded-xl border border-navy-line bg-navy-2 px-3 py-2.5 text-[12px] text-on-navy-muted">
+          <FlaskConical size={16} className="ico text-marigold" />
           Demo data
         </div>
-        <NavLink to={paths.settings()} className={({ isActive }) => cn("flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#EADFD0]", isActive && "bg-forest text-white hover:bg-forest")}>
+        <NavLink to={paths.settings()} className={({ isActive }) => cn("flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-on-navy-muted hover:bg-navy-2 hover:text-on-navy", isActive && "bg-forest text-white hover:bg-forest")}>
           <Settings size={17} className="ico" />
           Settings
         </NavLink>
-        <button type="button" onClick={() => toast({ title: "Help", body: "Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#EADFD0]">
+        <button type="button" onClick={() => toast({ title: "Help", body: "Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-on-navy-muted hover:bg-navy-2 hover:text-on-navy">
           <HelpCircle size={17} className="ico" />
           Help
         </button>
-        <button type="button" onClick={() => toast({ title: "This is a demo", body: "There is nothing to sign out of.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#EADFD0]">
+        <button type="button" onClick={() => toast({ title: "This is a demo", body: "There is nothing to sign out of.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-on-navy-muted hover:bg-navy-2 hover:text-on-navy">
           <LogOut size={17} className="ico" />
           Sign out
         </button>
-        <div className="mt-2.5 flex items-center gap-3 border-t border-[#EADFD2] px-2 pt-3.5" role="group" aria-label={`Signed in as ${viewer.name}, ${viewer.role}`}>
+        <div className="mt-2.5 flex items-center gap-3 border-t border-navy-line px-2 pt-3.5" role="group" aria-label={`Signed in as ${viewer.name}, ${viewer.role}`}>
           <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-forest text-xs font-semibold text-white" aria-hidden="true">{viewer.initials}</div>
           <div className="min-w-0">
-            <div className="truncate text-[13px] font-semibold">{viewer.name}</div>
-            <div className="truncate text-xs text-muted">{viewer.role}</div>
+            <div className="truncate text-[13px] font-semibold text-on-navy">{viewer.name}</div>
+            <div className="truncate text-xs text-on-navy-muted">{viewer.role}</div>
           </div>
         </div>
       </div>

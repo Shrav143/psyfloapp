@@ -5,8 +5,8 @@ import { REPORT_FOOTER, REPORT_HEADINGS as H, REPORT_TITLE, type ReportDoc, type
    so it stays out of the page until someone clicks Download PDF. */
 
 const C = {
-  forest: "#1D4F43", ink: "#1B1B19", ink2: "#4D463D", muted: "#6E6A63", line: "#E5DCD0", tile: "#FAF6F2", tileEdge: "#F0ECE4", neutralBg: "#F2EAE2", neutralInk: "#4A4239",
-  good: "#2F6F5C", goodBg: "#E6F2EE", goodInk: "#27493E", mid: "#8F6620", midBg: "#F6EED6", midInk: "#7D642F", risk: "#B5553A", riskBg: "#FAF2EA", riskInk: "#6B362A", faint: "#A9A59C", white: "#FFFFFF",
+  forest: "#217A78", ink: "#151B24", ink2: "#3F4752", muted: "#525B66", line: "#C9C2B6", tile: "#F5F2EC", tileEdge: "#EFEBE4", neutralBg: "#EFEBE4", neutralInk: "#3F4752",
+  good: "#2A7A55", goodBg: "#E3EFEA", goodInk: "#1D4F43", mid: "#9A6A0E", midBg: "#FCEFD0", midInk: "#6F4A05", risk: "#B8442B", riskBg: "#FBE7E2", riskInk: "#8A2E1C", faint: "#857F75", white: "#FFFFFF",
 };
 const TONE: Record<ReportTone, { fg: string; bg: string; ink: string }> = {
   good: { fg: C.good, bg: C.goodBg, ink: C.goodInk },
@@ -99,8 +99,8 @@ export async function buildAppealPdf(doc: ReportDoc) {
   /* ---------- page one: title band, facts, verdict ---------- */
   pdf.setFillColor(C.forest);
   pdf.rect(0, 0, PAGE.w, 118, "F");
-  w.put("PSYFLO  ·  DENIAL INTELLIGENCE", { font: "helvetica", weight: "bold", size: 8, color: "#CFE3DB", lh: 12, track: 0.6 }, left, 34);
-  w.put(`Generated ${doc.generatedOn}`, { font: "helvetica", weight: "normal", size: 8.5, color: "#CFE3DB", lh: 12 }, PAGE.w - left, 34, "right");
+  w.put("PSYFLO  ·  DENIAL INTELLIGENCE", { font: "helvetica", weight: "bold", size: 8, color: "#C9DED5", lh: 12, track: 0.6 }, left, 34);
+  w.put(`Generated ${doc.generatedOn}`, { font: "helvetica", weight: "normal", size: 8.5, color: "#C9DED5", lh: 12 }, PAGE.w - left, 34, "right");
   w.put(REPORT_TITLE, { font: "times", weight: "bold", size: 28, color: C.white, lh: 36 }, left, 52);
   w.put(`${doc.id}  ·  ${doc.facts[1][1]}  ·  ${doc.payerName}`, { font: "helvetica", weight: "normal", size: 11, color: C.white, lh: 16 }, left, 90);
   if (doc.workedExample) {

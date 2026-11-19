@@ -40,7 +40,7 @@ export function ValidationTab({ r, onView, onRequest, onOverride }: Props) {
             </div>
             <AgentChip agent="reader" />
           </div>
-          <Meter value={(ok / total) * 100} color={open.length ? "#A87A26" : "#2F6F5C"} height={8} />
+          <Meter value={(ok / total) * 100} color={open.length ? "#B07A12" : "#2A7A55"} height={8} />
           {canAct && askable.length ? (
             <div>
               <Button size="sm" variant="primary" onClick={() => onRequest(askable)}>Request information for all open findings</Button>
@@ -61,7 +61,7 @@ export function ValidationTab({ r, onView, onRequest, onOverride }: Props) {
             </div>
             <ul className="rounded-2xl border border-edge bg-white">
               {checks.map((c) => (
-                <li key={c.key} className={cn("flex items-start gap-3 border-b border-line px-4 py-3 last:border-b-0", !passed(c) && "bg-[#FDFAF2]")} data-check={c.key}>
+                <li key={c.key} className={cn("flex items-start gap-3 border-b border-line px-4 py-3 last:border-b-0", !passed(c) && "bg-[#FDF7E6]")} data-check={c.key}>
                   <Icon c={c} />
                   <div className="min-w-0 flex-1">
                     <div className="font-medium">{c.state === "pass" ? c.label : CHECK_PROBLEM[c.key]}</div>

@@ -4,7 +4,7 @@ import { band as chanceBand } from "@/lib/format";
 import type { CaseCtx } from "../caseTypes";
 import { DriverBars, formulaOf } from "./DriverBars";
 
-const OUTCOME_COLOR = ["#2F6F5C", "#A87A26", "#B5553A"];
+const OUTCOME_COLOR = ["#2A7A55", "#B07A12", "#B8442B"];
 
 /** "See the breakdown": the rows that add up to the approval chance, and what the payer is likely to decide. */
 export function BreakdownModal({ ctx, onClose }: { ctx: CaseCtx; onClose: () => void }) {

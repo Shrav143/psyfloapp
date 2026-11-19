@@ -6,26 +6,26 @@ import { cn } from "@/lib/cn";
    gives every chart a text summary for screen readers and a data table that opens from a real button (reachable with Tab). */
 
 export const CHART = {
-  good: "#2F6F5C",
-  forest: "#1D4F43",
-  sage: "#739C8E",
-  sageSoft: "#CFE3DB",
-  mid: "#8F6620",
-  midSoft: "#C9B791",
-  risk: "#B5553A",
+  good: "#2A7A55",
+  forest: "#217A78",
+  sage: "#5FC0BE",
+  sageSoft: "#C9DED5",
+  mid: "#9A6A0E",
+  midSoft: "#D6CDB8",
+  risk: "#B8442B",
   riskSoft: "#E8B9A7",
-  umber: "#6B4E3A",
-  neutral: "#A9A59C",
-  track: "#F0ECE4",
-  grid: "#EFE8DE",
-  axis: "#D9D0C3",
-  text: "#4D463D",
-  muted: "#6E6A63",
-  ink: "#1B1B19",
-  band: "#F8F4EC",
+  umber: "#525B66",
+  neutral: "#857F75",
+  track: "#EFEBE4",
+  grid: "#E6E1D9",
+  axis: "#D6D0C5",
+  text: "#3F4752",
+  muted: "#525B66",
+  ink: "#151B24",
+  band: "#F5F2EC",
 } as const;
 /** Colors for the segments of a stacked bar, in order. The last is for "other". Each differs in lightness too, so they read in grey. */
-export const SERIES_COLORS = ["#1D4F43", "#739C8E", "#8F6620", "#B5553A", "#6B4E3A", "#C9B791"];
+export const SERIES_COLORS = ["#217A78", "#5FC0BE", "#9A6A0E", "#B8442B", "#525B66", "#D6CDB8"];
 
 /** The width of an element, kept up to date. Charts draw at this width, so text and lines stay the size they were designed at. */
 export function useChartWidth(fallback = 640): [RefObject<HTMLDivElement | null>, number] {

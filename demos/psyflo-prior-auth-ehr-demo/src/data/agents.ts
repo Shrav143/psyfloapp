@@ -2,10 +2,10 @@ import { BadgeCheck, CalendarClock, Compass, FileText, Funnel, Gauge, History, L
 import type { AgentKey, CrewKey } from "./types";
 
 export const CREW: Record<CrewKey, { label: string; sub: string; color: string; bg: string }> = {
-  coverage: { label: "Coverage", sub: "Knows who pays and files with them", color: "#1D4F43", bg: "#E6F2EE" },
-  documentation: { label: "Documentation", sub: "Reads the chart, writes the case", color: "#5E8A7B", bg: "#EDF4F1" },
-  intelligence: { label: "Intelligence", sub: "Knows how each payer behaves", color: "#805E25", bg: "#F6EED6" },
-  casework: { label: "Case work", sub: "Moves each case to done", color: "#6B4E3A", bg: "#F2EAE2" },
+  coverage: { label: "Coverage", sub: "Knows who pays and files with them", color: "#217A78", bg: "#E3EFEA" },
+  documentation: { label: "Documentation", sub: "Reads the chart, writes the case", color: "#4C9C9A", bg: "#E1F0EF" },
+  intelligence: { label: "Intelligence", sub: "Knows how each payer behaves", color: "#6F4A05", bg: "#FCEFD0" },
+  casework: { label: "Case work", sub: "Moves each case to done", color: "#525B66", bg: "#EFEBE4" },
 };
 
 export const AGENTS: Record<AgentKey, { name: string; crew: CrewKey; icon: LucideIcon; role: string }> = {

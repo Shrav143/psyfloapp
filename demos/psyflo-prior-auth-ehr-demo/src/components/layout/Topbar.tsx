@@ -89,7 +89,7 @@ export function Topbar() {
   const notifOpen = useStore((s) => s.notifOpen);
   const btn = "relative grid h-9 w-9 place-items-center rounded-xl border border-field bg-white text-ink2 hover:bg-tile";
   return (
-    <div className="sticky top-0 z-30 flex h-[60px] items-center gap-3 border-b border-[#EFE6DA] bg-canvas/90 px-4 backdrop-blur lg:px-7">
+    <div className="sticky top-0 z-30 flex h-[60px] items-center gap-3 border-b border-[#EAE4DA] bg-canvas/90 px-4 backdrop-blur lg:px-7">
       <SiteSwitcher />
       <div className="ml-auto flex items-center gap-2 lg:gap-3.5">
         <DemoMenu />

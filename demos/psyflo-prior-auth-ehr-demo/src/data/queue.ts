@@ -46,9 +46,9 @@ export interface QueueItem {
 }
 
 export const BAND_META: Record<Band, { name: string; dot: string }> = {
-  now: { name: "Act now", dot: "#B5553A" },
-  day: { name: "Due within 24 hours", dot: "#A87A26" },
-  week: { name: "Due this week", dot: "#739C8E" },
+  now: { name: "Act now", dot: "#B8442B" },
+  day: { name: "Due within 24 hours", dot: "#B07A12" },
+  week: { name: "Due this week", dot: "#5FC0BE" },
 };
 export const BANDS: Band[] = ["now", "day", "week"];
 

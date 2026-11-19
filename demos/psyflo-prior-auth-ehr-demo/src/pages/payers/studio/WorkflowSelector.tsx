@@ -127,7 +127,7 @@ function WorkflowPicker({ workflows, current, onSelect }: { workflows: Workflow[
                 setOpen(false);
                 onSelect(w.id);
               }}
-              className={cn("flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-left hover:bg-tile", w.id === current?.id && "bg-[#F3F7F4]")}
+              className={cn("flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-left hover:bg-tile", w.id === current?.id && "bg-[#EEF6F5]")}
             >
               <span className="grid w-4 place-items-center text-forest">{w.id === current?.id ? <Check size={16} className="ico" aria-hidden="true" /> : null}</span>
               <span className="min-w-0 flex-1">

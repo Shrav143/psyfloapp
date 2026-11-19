@@ -82,8 +82,8 @@ function ReasonsTable({ board }: { board: Board }) {
               <Td>
                 <div className="flex items-center gap-2.5">
                   <svg width="120" height="6" role="presentation" className="block">
-                    <rect width="120" height="6" rx="3" fill="#F0ECE4" />
-                    <rect width={Math.min(120, r.share * 3 * 1.2)} height="6" rx="3" fill="#B5553A" />
+                    <rect width="120" height="6" rx="3" fill="#EFEBE4" />
+                    <rect width={Math.min(120, r.share * 3 * 1.2)} height="6" rx="3" fill="#B8442B" />
                   </svg>
                   <b className="text-risk-ink">{r.share}%</b>
                 </div>

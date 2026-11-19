@@ -8,8 +8,8 @@ export type CheckState = "done" | "missing" | "warn" | "working" | "optional";
 
 const BOX: Record<CheckState, string> = {
   done: "border-forest bg-forest text-white",
-  missing: "border-[#D9B25C] bg-white",
-  warn: "border-[#D9B25C] bg-mid-bg text-mid-ink",
+  missing: "border-[#F0B44C] bg-white",
+  warn: "border-[#F0B44C] bg-mid-bg text-mid-ink",
   working: "border-field bg-white",
   optional: "border-dashed border-faint bg-white text-faint",
 };
@@ -40,7 +40,7 @@ export function ChecklistProgress({ done, total, label = "ready", right }: { don
           </span>
           <span className={cn("text-[13px]", full ? "font-medium text-good-ink" : "text-muted")}>{full ? "Nothing is missing" : `${total - done} to go`}</span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-[#EDE5DA]" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label={`${done} of ${total} ${label}`}>
+        <div className="h-2 overflow-hidden rounded-full bg-[#E9E2D7]" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label={`${done} of ${total} ${label}`}>
           <div className={cn("h-full rounded-full transition-[width] duration-500", full ? "bg-good" : "bg-forest")} style={{ width: `${pct}%` }} />
         </div>
       </div>
@@ -65,7 +65,7 @@ export function ChecklistGroup({ title, done, total, children }: { title: string
 /** One thing that is needed. `detail` says what was found, or what is missing. `action` sits at the right. `children` is the editor that opens under the row. */
 export function ChecklistItem({ state, label, detail, tag, action, children, source }: { state: CheckState; label: ReactNode; detail?: ReactNode; tag?: string; action?: ReactNode; children?: ReactNode; source?: ReactNode }) {
   return (
-    <li className={cn("px-6 py-3", state === "missing" && "bg-[#FDFAF2]")}>
+    <li className={cn("px-6 py-3", state === "missing" && "bg-[#FDF7E6]")}>
       <div className="flex items-start gap-3.5">
         <CheckBox state={state} />
         <div className="min-w-0 flex-1">

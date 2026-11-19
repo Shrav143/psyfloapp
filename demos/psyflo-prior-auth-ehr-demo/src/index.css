@@ -7,50 +7,53 @@
   font-style: normal;
   font-display: swap;
 }
-@font-face {
-  font-family: "Newsreader Var";
-  src: url("../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2") format("woff2");
-  font-weight: 200 800;
-  font-style: normal;
-  font-display: swap;
-}
 
-/* Design tokens, derived from the Auth Cockpit draft: cream canvas, forest green, serif headlines. */
+/* Design tokens: the Unified demo palette (paper #F8F6F2, ink and rail navy #151B24, teal #217A78, marigold #F0B44C, its status pairs) and DM Sans throughout. */
 @theme {
-  --color-canvas: #faf6f1;
-  --color-side: #f2eae1;
+  --color-canvas: #F8F6F2;
+  --color-side: #151B24;
   --color-card: #ffffff;
-  --color-tile: #faf6f2;
-  --color-tile-edge: #f0ece4;
-  --color-edge: #efe8de;
-  --color-line: #f1efe9;
-  --color-field: #e5dcd0;
-  --color-ink: #1b1b19;
-  --color-ink2: #4d463d;
-  --color-muted: #6e6a63;
-  --color-faint: #a9a59c;
-  --color-forest: #1d4f43;
-  --color-forest-dark: #163d34;
-  --color-sage: #739c8e;
-  --color-sage-bg: #edf4f1;
-  --color-good: #2f6f5c;
-  --color-good-bg: #e6f2ee;
-  --color-good-ink: #27493e;
-  --color-good-edge: #cfe3db;
-  --color-mid: #8f6620;
-  --color-mid-bg: #f6eed6;
-  --color-mid-ink: #7d642f;
-  --color-mid-edge: #ebddb4;
-  --color-risk: #b5553a;
-  --color-risk-bg: #faf2ea;
-  --color-risk-ink: #6b362a;
-  --color-risk-edge: #f0dfd2;
-  --color-neutral-bg: #f2eae2;
-  --color-neutral-ink: #4a4239;
-  --color-neutral-edge: #e9ddd0;
-  --color-umber: #6b4e3a;
+  --color-tile: #F5F2EC;
+  --color-tile-edge: #EFEBE4;
+  --color-edge: #E6E1D9;
+  --color-line: #EEEAE3;
+  --color-field: #C9C2B6;
+  --color-ink: #151B24;
+  --color-ink2: #3F4752;
+  --color-muted: #525B66;
+  --color-faint: #857F75;
+  --color-forest: #217A78;
+  --color-forest-dark: #15605E;
+  --color-sage: #5FC0BE;
+  --color-sage-bg: #E1F0EF;
+  --color-good: #2A7A55;
+  --color-good-bg: #E3EFEA;
+  --color-good-ink: #1D4F43;
+  --color-good-edge: #C9DED5;
+  --color-mid: #9A6A0E;
+  --color-mid-bg: #FCEFD0;
+  --color-mid-ink: #6F4A05;
+  --color-mid-edge: #F0DCA8;
+  --color-risk: #B8442B;
+  --color-risk-bg: #FBE7E2;
+  --color-risk-ink: #8A2E1C;
+  --color-risk-edge: #F2CFC6;
+  --color-neutral-bg: #EFEBE4;
+  --color-neutral-ink: #3F4752;
+  --color-neutral-edge: #E1DBD1;
+  --color-umber: #525B66;
+  --color-navy: #151B24;
+  --color-navy-2: #222A35;
+  --color-navy-line: #3C4756;
+  --color-on-navy: #F8F6F2;
+  --color-on-navy-muted: #C9D1D6;
+  --color-teal-300: #5FC0BE;
+  --color-teal-tint: #E1F0EF;
+  --color-marigold: #F0B44C;
+  --color-info: #1F4E8C;
+  --color-info-bg: #DCE8F7;
   --font-sans: "DM Sans Var", "DM Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-  --font-serif: "Newsreader Var", "Newsreader", Georgia, "Times New Roman", serif;
+  --font-serif: "DM Sans Var", "DM Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
   --radius-card: 20px;
   --radius-tile: 16px;
   --radius-ctl: 12px;
@@ -79,6 +82,9 @@ button:disabled {
 :focus-visible {
   outline: 2px solid var(--color-forest);
   outline-offset: 2px;
+}
+.on-navy :focus-visible {
+  outline-color: var(--color-teal-300);
 }
 .ico {
   flex: none;
@@ -144,5 +150,5 @@ button:disabled {
 /* scrollbars: quiet */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #d9d0c3 transparent;
+  scrollbar-color: #D6D0C5 transparent;
 }

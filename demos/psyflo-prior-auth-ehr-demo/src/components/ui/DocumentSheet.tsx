@@ -13,17 +13,17 @@ export type DocBlock =
 /** A paper-style page for showing a source document next to what the agents extracted from it.
     Blocks with an `id` can be highlighted (the red box around the evidence). */
 export function DocumentSheet({ blocks, highlightId, onBlockClick, className, page, pages }: { blocks: DocBlock[]; highlightId?: string | null; onBlockClick?: (id: string) => void; className?: string; page?: number; pages?: number }) {
-  const hl = (id?: string) => (id && id === highlightId ? "outline-2 outline-offset-2 outline-risk bg-[#fdf3ec]" : id && onBlockClick ? "hover:bg-[#fdf9ef] cursor-pointer" : "");
+  const hl = (id?: string) => (id && id === highlightId ? "outline-2 outline-offset-2 outline-risk bg-[#FCEFEA]" : id && onBlockClick ? "hover:bg-[#FDF7E6] cursor-pointer" : "");
   const click = (id?: string) => (id && onBlockClick ? () => onBlockClick(id) : undefined);
   return (
-    <div className={cn("rounded-lg border border-[#E7DFD3] bg-white px-9 py-8 font-serif text-[13px] leading-[1.55] text-[#2b2823] shadow-[0_1px_0_rgba(0,0,0,0.03)]", className)}>
+    <div className={cn("rounded-lg border border-[#E6E1D9] bg-white px-9 py-8 font-serif text-[13px] leading-[1.55] text-[#151B24] shadow-[0_1px_0_rgba(0,0,0,0.03)]", className)}>
       {blocks.map((b, i) => {
         switch (b.kind) {
           case "letterhead":
             return (
-              <div key={i} className="mb-4 border-b-2 border-[#2b2823] pb-2">
+              <div key={i} className="mb-4 border-b-2 border-[#151B24] pb-2">
                 <div className="text-lg font-semibold tracking-tight">{b.org}</div>
-                {b.sub ? <div className="text-xs text-[#6b665d]">{b.sub}</div> : null}
+                {b.sub ? <div className="text-xs text-[#525B66]">{b.sub}</div> : null}
               </div>
             );
           case "title":
@@ -45,7 +45,7 @@ export function DocumentSheet({ blocks, highlightId, onBlockClick, className, pa
             );
           case "h":
             return (
-              <div key={i} className="mt-3.5 mb-1 border-b border-[#d9d1c5] text-xs font-bold tracking-wider uppercase">
+              <div key={i} className="mt-3.5 mb-1 border-b border-[#D6D0C5] text-xs font-bold tracking-wider uppercase">
                 {b.text}
               </div>
             );
@@ -69,7 +69,7 @@ export function DocumentSheet({ blocks, highlightId, onBlockClick, className, pa
                 <thead>
                   <tr>
                     {b.head.map((h) => (
-                      <th key={h} className="border border-[#cfc6b8] bg-[#f4efe6] px-2 py-1 text-left">
+                      <th key={h} className="border border-[#CFC8BC] bg-[#F1EEE8] px-2 py-1 text-left">
                         {h}
                       </th>
                     ))}
@@ -79,7 +79,7 @@ export function DocumentSheet({ blocks, highlightId, onBlockClick, className, pa
                   {b.rows.map((r, ri) => (
                     <tr key={ri}>
                       {r.map((c, ci) => (
-                        <td key={ci} className="border border-[#cfc6b8] px-2 py-1">
+                        <td key={ci} className="border border-[#CFC8BC] px-2 py-1">
                           {c}
                         </td>
                       ))}
@@ -90,13 +90,13 @@ export function DocumentSheet({ blocks, highlightId, onBlockClick, className, pa
             );
           case "sig":
             return (
-              <div key={i} onClick={click(b.id)} className={cn("mt-4 inline-block min-w-[220px] rounded-sm border-t border-[#2b2823] pt-1 text-xs", hl(b.id))}>
+              <div key={i} onClick={click(b.id)} className={cn("mt-4 inline-block min-w-[220px] rounded-sm border-t border-[#151B24] pt-1 text-xs", hl(b.id))}>
                 {b.missing ? <span className="text-risk">Signature line is empty</span> : <span className="italic">{b.text}</span>}
               </div>
             );
         }
       })}
-      {page && pages ? <div className="mt-5 text-right text-[11px] text-[#8a847a]">Page {page} of {pages}</div> : null}
+      {page && pages ? <div className="mt-5 text-right text-[11px] text-[#857F75]">Page {page} of {pages}</div> : null}
     </div>
   );
 }
