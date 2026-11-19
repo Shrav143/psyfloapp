@@ -64,6 +64,7 @@ export function AppealDrawer({ view, onClose }: { view: DenialView; onClose: () 
             <div className="flex flex-wrap items-center gap-2">
               <AgentChip agent="advocate" />
               <AgentChip agent="integrity" />
+              <Pill tone="neutral">Kept in Psyflo</Pill>
               {readOnly ? <Pill tone="neutral">Filed letter, read only</Pill> : <Pill tone="mid">Draft · a clinician signs before filing</Pill>}
             </div>
             <div>

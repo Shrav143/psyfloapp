@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
-import { CheckCircle2, Link2 } from "lucide-react";
+import { CheckCircle2, ExternalLink, Link2 } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, Disclosure, HistoryFeed, Label, Pill } from "@/components/ui";
+import { fixKey } from "@/ehr/model";
+import { useOpenLauris } from "@/ehr/useOpenLauris";
 import { cn } from "@/lib/cn";
 import { useStore } from "@/store";
 import type { Dimension, Finding } from "./lib/analysis";
@@ -28,6 +30,8 @@ export function PayerSaidCard({ view }: { view: DenialView }) {
 export function WeakPointsCard({ view, onSource }: { view: DenialView; onSource: (f: Finding) => void }) {
   const { req, analysis, work } = view;
   const setFix = useStore((s) => s.setFix);
+  const openLauris = useOpenLauris();
+  const ehrForm = useStore((s) => s.ehr.forms[req.id]);
   return (
     <Card id="denial-weak-points" tabIndex={-1} className="outline-none">
       <CardHeader title="Where the denial is weak" right={<WeakPointsSummary view={view} />} />
@@ -45,8 +49,11 @@ export function WeakPointsCard({ view, onSource }: { view: DenialView; onSource:
                   {f.source}
                 </button>
                 <span className="text-[13px] text-ink2">Fix: {f.fix}</span>
-                <Button size="sm" variant={added ? "ghost" : "outline"} icon={added ? CheckCircle2 : undefined} onClick={() => setFix(req.id, f.id, !added)} aria-pressed={added}>
-                  {added ? "Added to the evidence" : "Add to the evidence"}
+                {ehrForm?.viaEhr.includes(fixKey(f.id)) ? <Pill tone={ehrForm.unsaved.includes(fixKey(f.id)) ? "mid" : "good"}>{ehrForm.unsaved.includes(fixKey(f.id)) ? "Typed in Lauris · not saved" : "Added in Lauris"}</Pill> : (
+                  <Button size="sm" variant="outline" icon={ExternalLink} onClick={() => openLauris({ case: req.caseId, view: "denial" })} title="Correct the authorization in Lauris" data-testid={`fix-in-lauris-${f.id}`}>Fix in Lauris</Button>
+                )}
+                <Button size="sm" variant={added ? "ghost" : "outline"} icon={added ? CheckCircle2 : undefined} onClick={() => setFix(req.id, f.id, !added)} aria-pressed={added} title="For the appeal letter, which is written in Psyflo">
+                  {added ? "Added to the appeal evidence" : "Add to the appeal evidence"}
                 </Button>
               </div>
             </div>

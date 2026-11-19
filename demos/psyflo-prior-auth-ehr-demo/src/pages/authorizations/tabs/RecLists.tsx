@@ -5,7 +5,7 @@ import { gainOf } from "@/data/caseModel";
 import { plural } from "@/lib/format";
 
 /** Applied recommendations collapse to one line with a green tick. Open one to see what the agents did. */
-export function AppliedList({ recs }: { recs: Rec[] }) {
+export function AppliedList({ recs, viaEhr = [], unsaved = [] }: { recs: Rec[]; viaEhr?: string[]; unsaved?: string[] }) {
   return (
     <section aria-label="Applied" data-testid="applied-list" className="flex flex-col gap-2">
       <h3 className="mt-2 font-serif text-[16px] font-semibold">Applied <span className="font-sans text-[13px] font-normal text-muted">({recs.length})</span></h3>
@@ -14,6 +14,7 @@ export function AppliedList({ recs }: { recs: Rec[] }) {
           <summary className="flex cursor-pointer list-none items-center gap-3">
             <CheckCircle2 size={16} className="ico text-good" aria-label="Applied" />
             <span className="flex-1 text-[14px] font-semibold">{r.title}</span>
+            {viaEhr.includes(r.id) ? <Pill tone={unsaved.includes(r.id) ? "mid" : "good"}>{unsaved.includes(r.id) ? "Typed in Lauris · not saved" : "Added in Lauris"}</Pill> : null}
             <Pill tone="good">+{plural(gainOf(r), "pt")} · applied</Pill>
           </summary>
           <ul className="mt-2 ml-[30px] list-disc pl-4 text-[13px] text-ink2">

@@ -3,6 +3,7 @@ import { CheckCircle2, WandSparkles, X } from "lucide-react";
 import type { FocusId } from "@/data/caseDetail";
 import { FOCUS, withFocus } from "@/data/caseDetailFocus";
 import { canSend, draftView, groupRecs, plainText, projectedChance, currentChance, similarTotal, versionViews } from "@/data/caseModel";
+import { useOpenLauris } from "@/ehr/useOpenLauris";
 import { useStore } from "@/store";
 import type { CaseCtx } from "../caseTypes";
 import { useBusy } from "../useBusy";
@@ -14,6 +15,8 @@ import { WorkStrip } from "./WorkStrip";
 
 export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
   const { detail, work, key, focusRec } = ctx;
+  const openLauris = useOpenLauris();
+  const ehrForm = useStore((s) => s.ehr.forms[key]);
   const groups = useMemo(() => groupRecs(detail, work), [detail, work]);
   const included = groups.open.filter((r) => !work.excluded.includes(r.id));
   const [showErrors, setShowErrors] = useState(false);
@@ -90,12 +93,12 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
             onSendNote={(v) => useStore.getState().sendNote(key, r.id, v, r.agent)} onDismiss={() => setDismissing([{ id: r.id, title: r.title }])}
           />
         ))}
-        {groups.applied.length > 0 ? <AppliedList recs={groups.applied} /> : null}
+        {groups.applied.length > 0 ? <AppliedList recs={groups.applied} viaEhr={ehrForm?.viaEhr ?? []} unsaved={ehrForm?.unsaved ?? []} /> : null}
         {groups.dismissed.length > 0 ? <DismissedList items={groups.dismissed} onRestore={(id) => useStore.getState().restoreRec(key, id)} /> : null}
       </div>
       <ActionsSide
         included={included.length} openCount={groups.open.length} running={running} refining={refining} work={work}
-        onApply={apply} onRefine={refine} onContext={addContext} onDismiss={() => setDismissing(included.map((r) => ({ id: r.id, title: r.title })))}
+        onLauris={() => openLauris({ case: detail.id })} onApply={apply} onRefine={refine} onContext={addContext} onDismiss={() => setDismissing(included.map((r) => ({ id: r.id, title: r.title })))}
       />
       {dismissing ? (
         <DismissModal

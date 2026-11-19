@@ -1,4 +1,4 @@
-import { ArrowLeft, LayoutDashboard, PenLine } from "lucide-react";
+import { ArrowLeft, ExternalLink, LayoutDashboard, PenLine } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Chip, InfoTip, Label, Pill, Ring } from "@/components/ui";
 import { confidenceWord, daysLikely, isBenchmarkOnly, rangeOf, similarTotal } from "@/data/caseModel";
@@ -9,6 +9,7 @@ import type { Tone } from "@/data/types";
 import { band as chanceBand } from "@/lib/format";
 import { HOUR } from "@/lib/time";
 import { paths } from "@/routes";
+import { LAURIS_HINT, useOpenLauris } from "@/ehr/useOpenLauris";
 import { useStore } from "@/store";
 import { AuthFacts } from "./AuthFacts";
 import type { CaseCtx } from "./caseTypes";
@@ -26,6 +27,7 @@ const SAID_IN_TITLE = ["Request type", "Requested", "Site"];
 /** The header card (title, the next action, the authorization facts, the diagnosis and scores) and one strip of three figures. They stay the same on every tab. */
 export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
   const navigate = useNavigate();
+  const openLauris = useOpenLauris();
   const clock = useStore((s) => s.clock);
   const { detail, work, chance, projected, canSend, live, send } = ctx;
   const payer = payerById(detail.payerId);
@@ -65,6 +67,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
+            <Button size="sm" variant="primary" icon={ExternalLink} onClick={() => openLauris({ case: detail.id, view: detail.phase === "denial" ? "denial" : undefined })} title={LAURIS_HINT} data-testid="edit-in-lauris">Edit in Lauris</Button>
             <Button size="sm" icon={PenLine} onClick={send}>Open in review and sign</Button>
             <Button size="sm" variant="ghost" icon={ArrowLeft} onClick={() => navigate(paths.authorizations())}>Back to Authorizations</Button>
           </div>

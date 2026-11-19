@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CircleCheck, PenLine, RefreshCw, Undo2, TriangleAlert } from "lucide-react";
+import { CircleCheck, ExternalLink, PenLine, RefreshCw, Undo2, TriangleAlert } from "lucide-react";
 import { Button, Card, CardHeader, Label, Modal, Pill, TextArea } from "@/components/ui";
 import type { Evidence } from "@/data/caseDetail";
 import { checkViews, versionViews, type VersionView } from "@/data/caseModel";
@@ -8,6 +8,7 @@ import { stamp } from "@/lib/time";
 import { appliedAdds, draftForRequest, requestDraft } from "@/pages/newcase/fromRequest";
 import { narrativeOf, unfoldedAdds } from "@/pages/newcase/narrative";
 import { usePayerContext } from "@/pages/newcase/payerContext";
+import { LAURIS_HINT, useOpenLauris } from "@/ehr/useOpenLauris";
 import { useStore } from "@/store";
 import type { CaseCtx } from "../caseTypes";
 import { EvidenceChip, uniqueEvidence } from "../EvidenceChip";
@@ -61,6 +62,7 @@ export function useDraftSections(ctx: CaseCtx): DraftSectionView[] {
 /** The medical necessity request, section by section: read, edit, re-check, send back. Integrity's checks and the versions are one click away under it. */
 export function DraftCard({ ctx, sections, lit }: { ctx: CaseCtx; sections: DraftSectionView[]; lit: string[] }) {
   const { detail, work, key } = ctx;
+  const openLauris = useOpenLauris();
   const adds = useMemo(() => appliedAdds(detail, work), [detail, work]);
   const checks = checkViews(detail, work);
   const versions = versionViews(detail, work);
@@ -109,7 +111,7 @@ export function DraftCard({ ctx, sections, lit }: { ctx: CaseCtx; sections: Draf
     <Card id="draft" className="scroll-mt-4">
       <CardHeader
         title="Medical necessity request" subtitle={`Version ${current.n} · ${current.by} · ${stamp(current.at)}`}
-        right={editing ? <><Button size="sm" onClick={() => setEditing(false)}>Cancel</Button><Button size="sm" variant="primary" onClick={save}>Save changes</Button></> : <Button size="sm" icon={PenLine} onClick={startEdit}>Edit</Button>}
+        right={editing ? <><Button size="sm" onClick={() => setEditing(false)}>Cancel</Button><Button size="sm" variant="primary" onClick={save}>Save changes</Button></> : <><Button size="sm" variant="primary" icon={ExternalLink} onClick={() => openLauris({ case: detail.id })} title={LAURIS_HINT}>Edit in Lauris</Button><Button size="sm" icon={PenLine} onClick={startEdit} title="Edit the draft here in Psyflo instead">Edit here</Button></>}
       />
       <div className="flex flex-col gap-1 px-5 py-3">
         {sections.map((s) => {

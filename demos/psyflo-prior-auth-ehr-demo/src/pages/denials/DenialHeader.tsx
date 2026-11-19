@@ -1,6 +1,7 @@
-import { FileText, FolderOpen } from "lucide-react";
+import { ExternalLink, FileText, FolderOpen } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Card, CardBody, Chip, Pill } from "@/components/ui";
+import { Button, Card, CardBody, Chip, Pill } from "@/components/ui";
+import { LAURIS_HINT, useOpenLauris } from "@/ehr/useOpenLauris";
 import { PROGRAM_LABEL, type PsyRequest, type Tone } from "@/data/types";
 import { band } from "@/lib/format";
 import { DAY } from "@/lib/time";
@@ -26,6 +27,7 @@ function windowChip(r: PsyRequest, clock: number): { text: string; tone: Tone } 
 /** Who and what the denial is, the read of it, and the two ways out of the page: the report and the case. */
 export function DenialHeader({ view }: { view: DenialView }) {
   const { req, meta, analysis, clock, work } = view;
+  const openLauris = useOpenLauris();
   const chip = windowChip(req, clock);
   const chance = analysis.options[0].chance;
   const settled = isClosed(work);
@@ -52,6 +54,7 @@ export function DenialHeader({ view }: { view: DenialView }) {
           {meta.note ? <p className="mt-1 text-[13px] text-ink2">Note: {meta.note}</p> : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {settled ? null : <Button size="sm" variant="primary" icon={ExternalLink} onClick={() => openLauris({ case: req.caseId, view: "denial" })} title="Re-edit the authorization in Lauris. The Psyflo extension there suggests the corrections. The appeal letter stays in Psyflo." data-testid="edit-auth-in-lauris">Edit authorization in Lauris</Button>}
           <Link to={paths.report(req.id)} className={LINK}><FileText size={15} className="ico" />Appeal analysis report</Link>
           <Link to={paths.case(req.caseId)} className={LINK}><FolderOpen size={15} className="ico" />Case {req.caseId}</Link>
         </div>
