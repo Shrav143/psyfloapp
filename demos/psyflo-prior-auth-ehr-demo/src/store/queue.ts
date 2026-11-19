@@ -66,7 +66,7 @@ export interface QueueSlice {
   logCase: (caseId: string, text: string, actor?: AgentKey | "you") => void;
 }
 
-const patchCase = (s: AppState, id: string, fn: (w: CaseWork) => Partial<CaseWork>): Pick<AppState, "queueCases"> => {
+export const patchCase = (s: AppState, id: string, fn: (w: CaseWork) => Partial<CaseWork>): Pick<AppState, "queueCases"> => {
   const w = s.queueCases[id] ?? EMPTY_WORK;
   return { queueCases: { ...s.queueCases, [id]: { ...w, ...fn(w) } } };
 };

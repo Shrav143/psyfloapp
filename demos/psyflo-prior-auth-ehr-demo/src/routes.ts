@@ -56,4 +56,11 @@ export const paths = {
     return `/payers${id ? `/${id}` : ""}${qs ? `?${qs}` : ""}`;
   },
   settings: () => "/settings",
+  /** The mock Lauris EHR: a separate app (its own browser tab) with the Psyflo extension docked on its right. No argument: the consumer list.
+      `page: "authorizations"`: its Authorizations list. `case`: that case's authorization form, where the extension adds the recommendations.
+      `view`: what the extension opens on, the suggestions for the form (auth) or the corrections for a denied authorization (denial). */
+  lauris: (o?: { page?: "authorizations"; case?: string; view?: "auth" | "denial" }) => {
+    if (o?.case) return `/lauris/case/${encodeURIComponent(o.case)}${o.view ? `?view=${o.view}` : ""}`;
+    return o?.page === "authorizations" ? "/lauris/authorizations" : "/lauris";
+  },
 };

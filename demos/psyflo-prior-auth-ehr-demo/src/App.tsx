@@ -20,6 +20,7 @@ import NewCasePage from "@/pages/newcase/NewCasePage";
 import PayersPage from "@/pages/payers/PayersPage";
 import ReferralDetailPage from "@/pages/referrals/ReferralDetailPage";
 import SettingsPage from "@/pages/settings/SettingsPage";
+import LaurisApp from "@/ehr/lauris/LaurisApp";
 import { SearchX } from "lucide-react";
 
 function NotFound() {
@@ -44,6 +45,8 @@ export default function App() {
   return (
     <Router>
       <Routes>
+        {/* Lauris is a different app in its own browser tab: it has none of the Psyflo shell. */}
+        <Route path="/lauris/*" element={<LaurisApp />} />
         <Route element={<Shell />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />

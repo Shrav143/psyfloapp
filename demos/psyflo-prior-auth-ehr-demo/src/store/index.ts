@@ -5,6 +5,7 @@ import { createAgentSettingsSlice, type AgentSettingsSlice } from "./agentSettin
 import { createCasesSlice, type CasesSlice } from "./cases";
 import { createCoreSlice, resetCoreCounters, type CoreSlice } from "./core";
 import { createDenialsSlice, type DenialsSlice } from "./denials";
+import { createEhrSlice, type EhrSlice } from "./ehr";
 import { createEligibilitySlice, type EligibilitySlice } from "./eligibility";
 import { createManagerSlice, type ManagerSlice } from "./manager";
 import { createPayerConfigSlice, initPayerConfigPersistence, type PayerConfigSlice } from "./payerConfig";
@@ -15,10 +16,11 @@ import { createSessionSlice, type SessionSlice } from "./session";
 import { createWorkflowsSlice, initWorkflowPersistence, type WorkflowsSlice } from "./workflows";
 
 /** One store, built from slices. Each module owns its slice file. */
-export type AppState = CoreSlice & QueueSlice & CasesSlice & EligibilitySlice & ReferralsSlice & DenialsSlice & PayerConfigSlice & ManagerSlice & AgentSettingsSlice & RipplesSlice & SessionSlice & WorkflowsSlice;
+export type AppState = CoreSlice & EhrSlice & QueueSlice & CasesSlice & EligibilitySlice & ReferralsSlice & DenialsSlice & PayerConfigSlice & ManagerSlice & AgentSettingsSlice & RipplesSlice & SessionSlice & WorkflowsSlice;
 
 export const useStore = create<AppState>()((...a) => ({
   ...createCoreSlice(...a),
+  ...createEhrSlice(...a),
   ...createQueueSlice(...a),
   ...createCasesSlice(...a),
   ...createEligibilitySlice(...a),
