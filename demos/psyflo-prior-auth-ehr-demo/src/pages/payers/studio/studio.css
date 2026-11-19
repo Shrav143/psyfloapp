@@ -1,0 +1,107 @@
+/* Payer Workflow Studio: quiet overrides for the canvas library, in the app's tokens. */
+.wf-canvas .react-flow {
+  --xy-background-color: transparent;
+  --xy-edge-stroke-default: #b8ad9d;
+  --xy-handle-background-color-default: #ffffff;
+  --xy-handle-border-color-default: #739c8e;
+  --xy-selection-background-color-default: rgba(29, 79, 67, 0.06);
+  --xy-selection-border-default: 1px dashed #739c8e;
+  font-family: var(--font-sans);
+}
+.wf-canvas .react-flow__node {
+  font-family: var(--font-sans);
+  border-radius: 16px;
+}
+.wf-canvas .react-flow__node:focus-visible {
+  outline: 2px solid var(--color-forest);
+  outline-offset: 3px;
+}
+.wf-canvas .react-flow__edge:focus-visible .react-flow__edge-path {
+  stroke: var(--color-forest);
+  stroke-width: 2.6;
+}
+.wf-canvas .react-flow__attribution {
+  background: transparent;
+  font-size: 10px;
+  opacity: 0.6;
+}
+.wf-canvas .react-flow__attribution a {
+  color: var(--color-muted);
+}
+.wf-canvas .wf-handle {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #739c8e;
+  background: #fff;
+  min-width: 0;
+  min-height: 0;
+}
+.wf-canvas .wf-handle-in.wf-tb {
+  top: -7px;
+}
+.wf-canvas .wf-handle-out.wf-tb {
+  bottom: -7px;
+}
+.wf-canvas .wf-handle-in.wf-lr {
+  left: -7px;
+}
+.wf-canvas .wf-handle-out.wf-lr {
+  right: -7px;
+}
+.wf-canvas .wf-handle:hover,
+.wf-canvas .wf-handle:focus-visible,
+.wf-canvas .wf-handle.connectingfrom,
+.wf-canvas .wf-handle.connectionindicator:hover {
+  background: var(--color-forest);
+  border-color: var(--color-forest);
+}
+.wf-canvas .wf-handle.wf-tb:hover,
+.wf-canvas .wf-handle.wf-tb:focus-visible {
+  transform: translate(-50%, 0) scale(1.25);
+}
+.wf-canvas .wf-handle.wf-lr:hover,
+.wf-canvas .wf-handle.wf-lr:focus-visible {
+  transform: translate(0, -50%) scale(1.25);
+}
+.wf-canvas[data-readonly="true"] .wf-handle {
+  opacity: 0;
+  pointer-events: none;
+}
+.wf-canvas .react-flow__controls {
+  box-shadow: none;
+  border: 1px solid var(--color-field);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.wf-canvas .react-flow__controls-button {
+  width: 32px;
+  height: 32px;
+  border-bottom: 1px solid var(--color-line);
+  background: #fff;
+  color: var(--color-ink2);
+}
+.wf-canvas .react-flow__controls-button:hover {
+  background: var(--color-tile);
+}
+.wf-canvas .react-flow__controls-button svg {
+  max-width: 14px;
+  max-height: 14px;
+}
+.wf-canvas .react-flow__minimap {
+  border: 1px solid var(--color-field);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.wf-canvas .react-flow__connection-path {
+  stroke: var(--color-forest);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wf-canvas .react-flow__node,
+  .wf-canvas .wf-handle {
+    transition: none;
+  }
+}
