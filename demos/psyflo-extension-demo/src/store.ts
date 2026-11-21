@@ -315,8 +315,9 @@ export const useStore = create<State>()((set, get) => {
       run();
     },
     scribeDiscard: () => { stopTick(); set((s) => ({ scribe: { ...blankScribe(s.scribe.mode), docId: s.scribe.docId } })); },
-    scribeToggle: (key) => set((s) => ({ scribe: { ...s.scribe, draft: { ...s.scribe.draft, [key]: { ...s.scribe.draft[key], include: !s.scribe.draft[key].include } } } })),
-    scribeEdit: (key, value) => set((s) => ({ scribe: { ...s.scribe, draft: { ...s.scribe.draft, [key]: { ...s.scribe.draft[key], value, edited: true } } } })),
+    scribeToggle: (key) => set((s) => ({ scribe: { ...s.scribe, draft: { ...s.scribe.draft, [key]: { value: s.scribe.draft[key]?.value ?? "", edited: s.scribe.draft[key]?.edited ?? false, include: !s.scribe.draft[key]?.include } } } })),
+    /* typing into a card that has no draft (nothing was said about it) creates the card, included */
+    scribeEdit: (key, value) => set((s) => ({ scribe: { ...s.scribe, draft: { ...s.scribe.draft, [key]: { include: s.scribe.draft[key]?.include ?? true, value, edited: true } } } })),
     scribeType: () => {
       const { scribe, clinic } = get();
       const docId = scribe.docId;
