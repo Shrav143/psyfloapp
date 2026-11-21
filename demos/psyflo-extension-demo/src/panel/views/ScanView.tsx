@@ -275,7 +275,7 @@ function DocScan({ clinicShort, docId, seed, spec, consumer, doc, scan }: DocSca
         <p className="sn-status" data-testid="save-status">
           <ShieldCheck size={14} aria-hidden="true" />
           <span>
-            Check before save is <b>{checkOn ? "on" : "off"}</b>{checkOn ? <> · pauses at <b>{levelName}</b> or above</> : null} (change it in <button type="button" className="p-link" onClick={() => setTab("clinic")}>Clinic</button>)
+            Check before save is <b>{checkOn ? "on" : "off"}</b>{checkOn ? <> · pauses at <b>{levelName}</b> or above</> : null} (change it in <button type="button" className="p-link" onClick={() => setTab("settings")}>Settings</button>)
           </span>
         </p>
       </div>

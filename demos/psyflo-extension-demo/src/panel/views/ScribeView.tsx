@@ -1,15 +1,16 @@
-import { FileText, ScanSearch } from "lucide-react";
+import { ScanSearch } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { scenarioOf, useCurrent } from "@/hooks";
-import { usDate } from "@/engine";
 import { useStore } from "@/store";
 import "../panel-scribe.css";
+import "../panel-nav.css";
 import Capturing from "./scribe/Capturing";
 import Consent from "./scribe/Consent";
 import Generating from "./scribe/Generating";
 import Recover from "./scribe/Recover";
 import Review from "./scribe/Review";
 import Start from "./scribe/Start";
+import Picker from "./scribe/Picker";
 import Typed from "./scribe/Typed";
 import type { ScribeCtx } from "./scribe/shared";
 
@@ -71,40 +72,14 @@ export default function ScribeView() {
   return <div className="scr-root" ref={root} data-stage={stage}>{body}</div>;
 }
 
-/** The documents that have a Scribe scenario, as buttons that open the document in Lauris and start there. */
-function DocList({ heading }: { heading: string }) {
-  const { clinic } = useCurrent();
-  const openDoc = useStore((s) => s.openDoc);
-  const scribeOpen = useStore((s) => s.scribeOpen);
-  const items = clinic.scribe.flatMap((sc) => {
-    const seed = clinic.docs.find((d) => d.id === sc.docId);
-    const spec = seed ? clinic.forms[seed.kind] : undefined;
-    const consumer = seed ? clinic.consumers.find((c) => c.id === seed.consumerId) : undefined;
-    return seed && spec ? [{ sc, seed, spec, consumer }] : [];
-  });
-  if (items.length === 0) return null;
-  return (
-    <>
-      <h3 className="p-h">{heading}</h3>
-      <ul className="scr-docs">
-        {items.map(({ sc, seed, spec, consumer }) => (
-          <li key={sc.docId}>
-            <button type="button" className="scr-doc" data-testid="scribe-open-doc" data-doc-id={sc.docId} onClick={() => { openDoc(sc.docId); scribeOpen(sc.docId); }}>
-              <span className="ico" aria-hidden="true"><FileText size={16} /></span>
-              <span className="tx"><b>{spec.short}</b><span className="p-note">{consumer ? `${consumer.ini} · ` : ""}{usDate(seed.date)} · {sc.mode === "live" ? "Live session" : "Dictation"}</span></span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-}
-
 function NoDocument() {
   return (
     <div className="psy-body">
-      <div className="p-empty scr-empty"><h2 className="scr-empty-h" tabIndex={-1} data-stage-heading="">Open a document in Lauris to scribe it</h2>Psyflo listens, writes a draft and types it into the document. You check it and save.</div>
-      <DocList heading="Documents ready for Scribe" />
+      <section className="p-card" aria-labelledby="scr-new0">
+        <h2 className="p-big" id="scr-new0" tabIndex={-1} data-stage-heading="">Start a new session</h2>
+        <Picker />
+        <p className="p-note">Psyflo listens, writes a draft and types it into the document you pick. It opens that document in Lauris. You check it and save.</p>
+      </section>
     </div>
   );
 }
@@ -118,7 +93,6 @@ function NoScenario() {
         <p className="p-sub">Psyflo cannot listen and draft this form yet. If it is already written, Scan &amp; Enhance can read it and suggest fixes.</p>
         <button type="button" className="p-btn pri block" data-testid="scribe-go-scan" onClick={() => setTab("scan")}><ScanSearch size={16} aria-hidden="true" />Go to Scan &amp; Enhance</button>
       </section>
-      <DocList heading="Documents that work with Scribe" />
     </div>
   );
 }

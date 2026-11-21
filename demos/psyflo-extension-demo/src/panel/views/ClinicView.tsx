@@ -27,10 +27,8 @@ function Sec({ id, title, n, open, children }: { id: string; title: string; n?: 
 }
 
 /** What Psyflo knows about this clinic, read-only, plus the one live setting: what happens when a document is saved. */
-export default function ClinicView() {
+export function ClinicProfile() {
   const { clinic } = useCurrent();
-  const settings = useStore((s) => s.settings);
-  const setSettings = useStore((s) => s.setSettings);
   const p = clinic.profile;
   const docName = (k: DocKind) => clinic.forms[k]?.short ?? k;
 
@@ -41,18 +39,8 @@ export default function ClinicView() {
     else modules.push({ name: c.module, checks: [c] });
   }
 
-  const pauseHint = !settings.onSave
-    ? "Off. Lauris saves straight away and Psyflo does not check first."
-    : settings.pauseAt === "never"
-      ? "Psyflo checks the document, but never pauses the save."
-      : settings.pauseAt === "severe"
-        ? "Psyflo pauses the save when a severe alert is open."
-        : settings.pauseAt === "medium"
-          ? "Psyflo pauses the save when a medium or severe alert is open."
-          : "Psyflo pauses the save when any alert is open.";
-
   return (
-    <div className="psy-body cln-root">
+    <div className="cln-root">
       <div className="cln-head">
         <span className="ico" aria-hidden="true"><Building2 size={18} /></span>
         <div className="p-grow">
@@ -143,6 +131,29 @@ export default function ClinicView() {
         </dl>
       </Sec>
 
+
+      <p className="cln-end">This panel looks the same at every clinic. Only this profile and the checks change.</p>
+      <p className="p-note cln-demo-note">Demo: switch the clinic in the browser bar.</p>
+    </div>
+  );
+}
+
+/** What happens when a document is saved in Lauris. Live in the demo so the pause can be seen. */
+export function CheckBeforeSave() {
+  const settings = useStore((s) => s.settings);
+  const setSettings = useStore((s) => s.setSettings);
+  const pauseHint = !settings.onSave
+    ? "Off. Lauris saves straight away and Psyflo does not check first."
+    : settings.pauseAt === "never"
+      ? "Psyflo checks the document, but never pauses the save."
+      : settings.pauseAt === "severe"
+        ? "Psyflo pauses the save when a severe alert is open."
+        : settings.pauseAt === "medium"
+          ? "Psyflo pauses the save when a medium or severe alert is open."
+          : "Psyflo pauses the save when any alert is open.";
+
+  return (
+    <div className="cln-root">
       <Sec id="onsave" title="Check before save" open>
         <p className="p-note cln-demo">Demo control: change these to see how saving in Lauris behaves.</p>
         <div className="cln-set">
@@ -158,9 +169,8 @@ export default function ClinicView() {
         </div>
         <p className="p-note" data-testid="set-hint">{pauseHint}</p>
       </Sec>
-
-      <p className="cln-end">This panel looks the same at every clinic. Only this profile and the checks change.</p>
-      <p className="p-note cln-demo-note">Demo: switch the clinic in the browser bar.</p>
     </div>
   );
 }
+
+export default ClinicProfile;

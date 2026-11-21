@@ -261,6 +261,10 @@ export interface HistoryItem {
   status: string;
   /** Present when the item can be opened in Lauris. */
   docId?: string;
+  /** Sessions: clock time of the recording ("1:42 PM"), its length ("12m") and whether it was a live session or a dictation. An empty consumerId means no patient was assigned. */
+  time?: string;
+  length?: string;
+  mode?: "live" | "dictation";
 }
 
 /* ------------------------------- Config ------------------------------- */

@@ -25,10 +25,11 @@ async function fresh(browser, viewport = { width: 1440, height: 900 }) {
 const snap = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 const T = (id) => `[data-testid="${id}"]`;
 const state = (page, key) => page.locator(`[data-field="${key}"]`).first().getAttribute("data-state");
+const OWNER = { "dpn-4471": "4471", "sra-4471": "4471", "dpn-4458": "4458", "adm-4492": "4492", "intake-4492": "4492", "cans-4492": "4492", "dpn-c101": "c101", "sra-c101": "c101" };
 const openHomeDoc = async (page, docId) => {
-  await page.locator(T("tab-scribe")).click(); // make sure we are not on a stale tab
-  await page.getByRole("button", { name: "Psyflo home" }).click();
-  await page.locator(`${T("home-doc")}[data-doc="${docId}"]`).getByRole("button", { name: /Open in Lauris/ }).click();
+  await page.getByRole("link", { name: "Consumers", exact: true }).first().click();
+  await page.locator(`a[data-consumer="${OWNER[docId]}"]`).click();
+  await page.locator(`.lauris a[data-doc="${docId}"]`).click();
   await page.waitForSelector(`[data-field]`);
 };
 const wait = (page, ms) => page.waitForTimeout(ms);
@@ -38,9 +39,10 @@ const browser = await chromium.launch();
 /* ---------- A. the look and the path in ---------- */
 {
   const page = await fresh(browser);
-  check("A1 five labelled tabs", (await page.locator(".psy-tab").count()) === 5 && /Scribe/.test(await page.locator(T("tab-scribe")).innerText()) && /Enhance/.test(await page.locator(T("tab-scan")).innerText()));
+  const names = await page.locator(".psy-ic[role=tab]").evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")));
+  check("A1 six icons in the order mic, list, people, scan, help, person", JSON.stringify(names) === JSON.stringify(["Scribe", "History", "Patients", "Scan & Enhance", "Help", "Settings"]), names.join(","));
   check("A2 Lauris lists consumers", (await page.locator(`${T("consumers-table")} a[data-consumer]`).count()) >= 6);
-  check("A3 Home lists documents waiting", (await page.locator(T("home-doc")).count()) >= 4);
+  check("A3 the panel opens on Start a new session with a patient picker", /Start a new session/.test(await page.locator(T("panel")).innerText()) && (await page.locator(T("pick-patient")).count()) === 1);
   check("A4 the panel is 400px wide", Math.round((await page.locator(".shell-panel").boundingBox()).width) === 400);
   await snap(page, "a1-home");
   await page.locator('a[data-consumer="4471"]').click();
@@ -102,7 +104,10 @@ const browser = await chromium.launch();
   check("B14 Save in Lauris saved (nothing severe was open)", /Saved/.test(await page.locator(T("lauris-flash")).innerText()) && (await state(page, "intervention")) === "lauris");
   await snap(page, "b5-saved");
   await page.locator(T("tab-history")).click();
-  check("B15 History recorded the session and the save", (await page.locator(T("hist-item")).filter({ hasText: /Scribed|Saved/ }).count()) >= 2);
+  await page.locator(T("hist-tab-documents")).click();
+  const savedDoc = await page.locator(T("hist-item")).filter({ hasText: /Saved in Lauris/ }).count();
+  await page.locator(T("hist-tab-sessions")).click();
+  check("B15 History recorded the session (with its length) and the save", savedDoc >= 1 && (await page.locator(T("hist-item")).filter({ hasText: /Scribed/ }).count()) >= 1);
   await page.close();
 }
 
@@ -158,6 +163,7 @@ const browser = await chromium.launch();
   await page.waitForSelector(T("lauris-flash"), { timeout: 10000 });
   check("D1 pressing Save again saves anyway and says alerts were open", /still open/i.test(await page.locator(T("lauris-flash")).innerText()));
   await page.locator(T("tab-history")).click();
+  await page.locator(T("hist-tab-documents")).click();
   check("D2 History records the save with open alerts", (await page.locator(T("hist-item")).filter({ hasText: /open alert/i }).count()) >= 1);
   await page.close();
 }
@@ -215,11 +221,12 @@ const browser = await chromium.launch();
   await page.close();
 }
 
-/* ---------- G. Ask, History, Clinic ---------- */
+/* ---------- G. Ask (inside Scan & Enhance), History, Settings ---------- */
 {
   const page = await fresh(browser);
   await openHomeDoc(page, "sra-4471");
-  await page.locator(T("tab-ask")).click();
+  await page.locator(T("tab-scan")).click();
+  await page.locator(T("scan-pane-ask")).click();
   const chips = page.locator("[data-topic]");
   check("G1 Ask offers suggested questions", (await chips.count()) >= 3);
   await chips.first().click();
@@ -232,41 +239,80 @@ const browser = await chromium.launch();
   check("G3 an unknown question is declined, not guessed", true);
   await snap(page, "g1-ask");
   await page.locator(T("tab-history")).click();
-  check("G4 History lists at least ten items", (await page.locator(T("hist-item")).count()) >= 10 || (await page.locator(T("hist-item")).count()) >= 6);
+  await page.locator(T("hist-tab-documents")).click();
+  await page.locator(T("hist-who")).selectOption("all");
+  check("G4 History lists documents and, with All clinicians, most of them", (await page.locator(T("hist-item")).count()) >= 5);
   await page.locator(T("hist-search")).fill("M.R.");
   await wait(page, 200);
-  const only = await page.locator(T("hist-item")).evaluateAll((els) => els.every((e) => /M\.R\./.test(e.textContent || "")));
-  check("G5 search filters by consumer", only);
+  const only = await page.locator(T("hist-item")).evaluateAll((els) => els.length > 0 && els.every((e) => /M\.R\./.test(e.textContent || "")));
+  check("G5 search filters by patient", only);
+  await page.locator(T("hist-search")).fill("");
   await page.locator(T("hist-tab-sessions")).click();
-  check("G6 Sessions tab works", (await page.locator(T("hist-tab-sessions")).getAttribute("aria-selected")) === "true" || true);
-  await page.locator(T("tab-clinic")).click();
-  const clinicText = await page.locator(T("panel")).innerText();
-  check("G7 Clinic profile shows payers, wording rules, checks and retention", /Payers/i.test(clinicText) && /Wording/i.test(clinicText) && /Checks/i.test(clinicText) && /retention/i.test(clinicText));
-  await snap(page, "g2-clinic");
+  const groups = await page.locator(".nv-grp").allInnerTexts();
+  check("G6 Sessions are grouped by how recent, and one has no patient assigned", groups.length >= 2 && (await page.getByText("No patient assigned").count()) >= 1, groups.join("|"));
+  await snap(page, "g1b-sessions");
+  await page.locator(T("tab-settings")).click();
+  await page.locator('[data-section="clinic"] summary').first().click();
+  const clinicText = await page.locator(T("settings")).innerText();
+  check("G7 Settings holds you, recording, check before save and the clinic profile", /You/.test(clinicText) && /Recording/.test(clinicText) && /Check before save/.test(clinicText) && /Payers/i.test(clinicText) && /Wording/i.test(clinicText) && /retention/i.test(clinicText));
+  await snap(page, "g2-settings");
   await page.locator(T("set-onsave")).click();
-  await page.getByRole("button", { name: "Psyflo home" }).click();
-  await page.locator(`${T("home-doc")}[data-doc="dpn-4458"]`).getByRole("button", { name: /Open in Lauris/ }).click();
+  await openHomeDoc(page, "dpn-4458");
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await page.waitForSelector(T("lauris-flash"), { timeout: 10000 });
   check("G8 with Check before save off, Save goes straight through", /Saved/.test(await page.locator(T("lauris-flash")).innerText()) && (await page.locator(T("lauris-pause")).count()) === 0);
   await page.close();
 }
 
+/* ---------- J. the other icons: roster, pickers, help, pin, the end X ---------- */
+{
+  const page = await fresh(browser);
+  // start a session from the patient list, with nothing open in Lauris
+  await page.locator(T("pick-patient")).selectOption("4471");
+  const opts = await page.locator(`${T("pick-doc")} option`).allInnerTexts();
+  check("J1 choosing a patient lists the documents Scribe can fill", opts.length >= 3, opts.join("|"));
+  await page.locator(T("pick-doc")).selectOption({ label: opts.find((o) => /progress/i.test(o)) });
+  await page.waitForSelector('[data-field="intervention"]');
+  check("J2 choosing a document opens it in Lauris", (await page.locator(T("scribe-start")).count()) === 1 && /Daily progress note/.test(await page.locator(T("context")).innerText()));
+  await page.locator(T("tab-patients")).click();
+  const rows = await page.locator(T("pat-row")).count();
+  check("J3 the roster lists patients, those with documents first", rows >= 6 && (await page.locator(T("pat-row")).first().innerText()).includes("document"));
+  await page.locator(T("pat-search")).fill("4458");
+  check("J4 the roster searches by number", (await page.locator(T("pat-row")).count()) === 1);
+  await page.locator(T("pat-row")).first().click();
+  check("J5 a patient shows documents, sessions and the chart records Psyflo reads", (await page.locator(T("pat-doc")).count()) >= 1 && /chart summary/i.test(await page.locator(T("pat-detail")).innerText()));
+  await snap(page, "j1-patient");
+  await page.locator(T("pat-scan")).first().click();
+  check("J6 Scan on a patient's document opens it in Lauris and goes to Scan & Enhance", (await page.locator(T("scan-run")).count()) === 1 && (await page.locator('[data-field]').count()) > 0);
+  await page.locator(T("tab-help")).click();
+  const help = await page.locator(T("help")).innerText();
+  check("J7 Help explains the jobs, the six icons and the colors", /Write a document/.test(help) && /Check a document/.test(help) && /Microphone: Scribe/.test(help) && /Yellow/.test(help));
+  await snap(page, "j2-help");
+  await page.locator(T("pin")).click();
+  check("J8 the pin toggles", (await page.locator(T("pin")).getAttribute("aria-pressed")) === "false");
+  await page.locator(T("close-screen")).click();
+  check("J9 the X beside the icons goes back to Scribe", (await page.locator(T("tab-scribe")).getAttribute("aria-selected")) === "true");
+  check("J10 every icon has a name on hover and focus", (await page.locator(".psy-ic[data-tip]").count()) === 7);
+  await page.close();
+}
+
 /* ---------- H. same design, another clinic ---------- */
 {
   const page = await fresh(browser);
-  const tabsH = await page.locator(".psy-tab").allInnerTexts();
+  const tabsH = await page.locator(".psy-ic").evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")));
   const classesH = await page.locator(".psy").evaluate((el) => [...el.querySelectorAll("[class]")].slice(0, 12).map((e) => e.className).join("|").length > 0);
-  const homeH = await page.locator(T("home-doc")).count();
+  await page.locator(T("tab-patients")).click();
+  const homeH = await page.locator(T("pat-row")).count();
   await page.locator('[data-clinic="cccsn"]').click();
   await wait(page, 300);
-  const tabsC = await page.locator(".psy-tab").allInnerTexts();
-  check("H1 the same five tabs at the other clinic", JSON.stringify(tabsH) === JSON.stringify(tabsC) && classesH);
+  const tabsC = await page.locator(".psy-ic").evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")));
+  check("H1 the same six icons at the other clinic", JSON.stringify(tabsH) === JSON.stringify(tabsC) && classesH);
   check("H2 the roster changed", (await page.locator('a[data-consumer="4471"]').count()) === 0 && (await page.locator(`${T("consumers-table")} a[data-consumer]`).count()) >= 4);
   await snap(page, "h1-cccsn-home");
-  check("H3 Home lists that clinic's documents", (await page.locator(T("home-doc")).count()) >= 3 && homeH >= 3);
-  await page.locator(T("tab-clinic")).click();
-  check("H4 the Clinic tab shows the other clinic", /Southern Nevada|CCCSN/.test(await page.locator(T("panel")).innerText()));
+  await page.locator(T("tab-patients")).click();
+  check("H3 the roster is that clinic's", (await page.locator(T("pat-row")).count()) >= 4 && homeH >= 6);
+  await page.locator(T("tab-settings")).click();
+  check("H4 Settings shows the other clinic", /Southern Nevada|CCCSN/.test(await page.locator(T("panel")).innerText()));
   // scribe and scan work there
   await openHomeDoc(page, "dpn-c101");
   await page.locator(T("tab-scribe")).click();
@@ -286,7 +332,7 @@ const browser = await chromium.launch();
   check("H6 Scan & Enhance works on the other clinic's request", (await page.locator('[data-testid="finding"]').count()) >= 4);
   await snap(page, "h2-cccsn-scan");
   // clinic-agnostic UI: Harvest words must not appear in the CCCSN panel chrome
-  const chrome = (await page.locator(".psy-head").innerText()) + " " + (await page.locator(".psy-tabs").innerText());
+  const chrome = (await page.locator(".psy-head").innerText()) + " " + (await page.locator(".psy-icons").innerText());
   check("H7 no Harvest wording in the panel chrome", !/Harvest|TDT/i.test(chrome));
   await page.close();
 }

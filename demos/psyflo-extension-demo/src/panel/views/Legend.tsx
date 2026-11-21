@@ -1,4 +1,4 @@
-import { Building2, CircleHelp, Clock, MessagesSquare, Mic, ScanSearch, X } from "lucide-react";
+import { CircleHelp, List, Mic, Pin, ScanSearch, User, Users, X } from "lucide-react";
 import type { ReactNode } from "react";
 import "../panel-scan.css";
 
@@ -15,7 +15,6 @@ const Nav = ({ icon, tab, mark, children }: { icon: ReactNode; tab?: boolean; ma
 export default function Legend() {
   return (
     <div data-testid="legend">
-      <h2 className="p-big">What the colors and buttons mean</h2>
       <p className="lg-lead">Psyflo reads the page you are on in Lauris. It types, you check, you save.</p>
 
       <section className="lg-sec" aria-labelledby="lg-colors">
@@ -39,23 +38,23 @@ export default function Legend() {
       </section>
 
       <section className="lg-sec" aria-labelledby="lg-nav">
-        <h3 className="p-h" id="lg-nav">The panel</h3>
+        <h3 className="p-h" id="lg-nav">The six icons</h3>
         <ul className="lg-nav">
-          <Nav mark icon={<>psyflo<em>.</em></>}><b>The Psyflo mark</b> takes you Home: what is waiting for you.</Nav>
-          <Nav icon={<CircleHelp size={15} />}><b>?</b> opens this legend.</Nav>
-          <Nav icon={<X size={15} />}><b>×</b> closes the panel. The Psyflo button in the browser bar opens it again.</Nav>
-          <Nav tab icon={<Mic size={15} />}><b>Scribe</b> listens to a session or a dictation and drafts what was said. You choose what gets typed.</Nav>
-          <Nav tab icon={<ScanSearch size={15} />}><b>Scan &amp; Enhance</b> reads a document that is already written, checks it, and offers fixes you can type with one click.</Nav>
-          <Nav tab icon={<Clock size={15} />}><b>History</b> lists what Psyflo has scribed, scanned and saved.</Nav>
-          <Nav tab icon={<MessagesSquare size={15} />}><b>Ask</b> answers questions from the chart, your clinic's own rules, or a named reference. If it has no source, it says so.</Nav>
-          <Nav tab icon={<Building2 size={15} />}><b>Clinic</b> shows what Psyflo knows about your clinic, and holds the Check before save settings.</Nav>
+          <Nav tab icon={<Mic size={15} />}><b>Microphone: Scribe.</b> Record a visit or dictate a note. Psyflo drafts it, you check every field, then it types into Lauris.</Nav>
+          <Nav tab icon={<List size={15} />}><b>List: History.</b> Your documents and sessions, grouped by day. Search by patient, or look at another clinician.</Nav>
+          <Nav tab icon={<Users size={15} />}><b>People: Patients.</b> Your roster. Open a patient to see their documents, sessions and the chart records Psyflo reads.</Nav>
+          <Nav tab icon={<ScanSearch size={15} />}><b>Scan &amp; Enhance.</b> Reads a document already saved in Lauris, such as an intake or a prior authorization, and suggests fixes you can type in with one click. Ask Psyflo is in here too.</Nav>
+          <Nav tab icon={<CircleHelp size={15} />}><b>?: Help.</b> This page.</Nav>
+          <Nav tab icon={<User size={15} />}><b>Person: Settings.</b> Your account, recording choices, what happens when you save, and your clinic's profile.</Nav>
+          <Nav icon={<X size={15} />}><b>× beside the icons</b> closes this screen and takes you back to Scribe. <b>× at the top</b> closes the whole panel. The Psyflo button in the browser bar opens it again.</Nav>
+          <Nav icon={<Pin size={15} />}><b>Pin</b> keeps the panel open as you move between pages.</Nav>
         </ul>
       </section>
 
       <section className="lg-sec" aria-labelledby="lg-save">
         <h3 className="p-h" id="lg-save">Check before save</h3>
         <p className="p-sub" style={{ margin: 0 }}>
-          When you press Save in Lauris, Psyflo checks the document first. If an alert at or above the level set in Clinic is still open, the save pauses and Scan &amp; Enhance shows what is open. Fix it, or press Save anyway. You can turn this off or change the level in Clinic.
+          When you press Save in Lauris, Psyflo checks the document first. If an alert at or above the level set in Settings is still open, the save pauses and Scan &amp; Enhance shows what is open. Fix it, or press Save anyway. You can turn this off or change the level in Settings.
         </p>
       </section>
 

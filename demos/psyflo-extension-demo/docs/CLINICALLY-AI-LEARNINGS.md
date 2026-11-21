@@ -27,15 +27,15 @@ Source: the Nov 20 demo call (Granola transcript), the screenshots shared from t
 | # | Component | What it literally means | How sure | In the Psyflo extension |
 |---|---|---|---|---|
 | 1 | Clinical Notes AI (title, spark logo) | The product name. The panel is a Chrome or Edge side panel (the browser’s own side-panel feature) that docks beside the EHR. | Said on the call | A Psyflo header with the clinic connection shown (“Lauris connected”). Same docking. |
-| 2 | Pin icon, top right | Keeps the panel open when you move around. It shows a pin with a slash, which looks like the Chrome side-panel pin. | Best guess | Not copied. The browser provides it. |
+| 2 | Pin icon, top right | Keeps the panel open when you move around. It shows a pin with a slash, which looks like the Chrome side-panel pin. | Best guess | Same pin, top right. |
 | 3 | Close ×, top right | Closes the panel. | Seen on screen | Close button; the Psyflo button in the browser bar reopens it. |
-| 4 | Microphone icon, first in the row | The recording screen: Start New Session. It is highlighted whenever you are on Start Session or Session Capturing. | Seen on screen | Tab “Scribe”. |
-| 5 | List icon, second | The history screen. It is highlighted on the screen with the Documents and Sessions tabs. | Seen on screen | Tab “History”. |
-| 6 | Two-person icon, third | Not shown on any screen we have. Most likely a patient or team list. | Best guess | No equivalent. Ask Garrett. |
-| 7 | Orange speech-bubble icon, fourth | Not shown on any screen we have. Signals lives inside the extension, so this is probably it. | Best guess | Tab “Ask”. |
-| 8 | Question-mark icon | Not shown. Probably help. | Best guess | The “?” in our header opens a legend of every color and button. |
-| 9 | Person icon, last | Not shown. Probably the account or settings. | Best guess | Tab “Clinic” shows the clinic’s profile, read-only. |
-| 10 | Second × at the end of the icon row | Probably closes the current screen and returns to the idle state. | Best guess | Not needed: each screen has a back or cancel. |
+| 4 | Microphone icon, first in the row | The recording screen: Start New Session. It is highlighted whenever you are on Start Session or Session Capturing. | Seen on screen | First icon: Scribe, which opens Start a new session. |
+| 5 | List icon, second | The history screen. It is highlighted on the screen with the Documents and Sessions tabs. | Seen on screen | Second icon: History, with Sessions and Documents lists, a clinician filter and search by patient. |
+| 6 | Two-person icon, third | Not shown on any screen we have. Most likely a patient or team list. | Best guess | Third icon: Patients, the roster (your reading of it, which Psyflo follows). |
+| 7 | Orange speech-bubble icon, fourth | Not shown on any screen we have. Either Signals, which Garrett said lives inside the extension, or Comply, which you read it as. Comply’s alert chips appear on the EHR page and its dashboard is a separate web app, so I cannot tell. | Best guess | Fourth icon: Scan & Enhance (your reading: their Comply). Ask Psyflo, our evidence chat, sits inside it. |
+| 8 | Question-mark icon | Not shown. Probably help. | Best guess | Fifth icon: Help, with how-to steps and a legend of every color and icon. |
+| 9 | Person icon, last | Not shown. Probably the account or settings. | Best guess | Sixth icon: Settings: you, recording, Check before save and the clinic profile (read-only). |
+| 10 | Second × at the end of the icon row | Probably closes the current screen and returns to the idle state. | Best guess | Same: closes the screen and returns to Scribe. |
 
 ### Start New Session
 
@@ -111,7 +111,7 @@ Source: the Nov 20 demo call (Granola transcript), the screenshots shared from t
 
 ## Where Psyflo differs on purpose
 
-- Labelled tabs instead of six unlabeled icons.
+- Same six icons, but each names itself on hover and each screen starts with a title.
 - Scan & Enhance reads documents that are already written and proposes fixes a person can type into the field.
 - Psyflo types, a person saves. Typed text is yellow until the person saves in the EHR.
 - No invented clinical text: fixes quote the chart, wrap the clinician's own words in a fixed sentence, or apply a choice the clinician makes. Ratings and diagnoses are locked.

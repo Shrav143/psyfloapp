@@ -1,0 +1,78 @@
+/* The shell's icon row and the screens behind the icons that are not Scribe or Scan: History, Patients, Help, Settings. Everything under .psy. */
+
+.psy-icons { flex: none; display: flex; align-items: center; gap: 2px; padding: 6px 10px; background: var(--card); border-bottom: 1px solid var(--line); }
+.psy-ic { position: relative; width: 38px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: var(--ink-2); display: grid; place-items: center; }
+.psy-ic:hover { background: var(--paper); color: var(--ink); }
+.psy-ic[aria-selected="true"] { background: var(--teal-tint); color: var(--teal-hover); }
+.psy-ic.accent { color: #B26A00; }
+.psy-ic.accent[aria-selected="true"] { background: var(--gold-tint); color: #8A5200; }
+.psy-ic.end { margin-left: auto; color: var(--ink-3); }
+.psy-ic .n { position: absolute; top: 1px; right: 1px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: var(--gold); color: var(--navy); font-size: 10px; font-weight: 800; display: grid; place-items: center; }
+.psy-ic .n.sev { background: var(--danger); color: #fff; }
+.psy-ic .n.dot { min-width: 9px; width: 9px; height: 9px; padding: 0; background: #E5484D; top: 5px; right: 8px; }
+/* names on hover and focus: the icons carry no words, so every one says what it is */
+.psy [data-tip] { position: relative; }
+.psy [data-tip]:hover::after, .psy [data-tip]:focus-visible::after { content: attr(data-tip); position: absolute; top: calc(100% + 6px); right: 0; z-index: 30; width: max-content; max-width: 230px; padding: 6px 9px; border-radius: 7px; background: var(--navy); color: #fff; font: 600 11.5px/1.35 var(--sans); text-align: left; white-space: normal; pointer-events: none; box-shadow: 0 4px 14px rgba(21, 27, 36, 0.25); }
+.psy-icons [data-tip]:hover::after, .psy-icons [data-tip]:focus-visible::after { right: auto; left: 50%; transform: translateX(-50%); }
+.psy-icons .psy-ic:first-child[data-tip]:hover::after { left: 0; transform: none; }
+.psy-icons .psy-ic.end[data-tip]:hover::after { left: auto; right: 0; transform: none; }
+
+/* screen heading used by History, Patients, Help, Settings */
+.nv-h { display: flex; align-items: center; gap: 8px; margin: 0 0 2px; }
+.nv-h .p-big { margin: 0; }
+.nv-lead { color: var(--ink-2); margin: 0 0 10px; }
+.nv-search { position: relative; margin: 8px 0 10px; }
+.nv-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink-3); pointer-events: none; }
+.nv-search .p-input { padding-left: 32px; }
+.nv-row { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 8px; }
+.nv-grp { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin: 14px 0 6px; }
+
+/* sessions and documents rows */
+.hs-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.hs-item { border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 10px 12px; }
+.hs-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.hs-top b { color: var(--teal-hover); font-weight: 700; }
+.hs-top .when { color: var(--ink-3); font-size: 11.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.hs-pat { margin-top: 2px; color: var(--ink-2); }
+.hs-pat.none { color: var(--ink-3); font-style: italic; }
+.hs-sub { margin-top: 3px; font-size: 12px; color: var(--ink-3); }
+.hs-act { margin-top: 8px; }
+
+/* patients */
+.pt-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pt-card { width: 100%; text-align: left; display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 10px 12px; }
+.pt-card:hover { border-color: var(--line-strong); background: var(--paper); }
+.pt-av { flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--teal-tint); color: var(--teal-hover); display: grid; place-items: center; font-weight: 800; font-size: 11.5px; }
+.pt-tx { min-width: 0; flex: 1; }
+.pt-tx b { display: block; }
+.pt-tx span { display: block; color: var(--ink-3); font-size: 12px; }
+.pt-back { margin: -2px 0 8px -6px; }
+.pt-head { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+.pt-doc { border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+.pt-doc .p-row { gap: 6px; }
+.pt-rec { margin: 0 0 8px; padding: 0; list-style: none; }
+.pt-rec li { border-top: 1px solid var(--line); padding: 8px 0; }
+.pt-rec li:first-child { border-top: 0; }
+.pt-rec p { margin: 3px 0 0; color: var(--ink-2); font-size: 12.5px; }
+
+/* start-a-session pickers */
+.pk { display: grid; gap: 8px; margin-bottom: 10px; }
+.pk select { width: 100%; }
+
+/* scan screen: switch between checking a document and asking */
+.sc-seg { flex: none; padding: 10px 14px 0; background: var(--paper); }
+
+/* help */
+.hp-steps { margin: 0; padding-left: 20px; }
+.hp-steps li { margin: 0 0 6px; }
+.hp-ic { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; list-style: none; margin: 0 0 10px; padding: 0; }
+.hp-ic .g { width: 34px; height: 34px; border-radius: 9px; background: var(--teal-tint); color: var(--teal-hover); display: grid; place-items: center; }
+.hp-ic .g.accent { background: var(--gold-tint); color: #8A5200; }
+.hp-ic b { display: block; }
+.hp-list { margin: 0; padding: 0; }
+
+/* settings */
+.st-me { display: flex; gap: 12px; align-items: center; }
+.st-me .av { width: 44px; height: 44px; border-radius: 50%; background: var(--navy); color: var(--gold); display: grid; place-items: center; font-weight: 800; }
+.st-field { margin: 10px 0 0; }
+.st-field .p-input { max-width: 100%; }

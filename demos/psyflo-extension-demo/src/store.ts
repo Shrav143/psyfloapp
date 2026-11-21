@@ -8,7 +8,9 @@ import type { AskTopic, ClinicConfig, ClinicId, DocKind, DocState, Finding, Find
 
 export const CLINICS: Record<ClinicId, ClinicConfig> = { harvest, cccsn };
 
-export type PanelTab = "home" | "scribe" | "scan" | "history" | "ask" | "clinic";
+/** The six icons, in order: Scribe (mic), History (list), Patients (people), Scan & Enhance, Help, Settings. */
+export type PanelTab = "scribe" | "history" | "patients" | "scan" | "help" | "settings";
+export interface Prefs { telehealth: boolean; language: string; mic: string }
 export type LaurisPage = { kind: "consumers" } | { kind: "consumer"; consumerId: string } | { kind: "form"; docId: string };
 
 export type ScribeStage = "start" | "consent" | "capturing" | "recover" | "generating" | "review" | "typed";
@@ -67,6 +69,8 @@ interface State {
   pause: { docId: string; ids: string[] } | null;
   flash: { docId: string; text: string; tone: "ok" | "warn" } | null;
   settings: CheckSettings;
+  prefs: Prefs;
+  pinned: boolean;
   history: HistoryItem[];
   asks: AskMsg[];
   asking: boolean;
@@ -80,6 +84,8 @@ interface State {
   editField: (docId: string, key: string, v: Val) => void;
   requestSave: (docId: string) => void;
   setSettings: (p: Partial<CheckSettings>) => void;
+  setPrefs: (p: Partial<Prefs>) => void;
+  setPinned: (v: boolean) => void;
 
   scribeOpen: (docId: string) => void;
   scribeMode: (m: "live" | "dictation") => void;
@@ -119,9 +125,10 @@ function fresh(id: ClinicId) {
   const docs: Record<string, DocState> = {};
   for (const d of clinic.docs) docs[d.id] = initialDocState(d);
   return {
-    clinicId: id, clinic, page: { kind: "consumers" } as LaurisPage, panelOpen: true, tab: "home" as PanelTab, docs,
+    clinicId: id, clinic, page: { kind: "consumers" } as LaurisPage, panelOpen: true, tab: "scribe" as PanelTab, docs,
     scribe: blankScribe(), scans: {} as Record<string, ScanState>, focus: null, checking: null, pause: null, flash: null,
     settings: { pauseAt: clinic.profile.checks.pauseAt, onSave: clinic.profile.checks.onSave },
+    prefs: { telehealth: false, language: "English", mic: "Built-in microphone (simulated)" } as Prefs, pinned: true,
     history: [...clinic.history], asks: [] as AskMsg[], asking: false,
   };
 }
@@ -287,6 +294,8 @@ export const useStore = create<State>()((set, get) => {
     },
 
     setSettings: (p) => set((s) => ({ settings: { ...s.settings, ...p } })),
+    setPrefs: (p) => set((s) => ({ prefs: { ...s.prefs, ...p } })),
+    setPinned: (pinned) => set({ pinned }),
 
     /* ---------------------------------- Scribe ---------------------------------- */
     scribeOpen: (docId) => {
@@ -295,7 +304,7 @@ export const useStore = create<State>()((set, get) => {
       if (s.scribe.docId === docId && ["capturing", "recover", "review", "generating"].includes(s.scribe.stage)) return;
       const sc = s.clinic.scribe.find((x) => x.docId === docId);
       stopTick();
-      set({ scribe: { ...blankScribe(sc?.mode ?? "live"), docId } });
+      set({ scribe: { ...blankScribe(sc?.mode ?? "live"), docId, telehealth: s.prefs.telehealth } });
     },
     scribeMode: (mode) => set((s) => (s.scribe.stage === "start" ? { scribe: { ...s.scribe, mode } } : {})),
     scribeTelehealth: (telehealth) => set((s) => ({ scribe: { ...s.scribe, telehealth } })),
@@ -342,7 +351,12 @@ export const useStore = create<State>()((set, get) => {
       }
       patchScan(docId, (x) => (x.scannedAt ? { ...x, stale: true } : x));
       set((s) => ({ scribe: { ...s.scribe, stage: "typed", typedKeys: typed } }));
-      pushHistory({ type: "session", doc: seed.kind, consumerId: seed.consumerId, status: `Scribed: ${typed.length} field${typed.length === 1 ? "" : "s"} typed into Lauris, not saved yet`, docId });
+      const sc = clinic.scribe.find((x) => x.docId === docId);
+      const heard = sc?.lines[Math.max(0, Math.min(scribe.shown, sc.lines.length) - 1)]?.t ?? sc?.length ?? "1:00";
+      const mins = Math.max(1, parseInt(heard.split(":")[0], 10) || 1);
+      const now = new Date();
+      const clock = `${((now.getHours() + 11) % 12) + 1}:${String(now.getMinutes()).padStart(2, "0")} ${now.getHours() < 12 ? "AM" : "PM"}`;
+      pushHistory({ type: "session", doc: seed.kind, consumerId: seed.consumerId, status: `Scribed: ${typed.length} field${typed.length === 1 ? "" : "s"} typed into Lauris, not saved yet`, docId, time: clock, length: `${mins}m`, mode: scribe.mode });
     },
     scribeRegenerate: () => { set((s) => ({ scribe: { ...s.scribe, stage: "generating", gen: 1 } })); void generate(); },
 
