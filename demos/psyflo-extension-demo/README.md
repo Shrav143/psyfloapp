@@ -15,6 +15,8 @@ The extension does two jobs on EHR documents:
 
 **Same design at every clinic.** The panel and the mock EHR read a `ClinicConfig` and never name a clinic. Switch the clinic with the "Demo clinic" control in the browser bar. **Harvest Outreach** is the default (original TDT / school-based content: DPN, admission screening, intake/CNA, shortened CANS, continued-stay SRA). **CCCSN** is the substance use clinic (progress note, admission, ASAM assessment, continued-stay request).
 
+Published (private) as https://claude.ai/artifact/G6AdUeEf9jsodBYNiuXHFC; the button-by-button guide is https://claude.ai/artifact/EcLxKwpHJ9gBzurrV74BP2.
+
 ## Run
 
 ```bash
