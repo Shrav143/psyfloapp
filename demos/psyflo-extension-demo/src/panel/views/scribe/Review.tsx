@@ -16,8 +16,12 @@ export default function Review({ ctx }: { ctx: ScribeCtx }) {
   const [reviewed, setReviewed] = useState(false);
   const endBox = useRef<HTMLInputElement>(null);
 
+  const values = useStore((s) => s.docs[ctx.docId]?.values ?? {});
   const locked = fieldsOf(spec).filter((f) => f.lock);
-  const sections = spec.sections.map((s) => ({ ...s, fields: s.fields.filter((f) => !f.lock) })).filter((s) => s.fields.length > 0);
+  // a field Lauris already filled and nothing was drafted for is not a gap: it gets no card, only a line
+  const filled = (k: string) => !draft[k] && !isEmpty(values[k]);
+  const already = fieldsOf(spec).filter((f) => !f.lock && filled(f.key));
+  const sections = spec.sections.map((s) => ({ ...s, fields: s.fields.filter((f) => !f.lock && !filled(f.key)) })).filter((s) => s.fields.length > 0);
   const n = sections.flatMap((s) => s.fields).filter((f) => { const c = draft[f.key]; return !!c && c.include && !isEmpty(c.value); }).length;
   const why = !reviewed ? "Read every card, then tick “I have read the whole draft” at the end of the list." : n === 0 ? "No card is ticked, so there is nothing to type." : "";
 
@@ -33,6 +37,13 @@ export default function Review({ ctx }: { ctx: ScribeCtx }) {
             {s.fields.map((f) => <DraftCardView key={f.key} field={f} card={draft[f.key]} scen={scenario.draft[f.key]} ctx={ctx} />)}
           </section>
         ))}
+
+        {already.length ? (
+          <section className="p-card scr-locks" aria-labelledby="scr-already-h" data-testid="scribe-already">
+            <h3 className="p-title" id="scr-already-h">Already in Lauris (left as it is)</h3>
+            <ul>{already.map((f) => <li key={f.key}>{f.label}</li>)}</ul>
+          </section>
+        ) : null}
 
         {locked.length ? (
           <section className="p-card scr-locks" aria-labelledby="scr-locks-h">

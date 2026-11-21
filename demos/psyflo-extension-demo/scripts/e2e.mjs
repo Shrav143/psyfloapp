@@ -64,7 +64,7 @@ const browser = await chromium.launch();
   await wait(page, 600);
   await snap(page, "b2-capturing");
   await page.locator(T("scribe-pause")).click();
-  check("B2 recording can pause", /Paused|Resume/i.test(await page.locator(".psy-body").innerText()));
+  check("B2 recording can pause", /Paused|Resume/i.test(await page.locator(T("panel")).innerText()));
   await page.locator(T("scribe-pause")).click();
   await wait(page, 700);
   await page.locator(T("scribe-complete")).click();
@@ -111,7 +111,7 @@ const browser = await chromium.launch();
   const page = await fresh(browser);
   await openHomeDoc(page, "dpn-4458");
   await page.locator(T("tab-scan")).click();
-  check("C1 before a scan it lists what Psyflo sees", /What Psyflo sees/i.test(await page.locator(".psy-body").innerText()));
+  check("C1 before a scan it lists what Psyflo sees", /What Psyflo sees/i.test(await page.locator(T("panel")).innerText()));
   await page.locator(T("scan-run")).click();
   await page.waitForSelector(T("scan-tally"), { timeout: 15000 });
   const sevs = await page.locator('[data-testid="finding"]').evaluateAll((els) => els.map((e) => e.getAttribute("data-sev")));
@@ -183,7 +183,7 @@ const browser = await chromium.launch();
 /* ---------- F. the other four documents: scribe fills, ratings stay locked ---------- */
 {
   const page = await fresh(browser);
-  for (const [docId, key] of [["adm-4492", "trauma"], ["intake-4492", "prior"], ["cans-4492", null], ["sra-4471", "discharge"]]) {
+  for (const [docId, key] of [["adm-4492", "trauma"], ["intake-4492", "strengths"], ["cans-4492", null], ["sra-4471", "discharge"]]) {
     await openHomeDoc(page, docId);
     await page.locator(T("tab-scribe")).click();
     await page.locator(T("scribe-start")).click();
@@ -240,7 +240,7 @@ const browser = await chromium.launch();
   await page.locator(T("hist-tab-sessions")).click();
   check("G6 Sessions tab works", (await page.locator(T("hist-tab-sessions")).getAttribute("aria-selected")) === "true" || true);
   await page.locator(T("tab-clinic")).click();
-  const clinicText = await page.locator(".psy-body").innerText();
+  const clinicText = await page.locator(T("panel")).innerText();
   check("G7 Clinic profile shows payers, wording rules, checks and retention", /Payers/i.test(clinicText) && /Wording/i.test(clinicText) && /Checks/i.test(clinicText) && /retention/i.test(clinicText));
   await snap(page, "g2-clinic");
   await page.locator(T("set-onsave")).click();
@@ -266,7 +266,7 @@ const browser = await chromium.launch();
   await snap(page, "h1-cccsn-home");
   check("H3 Home lists that clinic's documents", (await page.locator(T("home-doc")).count()) >= 3 && homeH >= 3);
   await page.locator(T("tab-clinic")).click();
-  check("H4 the Clinic tab shows the other clinic", /Southern Nevada|CCCSN/.test(await page.locator(".psy-body").innerText()));
+  check("H4 the Clinic tab shows the other clinic", /Southern Nevada|CCCSN/.test(await page.locator(T("panel")).innerText()));
   // scribe and scan work there
   await openHomeDoc(page, "dpn-c101");
   await page.locator(T("tab-scribe")).click();
@@ -286,7 +286,7 @@ const browser = await chromium.launch();
   check("H6 Scan & Enhance works on the other clinic's request", (await page.locator('[data-testid="finding"]').count()) >= 4);
   await snap(page, "h2-cccsn-scan");
   // clinic-agnostic UI: Harvest words must not appear in the CCCSN panel chrome
-  const chrome = await page.locator(".psy-head, .psy-tabs").innerText();
+  const chrome = (await page.locator(".psy-head").innerText()) + " " + (await page.locator(".psy-tabs").innerText());
   check("H7 no Harvest wording in the panel chrome", !/Harvest|TDT/i.test(chrome));
   await page.close();
 }
