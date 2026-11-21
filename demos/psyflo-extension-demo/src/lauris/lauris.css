@@ -1,0 +1,167 @@
+/* The mock Lauris Online EHR. It stands for a product that is not Psyflo's, so it keeps its own look: slate top bar and left menu with a gold marker, white page, blue links and primary button, Arial.
+   EVERY selector starts with .lauris (generic element rules sit under .lauris .l-main) so nothing here can reach the Psyflo panel or the demo chrome.
+   Colors that mean something: green (.g) = already in Lauris, yellow (.y) = the Psyflo extension typed it, check it. Navy with a small "p." = Psyflo (the alert chips, the checking bar, the paused-save banner). */
+
+.lauris { container: lauris / inline-size; display: flex; flex-direction: column; flex: 1 1 auto; height: 100%; min-height: 0; background: #F2F3F5; color: #222; font: 13px/1.4 Arial, Helvetica, sans-serif; color-scheme: light; }
+.lauris *, .lauris *::before, .lauris *::after { box-sizing: border-box; }
+
+/* ---- top bar and left menu ---- */
+.lauris .l-top { flex: none; background: #2F3A4A; color: #fff; padding: 0 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; height: 38px; white-space: nowrap; overflow: hidden; }
+.lauris .l-top .ar { color: #E0A030; }
+.lauris .l-top .cap { font-weight: 400; font-size: 11px; color: #AEB8C4; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.lauris .l-top .r { margin-left: auto; font-weight: 400; font-size: 11px; color: #D5DBE3; display: flex; gap: 12px; align-items: center; flex: none; }
+.lauris .l-top .clk { color: #AEB8C4; }
+.lauris .l-top .dead { color: #D5DBE3; cursor: default; }
+.lauris .l-wrap { flex: 1; min-height: 0; display: flex; }
+.lauris .l-side { flex: 0 0 176px; background: #2F3A4A; padding: 6px 0; display: flex; flex-direction: column; overflow: auto; }
+.lauris .lnav { display: flex; align-items: center; gap: 9px; padding: 8px 14px; font-size: 12px; color: #D5DBE3; text-decoration: none; border: 0; background: transparent; width: 100%; text-align: left; font-family: inherit; cursor: pointer; }
+.lauris a.lnav:hover { background: #3C4756; color: #fff; }
+.lauris .lnav.on { background: #3C4756; color: #fff; border-left: 3px solid #E0A030; padding-left: 11px; }
+.lauris .lnav.inert { cursor: default; }
+.lauris .lnav .b { margin-left: auto; background: #C2410C; color: #fff; border-radius: 999px; font-size: 10px; padding: 0 6px; font-weight: 700; }
+.lauris .l-sep { border-top: 1px solid #46525F; margin: 8px 0; }
+.lauris .lnav:focus-visible { outline: 2px solid #E0A030; outline-offset: -2px; }
+.lauris .l-main { flex: 1; min-width: 0; padding: 12px 20px 0; overflow: auto; background: #F2F3F5; }
+.lauris .l-main .l-page { padding-bottom: 28px; }
+.lauris .l-main .l-page.form { max-width: 1000px; }
+
+/* ---- page parts (generic rules live under .l-main) ---- */
+.lauris .l-main a { color: #1F6FBF; }
+.lauris .l-main a:focus-visible, .lauris .l-main .tscroll:focus-visible { outline: 2px solid #1F6FBF; outline-offset: 2px; border-radius: 2px; }
+.lauris .l-main h2 { font-size: 15px; margin: 4px 0 10px; color: #1F3B6B; font-weight: 700; }
+.lauris .l-main h3 { font-size: 13px; margin: 0 0 10px; color: #1F3B6B; font-weight: 700; }
+.lauris .l-main .muted { color: #5F6975; }
+.lauris .l-main .small { font-size: 11px; }
+.lauris .l-main .card { background: #fff; border: 1px solid #DDE1E6; border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; }
+.lauris .l-main .card p { margin: 0 0 10px; }
+.lauris .l-main .crumbs { font-size: 12px; color: #5F6975; margin: 0 0 8px; }
+.lauris .l-main .hdr, .lauris .l-main .strip { display: flex; align-items: center; gap: 14px; background: #fff; border: 1px solid #DDE1E6; border-radius: 4px; padding: 8px 14px; flex-wrap: wrap; }
+.lauris .l-main .strip { padding: 6px 12px; margin-bottom: 10px; }
+.lauris .l-main .av { width: 36px; height: 36px; border-radius: 50%; background: #DDE1E6; flex: 0 0 36px; display: grid; place-items: center; color: #1F3B6B; font-weight: 700; font-size: 12px; }
+.lauris .l-main .strip .av { width: 28px; height: 28px; flex-basis: 28px; font-size: 10px; }
+.lauris .l-main .who { min-width: 0; }
+.lauris .l-main .nm { font-weight: 700; font-size: 15px; color: #1F3B6B; }
+.lauris .l-main .strip .nm { font-size: 13px; }
+.lauris .l-main .sub { font-size: 11px; color: #5F6975; }
+.lauris .l-main .units { margin-left: auto; font-size: 12px; color: #1F6FBF; font-weight: 700; text-align: right; }
+.lauris .l-main .tabs, .lauris .l-main .ltabs { display: flex; gap: 18px; margin: 6px 0 10px; border-bottom: 1px solid #DDE1E6; flex-wrap: wrap; }
+.lauris .l-main .tab { font-size: 12px; color: #4F5965; padding: 8px 0; border: 0; border-bottom: 2px solid transparent; background: transparent; font-family: inherit; cursor: default; }
+.lauris .l-main .tab.on { color: #222; font-weight: 700; border-bottom-color: #E0A030; }
+.lauris .l-main .tab:focus-visible { outline: 2px solid #1F6FBF; outline-offset: 2px; }
+
+/* ---- the document ---- */
+.lauris .l-main .doc-h { margin: 2px 0 10px; }
+.lauris .l-main .doc-h h2 { margin-bottom: 4px; }
+.lauris .l-main .doc-h .meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12px; color: #4F5965; }
+.lauris .l-main .sec { padding-bottom: 2px; }
+.lauris .l-main .secf { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 18px; }
+.lauris .l-main .loose { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.lauris .l-main .lbl { display: block; font-size: 11px; color: #55606C; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+.lauris .l-main .fld { margin-bottom: 12px; min-width: 0; }
+.lauris .l-main .fld-h { display: flex; align-items: center; gap: 4px 8px; margin-bottom: 3px; flex-wrap: wrap; min-height: 22px; }
+.lauris .l-main .fld-h .lbl { margin: 0; }
+.lauris .l-main .fld-h .lock { display: inline-flex; align-items: center; color: #5F6975; }
+.lauris .l-main .hint { font-size: 11px; color: #5F6975; margin-bottom: 4px; }
+.lauris .l-main .in { width: 100%; border: 1px solid #C9CDD3; background: #fff; padding: 6px 8px; border-radius: 3px; min-height: 30px; font: 13px Arial, Helvetica, sans-serif; color: #222; display: block; }
+.lauris .l-main select.in { padding-right: 4px; }
+.lauris .l-main .in.g { background: #E6F4EA; }
+.lauris .l-main .in.y { background: #FFF8E6; border-color: #E8C56A; }
+.lauris .l-main textarea.in { resize: vertical; line-height: 1.45; min-height: 96px; }
+.lauris .l-main .in.box { line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; cursor: text; text-align: left; }
+.lauris .l-main .in.box:hover { border-color: #8E99A6; }
+.lauris .l-main .in.box.empty { color: #6B7480; }
+.lauris .l-main .in:focus-visible { outline: 2px solid #1F6FBF; outline-offset: 1px; }
+.lauris .l-main .in mark { background: #FFE58A; color: #222; padding: 0 1px; border-radius: 2px; }
+.lauris .l-main .grp { display: flex; flex-wrap: wrap; gap: 4px 18px; border: 1px solid #C9CDD3; background: #fff; border-radius: 3px; padding: 7px 10px; }
+.lauris .l-main .grp.g { background: #E6F4EA; }
+.lauris .l-main .grp.y { background: #FFF8E6; border-color: #E8C56A; }
+.lauris .l-main .grp .opt { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.lauris .l-main .grp input { margin: 0; width: 14px; height: 14px; accent-color: #1F6FBF; cursor: pointer; }
+.lauris .l-main .grp input:focus-visible { outline: 2px solid #1F6FBF; outline-offset: 2px; }
+.lauris .l-main .tag { font-size: 10px; font-weight: 700; border-radius: 3px; padding: 1px 6px; border: 1px solid transparent; text-transform: none; letter-spacing: 0; }
+.lauris .l-main .tag.g { background: #E1F2E7; color: #1E6B40; border-color: #B5D9C3; }
+.lauris .l-main .tag.y { background: #FFF1D6; color: #8A5A00; border-color: #EDCB86; }
+.lauris .l-main .note { font-size: 11px; color: #8A5A00; margin-top: 3px; }
+
+/* ---- buttons, status tags ---- */
+.lauris .l-main .lb { display: inline-flex; align-items: center; justify-content: center; min-height: 30px; padding: 0 14px; border: 1px solid #9AA3AE; background: linear-gradient(#fff, #E9ECF0); border-radius: 3px; font: 12px Arial, sans-serif; color: #222; cursor: pointer; text-decoration: none; }
+.lauris .l-main .lb:hover { background: #E9ECF0; }
+.lauris .l-main .lb.pri { background: #1F6FBF; color: #fff; border-color: #1A5EA3; font-weight: 700; padding: 0 22px; }
+.lauris .l-main .lb.pri:hover { background: #1A5EA3; }
+.lauris .l-main .lb[disabled] { opacity: 0.55; cursor: not-allowed; }
+.lauris .l-main .lb[aria-disabled="true"] { cursor: default; }
+.lauris .l-main .lb:focus-visible { outline: 2px solid #1F6FBF; outline-offset: 2px; }
+.lauris .l-main .st { display: inline-block; border-radius: 3px; padding: 1px 7px; font-size: 11px; font-weight: 700; border: 1px solid transparent; white-space: nowrap; }
+.lauris .l-main .st.g { background: #E1F2E7; color: #1E6B40; border-color: #B5D9C3; }
+.lauris .l-main .st.n { background: #EEF0F3; color: #3B4656; border-color: #D5D9DF; }
+.lauris .l-main .st.r { background: #FBE5E0; color: #9B2C17; border-color: #EBB3A8; }
+
+/* ---- tables and filters ---- */
+/* the soft edge shows there is more to scroll to (the shadows ride on the content and fade as it scrolls) */
+.lauris .l-main .tscroll { overflow-x: auto; border: 1px solid #DDE1E6; border-radius: 4px; background:
+  linear-gradient(to right, #fff 30%, rgba(255, 255, 255, 0)) 0 0 / 40px 100% no-repeat local,
+  linear-gradient(to left, #fff 30%, rgba(255, 255, 255, 0)) 100% 0 / 40px 100% no-repeat local,
+  linear-gradient(to right, rgba(31, 59, 107, 0.22), rgba(31, 59, 107, 0)) 0 0 / 10px 100% no-repeat scroll,
+  linear-gradient(to left, rgba(31, 59, 107, 0.22), rgba(31, 59, 107, 0)) 100% 0 / 10px 100% no-repeat scroll,
+  #fff; }
+.lauris .l-main .list { width: 100%; border-collapse: collapse; background: #fff; min-width: 980px; }
+.lauris .l-main .list.docs { min-width: 520px; }
+.lauris .l-main .list th { background: #E9ECF0; text-align: left; font-size: 11px; padding: 7px 8px; border-bottom: 1px solid #DDE1E6; color: #444; white-space: nowrap; }
+.lauris .l-main .list td { padding: 7px 8px; border-bottom: 1px solid #EEF0F3; font-size: 12px; vertical-align: top; }
+.lauris .l-main .list tr:hover td { background: #F7F9FB; }
+.lauris .l-main .list td a { white-space: nowrap; font-weight: 700; }
+.lauris .l-main .list.docs td a { white-space: normal; }
+.lauris .l-main .list td.nt { min-width: 160px; color: #4F5965; }
+.lauris .l-main .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; align-items: end; background: #fff; border: 1px solid #DDE1E6; border-radius: 4px; padding: 10px 12px; margin-bottom: 10px; }
+.lauris .l-main .filters .lb { justify-self: start; }
+.lauris .l-main .more { margin-top: 8px; }
+
+/* ---- the action bar: Save stays in view, and so does what Psyflo or Lauris says about the save ---- */
+.lauris .l-main .l-actions { position: sticky; bottom: 0; z-index: 2; margin: 0 -20px; padding: 10px 20px 12px; background: #F2F3F5; border-top: 1px solid #DDE1E6; box-shadow: 0 -6px 10px -8px rgba(31, 59, 107, 0.25); }
+.lauris .l-main .l-actions .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lauris .l-main .l-msgs:empty { display: none; }
+.lauris .l-main .l-msgs { display: grid; gap: 6px; margin-bottom: 10px; max-width: 1000px; }
+.lauris .l-main .flash { border-radius: 3px; padding: 8px 12px; font-weight: 700; border: 1px solid #9ED3AE; background: #E6F4EA; color: #1D5F33; }
+.lauris .l-main .flash.w { background: #FFF4E5; border-color: #F0C27A; color: #7A4B00; }
+
+/* ---- Psyflo's parts inside the EHR: navy, DM Sans, the small "p." mark. Clearly not Lauris's. ---- */
+.lauris .pmk { flex: none; display: inline-block; width: 16px; height: 16px; border-radius: 4px; background: #151B24; color: #fff; text-align: center; text-transform: none; white-space: nowrap; font: 800 10px/15px var(--sans, "DM Sans Variable", "DM Sans", system-ui, sans-serif); letter-spacing: -0.02em; }
+.lauris .pmk em { color: #F0B44C; font-style: normal; }
+.lauris .l-main .l-checking, .lauris .l-main .l-pause { display: flex; align-items: center; gap: 9px; border-radius: 6px; padding: 8px 12px; font: 600 12.5px/1.4 var(--sans, "DM Sans Variable", "DM Sans", system-ui, sans-serif); }
+.lauris .l-main .l-checking { background: #151B24; color: #fff; padding-block: 7px; }
+.lauris .l-main .l-checking .pmk { background: #222A35; }
+.lauris .l-main .l-checking .spin { flex: none; width: 13px; height: 13px; border-radius: 50%; border: 2px solid #3A4554; border-top-color: #F0B44C; animation: lauris-spin 0.8s linear infinite; }
+.lauris .l-main .l-pause { background: #FCEFD0; color: #151B24; border: 1px solid #E5C77E; border-left: 4px solid #151B24; font-weight: 500; align-items: flex-start; }
+.lauris .l-main .l-pause .pmk { margin-top: 1px; }
+.lauris .l-main .l-pause b { font-weight: 800; }
+@keyframes lauris-spin { to { transform: rotate(360deg); } }
+
+.lauris .chips { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.lauris .chip { display: inline-flex; align-items: center; gap: 5px; height: 20px; padding: 0 8px 0 3px; border: 1px solid #151B24; border-radius: 999px; background: #fff; color: #151B24; font: 700 11px/1 var(--sans, "DM Sans Variable", "DM Sans", system-ui, sans-serif); cursor: pointer; text-transform: none; letter-spacing: 0; }
+.lauris .chip:hover { background: #F1EEE7; }
+.lauris .chip.on { background: #FCEFD0; box-shadow: 0 0 0 2px #F0B44C; }
+.lauris .chip.stale { border-style: dashed; opacity: 0.8; }
+.lauris .chip .pmk { width: 15px; height: 15px; font-size: 9px; line-height: 14px; border-radius: 999px; }
+.lauris .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: #7C8896; flex: none; }
+.lauris .chip.severe .dot { background: #E5603F; }
+.lauris .chip.medium .dot { background: #F0B44C; }
+.lauris .chip.low .dot { background: #7C8896; }
+.lauris .chip b { font-weight: 800; }
+.lauris .chip:focus-visible { outline: 2px solid #217A78; outline-offset: 2px; }
+
+/* ---- room: the EHR area is 700px wide at a 1100px window (the panel takes 400px) ---- */
+@container lauris (min-width: 980px) {
+  .lauris .l-main .secf { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lauris .l-main .fld.wide { grid-column: 1 / -1; }
+}
+@container lauris (max-width: 820px) {
+  .lauris .l-side { flex-basis: 148px; }
+  .lauris .lnav { padding-inline: 10px; font-size: 11.5px; }
+  .lauris .lnav.on { padding-left: 7px; }
+  .lauris .l-main { padding-inline: 14px; }
+  .lauris .l-main .l-actions { margin-inline: -14px; padding-inline: 14px; }
+  .lauris .l-top .cap { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lauris * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
