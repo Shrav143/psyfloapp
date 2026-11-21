@@ -2,7 +2,7 @@
    the mock Lauris keeps its own look (src/lauris/lauris.css) because it stands for a product that is not Psyflo's. */
 :root {
   --paper: #F8F6F2; --card: #FFFFFF; --line: #E5E0D6; --line-strong: #CFC8BA;
-  --ink: #151B24; --ink-2: #3F4752; --ink-3: #6B7480;
+  --ink: #151B24; --ink-2: #3F4752; --ink-3: #5A6370;
   --navy: #151B24; --navy-2: #222A35; --navy-line: #323C4A;
   --teal: #217A78; --teal-hover: #15605E; --teal-on-dark: #5FC0BE; --teal-tint: #E1F0EF;
   --gold: #F0B44C; --gold-tint: #FCEFD0;

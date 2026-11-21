@@ -29,7 +29,7 @@ export default function Typed({ ctx }: { ctx: ScribeCtx }) {
 
       <div className="p-col">
         <button type="button" className="p-btn pri block" data-testid="scribe-to-scan" onClick={() => { setTab("scan"); scanRun(ctx.docId); }}>
-          <ScanSearch size={16} aria-hidden="true" />Scan this note
+          <ScanSearch size={16} aria-hidden="true" />Scan this document
         </button>
         <button type="button" className="p-btn block" data-testid="scribe-another" onClick={scribeCancel}>Start another session</button>
         <button type="button" className="p-btn ghost block" data-testid="scribe-home" onClick={() => setTab("home")}>Back to Home</button>
