@@ -33,7 +33,7 @@ Source: the Nov 20 demo call (Granola transcript), the screenshots shared from t
 | 5 | List icon, second | The history screen. It is highlighted on the screen with the Documents and Sessions tabs. | Seen on screen | Second icon: History, with Sessions and Documents lists, a clinician filter and search by patient. |
 | 6 | Two-person icon, third | Not shown on any screen we have. Most likely a patient or team list. | Best guess | Third icon: Patients, the roster (your reading of it, which Psyflo follows). |
 | 7 | Orange speech-bubble icon, fourth | Not shown on any screen we have. Either Signals, which Garrett said lives inside the extension, or Comply, which you read it as. Comply’s alert chips appear on the EHR page and its dashboard is a separate web app, so I cannot tell. | Best guess | Fourth icon: Scan & Enhance (your reading: their Comply). Ask Psyflo, our evidence chat, sits inside it. |
-| 8 | Question-mark icon | Not shown. Probably help. | Best guess | Fifth icon: Help, with how-to steps and a legend of every color and icon. |
+| 8 | Question-mark icon | Not shown. Probably help. | Best guess | Fifth icon: Help, options only: chat with Psyflo, FAQs and training videos. |
 | 9 | Person icon, last | Not shown. Probably the account or settings. | Best guess | Sixth icon: Settings: you, recording, Check before save and the clinic profile (read-only). |
 | 10 | Second × at the end of the icon row | Probably closes the current screen and returns to the idle state. | Best guess | Same: closes the screen and returns to Scribe. |
 
@@ -47,7 +47,7 @@ Source: the Nov 20 demo call (Granola transcript), the screenshots shared from t
 | 14 | “Using Telehealth + Headphones?” checkbox | Tells the app that the other person’s voice arrives through headphones, so it must capture the computer’s audio as well as the microphone. The Recover screen says a session “was recorded with Telehealth + Headphones.” | Best guess | Same toggle, labelled “Telehealth / headphones”. |
 | 15 | Audio Device dropdown | Choose the microphone. | Seen on screen | Shown as “Microphone: built-in (simulated)”. |
 | 16 | Language dropdown | The language to transcribe. | Seen on screen | Not in the demo (one language). |
-| 17 | Chart Summary button + tooltip “View the chart summary for this patient” | Shows a summary of the patient’s chart before or during the session. What it is built from is not explained. | Best guess | “Chart summary: what Psyflo reads first”, listing the exact chart records used. |
+| 17 | Chart Summary button + tooltip “View the chart summary for this patient” | Shows a summary of the patient’s chart before or during the session. What it is built from is not explained. | Best guess | Removed. Psyflo reads the patient’s chart on its own, and listing the records gives a clinician nothing to act on. |
 | 18 | Start Session | Starts the session. With a live session, the next step asks whether the patient consented. | Said on the call | “Continue”, then the consent step. |
 
 ### Consent and recording
@@ -65,11 +65,11 @@ Source: the Nov 20 demo call (Granola transcript), the screenshots shared from t
 | # | Component | What it literally means | How sure | In the Psyflo extension |
 |---|---|---|---|---|
 | 24 | Session row (“1h Live Session”) with a refresh icon | The recording this document will be written from. The refresh icon probably reloads or switches the session. | Best guess | Not needed: the open document decides. |
-| 25 | Note title | Pre-filled with the name of the template it found on the EHR page. | Seen on screen | The document name comes from the page. |
-| 26 | Select a patient | Which chart the note belongs to. | Seen on screen | From the page, not chosen again. |
+| 25 | Note title | Pre-filled with the name of the template it found on the EHR page. | Seen on screen | The document name comes from the document you pick. |
+| 26 | Select a patient | Which chart the note belongs to. | Seen on screen | Pick a patient on the Start screen, then any kind of document. Choosing opens it in Lauris. |
 | 27 | Location and program (optional) | Lets the organization’s rules for a location or program apply to this note. | Best guess | Comes from the consumer’s record. |
 | 28 | Clinical observations and instructions + “Talk to AI” | A free-text box for anything the note should include or avoid. “Talk to AI” is a microphone for speaking that text. | Best guess | Not in this build. Worth adding: a one-line instruction box. |
-| 29 | Add Chart Context | Pull in or upload past notes and documents so the draft can use them. | Said on the call | Chart Summary plus the chart records the clinic holds. |
+| 29 | Add Chart Context | Pull in or upload past notes and documents so the draft can use them. | Said on the call | Not needed: Psyflo uses the patient’s chart in Lauris. |
 | 30 | Template Settings | Mirrors the EHR’s template into their app so an admin can add instructions per field. Opens from here and from the review screen. | Said on the call | “What Psyflo sees on this page”: every field with its kind, and which are clinician-only. |
 | 31 | Generate | Writes the document and then forces a review. | Said on the call | “Complete session” leads straight to generating. |
 | 32 | Analyzing Patient Context… then Writing Document… | The two stages while it works, with a Cancel. | Seen on screen | Same two steps: reading the chart, then writing. |
@@ -115,7 +115,7 @@ Source: the Nov 20 demo call (Granola transcript), the screenshots shared from t
 - Scan & Enhance reads documents that are already written and proposes fixes a person can type into the field.
 - Psyflo types, a person saves. Typed text is yellow until the person saves in the EHR.
 - No invented clinical text: fixes quote the chart, wrap the clinician's own words in a fixed sentence, or apply a choice the clinician makes. Ratings and diagnoses are locked.
-- "Not stated" instead of a guess; no star rating; no pre-generate form (the page decides the document and consumer).
+- "Not stated" instead of a guess; no star rating; no pre-generate form beyond choosing the patient and the document.
 
 ## Questions for Garrett, Monday Nov 23, 7 PM ET
 

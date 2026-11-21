@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, FileText, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { usDate } from "@/engine";
 import { tally, useCurrent } from "@/hooks";
@@ -12,15 +12,13 @@ const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 export default function PatientsView() {
   const { clinic } = useCurrent();
   const [q, setQ] = useState("");
-  const [withDocs, setWithDocs] = useState(false);
   const [sel, setSel] = useState<string | null>(null);
 
   const list = useMemo(() => {
     const nq = norm(q);
     return clinic.consumers
-      .filter((c) => (!withDocs || c.docs.length > 0) && (!nq || norm(`${c.ini} ${c.id} ${c.program} ${c.site}`).includes(nq)))
-      .sort((a, b) => b.docs.length - a.docs.length);
-  }, [clinic, q, withDocs]);
+      .filter((c) => !nq || norm(`${c.ini} ${c.id} ${c.program} ${c.site}`).includes(nq));
+  }, [clinic, q]);
 
   const patient = sel ? clinic.consumers.find((c) => c.id === sel) : undefined;
   if (patient) return <Detail patient={patient} onBack={() => setSel(null)} />;
@@ -29,15 +27,11 @@ export default function PatientsView() {
   return (
     <div className="psy-body" data-testid="patients">
       <h2 className="p-big">Patients</h2>
-      <p className="nv-lead">Your roster, from Lauris. Open a patient to see their documents.</p>
+      <p className="nv-lead">Everyone on your roster, from Lauris.</p>
       <div className="nv-search">
         <Search size={15} aria-hidden="true" />
         <label className="sr-only" htmlFor="pat-q">Search patients</label>
         <input id="pat-q" className="p-input" type="search" data-testid="pat-search" value={q} placeholder="Search by initials or number…" autoComplete="off" onChange={(e) => setQ(e.target.value)} />
-      </div>
-      <div className="p-row" style={{ marginBottom: 10 }}>
-        <button type="button" className="p-chip btn" aria-pressed={!withDocs} onClick={() => setWithDocs(false)} style={!withDocs ? { background: "var(--navy)", color: "#fff" } : undefined}>All {clinic.consumers.length}</button>
-        <button type="button" className="p-chip btn" data-testid="pat-with-docs" aria-pressed={withDocs} onClick={() => setWithDocs(true)} style={withDocs ? { background: "var(--navy)", color: "#fff" } : undefined}>With documents</button>
       </div>
       {list.length === 0 ? <div className="p-empty"><b>No patients match “{q.trim()}”</b>Check the initials or number.</div> : (
         <ul className="pt-list">
@@ -48,7 +42,7 @@ export default function PatientsView() {
                 <span className="pt-tx"><b>{c.ini}, {c.age} <span style={{ display: "inline", color: "var(--ink-3)", fontWeight: 400 }}>· {c.id}</span></b><span>{c.program} · {c.site}</span><span>{payerName(c.payer)}</span></span>
                 <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
                   <span className={`p-chip ${c.units ? "ok" : "neutral"}`}>{c.units ? `${c.units.left} units left` : "No authorization"}</span>
-                  {c.docs.length ? <span className="p-chip teal">{c.docs.length} document{c.docs.length === 1 ? "" : "s"}</span> : <span className="p-note">No documents here</span>}
+                  {c.docs.length ? <span className="p-chip teal">{c.docs.length} document{c.docs.length === 1 ? "" : "s"}</span> : null}
                 </span>
                 <ChevronRight size={16} aria-hidden="true" style={{ color: "var(--ink-3)", alignSelf: "center" }} />
               </button>
@@ -70,7 +64,6 @@ function Detail({ patient: c, onBack }: { patient: Consumer; onBack: () => void 
   const openConsumer = useStore((s) => s.openConsumer);
   const scribeOpen = useStore((s) => s.scribeOpen);
   const setTab = useStore((s) => s.setTab);
-  const [open, setOpen] = useState<string | null>(null);
   const payer = clinic.profile.payers.find((p) => p.id === c.payer)?.name ?? c.payer;
   const sessions = history.filter((h) => h.type === "session" && h.consumerId === c.id).slice(0, 3);
 
@@ -126,19 +119,6 @@ function Detail({ patient: c, onBack }: { patient: Consumer; onBack: () => void 
         </ul>
       )}
 
-      <h3 className="p-h">Chart summary: what Psyflo reads</h3>
-      {c.chart.length === 0 ? <p className="p-note">No stored records in the demo.</p> : (
-        <ul className="pt-rec">
-          {c.chart.map((r) => (
-            <li key={r.id}>
-              <button type="button" className="p-link" aria-expanded={open === r.id} onClick={() => setOpen(open === r.id ? null : r.id)} style={{ textAlign: "left", textDecoration: "none" }}>
-                <FileText size={13} aria-hidden="true" style={{ verticalAlign: "-2px" }} /> <b>{r.label}</b> <span className="p-note">· {usDate(r.date)}</span>
-              </button>
-              {open === r.id ? <p>{r.text}</p> : null}
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }

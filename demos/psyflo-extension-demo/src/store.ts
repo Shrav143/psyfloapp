@@ -3,8 +3,8 @@
 import { create } from "zustand";
 import { cccsn } from "./clinics/cccsn";
 import { harvest } from "./clinics/harvest";
-import { SEV_RANK, asText, boxState, fieldByKey, fieldsOf, findingSig, initialDocState, isEmpty, matchAsk, runChecks, speed, wait, writeInto } from "./engine";
-import type { AskTopic, ClinicConfig, ClinicId, DocKind, DocState, Finding, FindingStatus, HistoryItem, Severity, Val } from "./types";
+import { SEV_RANK, usDate, asText, boxState, fieldByKey, fieldsOf, findingSig, initialDocState, isEmpty, matchAsk, runChecks, speed, wait, writeInto } from "./engine";
+import type { AskTopic, ClinicConfig, ClinicId, DocKind, DocSeed, DocState, Finding, FindingStatus, HistoryItem, ScribeScenario, Severity, Val } from "./types";
 
 export const CLINICS: Record<ClinicId, ClinicConfig> = { harvest, cccsn };
 
@@ -81,6 +81,8 @@ interface State {
   goConsumers: () => void;
   openConsumer: (id: string) => void;
   openDoc: (docId: string) => void;
+  /** The patient's document of this kind, or a new blank one in Lauris (like Add Session) with a session to scribe. Returns its id. */
+  newDoc: (consumerId: string, kind: DocKind) => string;
   editField: (docId: string, key: string, v: Val) => void;
   requestSave: (docId: string) => void;
   setSettings: (p: Partial<CheckSettings>) => void;
@@ -265,6 +267,44 @@ export const useStore = create<State>()((set, get) => {
     goConsumers: () => leave({ kind: "consumers" }),
     openConsumer: (consumerId) => leave({ kind: "consumer", consumerId }),
     openDoc: (docId) => leave({ kind: "form", docId }),
+    newDoc: (consumerId, kind) => {
+      const s = get();
+      const consumer = s.clinic.consumers.find((c) => c.id === consumerId);
+      const spec = s.clinic.forms[kind];
+      if (!consumer || !spec) return "";
+      const have = consumer.docs.find((d) => s.clinic.docs.find((x) => x.id === d)?.kind === kind);
+      if (have) return have;
+      const id = `new-${kind}-${consumerId}`;
+      const values: Record<string, Val> = {};
+      const prefilled: string[] = [];
+      if (fieldsOf(spec).some((f) => f.key === "date" && f.kind === "date")) { values.date = usDate(s.clinic.today); prefilled.push("date"); }
+      const seed: DocSeed = { id, kind, consumerId, date: s.clinic.today, values, prefilled, status: "draft" };
+      // a session to scribe: the clinic's own scripted session for this kind, retold for this patient. What the chart said about the first patient is not carried over.
+      const base = s.clinic.scribe.find((x) => s.clinic.docs.find((d) => d.id === x.docId)?.kind === kind);
+      let scenario: ScribeScenario | undefined;
+      if (base) {
+        const baseDoc = s.clinic.docs.find((d) => d.id === base.docId);
+        const baseIni = s.clinic.consumers.find((c) => c.id === baseDoc?.consumerId)?.ini ?? "";
+        const swap = (t: string) => (baseIni ? t.split(baseIni).join(consumer.ini) : t);
+        const draft: ScribeScenario["draft"] = {};
+        for (const [k, d] of Object.entries(base.draft)) {
+          draft[k] = d.from === "chart"
+            ? { value: Array.isArray(d.value) ? [] : "", from: "none", note: "Nothing was said about this." }
+            : { ...d, value: typeof d.value === "string" ? swap(d.value) : d.value, note: d.note ? swap(d.note) : d.note };
+        }
+        scenario = { ...base, docId: id, who: swap(base.who), lines: base.lines.map((l) => ({ ...l, who: swap(l.who), text: swap(l.text) })), draft, context: base.context.filter((r) => consumer.chart.some((c) => c.id === r)) };
+      }
+      set((x) => ({
+        clinic: {
+          ...x.clinic,
+          docs: [...x.clinic.docs, seed],
+          scribe: scenario ? [...x.clinic.scribe, scenario] : x.clinic.scribe,
+          consumers: x.clinic.consumers.map((c) => (c.id === consumerId ? { ...c, docs: [...c.docs, id] } : c)),
+        },
+        docs: { ...x.docs, [id]: initialDocState(seed) },
+      }));
+      return id;
+    },
 
     editField: (docId, key, v) => {
       patchDoc(docId, (d) => ({ ...d, values: { ...d.values, [key]: v } }));

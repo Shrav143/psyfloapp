@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { KIND_LABEL, SEV_LABEL, SEV_RANK, checksFor, fieldByKey, fieldsOf, isEmpty, usDate } from "@/engine";
 import { tally, useCurrent } from "@/hooks";
 import { useStore, type ScanState } from "@/store";
+import Picker from "./scribe/Picker";
 import type { Check as AuditCheck, Consumer, DocSeed, DocState, Finding, FormSpec, Severity } from "@/types";
 import "../panel-scan.css";
 
@@ -32,40 +33,14 @@ export default function ScanView() {
 /* ------------------------------------------------------ no document open */
 
 function NoDocument() {
-  const { clinic, consumer } = useCurrent();
-  const docs = useStore((s) => s.docs);
-  const scans = useStore((s) => s.scans);
-  const openDoc = useStore((s) => s.openDoc);
-  const mine = consumer ? clinic.docs.filter((d) => d.consumerId === consumer.id) : [];
-  const rest = clinic.docs.filter((d) => !mine.includes(d));
-
-  const list = (items: DocSeed[]) => (
-    <ul className="sn-doclist">
-      {items.map((seed) => {
-        const open = scans[seed.id] ? tally(scans[seed.id].findings, scans[seed.id].status).open : 0;
-        return (
-          <li key={seed.id}>
-            <button type="button" className="sn-docbtn" data-testid="scan-open-doc" data-open-doc={seed.id} onClick={() => openDoc(seed.id)}>
-              <b>{clinic.consumers.find((c) => c.id === seed.consumerId)?.ini}</b>
-              <span className="what">{clinic.forms[seed.kind]?.short ?? seed.title ?? "Document"}</span>
-              <span className="when">{usDate(seed.date)}</span>
-              {open > 0 ? <span className="p-chip sev-medium">{open} to review</span> : docs[seed.id]?.status === "saved" ? <span className="p-chip saved">Saved</span> : <span className="p-chip">Draft</span>}
-            </button>
-          </li>
-        );
-      })}
-    </ul>
-  );
-
   return (
     <>
       <div className="psy-body">
-        <div className="p-empty" data-testid="scan-empty">
-          <b>Open a document in Lauris to scan it</b>
-          Scan &amp; Enhance reads the document you have open. Pick one here, or open it in Lauris.
-        </div>
-        {mine.length ? <><h3 className="p-h">Documents for {consumer?.ini}</h3>{list(mine)}</> : null}
-        {rest.length ? <><h3 className="p-h">{mine.length ? "Other documents" : "Documents"}</h3>{list(rest)}</> : null}
+        <section className="p-card" data-testid="scan-empty" aria-labelledby="sn-nodoc">
+          <h2 className="p-big" id="sn-nodoc">Scan a document</h2>
+          <p className="p-sub">Scan &amp; Enhance checks whatever document is open in Lauris. Open one there, or choose it here.</p>
+          <Picker then="scan" />
+        </section>
       </div>
       <Footer />
     </>
@@ -126,8 +101,6 @@ function DocScan({ clinicShort, docId, seed, spec, consumer, doc, scan }: DocSca
   const pausedOpen = pausedHere && scan ? pause.ids.map((id) => scan.findings.find((f) => f.id === id)).filter((f): f is Finding => !!f && status[f.id] === "open") : [];
   const checkOn = settings.onSave && settings.pauseAt !== "never";
   const levelName = settings.pauseAt === "never" ? "" : SEV_LABEL[settings.pauseAt];
-
-  const emptyDoc = fields.filter((f) => f.kind !== "date").every((f) => isEmpty(doc.values[f.key]));
 
   return (
     <>
@@ -212,10 +185,7 @@ function DocScan({ clinicShort, docId, seed, spec, consumer, doc, scan }: DocSca
                 ))}
               </div>
             </details>
-            {emptyDoc ? (
-              <p className="sn-empty">There is nothing to scan yet. Scribe it first. <button type="button" className="p-link" onClick={() => setTab("scribe")}>Go to Scribe</button></p>
-            ) : null}
-            <button type="button" className={`p-btn block${emptyDoc ? "" : " pri"}`} data-testid="scan-run" onClick={() => scanRun(docId)}>Scan this document</button>
+            <button type="button" className="p-btn pri block" data-testid="scan-run" onClick={() => scanRun(docId)}>Scan this document</button>
           </section>
         ) : (
           <>

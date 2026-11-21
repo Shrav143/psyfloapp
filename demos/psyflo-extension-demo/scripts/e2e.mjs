@@ -264,35 +264,83 @@ const browser = await chromium.launch();
   await page.close();
 }
 
-/* ---------- J. the other icons: roster, pickers, help, pin, the end X ---------- */
+/* ---------- J. the other icons: pickers, roster, help, pin, the end X ---------- */
 {
   const page = await fresh(browser);
   // start a session from the patient list, with nothing open in Lauris
   await page.locator(T("pick-patient")).selectOption("4471");
   const opts = await page.locator(`${T("pick-doc")} option`).allInnerTexts();
-  check("J1 choosing a patient lists the documents Scribe can fill", opts.length >= 3, opts.join("|"));
+  check("J1 every kind of document is offered for any patient", ["progress", "admission", "intake", "cans", "continued"].every((w) => opts.some((o) => new RegExp(w, "i").test(o))), opts.join("|"));
+  check("J1b the Start screen has no chart summary", !/chart summary/i.test(await page.locator(T("panel")).innerText()));
   await page.locator(T("pick-doc")).selectOption({ label: opts.find((o) => /progress/i.test(o)) });
   await page.waitForSelector('[data-field="intervention"]');
   check("J2 choosing a document opens it in Lauris", (await page.locator(T("scribe-start")).count()) === 1 && /Daily progress note/.test(await page.locator(T("context")).innerText()));
   await page.locator(T("tab-patients")).click();
-  const rows = await page.locator(T("pat-row")).count();
-  check("J3 the roster lists patients, those with documents first", rows >= 6 && (await page.locator(T("pat-row")).first().innerText()).includes("document"));
+  const rosterSize = await page.locator(T("pat-row")).count();
+  check("J3 the roster lists every patient in one list, with no filter chips", rosterSize >= 8 && (await page.locator(T("pat-with-docs")).count()) === 0, String(rosterSize));
   await page.locator(T("pat-search")).fill("4458");
   check("J4 the roster searches by number", (await page.locator(T("pat-row")).count()) === 1);
   await page.locator(T("pat-row")).first().click();
-  check("J5 a patient shows documents, sessions and the chart records Psyflo reads", (await page.locator(T("pat-doc")).count()) >= 1 && /chart summary/i.test(await page.locator(T("pat-detail")).innerText()));
+  check("J5 a patient shows documents and recent sessions, no chart summary", (await page.locator(T("pat-doc")).count()) >= 1 && !/chart summary/i.test(await page.locator(T("pat-detail")).innerText()));
   await snap(page, "j1-patient");
   await page.locator(T("pat-scan")).first().click();
   check("J6 Scan on a patient's document opens it in Lauris and goes to Scan & Enhance", (await page.locator(T("scan-run")).count()) === 1 && (await page.locator('[data-field]').count()) > 0);
   await page.locator(T("tab-help")).click();
-  const help = await page.locator(T("help")).innerText();
-  check("J7 Help explains the jobs, the six icons and the colors", /Write a document/.test(help) && /Check a document/.test(help) && /Microphone: Scribe/.test(help) && /Yellow/.test(help));
+  const optsHelp = await page.locator(T("help")).innerText();
+  check("J7 Help is a few options: chat, FAQs, training videos, and no long content", /Chat with Psyflo/.test(optsHelp) && /FAQs/.test(optsHelp) && /Training videos/.test(optsHelp) && optsHelp.length < 600, String(optsHelp.length));
+  await page.locator(T("help-faq")).click();
+  check("J7b an option says what it opens", /FAQ page/.test(await page.locator(T("help")).innerText()));
   await snap(page, "j2-help");
+  await page.locator(T("help-chat")).click();
+  check("J7c the help chat offers options only, with no typing box", (await page.locator(T("help-chat-view")).count()) === 1 && (await page.locator(`${T("help-chat-view")} input, ${T("help-chat-view")} textarea`).count()) === 0);
+  await page.locator(T("help-opt-fix")).click();
+  check("J7d choosing an option gets a reply and a way to reach a person", (await page.locator(T("help-reply")).count()) === 1 && (await page.locator(T("help-person-btn")).count()) === 1);
+  await page.locator(T("help-person-btn")).click();
+  check("J7e Talk to a person connects (simulated)", /Connecting you/.test(await page.locator(T("help-person")).innerText()));
+  await snap(page, "j3-chat");
   await page.locator(T("pin")).click();
   check("J8 the pin toggles", (await page.locator(T("pin")).getAttribute("aria-pressed")) === "false");
   await page.locator(T("close-screen")).click();
   check("J9 the X beside the icons goes back to Scribe", (await page.locator(T("tab-scribe")).getAttribute("aria-selected")) === "true");
   check("J10 every icon has a name on hover and focus", (await page.locator(".psy-ic[data-tip]").count()) === 7);
+  await page.close();
+}
+
+/* ---------- K. any patient, any kind of document ---------- */
+{
+  const page = await fresh(browser);
+  // a patient with no documents at all gets a new blank one, and Scribe works on it
+  await page.locator(T("pick-patient")).selectOption("4441");
+  await page.locator(T("pick-doc")).selectOption({ label: "Admission screening (new)" });
+  await page.waitForSelector('[data-field]');
+  const filled = await page.locator('[data-field]:not([data-state=""])').count();
+  check("K1 a new blank document opens in Lauris for a patient who had none", /Admission screening/i.test(await page.locator(T("context")).innerText()) && filled <= 1, String(filled));
+  await page.locator(T("scribe-start")).click();
+  await page.locator(T("consent-yes")).click();
+  await wait(page, 900);
+  await page.locator(T("scribe-complete")).click();
+  await page.waitForSelector("[data-draft]", { timeout: 20000 });
+  await page.locator(T("scribe-reviewed")).check();
+  await page.locator(T("scribe-type")).click();
+  await page.waitForSelector(T("scribe-typed"));
+  check("K3 Scribe types into the new document, and it is about this patient, not the one the session was written for", (await page.locator('.lauris [data-state="typed"]').count()) >= 2 && !/T\.W\./.test(await page.locator(".lauris .l-main").innerText()));
+  // Scan & Enhance works on a blank document of another kind: nothing assumes it should be scribed first
+  await page.locator(T("tab-scan")).click();
+  await page.locator(T("pick-doc")).selectOption({ label: "Daily progress note (new)" }).catch(() => {});
+  if (!(await page.locator(T("scan-run")).count())) {
+    await page.locator(T("pick-patient")).selectOption("4441").catch(() => {});
+    await page.locator(T("pick-doc")).selectOption({ label: "Daily progress note (new)" });
+  }
+  await page.waitForSelector(T("scan-run"));
+  check("K4 Scan is offered on an empty document, with no 'scribe it first' detour", !/scribe it first|Go to Scribe/i.test(await page.locator(T("panel")).innerText()));
+  await page.locator(T("scan-run")).click();
+  await page.waitForSelector(T("scan-tally"), { timeout: 15000 });
+  check("K5 the scan lists what is missing", (await page.locator('[data-testid="finding"]').count()) >= 1);
+  await snap(page, "k1-blank-scan");
+  // with nothing open, Scan & Enhance lets you choose any patient and document too
+  await page.getByRole("link", { name: "Consumers", exact: true }).first().click();
+  await page.locator(T("tab-scan")).click();
+  check("K6 with nothing open, Scan & Enhance offers the same patient and document pickers", (await page.locator(T("pick-patient")).count()) === 1);
   await page.close();
 }
 

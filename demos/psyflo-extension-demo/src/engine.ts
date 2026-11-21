@@ -1,5 +1,5 @@
 /* Pure helpers: no state, no timers. The store calls these. */
-import type { AskTopic, Check, ClinicConfig, DocKind, DocState, FieldSpec, Finding, FormSpec, Severity, Val } from "./types";
+import type { AskTopic, Check, ClinicConfig, DocKind, DocState, FieldSpec, Finding, FormSpec, RawFinding, Severity, Val } from "./types";
 
 export const SEV_RANK: Record<Severity, number> = { low: 1, medium: 2, severe: 3 };
 export const SEV_LABEL: Record<Severity, string> = { low: "Low", medium: "Medium", severe: "Severe" };
@@ -71,7 +71,9 @@ export function runChecks(clinic: ClinicConfig, docId: string, kind: DocKind, va
   for (const check of clinic.checks as Check[]) {
     if (!check.docs.includes(kind)) continue;
     const seen: Record<string, number> = {};
-    for (const raw of check.run(ctx)) {
+    let raws: RawFinding[] = [];
+    try { raws = check.run(ctx); } catch { raws = []; }
+    for (const raw of raws) {
       const n = (seen[raw.fieldKey] = (seen[raw.fieldKey] ?? 0) + 1);
       out.push({ ...raw, docId, checkId: check.id, id: `${docId}:${check.id}:${raw.fieldKey}:${n}` });
     }

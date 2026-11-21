@@ -1,12 +1,11 @@
 import { Check } from "lucide-react";
 import { useStore } from "@/store";
-import { StageHeading, recordsOf, type ScribeCtx } from "./shared";
+import { StageHeading, type ScribeCtx } from "./shared";
 
 /** Two steps: read the chart, then write the draft from what was said. The current one is active. */
-export default function Generating({ ctx }: { ctx: ScribeCtx }) {
+export default function Generating({ ctx: _ctx }: { ctx: ScribeCtx }) {
   const gen = useStore((s) => s.scribe.gen);
   const scribeCancel = useStore((s) => s.scribeCancel);
-  const labels = recordsOf(ctx.consumer, ctx.scenario.context).map((r) => r.label);
 
   const step = (n: 1 | 2, text: string) => {
     const state = gen > n ? "done" : gen === n ? "active" : "wait";
@@ -24,7 +23,7 @@ export default function Generating({ ctx }: { ctx: ScribeCtx }) {
         <StageHeading>Writing your draft</StageHeading>
         <p className="p-sub">This takes a few seconds. Nothing is typed into the document yet.</p>
         <ul className="scr-steps" aria-live="polite" data-testid="scribe-generating">
-          {step(1, `1. Reading the chart${labels.length ? `: ${labels.join(", ")}` : ""}`)}
+          {step(1, "1. Reading the patient's chart")}
           {step(2, "2. Writing the draft from what was said")}
         </ul>
         <button type="button" className="p-btn block scr-mt" data-testid="scribe-cancel" onClick={scribeCancel}>Cancel</button>
