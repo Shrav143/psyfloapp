@@ -44,7 +44,7 @@ const browser = await chromium.launch();
   check("A4 the panel is 400px wide", Math.round((await page.locator(".shell-panel").boundingBox()).width) === 400);
   await snap(page, "a1-home");
   await page.locator('a[data-consumer="4471"]').click();
-  await page.locator('[data-doc="dpn-4471"]').click();
+  await page.locator('.lauris a[data-doc="dpn-4471"]').click();
   await page.waitForSelector('[data-field="intervention"]');
   check("A5 consumer then document opens, panel says what it is reading", /Reading this page/.test(await page.locator(T("context")).innerText()) && /M\.R\./.test(await page.locator(T("context")).innerText()));
   check("A6 prefilled date is green, empty box is plain", (await state(page, "date")) === "lauris" && (await state(page, "intervention")) === "");

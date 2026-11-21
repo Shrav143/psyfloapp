@@ -268,7 +268,14 @@ export const useStore = create<State>()((set, get) => {
     requestSave: (docId) => {
       const s = get();
       if (s.checking) return;
-      if (s.pause?.docId === docId) { doSave(docId, s.pause.ids.length); return; }
+      if (s.pause?.docId === docId) {
+        // count what is still open at the pause level now, not what was open when the save was paused
+        const x = s.scans[docId];
+        const level = SEV_RANK[s.settings.pauseAt === "never" ? "severe" : s.settings.pauseAt];
+        const n = x ? x.findings.filter((f) => x.status[f.id] === "open" && SEV_RANK[f.severity] >= level).length : s.pause.ids.length;
+        doSave(docId, n);
+        return;
+      }
       const { onSave, pauseAt } = s.settings;
       if (!onSave || pauseAt === "never") { doSave(docId, 0); return; }
       set({ checking: docId, flash: null });
