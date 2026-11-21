@@ -180,7 +180,7 @@ export const useStore = create<State>()((set, get) => {
     for (const k of Object.keys(d.values)) if (!isEmpty(d.values[k])) green[k] = true;
     const seed = seedOf(docId);
     patchDoc(docId, (x) => ({ ...x, green, typed: {}, appended: {}, status: "saved", savedAt: get().clinic.today }));
-    set({ pause: null, checking: null, flash: { docId, text: anyway ? `Saved in Lauris. ${anyway} alert${anyway === 1 ? "" : "s"} from Psyflo were still open.` : "Saved in Lauris.", tone: anyway ? "warn" : "ok" } });
+    set({ pause: null, checking: null, flash: { docId, text: anyway ? `Saved in Lauris. ${anyway} alert${anyway === 1 ? " from Psyflo was" : "s from Psyflo were"} still open.` : "Saved in Lauris.", tone: anyway ? "warn" : "ok" } });
     if (seed) pushHistory({ type: "document", doc: seed.kind, consumerId: seed.consumerId, status: anyway ? `Saved in Lauris with ${anyway} open alert${anyway === 1 ? "" : "s"}` : "Saved in Lauris", docId });
   };
 
