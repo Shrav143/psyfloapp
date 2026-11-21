@@ -26,4 +26,13 @@
 .shell-body { flex: 1; min-height: 0; display: flex; background: #F2F3F5; }
 .shell-ehr { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
 .shell-panel { flex: 0 0 400px; width: 400px; border-left: 1px solid #D9D4CC; background: var(--paper); min-height: 0; overflow: hidden; }
-@media (max-width: 900px) { .shell-panel { flex-basis: 340px; width: 340px; } .shell-demo label { display: none; } }
+@media (max-width: 1000px) { .shell-panel { flex-basis: 360px; width: 360px; } .shell-demo label { display: none; } }
+/* a phone: the browser window cannot hold both side by side, so the EHR sits above and the extension below */
+@media (max-width: 760px) {
+  .shell { height: 100%; min-height: 100vh; }
+  .shell-body { flex-direction: column; }
+  .shell-ehr { flex: 0 0 56vh; min-height: 280px; }
+  .shell-panel { flex: 1 1 auto; width: 100%; min-height: 70vh; border-left: 0; border-top: 1px solid #D9D4CC; }
+  .shell-url { display: none; }
+  .shell-tabs { overflow: hidden; }
+}
