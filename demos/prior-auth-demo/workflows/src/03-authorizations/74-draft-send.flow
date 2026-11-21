@@ -1,0 +1,37 @@
+title: Authorizations › Case page › Draft › Review, sign and what happens next
+route: /authorizations/case/R-1042?tab=draft
+intro: What happens when a person sends the request: the one 'Send to payer' in the header, its gate, the hand-off to New Case where a clinician signs, and where the request appears once it is sent.
+dir: TD
+also: Demo only: the payer receiving the request is simulated. The summary signed in New Case is the one on this tab: edits, applied actions and added clinical context are all in it.
+---
+start s1 "Header 'Next:' block, on any tab"
+decision dc "Do all four checks pass, and is the request still preparing?"
+process off "'Send to payer' is greyed out\nits tooltip says why, e.g. 'Integrity 2/4: apply the matching actions'\nthe chip beside it counts the checks"
+click sp "Click 'Send to payer'\n(the primary button once ready; tooltip: a clinician signs before anything is sent)"
+click os "Click 'Open in review and sign' (header, always on)"
+process rp "The case page finds this request's draft in New Case, or makes one from the request\nReview & submit when the request is ready, Authorization preparation when agents still have work"
+goto gR "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+
+group gSign "In New Case (drawn in its own diagram)"
+  process sg "A licensed clinician signs\nThe UR coordinator cannot sign; Dr. Rivera can"
+  ext py "Navigator sends the request through the payer's portal\n(demo: simulated)"
+  doc pk "What goes out\nThe signed summary and the packet's documents"
+endgroup
+
+store rq "Dashboard: the request moves to 'Received'\nHistory: 'You signed as Dr. Rivera (clinician) and sent the request', 'Navigator sent the request through the payer's portal'"
+screen cpg "Back on the case page or the Dashboard"
+process qg "In Authorizations the row leaves In progress\nIt reads With the payer, marked 'New today' when the ledger did not have it\n'N sent today' counts it; the sidebar badge drops if it was due now or within 24 hours"
+process cp "The case page of a sent request\nthe request's own status chip, e.g. 'Received'\n'Next: Wait for Beacon to decide' and a greyed-out 'Sent to payer'\nno Integrity chip"
+goto gD "Continues in: Dashboard › Request drawer › Open and read a request"
+goto gQ "Continues in: Authorizations › With the payer › A request sent today joins the list"
+
+s1 --> dc
+dc -->|No| off
+dc -->|Yes| sp --> rp
+s1 --> os --> rp
+rp --> gR
+gR --> sg --> py --> pk
+sg --> rq --> cpg
+cpg --> cp
+cpg --> gD
+rq --> qg --> gQ

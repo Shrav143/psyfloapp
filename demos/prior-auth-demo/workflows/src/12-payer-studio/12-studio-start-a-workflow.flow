@@ -1,0 +1,33 @@
+title: Payers › Workflow Builder › Start a new workflow
+route: /payers/summit?tab=builder
+intro: A payer with no workflow shows three clear ways to start. A payer that has some reaches the same three through the 'New' button. Every new workflow is a draft; nothing is used for a real case until a person publishes it.
+dir: TD
+---
+start s1 "Open Workflow Builder for a payer"
+decision d1 "Does the payer have any workflow?"
+screen em "Empty state\n'Maple Health Plan has no workflow yet'\nThree cards: 'Start with a template', 'Build from scratch', 'Generate with FLO'\nNote under each: 'Illustrative, not payer policy', 'Full control, more clicks', 'Demo draft: not a live model'"
+screen bar "The bar\n'New' menu: 'From a template', 'Blank', 'Generate with FLO'"
+click c1 "Click 'Start with a template'\nor New, then 'From a template'"
+click c2 "Click 'Build from scratch'\nor New, then 'Blank'"
+click c3 "Click 'Generate with FLO'\nor New, then 'Generate with FLO'"
+decision d2 "Unsaved changes on the open workflow?"
+overlay o0 "'Leave without saving?'"
+goto g1 "Continues in: Payers › Workflow Builder › Start from a template"
+goto g2 "Continues in: Payers › Workflow Builder › Build from scratch"
+goto g3 "Continues in: Payers › Workflow Builder › Generate with FLO"
+end e1 "A draft opens on the canvas"
+
+s1 --> d1
+d1 -->|No| em
+d1 -->|Yes| bar
+em --> c1 --> g1
+em --> c2 --> g2
+em --> c3 --> g3
+bar --> d2
+d2 -->|Yes| o0 --> c1
+d2 -->|No| c1
+bar -.-> c2
+bar -.-> c3
+g1 --> e1
+g2 --> e1
+g3 --> e1

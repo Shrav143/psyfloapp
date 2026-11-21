@@ -1,0 +1,25 @@
+/* Design tokens. The look is the Unified demo's: paper, navy, teal, marigold. The extension panel and the demo chrome use these;
+   the mock Lauris keeps its own look (src/lauris/lauris.css) because it stands for a product that is not Psyflo's. */
+:root {
+  --paper: #F8F6F2; --card: #FFFFFF; --line: #E5E0D6; --line-strong: #CFC8BA;
+  --ink: #151B24; --ink-2: #3F4752; --ink-3: #5A6370;
+  --navy: #151B24; --navy-2: #222A35; --navy-line: #323C4A;
+  --teal: #217A78; --teal-hover: #15605E; --teal-on-dark: #5FC0BE; --teal-tint: #E1F0EF;
+  --gold: #F0B44C; --gold-tint: #FCEFD0;
+  --danger: #8A2E1C; --danger-bg: #FBE7E2; --warn: #6F4A05; --warn-bg: #FCEFD0;
+  --ok: #1D4F43; --ok-bg: #E3EFEA; --neutral: #3F4752; --neutral-bg: #EFEBE4; --info: #1F4E8C; --info-bg: #DCE8F7;
+  /* the two colors that mean the same thing in the EHR and in the panel */
+  --typed: #FFF8E6; --typed-line: #E8C56A; --typed-mark: #FFE58A; --saved: #E6F4EA;
+  --sans: "DM Sans Variable", "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --page: #0E1319; --page-ink: #E7E3DB; --page-line: #2A323D; }
+}
+:root[data-theme="dark"] { --page: #0E1319; --page-ink: #E7E3DB; --page-line: #2A323D; }
+:root { --page: #E9E5DC; --page-ink: #151B24; --page-line: #D6D0C3; }
+:root[data-theme="light"] { --page: #E9E5DC; --page-ink: #151B24; --page-line: #D6D0C3; }
+html, body, #root { height: 100%; }
+body { margin: 0; background: var(--page); color: var(--page-ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+*, *::before, *::after { box-sizing: border-box; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

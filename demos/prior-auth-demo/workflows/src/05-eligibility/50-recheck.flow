@@ -1,0 +1,54 @@
+title: Authorizations › Eligibility & Benefits › Re-verify a patient
+route: /authorizations/eligibility (and /authorizations/eligibility/R-1042)
+intro: Three ways to check a patient again. A row's 'Re-check' and the result's 'Re-check' run the same quick re-check, and so does 'Refresh verification' in New Case: all three refresh the one shared verification record. Opening the Verify page from a case runs the full live check again.
+dir: TD
+also: Demo only: a re-check never changes the answer. R-1101 stays lapsed. The re-checks Verify runs on its own, when the Demo clock passes a booked time, are in 'Re-check on its own'.
+---
+start a1 "On the list, click 'Re-check' on a row"
+start a2 "On a result, click 'Re-check' on the verdict band"
+start a3 "Open the Verify page from a case and click 'Check now'"
+start a4 "In New Case, step 2, click 'Refresh verification'"
+
+decision q1 "Is a re-check already running for this patient?"
+process p1 "The click is ignored\nThe button is off with a spinner"
+process p2 "Patient marked as checking\nList: button reads 'Checking' with a spinner, the quiet second line says 'Checking now'\nResult: 'Re-check' shows a spinner"
+agent g0 "Verify and the other agents ask again"
+ext x1 "The state and the plan\n(demo: simulated, same answer as before)"
+wait w1 "About 1.1 seconds"
+decision qv "Is Verify paused in Settings?"
+store st1 "Verification record replaced\nChecked time is now, any booked re-check cleared, verdict unchanged\nA check that never ran ('Not checked') is asked again for real"
+store st3 "Record kept as it was, with the warning\n'Verification service unavailable'\nChecked time unchanged"
+toast t3 "'Could not re-check R-1042'\n'Verify is paused in Settings, so nothing was asked. The last result is still shown.'"
+
+decision q2 "Does the payer need a phone call? (Evergreen)"
+toast t1 "'R-1042 re-checked'\n'Still Authorization first.' ('Now Cleared to bill.' when a check that never ran has answered)"
+toast t2 "'R-0975 re-checked'\n'The plan's system did not answer, so Caller phoned. Still Fix before billing.'"
+
+group gAfter "What changes on screen"
+  process r1 "List: 'Checked 3 h ago' becomes 'Checked just now'"
+  process r2 "List: tile 'Re-check due' goes down by one if this row had a re-check booked"
+  process r3 "Result: 'Time checked' in the facts line, 'Sat 10:40 am, 3 d ago', becomes '10:42 am, live'\nHistory in the side panel: 'Checked coverage and benefits: ...' at the new time"
+  process r4 "Verdict, sidebar badge and the other tiles do not change"
+endgroup
+
+process v1 "Opens the verify form pre-filled from the case\nThen the full live check (about 10 seconds)"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › Re-check on its own"
+end e1 "Patient is up to date"
+
+a1 --> q1
+a2 --> q1
+a4 --> q1
+q1 -->|Yes| p1
+q1 -->|No| p2 --> w1 --> qv
+qv -->|No| g0 --> x1 --> st1 --> q2
+qv -->|Yes| st3 --> t3 --> e1
+q2 -->|No| t1
+q2 -->|Yes| t2
+t1 --> r1 & r3 & r4
+t2 --> r1 & r3 & r4
+r1 --> r2 --> e1
+r3 --> e1
+r4 --> e1
+r2 -.-> g2
+a3 --> v1 --> g1

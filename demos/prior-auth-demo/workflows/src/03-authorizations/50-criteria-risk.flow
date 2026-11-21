@@ -1,0 +1,54 @@
+title: Authorizations › Case page › Criteria & risk
+route: /authorizations/case/R-1042?tab=criteria
+intro: The third tab answers one question: does the documentation meet the payer's criteria, and how strong is it. Two figures and the three biggest risks first, then one row per criterion that opens to its evidence, the risk it carries and the action that closes it.
+dir: TD
+also: Demo only: 'Re-check criteria' is a simulated wait. The old ?tab=risk link lands here on the figures.
+---
+start s1 "Click 'Criteria & risk'\n(or open ?tab=criteria or the old ?tab=risk)"
+screen top "Two figures side by side\n'Criteria met 8 of 9' with '1 partial'\n'Approval chance 62%' with 'Moderate · 57–66%'"
+click br "Click 'See the breakdown'"
+screen rk "'Biggest risks': up to three chips\n'No named step-down · 11 pts', 'Earlier IOP summary not attached · 5 pts', 'Home not described plainly · 4 pts'"
+decision dRk "Any action still open?"
+process nr "Pill 'None open'"
+click chp "Click a risk chip"
+
+screen tb "Card 'What Summit requires' with an (i) 'Payer note' when the payer has a note on this request\npolicy v2026.3, approved as asked in the last 90 days, the required tool\none row per criterion, closed"
+decision dS "For each row: what does the chart show?"
+process met "'Met' with a green tick"
+process par "'Partial' with an amber icon and '11 pts at risk'\ncovered in the draft, not backed by the chart yet"
+process nm "'Not met' with a red icon"
+click op "Click a row"
+screen ev "The evidence, the quoted chart text with its source chip\nand what Criteria says"
+click ac "Click the action under a Partial row\n'Name the step-down provider'"
+click chs "Click the source chip"
+
+click rc "Click 'Re-check criteria'"
+agent cr "Criteria reads the payer's policy again\n(demo: simulated, nothing changes)"
+toast tr "'Criteria re-checked'\n'Summit policy v2026.3: 8 of 9 met'"
+
+click sd "Open 'Similar decisions'"
+screen sdl "The three closest decisions with outcome pills\nForecaster's calibration line\n'See all' and 'How it is calculated'"
+
+store ap "Applying the action that fixes a row\nthe row turns 'Met', its chip leaves 'Biggest risks', the figures move"
+process dl "Recommended actions opens with that card outlined"
+
+goto g1 "Continues in: Authorizations › Case page › Criteria & risk › Pop-ups"
+goto g2 "Continues in: Authorizations › Case page › Recommended actions › The tab"
+goto g3 "Continues in: Authorizations › Case page › Source chip"
+goto g4 "Continues in: Authorizations › Case page › Framework: ASAM or LOCUS"
+
+s1 --> top --> br --> g1
+top --> rk --> dRk
+dRk -->|Yes| chp --> dl
+dRk -->|No| nr
+top --> tb --> dS
+dS -->|Backed| met
+dS -->|Covered, not backed| par
+dS -->|Nothing| nm
+tb --> op --> ev
+ev --> ac --> dl --> g2
+ev --> chs --> g3
+tb --> rc --> cr --> tr
+tb --> sd --> sdl --> g1
+tb -.-> g4
+dl -.-> ap

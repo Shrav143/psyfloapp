@@ -1,0 +1,34 @@
+title: Dashboard › Title › What the title and quiet line say
+route: /dashboard
+intro: The small title counts what waits on payers and what waits on you, over every authorization the viewer can see. The table's menus and the Lifecycle chips do not change it, and neither does the demo clock. The quiet line under it never changes.
+dir: TD
+---
+start s1 "Dashboard is open"
+process p1 "Take the requests at the sites in view\nBoth sites, Site A or Site B, from the top bar and the viewer\nPayer, Program, Request type and Status menus are ignored here"
+process p2 "Waiting on payers = Submitted + Decision pending\nWaiting on you = requests with a question for a person (a payer's question, an agent's question)\nplus cases saved in New Case that wait for a person"
+decision d1 "How many wait on payers?"
+screen a0 "'Nothing is waiting on a payer.'"
+screen a1 "'1 request is waiting on a payer.'"
+screen a2 "'18 requests are waiting on payers.'"
+decision d2 "How many wait on you?"
+screen b0 "'Nothing is waiting on you.'"
+screen b1 "'1 is waiting on you.'"
+screen b2 "'3 are waiting on you.'"
+screen h "Title\nThe two sentences together, e.g. '18 requests are waiting on payers. 3 are waiting on you.'\nSmall serif type, no card around it"
+screen q "One quiet line under it\n'What to do now, and where every authorization stands.'"
+process p3 "Recomputed after a payer reply, an answer sent, a case signed and sent, a case saved in New Case, or a change of site or viewer\nSite A and Site B add up to Both sites"
+decision d3 "Does the number match the table?"
+screen n1 "Not the same count as 'Needs me today'\nThe title counts questions waiting on a person; 'Needs me today' also counts a request ready to sign, a write-back to approve, a late payer to chase and a denial deadline inside 2 days"
+goto g1 "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type"
+goto g2 "Continues in: Dashboard › Sites › What each site sees and out-of-site links"
+
+s1 --> p1 --> p2 --> d1
+d1 -->|None| a0 --> d2
+d1 -->|One| a1 --> d2
+d1 -->|Many| a2 --> d2
+d2 -->|None| b0 --> h
+d2 -->|One| b1 --> h
+d2 -->|Many| b2 --> h
+h --> q --> p3 --> d3
+d3 -->|No, by design| n1 --> g1
+p1 -.-> g2

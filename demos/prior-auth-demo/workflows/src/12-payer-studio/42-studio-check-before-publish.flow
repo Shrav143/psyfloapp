@@ -1,0 +1,32 @@
+title: Payers › Workflow Builder › Check a workflow before publishing
+route: /payers/summit?tab=builder
+intro: The checks run on every change, so a step's mark and the list on the right are always current. Problems that make a workflow unsafe to use block publishing. Things worth a look are listed but do not block.
+dir: TD
+---
+start s1 "Look at the right panel with no step selected\n('This workflow'), or click 'Publish'"
+process p1 "Checks run on the draft as it is on screen, with the payer's rules and the connections it knows"
+decision d1 "Anything that blocks?"
+screen ok1 "'Checks'\n'No problems found. It can be published.'\nor 'Nothing blocks publishing.' with a fold '3 things to check'"
+screen er "Each blocker\n'Needs fixing' and the step's name, one sentence, and 'Go to node'"
+screen eg "What blocks publishing\nNo Start, or two, or no End; a step that cannot be reached from Start;\nnothing after a step, or an exit with no line; a path that never reaches an End;\na Decision with no branches; a loop with nothing to wait for, approve or count;\nnothing leading into a trigger; a rule that was deleted or superseded;\nan integration that is not configured and has no manual fallback;\na step that reaches the payer without a person's approval"
+click c1 "Click 'Go to node'"
+process p2 "The step is selected, the canvas moves to it and its settings open with the same message at the top"
+click c2 "Click 'Publish' while something blocks"
+toast t1 "Panel shows 'Cannot publish yet: N things need fixing.'\nAnnounced the same way\nNo pop-up opens"
+click c3 "Open the fold 'N things to check'"
+screen wn "Warnings, each a 'Check' line with 'Go to node'\nA rule that is unverified, marked for review or has ended; a rule step that names no rule;\na step that is a demo simulation or not configured with a manual fallback;\na step with no instructions or an agent with no prompt; a condition with no value;\nan agent review with no approval after it; a workflow whose dates do not match today;\nanother published workflow with the same scope"
+decision d2 "Fixed in the draft?"
+process p3 "The blocker disappears from the list at once\nThe step's mark goes too"
+end e1 "Nothing blocks publishing"
+goto g1 "Continues in: Payers › Workflow Builder › Publish a workflow"
+
+s1 --> p1 --> d1
+d1 -->|No| ok1 --> c3
+d1 -->|Yes| er --> eg
+er --> c1 --> p2 --> d2
+er --> c2 --> t1 --> c1
+d2 -->|Yes| p3 --> ok1
+d2 -->|No| er
+c3 --> wn --> e1
+ok1 --> e1
+e1 --> g1

@@ -1,0 +1,45 @@
+title: Payers › History & Changes › Edit audit
+route: /payers/summit?tab=history
+intro: The edit audit is the one record of every edit to this payer, newest first, with who, when, why, the old text and the new text. It is the same list as the header's 'Edit log' drawer. Six areas are logged: Workflow (save, publish, archive, restore, accept a suggestion), Rules (save, add, verify, archive), Documents, Caller instructions and Payer details. A row of area buttons, each with its count, narrows the list. There is no undo: a saved edit is reversed by editing again.
+dir: TD
+---
+start s1 "Open History & Changes\nclick 'Edit audit' (closed)\nor click 'Edit log' in the header"
+screen sm "Closed: '4 edits, newest first. Filter by area.'\nor 'No edits yet.'"
+screen ls "Open: 'Area' buttons, then one card per edit\nArea chip, bold 'what changed'\n'{viewer} · Tue 10:42 am · Reason: ...'\nRed 'Before' and green 'After' boxes"
+screen ab "Area buttons\nAll, Workflow 2, Rules 1, Documents 0, Caller instructions 0, Payer details 1\nThe count is this payer's edits in that area"
+click ca "Click an area button, for example 'Workflow'"
+decision dn "Any edit in that area?"
+process fl "Only that area's cards show\n'2 edits'"
+screen em "'No Rules edits'\n'Pick All to see every edit.'"
+click cl "Click 'All'"
+decision d0 "Any edit at all?"
+screen e0 "'No edits yet'\nEvery edit to a workflow, rule, script or document list is logged here\nwith your name, the time and your reason."
+process who "The name is the person viewing when the edit was saved\nJordan Perez at the start; Dr. Rivera, Alex Morgan or Sam Okafor after 'Viewing as'"
+process ro "Read only: no revert, no search, no export"
+process hd "Header button 'Edit log (3)' opens the same list in a right-hand drawer"
+group gA "Where entries come from"
+  store a1 "Workflow\nCreated, saved a draft, published, archived, restored, discarded, accepted a suggestion"
+  store a2 "Rules\nAdded, changed what it says, changed where it applies, verified, archived"
+  store a3 "Documents\nA document list saved, or documents added by a payer change"
+  store a4 "Caller instructions\nThe saved script"
+  store a5 "Payer details\nEdit payer, Add a payer"
+endgroup
+goto g1 "Continues in: Payers › Edit log"
+goto g2 "Continues in: Payers › Rules & Instructions › Edit a rule"
+goto g3 "Continues in: Payers › History & Changes › Workflow versions"
+end e1 "Person can answer who changed what, when and why"
+
+s1 --> sm --> ls --> ab --> ca --> dn
+dn -->|Yes| fl --> cl
+dn -->|No| em --> cl
+cl --> d0
+d0 -->|No| e0
+d0 -->|Yes| who --> ro --> e1
+ls -.-> hd --> g1
+a1 --> ls
+a2 --> ls
+a3 --> ls
+a4 --> ls
+a5 --> ls
+a2 -.-> g2
+a1 -.-> g3

@@ -1,0 +1,38 @@
+title: Authorizations › Eligibility & Benefits › The details panel
+route: /authorizations/eligibility/R-0988
+intro: The payment checks, how a check was done and its History are secondary, so they sit in a side panel, 'Verification details', instead of the page. The same panel opens from the result and from step 2 of New Case ('View full verification details'). On the result the panel holds only those three sections, because the rows and facts are already on the page. From New Case it starts with the rows and the facts, then any warnings, and ends with a button to open the full result.
+dir: TD
+---
+start s1 "On a result, click 'View full verification details'"
+start s2 "In New Case step 2, click 'View full verification details'"
+overlay o1 "Side panel 'Verification details' slides in from the right\nSub line: initials, age, payer, level of care"
+decision q1 "Opened from the result page itself?"
+screen a1 "From New Case: label and value rows first\n'Eligibility', 'Benefits', 'Patient pays' (only with a cost share), 'What this service needs',\n'Existing authorization', plan type and routing, member, dates of service, last verified, source\nthen any warnings"
+screen b1 "'Payment checks' · '6 of 7 pass, 1 needs a look'\nSeven rows, one chip each, a line only when it adds a fact"
+screen b2 "'How this was checked' · 'Verify, Criteria, Navigator · 0:12'\nOne row per agent, with the time it took"
+click k1 "Click an agent row"
+decision q2 "Was that row already open?"
+process p1 "Row closes"
+process p2 "Its answer opens under it\nAny other open row closes"
+screen b3 "'History', newest first, one flag on the right\n'Coverage check, then monthly' (Scheduled, the 1st of next month)\n'Re-check' (Scheduled, when one is booked) or 'Re-check, waiting for Verify to be resumed'\n'Refresh could not run: Verify is paused in Settings' (Psyflo)\n'Checked coverage and benefits: Cleared to bill' or 'Re-checked automatically: ...' (Agent)"
+click f1 "Click 'Open the full result' (footer, only from New Case)"
+process p3 "Opens /authorizations/eligibility/R-0988"
+click e1 "Press Escape, click the dimmed area or click the close button"
+process p4 "The panel closes, one layer at a time\nThe page and its place on the page are as they were"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows"
+goto g2 "Continues in: Authorizations › New Case › How a case starts and resumes"
+
+s1 --> o1
+s2 --> o1
+o1 --> q1
+q1 -->|Yes| b1
+q1 -->|No| a1 --> b1
+b1 --> b2 --> k1 --> q2
+q2 -->|Yes| p1
+q2 -->|No| p2
+b2 --> b3
+b3 -.-> f1
+a1 -.-> f1
+f1 --> p3 --> g1
+b3 --> e1 --> p4
+p4 -.-> g2

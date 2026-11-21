@@ -1,0 +1,56 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Read the row of six figures under the filters" }
+  a1@{ shape: curv-trap, label: "<b>'Approval rate' 71%</b><br/>'+5 pts vs last quarter'<br/>'759 of 1,070 approved as requested'" }
+  a2@{ shape: curv-trap, label: "<b>'Denial rate' 29%</b><br/>'311 denials · 17 accepted'" }
+  a3@{ shape: curv-trap, label: "<b>'First-pass approval'</b><br/>Approved as requested with no information request" }
+  a4@{ shape: curv-trap, label: "<b>'Average decision time' 2.4 days</b><br/>'8% past the CMS time at Medicaid plans (67 of 802)'" }
+  a5@{ shape: curv-trap, label: "<b>'Preventable denials' 207</b><br/>'67% of 311 denials'" }
+  a6@{ shape: curv-trap, label: "<b>'Appeals overturned' 56%</b><br/>'54 of 96 rulings · 17 denials accepted'" }
+  p1@{ shape: rect, label: "<b>Each change compares this quarter with last quarter, last quarter with the one before, or the last 6 months with the 6 before for 'Last 12 months'</b><br/>Green words mean better, red worse, grey neither" }
+  p2@{ shape: rect, label: "<b>Sparkline: one value for each of the last 12 months</b><br/>Appeals use the 3 months up to each month, because one month holds too few rulings" }
+  subgraph gInfo ["Info button on each figure"]
+  i1@{ shape: trap-t, label: "Hover or Tab to the info icon" }
+  i2@{ shape: win-pane, label: "<b>A short definition</b><br/>CMS decision time: 72 hours expedited, 7 calendar days standard, from 2026, Medicaid managed care plans, 'Check your state.'" }
+  i3@{ shape: lean-r, label: "Escape or moving away closes it" }
+  end
+  c1@{ shape: trap-t, label: "Click a figure" }
+  p3@{ shape: rect, label: "<b>Opens the case list panel for the cases that figure counts</b><br/>Approval rate: approved as requested<br/>Denial rate: denied or approved in part<br/>First-pass: approved with no information request<br/>Decision time: all decisions, slowest first<br/>Preventable: preventable denials<br/>Appeals: appeals the payer ruled on" }
+  q1@{ shape: diam, label: "Fewer than 20 decisions behind it?" }
+  h1@{ shape: curv-trap, label: "<b>The figure shows a dash</b><br/>The line below says what it rests on" }
+  g1@{ shape: subproc, label: "Continues in: Analytics › Case list panel" }
+  e1@{ shape: stadium, label: "Figure read" }
+  s1 --> a1 & a2 & a3 & a4 & a5 & a6
+  a1 & a2 & a3 & a4 & a5 & a6 --> p1
+  a1 --> p2
+  a4 --> i1 --> i2 --> i3
+  a1 & a2 & a3 & a4 & a5 & a6 --> q1
+  q1 -->|"Yes"| h1 --> e1
+  q1 -->|"No"| c1
+  c1 --> p3 --> g1
+  class s1 k_start
+  class a1,a2,a3,a4,a5,a6,h1 k_screen
+  class p1,p2,p3 k_process
+  class i1,c1 k_click
+  class i2 k_overlay
+  class i3 k_input
+  class q1 k_decision
+  class g1 k_goto
+  class e1 k_end
+  style gInfo fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,52 @@
+title: Authorizations › Eligibility & Benefits › Result › What the page shows
+route: /authorizations/eligibility/R-1042
+intro: One result, said once. A slim title row (the patient), then one card: the verdict band with the one fact that decides it and the actions, then Eligibility, Plan type and routing, Benefits, Patient pays (only when there is a cost share) and What this service needs as label and value rows, then a warning only when no row already says it, and one quiet facts line. The payment checks, how it was checked and History are behind one button, in a side panel. Reached by a row on the list, or when a live check finishes. A check at a site the viewer cannot see shows a notice instead.
+dir: TD
+---
+start s1 "Click a row on the list, or a live check finishes"
+decision qs "Is this check at a site the viewer can see?"
+screen os "'This coverage check is not available at Site A'\nIt names no patient. Staff who may see both sites get 'Show Site B'"
+screen sc "Title row (no card, no headline)\n'R-1042' (24 px) · 'J.M., 34' · 'Residential 3.5 · Summit Medicaid HMO (Ohio Medicaid)'\nA Site A or Site B tag when the view is narrowed"
+click b1 "Click '← Eligibility & Benefits' (back link, top left)"
+goto g0 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+click b2 "Click '← Back to referral RF-2040' beside it\nWith ?case= in the address it reads '← Back to case R-1042'\nShown only when ?referral= names a referral that exists"
+goto g4 "Continues in: Authorizations › New Case › Referral › The full referral page"
+
+group gSum "The result card"
+  screen vb "Verdict band, green, amber, red or grey\n'Authorization first' (18 px) | 'Authorization' 'In progress'\nThe verdict and the one fact behind it, as a value, no sentence"
+  screen bt "Actions on a second line of the band, small buttons\n'Start authorization', 'Create authorization from verification', 'Request retro-eligibility',\n'Ask Caller to ...', 'Ask Navigator to check enrollment', 'Open Settings', 'Open case', 'Re-check'"
+  screen rows "Label and value rows\n'Eligibility' pill and dates · 'Plan type and routing'\n'Benefits' pill, program, codes and limit · 'Patient pays' only with a cost share\n'What this service needs' pill and line, then the payer's saved rules"
+  screen warn "A warning only when no row says it already\nToday that is one: a refresh that could not run while Verify is paused\n'Verification service unavailable. ... This is the last result.'"
+  screen facts "One quiet facts line\nMember (masked), dates of service, time checked, source 'Simulated check against the payer portal'"
+endgroup
+
+toast t1 "Banner 'Not re-checked: Verify is paused in Settings'\n'Due Tue 11:32 am' with 'Open Settings'\nOnly when a booked re-check passed while Verify is paused"
+
+group gRow "One row under the card"
+  screen pc "'Verification details'\n'Payment checks: 6 of 7 pass, 1 needs a look'\nButton 'View full verification details'"
+  click pk "Click 'View full verification details'"
+  overlay ov "Side panel 'Verification details' opens from the right\nPayment checks, How this was checked, History\nThe page behind stays where it was"
+endgroup
+
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › The details panel"
+goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
+goto g5 "Continues in: Authorizations › Eligibility & Benefits › Result › Result first: eligibility, benefits, what the service needs"
+goto g6 "Continues in: Authorizations › Eligibility & Benefits › Result › Plan type and routing"
+goto g7 "Continues in: Authorizations › Eligibility & Benefits › The exceptions"
+goto g8 "Continues in: Authorizations › Eligibility & Benefits › Sites"
+
+s1 --> qs
+qs -->|No| os --> g8
+qs -->|Yes| sc
+sc --> b1 --> g0
+sc --> b2 --> g4
+sc --> vb --> bt
+vb -.-> g1
+bt --> g3
+vb --> rows --> warn --> facts
+rows -.-> g5
+rows -.-> g6
+warn -.-> g7
+sc -.-> t1
+sc --> pc --> pk --> ov --> g2

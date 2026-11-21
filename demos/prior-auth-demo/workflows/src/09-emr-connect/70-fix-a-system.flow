@@ -1,0 +1,61 @@
+title: EMR Connect › Problems › Fix a system that needs attention
+route: /emr
+intro: The three-step 'Fix' pop-up for a system whose read-only sign-in has expired: say what happened, renew the sign-in, test it. Nothing is written to the system.
+dir: TD
+also: In the demo the Billing system is the only system that Needs attention. The test always passes. Navigator does the fix, so a paused Navigator waits and 'Ask before acting' asks first.
+---
+screen s1 "Connection health\nBilling system · 'Needs attention' (amber) · '2 sync failures'\n'The read-only sign-in expired 2 hours ago, so remittances are not arriving. First step: renew the sign-in with Fix.'\nThe 'Action required' line says 'Billing system needs attention.' with its own 'Fix' button"
+click c1 "Click 'Fix' on the row, or 'Fix' in the Action required line"
+goto gg "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
+overlay o1 "Fix billing system\nThree short steps. Nothing is written to the system.\nSteps: What happened, Renew access, Test"
+
+group gS1 "Step 1 of 3: What happened"
+  process a1 "The issue text in an amber box"
+  process a2 "'This is usually an expired sign-in. The first step is to renew the read-only access. The agents then pull the missed remittances.'"
+  click a3 "Click 'Next'"
+endgroup
+
+group gS2 "Step 2 of 3: Renew access"
+  input b1 "'Who approves the new sign-in' (required)\nFilled in with the system's contact, for example 'Billing lead'"
+  input b2 "Tick 'I confirm the agents may read claims and remittances. They cannot change them.'"
+  click b3 "Click 'Renew and test'"
+  decision q1 "Name filled in and box ticked?"
+  toast t1 "'Name the person who approves and confirm read-only access.'\nClears when either is changed"
+  ext x1 "The approver renews the read-only sign-in\nDemo: simulated"
+endgroup
+
+group gS3 "Step 3 of 3: Test"
+  process k1 "Signing in with the new read-only access"
+  process k2 "Reading the latest remittance"
+  process k3 "Matching it to a claim"
+  toast t2 "'The test passed. Access is read-only, and nothing is written back.'"
+  click f1 "Click 'Finish and reconnect'\nDimmed until the last check passes"
+endgroup
+
+group gSave "What finishing does"
+  store v1 "Billing system becomes Connected\nLast sync now, the issue text is cleared"
+  store v4 "Files pulled this week goes up by 12, the remittances the log line names\nSync failures go back to 0"
+  agent v2 "Navigator logs 'Renewed the read-only sign-in for billing system and pulled 12 remittances'"
+  toast v3 "'Billing system is connected'\n'Remittances are arriving again.'\nNo toast when Navigator is set to 'Act on its own'"
+endgroup
+
+click cx "Click 'Cancel' or the X, press Escape, or click the dimmed area\nThere is no 'Back' in this pop-up"
+endx e2 "Pop-up closes\nThe system still Needs attention"
+end e1 "Row shows 'Last sync just now', 'Connected', '0 sync failures' and a 'Sync now' button\nThe 'Action required' line moves on to the next item, or goes"
+goto g1 "Continues in: EMR Connect › Manage › Disconnect and reconnect"
+goto g2 "Continues in: EMR Connect › Manage › Reconnect a system"
+
+s1 --> c1 --> gg --> o1 --> a1 --> a2 --> a3
+a3 --> b1 --> b2 --> b3 --> q1
+q1 -->|No| t1
+t1 --> b1
+q1 -->|Yes| k1
+b3 -.-> x1
+k1 --> k2 --> k3 --> t2 --> f1
+f1 --> v1 & v2 & v3 & v4
+v1 --> e1
+v3 --> e1
+o1 -.-> cx
+cx --> e2
+s1 -.->|Another way out| g1
+s1 -.->|If it is disconnected later| g2

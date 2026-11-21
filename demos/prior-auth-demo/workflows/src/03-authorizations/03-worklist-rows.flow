@@ -1,0 +1,67 @@
+title: Authorizations › Worklist › What makes a row
+route: /authorizations
+intro: The worklist stores nothing. Its rows are worked out from what the demo already holds, one row per request: the open queue requests, the approved-authorization ledger, the Dashboard requests, the saved New Case drafts and the accepted denials. A queue request and its ledger record are the same request, so they share one row. The rows are then kept to the sites in view and put in order.
+dir: TD
+also: Demo only, Both sites at the start: 56 open queue requests (24 of them also have a ledger record), 32 approved authorizations with no open request, and 7 open denials that are in neither list: 95 rows. The 5 saved drafts all belong to queue requests, so they add no row. A row keeps its sources, so the quick views, the case page and the review drawer open the same records as before.
+---
+start s0 "The list is drawn, or anything it reads changes\n(a send, a payer reply, a signature, a draft saved, the demo clock)"
+
+group gS "Sources, in this order"
+  process r1 "**1 Open queue requests**\nPreparing, Ready to sign, With the payer, Denial route\nA request leaves once nothing is left for a person: sent, decided or settled"
+  process r2 "**2 Ledger records**\nApproved authorizations with their units and reviews, and requests waiting on a payer\nPlus each request signed and sent in New Case during the demo that the ledger did not have, marked 'New today'"
+  process r3 "**3 Dashboard requests in neither list**\nOpen denials, and requests decided or sent since"
+  process r4 "**4 Saved New Case drafts** that are not a request yet"
+  process r5 "**5 Accepted denials**\nDenial Intelligence closed them"
+endgroup
+
+decision d2 "Is the ledger record the same request as a queue row?\n(same ID or case ID)"
+process j2 "It joins that row: units used and the review are added, and 'New today' when it applies\nStatus, next action and button stay the request's"
+process o2 "A row of its own: Approved, With the payer, Info requested, Denial route, Accepted or Preparing\nWhen its Dashboard request was decided since, the row says so: Approved, Partial approval or Denied"
+decision d4 "Does the draft belong to a request already listed?"
+process j4 "It stays on that row\nThe row offers 'Open the draft in New Case'"
+process o4 "A row of its own in In progress\nIntake not finished, Needs your input, Agents working or Ready to sign"
+goto gP "Continues in: Authorizations › In progress › Drafts being prepared"
+process j5 "The denial's row reads 'Accepted' in Denied\nNeeds attention, 'Plan the step-down', button 'Open case'"
+goto gD "Continues in: Authorizations › Denied › Step-down plans from accepted denials"
+
+group gN "Notes added under the patient"
+  process n1 "'New today': a request signed and sent today"
+  process n2 "'Updated for a payer change · 10/20': Payers redrafted it"
+  process n3 "'Consider a step-down' on R-0873 and P-1522\nHover for 'Day 18 of 21 · aftercare visit not booked yet' or 'Day 11 · IOP starts Monday'"
+endgroup
+goto gU "Continues in: Authorizations › Worklist › Updated for a payer change"
+
+process st "Only the rows at the sites in view are kept\nA denial follows its own site; everything else follows its case"
+goto gSi "Continues in: Authorizations › Worklist › Sites: what each viewer sees"
+
+group gO "Order, before any sort"
+  process o1 "By deadline: Act now, then Within 24 hours, then the next 7 days, then later"
+  process o3 "Then the rows waiting on a person first"
+  process o5 "Then the soonest due, then the lower approval chance, then the ID"
+endgroup
+process bd "A queue request keeps its own deadline band\nAny other row: overdue or urgent is Act now, under a day is Within 24 hours, under 7 days is the week, else later"
+end e1 "One row per request, in that order"
+goto gR "Continues in: Authorizations › Worklist › Read a row"
+
+s0 --> r1 --> r2 --> d2
+d2 -->|Yes| j2
+d2 -->|No| o2
+j2 --> r3
+o2 --> r3
+r3 --> r4 --> d4
+d4 -->|Yes| j4
+d4 -->|No| o4
+o4 -.-> gP
+j4 --> r5
+o4 --> r5
+r5 --> j5
+j5 -.-> gD
+j5 --> n1
+r2 -.-> n1
+n1 --> n2 --> n3
+n2 -.-> gU
+n3 --> st
+st -.-> gSi
+st --> o1 --> o3 --> o5 --> e1
+o1 -.-> bd
+e1 --> gR

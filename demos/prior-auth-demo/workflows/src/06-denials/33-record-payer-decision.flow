@@ -1,0 +1,61 @@
+title: Denial Intelligence › Written appeal › Record the payer's decision
+route: /denials/D-3279
+intro: Once the payer answers a filed appeal, the person records what it decided. 'Overturned' and 'Partly overturned' close the denial. 'Upheld' goes on to the next appeal level, with a new deadline, or to accepting the denial.
+dir: TD
+also: Demo only: nobody plays the payer's reply, so the person records it here. In production Navigator saves the answer it finds in its daily check. The ladder is Appeal, Second-level appeal, External review.
+---
+start s1 "A filed appeal is on screen\nWritten appeal choice 'Appeal filed 10/05 · decision 11/02'"
+click c1 "Click 'Record the payer's decision'"
+overlay o1 "Modal 'Record the payer's decision'\nD-3279 · Beacon PPO"
+input i1 "Pick one (radio cards)\n'Overturned' (chosen at first), 'Partly overturned' or 'Upheld'"
+input i2 "Note (optional)"
+click c2 "Click 'Cancel', the X, press Esc, or click the dimmed area"
+endx e1 "Nothing is recorded\nThe appeal stays filed"
+decision d1 "Which decision?"
+
+group gWin "Overturned or partly overturned"
+  click c3 "Click 'Record the decision'"
+  store st1 "Decision saved on the denial: result, note, time\nHistory: 'You recorded the payer's decision: overturned' with the note, then 'Beacon overturned the denial on the appeal'\nThe scheduled daily check is dropped"
+  store st2 "Request settled: leaves 'Appeal or call' (Dashboard stage 'Decided today')\nChip 'Overturned' or 'Partly overturned'\nLedger result approved or partly approved"
+  agent a1 "Cadence updates the ledger and books the next review"
+  toast t1 "'Overturned' or 'Partly overturned'\n'The ledger is updated and the next review is booked.'"
+  screen sc1 "Written appeal choice: pill 'Overturned on appeal' or 'Partly overturned on appeal'\nBadge goes down by one\nThe dashboard lists it under 'Closed'"
+  end e2 "Denial is closed with the appeal's result"
+endgroup
+
+group gUp "Upheld"
+  screen u1 "'Next step' appears under the cards"
+  input u2 "Pick one\n'Appeal to the next level: Second-level appeal' (chosen at first)\nor 'Accept the denial'"
+  process u3 "Next level shows its new deadline and window\nSecond-level appeal: 60 days to file\nExternal review: 120 days to file"
+  process u4 "External review is the last level\nOnly 'Accept the denial' is offered"
+  click c4 "Click 'Record and start the second-level appeal'"
+  store st3 "Decision saved with the next level\nHistory: 'You recorded the payer's decision: upheld', 'Beacon upheld its decision on the appeal'"
+  store st4 "Chip 'Appeal drafting', clock 'to file' with the new deadline\nThe filed letter and the old draft are cleared\nRung on the ladder moves up by one"
+  agent a2 "Advocate starts the next-level letter"
+  overlay o2 "Appeal drawer opens at once and drafts the letter"
+  input u5 "'Reason for the record' (required)\nShows when 'Accept the denial' is picked"
+  click c5 "Click 'Record and accept the denial'"
+  store st5 "Decision saved: upheld, no next level"
+endgroup
+
+store r1 "Every decision is also logged for other screens\nDenial, request, payer, result and next level\nAnalytics reads the appeal rulings"
+click c6 "Open the Dashboard from the sidebar"
+
+goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
+goto g2 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
+goto g3 "Continues in: Denial Intelligence › Accept the denial"
+
+s1 --> c1 --> o1
+o1 --> i1 & i2
+o1 --> c2 --> e1
+i1 --> d1
+i2 --> d1
+d1 -->|Overturned or Partly overturned| c3 --> st1 --> r1
+st1 --> st2 --> a1 --> t1 --> sc1 --> e2
+sc1 --> c6 --> g1
+d1 -->|Upheld| u1 --> u2
+u2 --> u3 --> c4 --> st3 --> r1
+st3 --> st4 --> a2 --> o2 --> g2
+u2 --> u4
+u2 --> u5 --> c5 --> st5 --> r1
+st5 --> g3

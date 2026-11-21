@@ -1,0 +1,80 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On step 3, look at a document row" }
+  dRow@{ shape: diam, label: "Does the row have a file?" }
+  subgraph gReplace ["Replace"]
+  cRep@{ shape: trap-t, label: "Click 'Replace' (next to the eye and the x)" }
+  iFile@{ shape: lean-r, label: "Choose one file in the picker" }
+  pSwap@{ shape: rect, label: "The new file takes the old file's place in that slot" }
+  aRead@{ shape: hex, label: "<b>Reader reads the new file for about 1 second</b><br/>Row shows 'Reader is reading'" }
+  pClean@{ shape: rect, label: "<b>Demo: a replacement is read clean</b><br/>Row shows 'NEW FILE · N checks passed'" }
+  dAfter@{ shape: diam, label: "Had the agents already run?" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
+  end
+  subgraph gMark ["Mark not available"]
+  cMark@{ shape: trap-t, label: "<b>Click 'Mark not available'</b><br/>(on an empty row, next to 'Add file' and 'Use sample file')" }
+  oWhy@{ shape: win-pane, label: "<b>Editor opens under the row</b><br/>'Why is it not available?' with a box, 'Mark not available' and 'Cancel'" }
+  iWhy@{ shape: lean-r, label: "<b>Type a few words, up to 80 characters</b><br/>'For example: the patient has not had one done yet'" }
+  dText@{ shape: diam, label: "Is there a reason?" }
+  pOff@{ shape: rect, label: "'Mark not available' stays switched off" }
+  cDo@{ shape: trap-t, label: "Click 'Mark not available', or press Enter" }
+  cEsc@{ shape: trap-t, label: "Click 'Cancel', or press Escape in the box" }
+  pNo@{ shape: rect, label: "Editor closes; nothing changes" }
+  stMark@{ shape: cyl, label: "<b>The reason is saved with the case</b><br/>Any file in that slot is taken out" }
+  end
+  subgraph gRow ["What the row and the page say"]
+  dReq@{ shape: diam, label: "Does the payer's list require the document?" }
+  rReq@{ shape: rect, label: "<b>Row shows an amber box</b><br/>'Marked not available: REASON · Summit asks for it, so the review will warn.'" }
+  rRec@{ shape: rect, label: "<b>Row shows a ticked box</b><br/>'Marked not available: REASON · You can sign without it.'" }
+  pReady@{ shape: rect, label: "<b>Counts as ready in 'N of M ready'</b><br/>It is not listed as 'Not in yet' in the footer" }
+  cUndo@{ shape: trap-t, label: "Click 'Undo'" }
+  pUndo@{ shape: rect, label: "<b>The mark is removed</b><br/>The row is missing again" }
+  cAdd@{ shape: trap-t, label: "<b>Click 'Add file'</b><br/>The file replaces the mark" }
+  end
+  gRev@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
+  gQ@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
+  gRec@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Clinical summary and document rows" }
+  s1 --> dRow
+  dRow -->|"Yes"| cRep --> iFile --> pSwap --> aRead --> pClean --> dAfter
+  dAfter -->|"Yes"| tStale
+  dAfter -->|"No"| gRec
+  tStale --> gRec
+  dRow -->|"No"| cMark --> oWhy --> iWhy --> dText
+  dText -->|"No"| pOff --> iWhy
+  dText -->|"Yes"| cDo --> stMark --> dReq
+  oWhy --> cEsc --> pNo
+  dReq -->|"Yes"| rReq --> pReady
+  dReq -->|"No, recommended"| rRec --> pReady
+  pReady --> cUndo --> pUndo --> dRow
+  pReady --> cAdd --> pSwap
+  rReq --> gRev
+  pReady -.->|"No psychiatric evaluation, or no document for the lower-level reason"| gQ
+  class s1 k_start
+  class dRow,dAfter,dText,dReq k_decision
+  class cRep,cMark,cDo,cEsc,cUndo,cAdd k_click
+  class iFile,iWhy k_input
+  class pSwap,pClean,pOff,pNo,rReq,rRec,pReady,pUndo k_process
+  class aRead k_agent
+  class tStale k_toast
+  class oWhy k_overlay
+  class stMark k_store
+  class gRev,gQ,gRec k_goto
+  style gReplace fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gMark fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

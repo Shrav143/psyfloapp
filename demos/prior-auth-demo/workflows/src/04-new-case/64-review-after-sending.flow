@@ -1,0 +1,60 @@
+title: Authorizations › New Case › Review & submit › After sending
+route: /authorizations/case/R-1701, then /dashboard and /authorizations
+intro: What changes once the request is signed and sent: the new case opens, the Dashboard shows it as Received, Authorizations lists it under With the payer instead of In progress, and the patient's record gains the request. An existing patient is never copied: the request joins the patient, the treatment episode and the authorization it belongs to. The draft's own address turns into a 'was sent' page.
+dir: TD
+---
+start s1 "The request is signed and sent"
+screen sCase "The new case opens\nCase page for R-1701 with its tabs\nHistory has the lines written at signing"
+goto gCase "Continues in: Authorizations › Case page › Header and buttons"
+
+group gDash "Dashboard"
+  screen sDash "Dashboard\nThe request is in the table and in its drawer: '/dashboard?request=R-1701'\nChip 'Received', held by Navigator"
+  process pCount "In the lifecycle counts 'Received' goes up by one\nThe 'Preparing' count goes down by one: a saved draft was counted there until now"
+  toast tToast "Toast: 'Sent to the payer'\nBell notification: 'Sent to the payer'"
+endgroup
+goto gOpen "Continues in: Dashboard › Request drawer › Open and read a request"
+
+group gQueue "Authorizations"
+  screen sQ "Authorizations, With the payer view\nOne row for the request, marked 'New today'\nThe draft's In progress row is gone, so 'Needs attention' no longer counts it"
+  process pQ "Only a viewer who can see the case's site sees the row"
+endgroup
+goto gQueue "Continues in: Authorizations › Worklist › Read a row"
+
+group gPat "The patient's record"
+  store stLink "The request is linked to its patient, treatment episode, authorization and verification\nA new patient becomes a patient\nA review, renewal or modification joins its authorization: History gets 'Continued stay request signed and sent'\nA new stay for a known patient gets its own episode and a pending authorization"
+  process pBook "The next search finds the patient once, with the new authorization shown as Not approved yet\nA second new case for them finds this one as a possible duplicate"
+  process pVer "The check from step 2 is the same record Eligibility & Benefits shows\nIt is filed under the case id"
+endgroup
+goto gEb "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+
+group gWas "The draft's own address"
+  click cBr "Press the browser's Back button, or reopen the case's address"
+  screen sWas "R-1701 was sent\n'It was signed and sent to the payer (demo). The agents are following it from the Dashboard.'\nIf the store does not hold the request: 'R-1701 is with the payer'"
+  process pNoSign "'This case is no longer being prepared'\n'Nothing more is needed here.'\nIt cannot be signed a second time"
+  click cOpenCase "Click 'Open the case'"
+  click cOpenDash "Click 'Open it on the Dashboard'"
+  click cBackCM "Click 'Back to Authorizations'"
+endgroup
+
+group gCM "Authorizations › With the payer"
+  screen sCM "Authorizations\nThe plain address reopens the last view used"
+  click cSent "On the With the payer view, click the 'N sent today' button"
+  process pSentN "The count is one higher (4 becomes 5)\nThe button opens the Dashboard's Received requests"
+endgroup
+goto gDash2 "Continues in: Dashboard › Requests table › Order, rows and paging"
+goto gCM2 "Continues in: Authorizations › With the payer › A request sent today joins the list"
+
+s1 --> sCase --> gCase
+s1 --> sDash --> pCount
+sDash --> tToast
+sDash --> gOpen
+s1 --> sQ --> pQ --> gQueue
+s1 --> stLink --> pBook
+stLink --> pVer --> gEb
+s1 --> cBr --> sWas --> pNoSign
+pNoSign --> cOpenCase --> sCase
+pNoSign --> cOpenDash --> sDash
+pNoSign --> cBackCM --> sCM
+sQ --> cSent --> pSentN --> gDash2
+sCM --> sQ
+sQ -.-> gCM2

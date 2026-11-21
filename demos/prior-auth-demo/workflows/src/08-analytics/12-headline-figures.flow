@@ -1,0 +1,37 @@
+title: Analytics › Headline figures
+route: /analytics
+intro: Six figures sit under the filters. Each one has a label, the number, the change against the earlier period in words and an arrow, a line that says what it counts, twelve months of sparkline, and an info button. The figure is a button: it opens the cases it counts.
+dir: TD
+also: Demo only: average decision time is sample data. The change for 'Last 12 months' compares the last 6 months with the 6 before, and the figure says so.
+---
+start s1 "Read the row of six figures under the filters"
+screen a1 "'Approval rate' 71%\n'+5 pts vs last quarter'\n'759 of 1,070 approved as requested'"
+screen a2 "'Denial rate' 29%\n'311 denials · 17 accepted'"
+screen a3 "'First-pass approval'\nApproved as requested with no information request"
+screen a4 "'Average decision time' 2.4 days\n'8% past the CMS time at Medicaid plans (67 of 802)'"
+screen a5 "'Preventable denials' 207\n'67% of 311 denials'"
+screen a6 "'Appeals overturned' 56%\n'54 of 96 rulings · 17 denials accepted'"
+process p1 "Each change compares this quarter with last quarter, last quarter with the one before, or the last 6 months with the 6 before for 'Last 12 months'\nGreen words mean better, red worse, grey neither"
+process p2 "Sparkline: one value for each of the last 12 months\nAppeals use the 3 months up to each month, because one month holds too few rulings"
+
+group gInfo "Info button on each figure"
+  click i1 "Hover or Tab to the info icon"
+  overlay i2 "A short definition\nCMS decision time: 72 hours expedited, 7 calendar days standard, from 2026, Medicaid managed care plans, 'Check your state.'"
+  input i3 "Escape or moving away closes it"
+endgroup
+
+click c1 "Click a figure"
+process p3 "Opens the case list panel for the cases that figure counts\nApproval rate: approved as requested\nDenial rate: denied or approved in part\nFirst-pass: approved with no information request\nDecision time: all decisions, slowest first\nPreventable: preventable denials\nAppeals: appeals the payer ruled on"
+decision q1 "Fewer than 20 decisions behind it?"
+screen h1 "The figure shows a dash\nThe line below says what it rests on"
+goto g1 "Continues in: Analytics › Case list panel"
+end e1 "Figure read"
+
+s1 --> a1 & a2 & a3 & a4 & a5 & a6
+a1 & a2 & a3 & a4 & a5 & a6 --> p1
+a1 --> p2
+a4 --> i1 --> i2 --> i3
+a1 & a2 & a3 & a4 & a5 & a6 --> q1
+q1 -->|Yes| h1 --> e1
+q1 -->|No| c1
+c1 --> p3 --> g1

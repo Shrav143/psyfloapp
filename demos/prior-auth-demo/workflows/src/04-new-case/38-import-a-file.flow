@@ -1,0 +1,46 @@
+title: Authorizations › New Case › Import › Import a file with field mapping
+route: /authorizations/new/:draftId (Intake, and the documents row of Clinical documentation)
+intro: Import an export from any record system. A CSV or XLSX file goes through a field-mapping step: each column on the left, a Psyflo field on the right, guessed from the header and the first row, any column can be skipped. A PDF is read as a document. Cells copied from a spreadsheet can be pasted the same way. The file is read in the browser and never uploaded.
+dir: TD
+also: Demo only: 'Use a sample export' loads a built-in CSV of three invented patients. A PDF's reading is simulated and says so.
+---
+start s1 "Click 'Import a file'"
+overlay o1 "Drop zone 'Choose or drop a CSV, XLSX or PDF export'\nLink 'Use a sample export'"
+input i1 "Drop a file, or click and choose one"
+click c1 "Click 'Use a sample export'"
+input iPaste "Or paste cells copied from a spreadsheet (Ctrl+V)"
+decision dKind "What kind of file?"
+process pCsv "CSV or tab-separated text is read as a table\nQuoted cells, commas and line breaks inside cells are kept"
+process pXlsx "XLSX: the first sheet is read in the browser\nDate cells are read as dates"
+process pPdf "PDF: read as a document\nIts title comes from the file name"
+wait wPdf "'Reading patients.pdf…', about one second"
+process pImg "An image goes the screenshot way"
+goto gShot "Continues in: Authorizations › New Case › Import › Paste a screenshot"
+toast tBad "'notes.docx is not a CSV, XLSX, PDF or image.'\nor 'Could not read X. Save it as CSV and try again.'"
+
+group gMap "Field mapping"
+  screen sMap "'patients-export.csv' · 12 columns · 3 rows · 11 mapped\nColumn | First row | Psyflo field"
+  process pGuess "Each column is guessed from its header ('DOB' to Date of birth, 'Primary payer' to Payer)\nthen from the first row's value (an ICD-10 code, a payer's name)\n'MRN' has no Psyflo field: Skip"
+  input iRow "Pick 'Row 2 · R.D.' when the export has several patients"
+  input iField "Change a field, or choose 'Skip'\nA field can be used by one column only"
+  click cApply "Click 'Apply mapping'"
+  click cCancel "Click 'Cancel'"
+endgroup
+process pRead "Values are read into Psyflo's form\nPayer name to the payer, 'Intensive outpatient' to IOP, '06/14/1989' to a date\n'Last note' and 'Prior dx' become documents"
+toast tUnread "A value that cannot be read is listed as not used\ne.g. 'Payer: “Acme Health”: not a payer in Psyflo'"
+goto gReview "Continues in: Authorizations › New Case › Import › Review what was found and apply"
+
+s1 --> o1
+o1 --> i1 --> dKind
+o1 --> c1 --> pCsv
+o1 --> iPaste --> pCsv
+dKind -->|CSV| pCsv
+dKind -->|XLSX| pXlsx
+dKind -->|PDF| pPdf --> wPdf --> gReview
+dKind -->|Image| pImg --> gShot
+dKind -->|Other, or unreadable| tBad
+pCsv --> sMap
+pXlsx --> sMap
+sMap --> pGuess --> iRow --> iField --> cApply --> pRead --> gReview
+pRead -.-> tUnread
+sMap --> cCancel --> o1

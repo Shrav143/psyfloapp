@@ -1,0 +1,17 @@
+{
+  "_about": "Extra synthetic seed used by the live flows. Merged over seed.json (arrays appended, objects merged).",
+  "timers": {
+    "khale": { "client": "MR", "started": "2026-10-29T13:52",
+      "blocks": [["08:05", "08:35", "Morning check-in, classroom"], ["09:50", "11:05", "In-class support, math & reading"], ["11:40", "12:25", "Lunch support"], ["12:25", "13:05", "Recess and transition"], ["13:10", "13:40", "Movement intervention + co-regulation walk"], ["13:40", "15:10", "Afternoon classes, transitions", "unconfirmed"]] }
+  },
+  "school_numbers": {
+    "TW": { "reported": "2026-10-19", "by": "rbell", "unexcused_absences": 9, "iss_days_6mo": 1, "oss_days_6mo": 0, "classes": 7, "passing": 4,
+      "incident_dates": ["2026-10-02", "2026-10-06", "2026-10-09", "2026-10-14", "2026-10-20", "2026-10-22"] }
+  },
+  "notes": [
+    { "id": "n-jt-1029", "client": "JT", "staff": "khale", "type": "daily", "date": "2026-10-29", "units": 3, "processed_at": "2026-10-29T15:11", "review": "approved" },
+    { "id": "n-dp-1029", "client": "DP", "staff": "khale", "type": "daily", "date": "2026-10-29", "units": 3, "processed_at": "2026-10-29T15:14", "review": "approved" },
+    { "id": "n-ag-1029", "client": "AG", "staff": "khale", "type": "daily", "date": "2026-10-29", "units": 3, "processed_at": "2026-10-29T15:16", "review": "approved" },
+    { "id": "n-cb-1029", "client": "CB", "staff": "khale", "type": "daily", "date": "2026-10-29", "units": 2, "processed_at": "2026-10-29T15:19", "review": "approved" }
+  ]
+}

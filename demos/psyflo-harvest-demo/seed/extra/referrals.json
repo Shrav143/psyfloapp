@@ -1,0 +1,401 @@
+{
+ "_about": "Referrals group (screens 2, 6, 7, 9, 10, 40). History referrals (history:true) are the rest of this school year so the per-school table on Referrals counts from the list (31 this year). Plus: A.R.'s opened family link and today's screening call, this week's items on Do next, and the family-link question settings.",
+ "referrals": [
+  {
+   "id": "REF-115",
+   "client": "Z.E., 6",
+   "school": "LC-ES3",
+   "received": "2026-10-02",
+   "stage": "screening_booked",
+   "history": true,
+   "next": "Mon Nov 2, 10:00 am · J. Perez",
+   "screening": {
+    "who": "jperez",
+    "when": "2026-11-02T10:00"
+   }
+  },
+  {
+   "id": "REF-114",
+   "client": "P.H., 14",
+   "school": "CC-HS1",
+   "received": "2026-10-01",
+   "stage": "declined",
+   "history": true,
+   "next": "Family declined services",
+   "closed": "2026-10-10"
+  },
+  {
+   "id": "REF-113",
+   "client": "Q.S., 10",
+   "school": "CC-ES2",
+   "received": "2026-09-30",
+   "stage": "declined",
+   "history": true,
+   "next": "Family moved out of the area",
+   "closed": "2026-10-09"
+  },
+  {
+   "id": "REF-112",
+   "client": "H.C., 6",
+   "school": "CC-ES1",
+   "received": "2026-09-28",
+   "stage": "declined",
+   "history": true,
+   "next": "Guardian chose outpatient elsewhere",
+   "closed": "2026-10-07"
+  },
+  {
+   "id": "REF-111",
+   "client": "U.N., 12",
+   "school": "CC-MS1",
+   "received": "2026-09-24",
+   "stage": "in_intake",
+   "history": true,
+   "next": "Intake Oct 27 · CNA in Lauris"
+  },
+  {
+   "id": "REF-110",
+   "client": "R.T., 13",
+   "school": "LC-MS2",
+   "received": "2026-09-21",
+   "stage": "declined",
+   "history": true,
+   "next": "Family declined services",
+   "closed": "2026-09-30"
+  },
+  {
+   "id": "REF-109",
+   "client": "O.R., 7",
+   "school": "CC-ES1",
+   "received": "2026-09-14",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-10-12",
+   "next": "Started TDT Oct 12"
+  },
+  {
+   "id": "REF-108",
+   "client": "A.F., 12",
+   "school": "LC-MS2",
+   "received": "2026-09-08",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-10-03",
+   "next": "Started TDT Oct 3"
+  },
+  {
+   "id": "REF-107",
+   "client": "F.J., 15",
+   "school": "CC-HS1",
+   "received": "2026-09-02",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-10-02",
+   "next": "Started TDT Oct 2"
+  },
+  {
+   "id": "REF-106",
+   "client": "V.M., 16",
+   "school": "CC-HS1",
+   "received": "2026-05-18",
+   "stage": "grant_program",
+   "history": true,
+   "next": "Routed May 21 · no Medicaid"
+  },
+  {
+   "id": "REF-105",
+   "client": "I.D., 8",
+   "school": "CC-ES1",
+   "received": "2026-05-11",
+   "stage": "grant_program",
+   "history": true,
+   "next": "Routed May 14 · Medicaid lapsed"
+  },
+  {
+   "id": "REF-104",
+   "client": "C.N., 11",
+   "school": "LC-MS2",
+   "received": "2026-05-04",
+   "stage": "grant_program",
+   "history": true,
+   "next": "Routed May 7 · no Medicaid"
+  },
+  {
+   "id": "REF-103",
+   "client": "B.M., 9",
+   "school": "CC-ES1",
+   "received": "2026-04-27",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-05-20",
+   "next": "Started TDT May 20"
+  },
+  {
+   "id": "REF-102",
+   "client": "D.S., 14",
+   "school": "LC-MS2",
+   "received": "2026-04-20",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-05-12",
+   "next": "Started TDT May 12"
+  },
+  {
+   "id": "REF-101",
+   "client": "W.K., 17",
+   "school": "CC-HS1",
+   "received": "2026-04-13",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-05-08",
+   "next": "Started TDT May 8"
+  },
+  {
+   "id": "REF-100",
+   "client": "Y.L., 9",
+   "school": "CC-ES2",
+   "received": "2026-03-30",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-04-21",
+   "next": "Started TDT Apr 21"
+  },
+  {
+   "id": "REF-099",
+   "client": "L.P., 8",
+   "school": "CC-ES1",
+   "received": "2026-03-23",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-04-13",
+   "next": "Started TDT Apr 13"
+  },
+  {
+   "id": "REF-098",
+   "client": "K.L., 12",
+   "school": "LC-MS2",
+   "received": "2026-03-16",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-04-04",
+   "next": "Started TDT Apr 4"
+  },
+  {
+   "id": "REF-097",
+   "client": "G.A., 15",
+   "school": "CC-HS1",
+   "received": "2026-03-02",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-03-25",
+   "next": "Started TDT Mar 25"
+  },
+  {
+   "id": "REF-096",
+   "client": "S.D., 8",
+   "school": "LC-ES3",
+   "received": "2026-02-23",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-03-13",
+   "next": "Started TDT Mar 13"
+  },
+  {
+   "id": "REF-095",
+   "client": "N.G., 6",
+   "school": "CC-ES1",
+   "received": "2026-02-17",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-03-08",
+   "next": "Started TDT Mar 8"
+  },
+  {
+   "id": "REF-094",
+   "client": "M.B., 13",
+   "school": "LC-MS2",
+   "received": "2026-02-09",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-02-26",
+   "next": "Started TDT Feb 26"
+  },
+  {
+   "id": "REF-093",
+   "client": "T.B., 16",
+   "school": "CC-HS1",
+   "received": "2026-01-26",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-02-15",
+   "next": "Started TDT Feb 15"
+  },
+  {
+   "id": "REF-092",
+   "client": "E.W., 7",
+   "school": "CC-ES1",
+   "received": "2026-01-20",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-02-04",
+   "next": "Started TDT Feb 4"
+  },
+  {
+   "id": "REF-091",
+   "client": "J.H., 11",
+   "school": "LC-MS2",
+   "received": "2026-01-12",
+   "stage": "in_service",
+   "history": true,
+   "started": "2026-01-24",
+   "next": "Started TDT Jan 24"
+  }
+ ],
+ "screenings": [
+  {
+   "referral": "REF-121",
+   "client": "A.R., 9",
+   "who": "jperez",
+   "when": "2026-10-29T14:00",
+   "status": "booked"
+  },
+  {
+   "referral": "REF-115",
+   "client": "Z.E., 6",
+   "who": "jperez",
+   "when": "2026-11-02T10:00",
+   "status": "booked"
+  }
+ ],
+ "family_links": [
+  {
+   "referral": "REF-121",
+   "client": "A.R., 9",
+   "token": "ar-demo",
+   "sent_at": "2026-10-28T10:05",
+   "opened_at": "2026-10-28T18:12",
+   "steps": {
+    "guardian": true,
+    "best_time": true
+   },
+   "answers": {
+    "guardian_name": "Gloria Reed",
+    "relationship": "grandmother",
+    "best_time": "Afternoons"
+   }
+  }
+ ],
+ "reminders": [
+  {
+   "id": "rem-mr-weekly",
+   "for": "jperez",
+   "kind": "weekly_call",
+   "record": "MR",
+   "due": "2026-10-30",
+   "text": "Weekly guardian call · M.R. · grandmother",
+   "href": "ExtWeekly.dc.html?client=MR",
+   "btn": "Open in Lauris"
+  },
+  {
+   "id": "rem-dp-collateral",
+   "for": "jperez",
+   "kind": "collateral",
+   "record": "DP",
+   "due": "2026-10-30",
+   "text": "Monthly collateral · D.P. · school counselor",
+   "href": "ExtMonthly.dc.html?client=DP",
+   "btn": "Open in Lauris"
+  },
+  {
+   "id": "rem-critical-1103",
+   "for": "jperez",
+   "kind": "meeting",
+   "record": "compliance",
+   "due": "2026-11-03",
+   "text": "Critical meeting · D.W., A.M., J.O., L.V.",
+   "href": "Compliance.dc.html",
+   "btn": "Agenda"
+  }
+ ],
+ "settings": {
+  "family_link": {
+   "questions": [
+    {
+     "key": "guardian",
+     "label": "Guardian name and relationship",
+     "ask": true,
+     "required": true,
+     "goes": "Screening · CNA header"
+    },
+    {
+     "key": "phone",
+     "label": "Best phone number",
+     "ask": true,
+     "required": true,
+     "goes": "Screening · CNA header"
+    },
+    {
+     "key": "insurance",
+     "label": "Child's insurance and Medicaid ID",
+     "sub": "Runs the eligibility check",
+     "ask": true,
+     "required": true,
+     "goes": "Eligibility check · screening",
+     "locked": true
+    },
+    {
+     "key": "dob",
+     "label": "Child's date of birth",
+     "ask": true,
+     "required": false,
+     "goes": "Eligibility check"
+    },
+    {
+     "key": "consent",
+     "label": "Consent to be called about the child",
+     "ask": true,
+     "required": true,
+     "goes": "Psyflo only"
+    },
+    {
+     "key": "best_time",
+     "label": "Best time to call",
+     "ask": true,
+     "required": false,
+     "goes": "Psyflo only"
+    },
+    {
+     "key": "transport",
+     "label": "Can you get to an in-person intake?",
+     "sub": "Flags families who need transport",
+     "ask": true,
+     "required": false,
+     "goes": "Psyflo only · screening note"
+    },
+    {
+     "key": "language",
+     "label": "Preferred language",
+     "ask": true,
+     "required": false,
+     "goes": "Screening · CNA header"
+    },
+    {
+     "key": "address",
+     "label": "Home address",
+     "ask": false,
+     "required": false,
+     "goes": "Screening (if on)"
+    },
+    {
+     "key": "household",
+     "label": "Who else lives in the home",
+     "ask": false,
+     "required": false,
+     "goes": "CNA (if on)"
+    }
+   ],
+   "message": "Hi, this is Harvest Outreach Center. [School] asked us to reach out about support for your child. Could you answer a few quick questions so we can call you? [link] · Reply STOP to opt out.",
+   "expires_days": 7
+  }
+ }
+}

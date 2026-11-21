@@ -1,0 +1,56 @@
+title: Authorizations › Case page › Recommended actions › Apply selected
+route: /authorizations/case/R-1042?tab=actions
+intro: What 'Apply selected' does: the check for missing answers, the eight-second work strip, and everything that changes when the agents finish (chance, draft version, log, Dashboard, the row in Authorizations, notification).
+dir: TD
+also: Demo only: the eight seconds are a simulated wait. The new chance is the old chance plus the points on the cards you included (and any clinical context), worked out on the page. The run belongs to the app, so it still finishes if you leave the page.
+---
+click ap "Click 'Apply selected (6)'"
+decision d0 "Is at least one card included?"
+endx e0 "Button is off\nNothing to apply"
+decision d1 "Does an included card ask a question that has no answer?"
+toast t1 "'Add your answer first'\n'2 selected actions need your input before it can be applied.'"
+process sc "Red text on those cards\nPage scrolls to the first one"
+endx e1 "Nothing is applied\nAnswer, or uncheck the card, then try again"
+
+process st "New chance worked out\nCurrent chance plus the points on the included cards"
+store run "A run starts on this case\nThe four side buttons and every card control lock"
+process top "Page scrolls to the top so the strip and the ring are in view"
+screen strip "Work strip\n'The agents are updating the draft'"
+
+group gA "Agents in turn"
+  agent a1 "Scribe\n'Reading your answers' › 'Writing the new sentences into the draft' › 'Rewriting 2 sections' › 'Draft updated'"
+  agent a2 "Integrity\n'Reading every sentence against the chart' › 'Checking dates and identifiers' › 'Every sentence matches the chart'"
+  agent a3 "Forecaster\n'Matching 1,248 similar decisions' › 'Re-scoring the approval chance' › 'New chance ready'"
+endgroup
+wait w "About 8 seconds in all\n(demo: simulated)\nEach agent: Waiting, spinner, green tick"
+
+store dn "Run ends\nCards move to 'Applied'\nChance and 'points left' saved on the case\nNew draft version: 'Scribe', 'Added 6 recommendations'\nHistory: Scribe applied '...' for each card, flagged 'Agent'"
+process rg "Header ring counts up to the new chance\nPill, likely range and 'Days likely granted' follow"
+decision dQ "Is this a queue request with a Dashboard entry?"
+store db "Dashboard request gets the new chance\nIts own line 'Scribe added 6 items to the draft ...'\nnot repeated in the case page's History"
+process qu "Its row in Authorizations shows the new chance\nThe 'Approval chance, open requests' average moves too"
+toast nf "Notification from Forecaster: 'Approval chance updated'\n'R-1042 is now 88% after 6 actions.'\nClick it to return to this case"
+toast ts "Toast: 'Draft updated'\n'6 actions applied. Approval chance is now 88%.'"
+decision dR "Do all four checks pass now?"
+process ok "'Send to payer' turns on, chip 'Integrity 4/4'\nBadge on 'Clinical picture & draft' clears\n'Every recommendation is applied' if none are left"
+process no "'Send to payer' stays off\nIts reason names the checks still open"
+process pt "Cards you left out stay open\nHeader line then reads 'up to N% with the rest'"
+goto g1 "Continues in: Authorizations › Case page › Draft › Read and edit"
+
+ap --> d0
+d0 -->|No| e0
+d0 -->|Yes| d1
+d1 -->|Yes| t1 --> sc --> e1
+d1 -->|No| st --> run --> top --> strip
+strip --> a1 --> a2 --> a3
+a3 --> w --> dn
+dn --> rg --> dQ
+dQ -->|Yes| db --> qu
+dQ -->|No| qu
+dn --> nf
+dn --> ts
+dn --> dR
+dR -->|Yes| ok
+dR -->|No| no
+dn -.-> pt
+ok --> g1

@@ -1,0 +1,65 @@
+title: Authorizations › New Case › Referral › Check coverage
+route: /authorizations/new/:draftId?ref=RF-2053 (checklist) and /authorizations/new/referral/RF-2053 (Coverage tab)
+intro: Verify can check a referral's coverage from the checklist row or from the Coverage tab on the full page. For the full check, the Coverage tab hands off to Eligibility & Benefits.
+dir: TD
+also: Demo only: Verify's answer is fixed for each referral (covered, authorization first, lapsed, or no insurance) and takes about three seconds. Real world (PRD 02): coverage is verified before the first appointment, and intakes without a card get insurance discovery.
+---
+start s1 "Checklist, Coverage section:\n'Verify checked coverage' row"
+start s2 "Full page: open the 'Coverage' tab"
+
+decision d1 "Does the referral list an insurance?"
+process p1 "Row says 'Optional'\n'Verify needs the insurance and member ID first.'\nNo button"
+goto g1 "Continues in: Authorizations › New Case › Referral › Ask the referrer"
+process p2 "Row says 'Optional'\n'Not checked yet. Verify looks up eligibility, the plan and whether an authorization is needed first.'"
+click c1 "Click 'Run coverage check'"
+
+group gTab "Coverage tab"
+  screen sc1 "Card 'Coverage has not been checked'\n'Verify looks up eligibility, the plan, the authorization rule and the program's network status.'"
+  process p3 "No insurance on the referral:\n'Verify will report that it cannot confirm coverage'"
+  click c2 "Click 'Run coverage check'"
+  overlay o1 "Card 'Verify is checking coverage'\n'This takes a few seconds.'\nEligibility with Summit · Benefits and plan · Authorization rule and network status"
+endgroup
+
+store st0 "Verify is running for this referral\nRow shows 'Verify is checking coverage.' with a spinner"
+agent a1 "Verify checks eligibility, benefits and plan,\nauthorization rule and network status"
+decision d2 "What does Verify find?"
+store st1 "Coverage saved on the referral\nTimeline 'Verify checked coverage: …'"
+toast t1 "'Verify checked coverage'\n'Covered and ready to admit'"
+toast t2 "'Verify checked coverage'\n'Covered, but you need an authorization first'"
+toast t3 "Amber toast 'Verify checked coverage'\n'Coverage has lapsed. Fix this before billing'"
+process p4 "Checklist row turns Done\nProgress changes from 11 to 12 items"
+process p5 "Row turns 'Check this' with 'Check again'\nRed banner on the full page 'Verify found that coverage has lapsed' with 'Open coverage'"
+screen sc2 "Coverage tab result\nBanner with the headline, 'Check again'\nCard 'Payment checks' with six lines and 'Checked live at 10:42 am'"
+click c3 "Click 'Check again'"
+
+click c4 "Click 'Open full Eligibility & Benefits check'"
+process p6 "Opens Verify a patient with the referral's payer,\nmember ID, level of care and a made-up birth date filled in\nThe address keeps ?referral=RF-2053 (and ?case= once the referral is a request)"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill"
+start s3 "Coming back: 'Start authorization'\non the coverage result (authorization first)"
+process p7 "Opens a NEW case with payer, level of care, member ID, initials and age\nIt is not tied to the referral or its case"
+goto g3 "Continues in: Authorizations › New Case › How a case starts and resumes"
+start s4 "Click 'Back to referral RF-2053'\non Verify a patient or its result\n(shown when the address has ?referral=)"
+process p8 "Opens the full referral page for RF-2053\nOnce the referral is a request the link reads 'Back to case R-1042'\nThe full page finds the case that holds the referral, so 'Back to the case' still works"
+
+s1 --> d1
+d1 -->|No| p1 --> g1
+d1 -->|Yes| p2 --> c1
+c1 --> st0
+s2 --> sc1
+sc1 -.-> p3
+sc1 --> c2 --> st0
+st0 --> o1
+st0 --> a1 --> d2
+d2 -->|Covered| st1
+d2 -->|Authorization first| st1
+d2 -->|Lapsed| st1
+st1 --> t1 --> p4
+st1 --> t2 --> p4
+st1 --> t3 --> p5
+p4 --> sc2
+p5 --> sc2
+p5 --> c3 --> st0
+sc2 --> c3
+sc2 --> c4 --> p6 --> g2
+s4 --> p8 --> sc2
+s3 --> p7 --> g3

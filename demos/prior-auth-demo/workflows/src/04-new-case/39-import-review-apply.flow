@@ -1,0 +1,29 @@
+title: Authorizations › New Case › Import › Review what was found and apply
+route: /authorizations/new/:draftId (Intake, Clinical documentation; the same review on Eligibility & Benefits and EMR Connect)
+intro: Every way in ends here. Nothing is applied until Apply. A found value that differs from what the form already holds says what it replaces, so nothing is overwritten silently. Applied fields say where they came from in small text until the person changes them.
+dir: TD
+---
+start s1 "A pull, a file or a screenshot was read"
+screen sc "'9 fields found' and the source\nOne row per field: a box (ticked), the label, the value\n'Check' where the reading is unsure\nDocuments listed under 'N documents'"
+decision dCur "Does the form already hold a different value?"
+toast tRep "'replaces J.M.' beside that row"
+input iUntick "Untick a field or a document to leave it out"
+click cApply "Click 'Apply 10'"
+click cCancel "Click 'Cancel'"
+process pBack "Back to that way in, nothing applied"
+decision dKnown "Does the case follow a known patient?"
+process pHold "The patient and the plan stay as they are\nOnly the diagnosis, start date and documents are applied"
+store st1 "Intake fields filled\nDate of birth sets the age\nThe payer's first plan type when the plan is not one it offers"
+store st2 "Documents added to the case and read by Reader\nA document already in the case is never replaced"
+toast t1 "'Applied 9 fields and 2 documents'\n'From the sample screenshot'"
+screen sMark "Under each filled field, small text\n'From EMR', 'From file' or 'From screenshot'\nGone once the person changes the field"
+end e1 "The form shows the record; the person checks it and goes on"
+
+s1 --> sc --> dCur
+dCur -->|Yes| tRep --> iUntick
+dCur -->|No| iUntick
+iUntick --> cApply --> dKnown
+sc --> cCancel --> pBack
+dKnown -->|Yes| pHold --> st2
+dKnown -->|No| st1 --> st2
+st2 --> t1 --> sMark --> e1

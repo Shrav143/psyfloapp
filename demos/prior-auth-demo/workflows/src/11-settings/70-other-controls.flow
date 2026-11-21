@@ -1,0 +1,64 @@
+title: Settings › Page › Other controls and notices
+route: /settings
+intro: Everything on the Settings page that is not an agent row or the pause button: the sidebar item, the always-on notices, the Gates card, the levels card, tooltips, toasts and the things the page does not have.
+dir: TD
+also: Found by reading the page and testing it. There is no Save, Apply or Reset button anywhere on the page: every change is kept at once.
+---
+start s1 "Click 'Settings' in the sidebar"
+screen p1 "Settings\nThe sidebar item turns forest green while the page is open"
+
+group gBan "Notices"
+  toast b1 "'Privacy mode is always on'\nNames, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen.\nNo switch: it cannot be turned off"
+  toast b2 "'All agents are paused', or '{Agent} is paused' and 'N agents are paused'\nAmber, while any agent is paused\nSays what is held back, then 'Requests already with a payer stay where they are.'"
+endgroup
+
+group gLev "Levels card: 'What each level changes'"
+  process v1 "Subtitle 'Set per agent. Applied in EMR Connect'"
+  process v2 "Ask before acting, Act, then report and Act on its own\nOne plain line for each"
+endgroup
+
+group gGate "Gates card: 'Agents never pass these without a person'"
+  process g1 "Sign-off: A licensed clinician signs every request and appeal."
+  process g2 "Confirm: The case owner confirms before agents start, before a next step on a denial, and before any write-back."
+  process g3 "Answer: A person answers when an agent asks a question."
+  process g4 "Acknowledge: A person acknowledges a payer rule change before drafts are updated."
+  process g5 "Pause: An operator can pause one agent or all of them."
+endgroup
+
+click h1 "Hover a round agent icon"
+process h2 "Tooltip shows the agent and its role\nFor example 'Reader: Reads the chart, protects identifiers'"
+process h3 "A long role is cut short with an ellipsis on the row"
+
+group gToast "Toasts on this page"
+  toast t1 "'{Agent}: {level}'\nWhen a different Freedom level is picked"
+  toast t2 "'All agents paused'\nWhen 'Pause all' is confirmed"
+  toast t3 "'Agents resumed'\nWhen 'Resume all agents' is clicked"
+  toast t5 "'{Agent} paused' or '{Agent} resumed'\nWhen one switch is turned"
+  wait t4 "A toast stays about four seconds\nClick it to dismiss it sooner"
+endgroup
+
+group gNone "What the page does not have"
+  endx n1 "No Save, Apply or Reset button\nNo way to change the Gates or the privacy notice\nNo edit control for who can see which site: the roles are fixed, and 'View as' only switches the viewer"
+  endx n2 "Choices are lost on a reload\nEvery agent returns to its starting level and switch. Leaving the page keeps them"
+endgroup
+
+click d1 "Demo menu, then 'Reset demo data'\nTop bar, any page"
+process d2 "Goes to the Dashboard with the toast 'Demo data reset'\nEvery agent is back at its starting level with its switch on"
+goto x1 "Continues in: Settings › Agents › Change an agent's freedom"
+goto x2 "Continues in: Settings › Pause › Pause all agents"
+goto x3 "Continues in: Global shell › Demo menu › Reset demo data"
+
+s1 --> p1
+p1 --> b1 & b2
+b2 -.-> x2
+p1 --> v1 --> v2
+p1 --> g1 --> g2 --> g3 --> g4 --> g5
+g5 -.-> x2
+p1 --> h1 --> h2 --> h3
+p1 --> t1
+t1 --> t2 --> t3 --> t5 --> t4
+t1 -.-> x1
+p1 -.-> n1
+n1 --> n2
+n2 -.-> d1
+d1 --> d2 --> x3

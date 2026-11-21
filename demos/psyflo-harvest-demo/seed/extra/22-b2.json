@@ -1,0 +1,9 @@
+{
+  "_about": "B2 decision pages. partial_reasons: the reason a payer gave for a partial approval, and what worked last time for that reason (the ? on the Partial approval screen, 20 words or fewer). Synthetic sample data.",
+  "partial_reasons": {
+    "R-0402": {
+      "chip": "IEP covers part",
+      "worked": "Sep, same school: extra evidence cut 120 to 110. Dated counts worked; accept, then plan early discharge."
+    }
+  }
+}

@@ -1,0 +1,66 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Pick 'Concurrent review' in 'Authorization type'</b><br/>Or open ?type=concurrent" }
+  sc@{ shape: curv-trap, label: "<b>Intake · Concurrent review</b><br/>'Find the patient, then the authorization this review is for.'" }
+  gFind@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization" }
+  dHas@{ shape: diam, label: "Is a patient and an authorization chosen?" }
+  sAuth@{ shape: curv-trap, label: "<b>Authorization card and one quiet sentence about its state</b><br/>None left, Expiring soon, Not approved yet or Closed" }
+  dDup@{ shape: diam, label: "<b>Does another open request, draft or active authorization overlap these dates?</b><br/>The authorization this review follows is left out" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Possible duplicate" }
+  sDates@{ shape: curv-trap, label: "<b>Card 'Dates to review'</b><br/>'The next stretch starts the day after the approval ends, or today when it already has.' · Residential 3.5 · Summit Medicaid HMO" }
+  iFrom@{ shape: lean-r, label: "<b>'Requested start date'</b><br/>Filled from the authorization" }
+  iTo@{ shape: lean-r, label: "<b>'Requested end date' (optional)</b><br/>Left empty: the usual days for the level of care" }
+  dBad@{ shape: diam, label: "Is the end before the start?" }
+  tBad@{ shape: odd, label: "Field error: 'The end is before the start.'" }
+  st@{ shape: cyl, label: "<b>The request is recorded as 'Continued stay'</b><br/>It carries the patient, treatment episode and authorization ids" }
+  pCheck@{ shape: rect, label: "<b>Eligibility & Benefits will show the patient's last check</b><br/>and the authorization already on file" }
+  pDoc@{ shape: rect, label: "Typical documents: progress note since the last review, updated treatment plan, current ASAM reassessment, step-down or discharge plan" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Concurrent review" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
+  subgraph gFoot ["Footer bar"]
+  cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
+  cCont@{ shape: trap-t, label: "Click 'Continue to Eligibility & Benefits'" }
+  tHint@{ shape: odd, label: "'Still to add: authorization. You can go on; Review & submit lists what is missing.'" }
+  end
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New Case › Save as draft and leave" }
+  s1 --> sc --> gFind
+  sc --> dHas
+  dHas -->|"No"| gFind
+  dHas -->|"Yes"| sAuth --> dDup
+  dDup -->|"Yes"| gDup
+  dDup -->|"No"| sDates
+  gDup -.-> sDates
+  sDates --> iFrom --> iTo --> dBad
+  dBad -->|"Yes"| tBad --> iTo
+  dBad -->|"No"| st
+  st --> pCheck --> gElig
+  st --> pDoc --> gDocs
+  sDates --> tHint
+  sDates --> cSave --> gSave
+  sDates --> cCont --> gElig
+  class s1 k_start
+  class sc,sAuth,sDates k_screen
+  class gFind,gDup,gElig,gDocs,gSave k_goto
+  class dHas,dDup,dBad k_decision
+  class iFrom,iTo k_input
+  class tBad,tHint k_toast
+  class st k_store
+  class pCheck,pDoc k_process
+  class cSave,cCont k_click
+  style gFoot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

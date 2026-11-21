@@ -1,0 +1,92 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On step 4, find the Sign card" }
+  cWho@{ shape: trap-t, label: "Click the 'Signing as' dropdown" }
+  oWho@{ shape: win-pane, label: "<b>Two names</b><br/>'Jordan Perez (UR coordinator)'<br/>'Dr. Rivera (clinician)'" }
+  dWho@{ shape: diam, label: "Who is chosen?" }
+  tUR@{ shape: odd, label: "<b>A muted line under the dropdown, not a banner</b><br/>'Only a clinician signs. Switch to Dr. Rivera.'" }
+  iRiv@{ shape: lean-r, label: "Pick 'Dr. Rivera (clinician)'" }
+  dBlock@{ shape: diam, label: "<b>Is anything blocking?</b><br/>No patient, payer, service or dates; coverage inactive with no documented exception; an unanswered duplicate" }
+  tBlock@{ shape: odd, label: "'Fix first: coverage'" }
+  dWarn@{ shape: diam, label: "Does 'What is missing' list a warning to acknowledge?" }
+  iAck@{ shape: lean-r, label: "Tick 'I reviewed the warning under What is missing and want to sign anyway.'" }
+  iAtt@{ shape: lean-r, label: "Tick 'I reviewed this summary and it reflects the record. The level of care is my clinical judgment.'" }
+  dCan@{ shape: diam, label: "Agents done, clinician chosen, attestation ticked, nothing blocking, no re-check, warnings acknowledged?" }
+  eOff@{ shape: stadium, label: "'Sign and send to payer (demo)' stays switched off" }
+  sNote@{ shape: curv-trap, label: "<b>The button's own label says '(demo)'</b><br/>No sentence under it" }
+  cSign@{ shape: trap-t, label: "Click 'Sign and send to payer (demo)'" }
+  oConf@{ shape: win-pane, label: "<b>Sign and send to payer (demo)?</b><br/>'Signing as Dr. Rivera, clinician'<br/>Patient, Payer, Request, Level of care, Approval chance, Attachments<br/>'Demo: the send is simulated.'" }
+  cCancel@{ shape: trap-t, label: "Click 'Cancel', press Escape, or click outside" }
+  eCancel@{ shape: stadium, label: "Pop-up closes; nothing is sent" }
+  cConfirm@{ shape: trap-t, label: "Click 'Sign and send to payer (demo)' in the pop-up" }
+  dReady@{ shape: diam, label: "Are all ten agents done?" }
+  tCould@{ shape: odd, label: "<b>'Could not sign yet'</b><br/>'All agents must finish before the request can be signed.'" }
+  dOn@{ shape: diam, label: "Is the case already on the Dashboard as Preparing?" }
+  stNew@{ shape: cyl, label: "<b>A new request is added</b><br/>Stage 'Received', held by Navigator<br/>The case keeps its id" }
+  stMove@{ shape: cyl, label: "<b>That request moves from Preparing to Received</b><br/>The same id is kept" }
+  aNav@{ shape: hex, label: "Navigator files the request through the payer's portal (demo: simulated)" }
+  xPortal@{ shape: st-rect, label: "<b>Payer portal (demo: simulated)</b><br/>Receives the request and gives a receipt" }
+  stLink@{ shape: cyl, label: "<b>The request is linked</b><br/>Patient (an existing patient is never copied; a new patient becomes one), treatment episode, authorization and verification" }
+  stQueue@{ shape: cyl, label: "The request joins Authorizations as a With the payer row, marked 'New today'" }
+  stEv@{ shape: cyl, label: "<b>History: 'You signed as Dr. Rivera (clinician) and sent the request'</b><br/>'Navigator sent the request through the payer's portal'<br/>'Navigator saved the receipt to the case'<br/>A documented exception, a duplicate reason or a proposed change: one line each, with the reason<br/>If Verify was skipped: 'Verify could not reach Cardinal's portal before signing'" }
+  stDraft@{ shape: cyl, label: "<b>The draft is marked sent</b><br/>'N sent today' on Authorizations › With the payer goes up by one" }
+  tNotif@{ shape: odd, label: "<b>Notification: 'Sent to the payer'</b><br/>'R-1701 was sent. It now shows as Received on the Dashboard.'" }
+  tSent@{ shape: odd, label: "<b>'Sent to the payer'</b><br/>'R-1701 is on the Dashboard as Received.'" }
+  pNav@{ shape: rect, label: "The new case opens: /authorizations/case/R-1701" }
+  eStay@{ shape: stadium, label: "Stays on step 4; nothing is sent" }
+  cBack@{ shape: trap-t, label: "Click 'Send back to Scribe'" }
+  gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Header and buttons" }
+  gAfter@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › After sending" }
+  gSB@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Send back to Scribe" }
+  gMis@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › What is missing" }
+  s1 --> cWho --> oWho --> dWho
+  dWho -->|"Jordan Perez"| tUR --> eOff
+  dWho -->|"Dr. Rivera"| iRiv --> dBlock
+  dBlock -->|"Yes"| tBlock --> eOff
+  tBlock -.-> gMis
+  dBlock -->|"No"| dWarn
+  dWarn -->|"Yes"| iAck --> iAtt
+  dWarn -->|"No"| iAtt
+  iAtt --> dCan
+  dCan -->|"No"| eOff
+  dCan -->|"Yes"| sNote --> cSign --> oConf
+  oConf --> cCancel --> eCancel
+  oConf --> cConfirm --> dReady
+  dReady -->|"No"| tCould --> eStay
+  dReady -->|"Yes"| dOn
+  dOn -->|"No"| stNew
+  dOn -->|"Yes"| stMove
+  stNew --> aNav
+  stMove --> aNav
+  aNav --> xPortal --> stLink --> stQueue --> stEv --> stDraft --> tNotif --> tSent --> pNav --> gCase
+  pNav --> gAfter
+  s1 --> cBack --> gSB
+  class s1 k_start
+  class cWho,cSign,cCancel,cConfirm,cBack k_click
+  class oWho,oConf k_overlay
+  class dWho,dBlock,dWarn,dCan,dReady,dOn k_decision
+  class tUR,tBlock,tCould,tNotif,tSent k_toast
+  class iRiv,iAck,iAtt k_input
+  class eOff,eCancel,eStay k_endx
+  class sNote k_screen
+  class stNew,stMove,stLink,stQueue,stEv,stDraft k_store
+  class aNav k_agent
+  class xPortal k_ext
+  class pNav k_process
+  class gCase,gAfter,gSB,gMis k_goto

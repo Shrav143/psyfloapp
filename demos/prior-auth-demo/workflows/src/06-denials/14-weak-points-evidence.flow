@@ -1,0 +1,41 @@
+title: Denial Intelligence › A denial opened › Where the denial is weak
+route: /denials/D-3318
+intro: The findings card: each finding has a severity, a source chip that opens the chart excerpt, and a suggested fix that can be added to the evidence for the brief and the appeal.
+dir: TD
+---
+start s1 "Scroll to 'Where the denial is weak'"
+process p0 "Words of the card follow the denial type\nPartial approval, Level-of-care downgrade, Units cut, Late notice, Retro-authorization denied, Full denial\nD-3318 is written out in full"
+screen sc1 "'Where the denial is weak'\nOne row per finding: severity, title, detail, source chip, 'Fix: ...' and its button"
+screen f1 "One row per finding\nSeverity pill 'Critical' or 'Strong', title, detail"
+screen f2 "Under it: source chip (for example 'Progress note 10/14'), 'Suggested fix: Add the progress note from 10/14', button 'Add to the evidence'"
+
+click c1 "Click the source chip"
+overlay o1 "Drawer titled with the source name\n'From the chart. Reader found this and removed identifiers.'"
+doc dc1 "Paper sheet\n'Clinical record excerpt', 'Identifiers removed', title, Member and Program\nThe excerpt is highlighted"
+click c2 "Close: click X, press Esc, or click the dimmed area"
+end e1 "Back on the page, nothing changed"
+
+click c3 "Click 'Add to the evidence'"
+store st1 "Fix saved on this denial"
+process p1 "Button turns to a tick and reads 'Added to the evidence'"
+click c4 "Click 'Added to the evidence' again"
+store st2 "Fix removed from this denial"
+process p2 "Button reads 'Add to the evidence' again"
+
+process p3 "Brief page: the fix is listed under 'Have these open'\nunless it only repeats a source already listed"
+process p4 "Appeal letter drawer: the fix is listed under 'Evidence to attach' and ticked"
+goto g1 "Continues in: Denial Intelligence › Peer-to-peer › The brief"
+goto g2 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
+process p5 "Added fixes stay for the session\nThey do not change the win chance"
+click c5 "Click 'Full summary' (card header)"
+goto g3 "Continues in: Denial Intelligence › A denial opened › Full summary: where the denial is weak"
+
+s1 --> sc1
+p0 --> sc1
+sc1 --> f1 --> f2
+f2 --> c1 --> o1 --> dc1 --> c2 --> e1
+f2 --> c3 --> st1 --> p1 --> c4 --> st2 --> p2
+p1 --> p3 --> g1
+p1 --> p4 --> g2
+st1 -.-> p5
+f2 --> c5 --> g3

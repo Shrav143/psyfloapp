@@ -1,0 +1,97 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Settings' in the sidebar</b><br/>Above 'Help', below the 'Demo data' tag" }
+  p1@{ shape: curv-trap, label: "<b>Settings</b><br/>Who the agents are, how much freedom each one has, a way to pause them, and who can see which site." }
+  hb@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>Red outline button, top right<br/>'Resume all agents' when all sixteen are paused" }
+  g1@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
+  bn@{ shape: odd, label: "<b>'Privacy mode is always on'</b><br/>Names, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen." }
+  gates@{ shape: curv-trap, label: "<b>Gates</b><br/>Agents never pass these without a person" }
+  lv@{ shape: curv-trap, label: "<b>What each level changes</b><br/>One plain line for each of the three levels<br/>Subtitle: 'Set per agent. Applied in EMR Connect'" }
+  g6@{ shape: subproc, label: "Continues in: Settings › Agents › What each freedom level allows and the gates it never skips" }
+  g2@{ shape: subproc, label: "Continues in: Settings › Page › Other controls and notices" }
+  sa@{ shape: curv-trap, label: "<b>Sites and access (closed card, first in the grid)</b><br/>'Two sites, four roles'" }
+  gsa@{ shape: subproc, label: "Continues in: Settings › Sites and access › Read the roles and switch with View as" }
+  subgraph gCov ["Coverage"]
+  c0@{ shape: curv-trap, label: "<b>Coverage card</b><br/>Knows who pays and files with them" }
+  c1@{ shape: rect, label: "<b>Verify: Checks coverage and benefits</b><br/>Starts at 'Act on its own'" }
+  c2@{ shape: rect, label: "<b>Caller: Makes payer calls</b><br/>Starts at 'Ask before acting'" }
+  c3@{ shape: rect, label: "<b>Navigator: Files and tracks requests</b><br/>Starts at 'Act, then report'" }
+  end
+  subgraph gDoc ["Documentation"]
+  d0@{ shape: curv-trap, label: "<b>Documentation card</b><br/>Reads the chart, writes the case" }
+  d1@{ shape: rect, label: "<b>Reader: Reads the chart, protects identifiers</b><br/>Starts at 'Act on its own'" }
+  d2@{ shape: rect, label: "Criteria: Reviews payer policy" }
+  d3@{ shape: rect, label: "Placement: Maps the chart to ASAM levels" }
+  d4@{ shape: rect, label: "Scribe: Drafts the medical-necessity case" }
+  d5@{ shape: rect, label: "Integrity: Checks every sentence against the chart" }
+  end
+  subgraph gInt ["Intelligence"]
+  i0@{ shape: curv-trap, label: "<b>Intelligence card</b><br/>Knows how each payer behaves" }
+  i1@{ shape: rect, label: "Historian: Reviews how this payer has ruled" }
+  i2@{ shape: rect, label: "Forecaster: Estimates the approval chance" }
+  i3@{ shape: rect, label: "Sentinel: Watches for policy changes" }
+  i4@{ shape: rect, label: "Analyst: Answers questions, builds reports" }
+  end
+  subgraph gCase ["Case work"]
+  k0@{ shape: curv-trap, label: "<b>Case work card</b><br/>Moves each case to done" }
+  k1@{ shape: rect, label: "Packet: Assembles forms and attachments" }
+  k2@{ shape: rect, label: "Scrubber: Scrubs requests and claims" }
+  k3@{ shape: rect, label: "<b>Cadence: Schedules concurrent reviews</b><br/>Starts at 'Act, then report'" }
+  k4@{ shape: rect, label: "Advocate: Handles denials, P2P and appeals" }
+  end
+  row@{ shape: rect, label: "<b>Each row shows</b><br/>The agent's round icon, its name, its role on one line, a Freedom dropdown and an on/off switch<br/>A 'Paused' tag beside the name while its switch is off" }
+  st@{ shape: rect, label: "<b>Every other agent starts at 'Ask before acting'</b><br/>All sixteen switches start on" }
+  fz@{ shape: trap-t, label: "Click a Freedom dropdown" }
+  sw@{ shape: trap-t, label: "Click a switch" }
+  g3@{ shape: subproc, label: "Continues in: Settings › Agents › Change an agent's freedom" }
+  g4@{ shape: subproc, label: "Continues in: Settings › Pause › Pause one agent, resume all" }
+  g5@{ shape: subproc, label: "Continues in: Settings › Agent map › Where each of the sixteen agents works" }
+  s1 --> p1
+  p1 --> hb --> g1
+  p1 --> bn
+  p1 --> c0 & d0 & i0 & k0
+  c0 --> c1
+  d0 --> d1
+  i0 --> i1
+  k0 --> k1
+  c1 --> c2 --> c3
+  d1 --> d2 --> d3 --> d4 --> d5
+  i1 --> i2 --> i3 --> i4
+  k1 --> k2 --> k3 --> k4
+  c3 --> row
+  d5 --> row
+  i4 --> row
+  k4 --> row
+  row --> st
+  row --> fz --> g3
+  row --> sw --> g4
+  p1 --> sa --> gsa
+  p1 --> gates --> g2
+  p1 --> lv --> g6
+  c1 -.-> g5
+  class s1 k_start
+  class p1,gates,lv,sa,c0,d0,i0,k0 k_screen
+  class hb,fz,sw k_click
+  class g1,g6,g2,gsa,g3,g4,g5 k_goto
+  class bn k_toast
+  class c1,c2,c3,d1,d2,d3,d4,d5,i1,i2,i3,i4,k1,k2,k3,k4,row,st k_process
+  style gCov fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gDoc fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gInt fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gCase fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

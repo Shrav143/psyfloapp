@@ -1,0 +1,42 @@
+title: Authorizations › New Case › Referral › Ask the referrer
+route: /authorizations/new/:draftId?ref=RF-2053
+intro: Ask the referrer for what is missing. The same dialog opens from the checklist and from the full referral page. In the demo nothing leaves the app.
+dir: TD
+also: Demo only: nothing is sent. The referrer's answer is in the next diagram, 'The referrer replies'.
+---
+start s1 "Click 'Ask the referrer' on a row,\nor 'Ask the referrer for the 4 missing items'"
+start s2 "Full page: click 'Request information',\n'Request information for all open findings',\nor Resolve › 'Request information'"
+
+overlay o1 "'Request more information'\n'To Crisis line 988 follow-up, fax (614) 555-0100'\n'The message comes from the 4 open items. The referral moves to Awaiting info until they reply.'"
+process p1 "Message is written from the open items\nOne numbered line each: signed copy, current order, credentials or cosigner, form parts, ICD-10 code, level of care, risk screening, phone number, insurance card\nA failed age check is never listed"
+process p1b "No open items: 'The message comes from this referral'\nOne line: 'Anything you can add that supports the request'"
+input i1 "Pick 'Send by': Fax, E-referral, Email or Phone call\nStarts at the referral's own channel; phone and portal start at Email"
+decision d1 "Message edited by hand?"
+process p2 "Message is rewritten for the new channel\n'Please reply by email and Reader will pick it up'"
+process p3 "Message stays as typed"
+input i2 "Edit the 'Message'"
+decision d2 "Message empty?"
+process p4 "'Send request' stays disabled"
+click cCancel "Click 'Cancel' or 'Close', press Escape,\nor click outside the dialog"
+endx e1 "Nothing is sent\nThe referral is unchanged"
+click cSend "Click 'Send request'"
+
+store st1 "Referral is Awaiting info\nWhen and how it was asked, and the message, are saved"
+process p5 "Timeline gets 'You asked Crisis line 988 follow-up for more information by email'\nand a pending 'Reader will read the reply when it arrives'"
+ext x1 "Referrer receives the request\n(demo: simulated, nothing is sent)"
+toast t1 "'Request sent'\n'Crisis line 988 follow-up was asked for more information. RF-2053 is Awaiting info.'"
+screen sc1 "Checklist after sending\nAsked rows read 'Waiting on the referrer. Asked by email, just now.'\nNo 'Ask' buttons, 'Mark OK' stays, button 'Demo: the referrer replies' appears\nAsked rows no longer block 'Accept referral and continue'"
+goto g1 "Continues in: Authorizations › New Case › Referral › The referrer replies"
+
+s1 --> o1
+s2 --> o1
+o1 --> p1 --> i1
+o1 -.-> p1b -.-> i1
+i1 --> d1
+d1 -->|No| p2 --> i2
+d1 -->|Yes| p3 --> i2
+i2 --> d2
+d2 -->|Yes| p4 --> cCancel
+d2 -->|No| cSend
+o1 --> cCancel --> e1
+cSend --> st1 --> p5 --> x1 --> t1 --> sc1 --> g1

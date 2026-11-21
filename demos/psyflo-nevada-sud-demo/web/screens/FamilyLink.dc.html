@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Family link — Harvest Outreach Center</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:17px;line-height:1.45}
+a{color:#217A78}a:hover{color:#15605E}
+*{box-sizing:border-box}
+label{display:block;font-size:15px;font-weight:600;margin-bottom:6px}
+.in{width:100%;border:1.5px solid #C9CDD3;border-radius:10px;padding:12px 14px;font:inherit;font-size:17px;background:#fff;min-height:50px;color:#151B24}
+.rad{display:flex;gap:10px}
+.rad label{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:500;margin:0;border:1.5px solid #C9CDD3;border-radius:10px;min-height:50px;background:#fff;font-size:16px}
+.rad label.on{border-color:#217A78;background:#DDF1EF;color:#15605E;font-weight:600}
+.rad input{width:18px;height:18px;margin:0;accent-color:#217A78}
+.btn{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:12px;font:inherit;font-weight:600;font-size:17px;border:0;width:100%;text-decoration:none}
+.btn.p{background:#217A78;color:#fff}
+</style>
+</helmet>
+
+<div style="width:100%;height:844px;background:#F8F6F2;display:flex;flex-direction:column;overflow:hidden">
+  <div style="background:#151B24;color:#fff;padding:18px 20px 14px">
+    <div style="font-weight:700;font-size:17px">Harvest Outreach Center</div>
+    <div style="font-size:13px;color:#C9D1D6;margin-top:2px">{{t.head}}</div>
+    <div style="display:flex;gap:4px;margin-top:12px"><sc-for list="{{segs}}" as="g"><span style="flex:1;height:4px;border-radius:2px;background:{{g}}"></span></sc-for></div>
+    <div style="font-size:12px;color:#8E99A6;margin-top:6px">{{stepLine}}</div>
+  </div>
+
+  <div style="flex:1;padding:20px 20px 0;display:flex;flex-direction:column;gap:18px;overflow-y:auto">
+    <sc-if value="{{intro}}"><div style="font-size:15px;color:#525B66">{{intro}}</div></sc-if>
+
+    <sc-if value="{{st.guardian}}">
+      <sc-if value="{{ask.guardian}}">
+      <div><label for="gname">{{t.gname}}</label><input class="in" id="gname" data-k="guardian_name" type="text" autocomplete="name"></div>
+      <div><label for="rel">{{t.rel}}</label><select class="in" id="rel" data-k="relationship"><sc-for list="{{rels}}" as="o"><option value="{{o.v}}">{{o.label}}</option></sc-for></select></div>
+      </sc-if>
+      <sc-if value="{{ask.phone}}"><div><label for="phone">{{t.phone}}</label><input class="in" id="phone" data-k="phone" type="tel" autocomplete="tel" placeholder="(434) 555-0100"></div></sc-if>
+      <sc-if value="{{ask.language}}"><div><label>{{t.lang}}</label><div class="rad"><sc-for list="{{langOpts}}" as="o"><label class="{{o.cls}}"><input type="radio" name="language" value="{{o.v}}" {{o.chk}}>{{o.label}}</label></sc-for></div></div></sc-if>
+      <sc-if value="{{ask.address}}"><div><label for="addr">{{t.addr}}</label><input class="in" id="addr" data-k="address" type="text" autocomplete="street-address"></div></sc-if>
+    </sc-if>
+
+    <sc-if value="{{st.insurance}}">
+    <div>
+      <label for="plan">{{t.plan}}</label>
+      <select class="in" id="plan" data-k="plan_kind"><sc-for list="{{plans}}" as="o"><option value="{{o.v}}">{{o.label}}</option></sc-for></select>
+    </div>
+
+    <div>
+      <label for="mid">{{t.mid}}</label>
+      <input class="in" id="mid" data-k="medicaid_id" type="text" inputmode="numeric" placeholder="0000 000 000 00">
+      <div style="font-size:13px;color:#525B66;margin-top:6px">{{t.photo}} <a href="#photo">{{t.camera}}</a><sc-if value="{{photoName}}"> · {{photoName}}</sc-if></div>
+      <input type="file" id="cardphoto" accept="image/*" capture="environment" data-nobind="" style="display:none">
+    </div>
+
+    <sc-if value="{{ask.dob}}">
+    <div>
+      <label for="dob">{{t.dob}}</label>
+      <input class="in" id="dob" data-k="dob_text" type="text" inputmode="numeric" placeholder="MM / DD / YYYY">
+    </div>
+    </sc-if>
+    </sc-if>
+
+    <sc-if value="{{st.consent}}">
+      <sc-if value="{{ask.consent}}"><div><label>{{t.consentQ}}</label><div class="rad"><sc-for list="{{consentOpts}}" as="o"><label class="{{o.cls}}"><input type="radio" name="consent_record" value="{{o.v}}" {{o.chk}}>{{o.label}}</label></sc-for></div><div style="font-size:13px;color:#525B66;margin-top:6px">{{t.consentNote}}</div></div></sc-if>
+      <sc-if value="{{ask.household}}"><div><label for="hh">{{t.household}}</label><input class="in" id="hh" data-k="household" type="text"></div></sc-if>
+    </sc-if>
+
+    <sc-if value="{{st.best_time}}">
+      <div><label>{{t.bestQ}}</label><div class="rad" style="flex-direction:column"><sc-for list="{{timeOpts}}" as="o"><label class="{{o.cls}}"><input type="radio" name="best_time" value="{{o.v}}" {{o.chk}}>{{o.label}}</label></sc-for></div></div>
+    </sc-if>
+
+    <sc-if value="{{st.transport}}">
+      <div><label>{{t.transQ}}</label><div class="rad" style="flex-direction:column"><sc-for list="{{transOpts}}" as="o"><label class="{{o.cls}}"><input type="radio" name="transport" value="{{o.v}}" {{o.chk}}>{{o.label}}</label></sc-for></div></div>
+    </sc-if>
+
+    <sc-if value="{{st.done}}">
+      <div style="font-size:22px;font-weight:700;letter-spacing:-.01em">{{t.thanks}}</div>
+      <div style="font-size:16px;line-height:1.5">{{doneText}}</div>
+      <div style="font-size:15px;color:#525B66">{{t.doneNote}}</div>
+    </sc-if>
+    <sc-if value="{{err}}"><div role="alert" style="color:#8A2E1C;font-size:15px;font-weight:600">{{err}}</div></sc-if>
+  </div>
+
+  <div style="padding:14px 20px 22px;display:flex;flex-direction:column;gap:10px;background:#F8F6F2;border-top:1px solid #E6E1D9">
+    <sc-if value="{{!st.done}}"><a class="btn p" href="#next">{{nextLabel}}</a></sc-if>
+    <sc-if value="{{st.done}}"><a class="btn p" href="{{portalHref}}">{{t.portal}}</a></sc-if>
+    <div style="font-size:12px;color:#525B66;text-align:center">{{t.secure}} · <a href="#help">{{t.call}}</a><sc-if value="{{canBack}}"> · <a href="#back">{{t.back}}</a></sc-if> · <a href="#es">{{t.other}}</a></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

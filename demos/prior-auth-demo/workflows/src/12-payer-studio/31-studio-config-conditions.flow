@@ -1,0 +1,40 @@
+title: Payers › Workflow Builder › Configure a step › Conditions
+route: /payers/summit?tab=builder
+intro: If / Else, AND / OR group and Decision steps follow a condition built from the case's own facts. The engine reads the structured condition, never a model, so the same case always takes the same path.
+dir: TD
+---
+start s1 "Select an If / Else or AND / OR group step"
+screen cb "Condition builder\n'Match All / Any of these'\nOne row per condition: what to check, operator, value"
+click c1 "Click 'Add condition'"
+process p1 "A row appears: 'Coverage' 'is' 'Active'"
+click c2 "Pick what to check"
+screen f1 "The facts\nService, Request type, Payer, Plan or product, State, Coverage, Benefit for the service,\nAuthorization requirement, Provider in network, Has an existing authorization,\nUnits remaining, Days until it expires, Requested units, Requested start date,\nDays since the service started, All required documents are in,\nPayer response, Payer portal, Business days waiting, and 'Document: ...' for each document on the payer's list"
+process p2 "The operator list shrinks to what makes sense for that fact\nis, is not, contains, is greater than, is less than, is before, is after, exists, does not exist"
+decision d1 "What kind of value does the fact take?"
+screen v1 "A short list: Coverage (Active, Inactive, Unknown), Benefit, Service, Request type,\nPayer response, Portal, Authorization requirement ..."
+screen v2 "A number with its unit: Units remaining, Business days waiting"
+screen v3 "Yes or No: Has an existing authorization, All required documents are in"
+screen v4 "A date: Today, Days after today, Days before today, or A fixed date"
+screen v5 "No value: 'exists' and 'does not exist' on a document"
+click c3 "Click 'Add group'"
+process p3 "A group appears inside, one level only, with its own All or Any\nGroups inside groups are not offered"
+click c4 "Click the bin on a row or a group"
+process p4 "The row or group is removed"
+decision d2 "Are there no conditions?"
+process p5 "'No condition yet. With none, this always holds.'"
+process p6 "Edits are held in the builder until 'Save draft'"
+end e1 "The condition is set and the step's exits are Yes and No"
+goto g1 "Continues in: Payers › Workflow Builder › Decision branches"
+
+s1 --> cb
+cb --> c1 --> p1 --> c2 --> f1 --> p2 --> d1
+d1 -->|List| v1 --> p6
+d1 -->|Number| v2 --> p6
+d1 -->|Yes or No| v3 --> p6
+d1 -->|Date| v4 --> p6
+d1 -->|Document| v5 --> p6
+cb --> c3 --> p3 --> p6
+cb --> c4 --> p4 --> d2
+d2 -->|Yes| p5
+d2 -->|No| p6
+p6 --> e1 --> g1

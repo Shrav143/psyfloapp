@@ -1,0 +1,49 @@
+title: Payers › History & Changes › Workflow versions
+route: /payers/summit?tab=history
+intro: Every save of a draft, publish, archive and restore of this payer's workflows is a version row, newest first: the workflow's name, the version number, its status (Draft, Published, Archived), who did it, when (demo time) and why. A row opens that exact version in a right-hand panel (read only, with its path) and can be restored as a draft. Restoring never touches the published version: the draft is checked and published like any other, so new cases keep matching the published one until then. A case keeps the version it started with.
+dir: TD
+---
+start s1 "Open History & Changes\nclick 'Workflow versions' (closed, with a one-line summary)"
+screen sm "Closed: '4 saved versions, newest first.\nLatest: Summit Initial Authorization, Residential SUD (copy), version 1, Tue 10:42 am.'"
+screen ls "Open: one row per version, newest first\nWorkflow name, 'version 1', status pill,\n'Jordan Perez · Tue 10:42 am · Reason: Ready for Summit initial requests'\nButtons 'View' and 'Restore as draft'"
+decision dm "More than one workflow?"
+input fl "Pick 'Workflow'\nAll workflows or one"
+process fl2 "List shows that workflow's versions only"
+decision de "Any version saved yet?"
+screen em "'No saved versions yet'\nEvery save, publish, archive and restore of a workflow is listed here\nwith who, when and why."
+process sd "Seeded rows read 'Made from the Process tab'\n(the earlier process, migrated)\nor 'Sample workflow from the starter template'"
+
+group gW "Where rows come from (Workflow Builder)"
+  store w1 "Save draft: one draft row per version\n(a newer save replaces the earlier draft row)"
+  store w2 "Publish with a reason: the draft row becomes a Published row"
+  store w3 "Archive: an Archived row"
+  store w4 "Restore as draft: a new Draft row\n'Restored from version 1'"
+endgroup
+
+click vw "Click 'View'"
+overlay pn "Version panel (right-hand)\nThe read-only canvas for that version\n'Open in Workflow Builder' at the foot"
+click xc "Press Escape or click the X"
+process xc2 "Panel closes; the list is as it was"
+click rs "Click 'Restore as draft'"
+store rd "A draft of the next version is made from that version\nThe published version keeps matching new cases\nEdit audit gets a 'Workflow' line"
+toast tr "'Restored as a draft'\n'Summit process (migrated) version 1 is now draft version 2.\nThe published version has not changed.'"
+process nr "A new row at the top: 'Restored from version 1', Draft"
+goto g1 "Continues in: Payers › Workflow Builder › Read a workflow"
+goto g2 "Continues in: Payers › Workflow Builder › Save a draft and publish"
+goto g3 "Continues in: Payers › History & Changes › Edit audit"
+goto g4 "Continues in: Authorizations › New Case › Workflow › Match and pin the payer workflow"
+process pin "A case keeps the version it started with\nPublishing a newer version moves nobody"
+end e1 "Person can see who changed which version, and why, and bring one back as a draft"
+
+s1 --> sm --> ls --> dm
+dm -->|Yes| fl --> fl2 --> de
+dm -->|No| de
+de -->|No| em
+de -->|Yes| sd --> vw
+ls -.-> w1 & w2 & w3 & w4
+w2 -.-> g2
+vw --> pn --> xc --> xc2
+pn -.-> g1
+sd --> rs --> rd --> tr --> nr --> e1
+rd -.-> g3
+nr -.-> pin --> g4

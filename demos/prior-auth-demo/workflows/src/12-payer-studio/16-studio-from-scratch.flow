@@ -1,0 +1,22 @@
+title: Payers › Workflow Builder › Build from scratch
+route: /payers/summit?tab=builder
+intro: A blank workflow has a Start and an End, apart, and nothing between them. It cannot be published until the steps are added and connected, and the checks say so.
+dir: TD
+---
+start s1 "Click 'Blank' (New menu)\nor 'Build from scratch' (empty state)"
+overlay o1 "Right-hand panel 'Build from scratch'\n'You get a Start and an End. Add steps from the list on the left of the canvas and connect them.'"
+input i1 "Optionally name it, pick a service and request type"
+click c1 "Click 'Create the draft'"
+store st1 "Workflow saved as a draft with Start and End only\nVersion history first line: 'Started from a blank canvas'"
+screen s2 "Canvas with two steps and no lines\nSettings panel 'This workflow'"
+process p1 "Checks list two problems, each with 'Go to node'\n'Nothing follows Start' and 'End cannot be reached from Start'"
+click c2 "Click 'Publish' now"
+toast t1 "'Cannot publish yet: 2 things need fixing.'"
+click c3 "Add steps and connect them"
+goto g1 "Continues in: Payers › Workflow Builder › Add, move and connect steps"
+end e1 "A blank draft is open and ready to build"
+
+s1 --> o1 --> i1 --> c1 --> st1 --> s2 --> p1 --> e1
+p1 --> c2 --> t1
+t1 --> c3
+s2 --> c3 --> g1

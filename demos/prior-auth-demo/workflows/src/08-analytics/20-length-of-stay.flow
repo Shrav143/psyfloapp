@@ -1,0 +1,26 @@
+title: Analytics › Length of stay and units
+route: /analytics
+intro: Days or units asked for against days or units approved, by payer and by level of care. It sits in a folded section under 'Detailed breakdowns'. A cut is an approval for less than was asked, so denied requests are not in the averages.
+dir: TD
+---
+start s1 "Under 'Detailed breakdowns', click 'Length of stay and units'\nOr Tab to it and press Enter or Space"
+screen sc "Closed: one summary line, for example 'Cardinal approves 90% of the days or units it is asked for, the lowest of the payers in view. 58 of its approvals were cut.'\nOpen: tabs 'All', 'Residential 3.5', 'IOP', 'PHP', 'Detox'"
+click t1 "Click 'All'"
+screen a1 "One bar for each payer: the share of the requested days or units that were approved\nRed under 80%\nThe line under the name: 'N approvals · N cut'"
+click t2 "Click a level of care, for example 'Residential 3.5'"
+screen a2 "Two bars for each payer: average days requested (grey) and approved (green)\nIOP counts units, the others days"
+click c1 "Click a payer row"
+process p1 "Opens the case list panel: 'Cardinal Health Plan: days and units requested and approved, Residential 3.5'\nDecisions that approved something, as requested or in part"
+goto g1 "Continues in: Analytics › Case list panel"
+click d1 "Click 'View data table'"
+screen d2 "Payer, approvals, cut, requested and approved averages, share approved"
+decision q1 "Any approvals in view?"
+screen n1 "'No approvals in this view.'"
+end e1 "Section read"
+
+s1 --> sc --> t1 --> a1
+sc --> t2 --> a2
+a1 & a2 --> q1
+q1 -->|Yes| c1 --> p1 --> g1
+q1 -->|No| n1 --> e1
+a1 --> d1 --> d2

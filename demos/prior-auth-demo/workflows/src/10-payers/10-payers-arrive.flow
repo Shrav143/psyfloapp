@@ -1,0 +1,54 @@
+title: Payers › Arrive on the page
+route: /payers
+intro: How a person lands on Payers: the landing page (/payers) lists every payer, and a payer's address (/payers/:id) opens its workspace with four views. The older tab names still work in links. Payers are the same for every viewer and site view; only the drafts an update can redraft follow the site. Every other Payers diagram starts from one of the hand offs at the bottom.
+dir: TD
+---
+start s1 "Click 'Payers' in the sidebar\nunder Connections"
+start s2 "Open a link to one payer\nBell notification, FLO answer, Demo menu,\nEligibility 'Rules' link, an address"
+process p1 "Address is /payers\nNo payer"
+process p2 "Address is /payers/cardinal?tab=changes\nor ?tab=builder, rules, test, history,\nor the older process, documents, changes"
+decision d1 "Does the address name a payer?"
+decision d2 "Is it a known payer?"
+screen nf "'That payer is not in the demo'\nButton 'Back to all payers'"
+click cnf "Click 'Back to all payers'"
+screen land "Payers landing page\n'N payers. The agents know how each one works.'\nSearch, three filters, 'Add a payer', one row per payer"
+decision d3 "Which view does ?tab name?"
+process t1 "builder, process, missing or unknown\nOpens Workflow Builder"
+process t2 "rules\nOpens Rules & Instructions"
+process t3 "documents\nOpens Rules & Instructions with the\nClinical documentation group open and in view"
+process t4 "test\nOpens Test Workflow"
+process t5 "history, changes\nOpens History & Changes"
+screen ws "Payer workspace\nBreadcrumb 'Payers › name'\nHeader, then four tabs"
+
+group gB "What the badges count"
+  process b1 "Sidebar 'Payers' badge\nPayers with a change waiting\n3 at the start: Cardinal, Evergreen and Harborview.\nFalls when a change is applied. Same for every viewer and site"
+  process b2 "'History & Changes' tab badge\nThe waiting change plus each Historian suggestion\nFalls as each is handled"
+endgroup
+
+goto g_land "Continues in: Payers › Landing › Search, filter and open a payer"
+goto g_add "Continues in: Payers › Add a payer"
+goto g_head "Continues in: Payers › Workspace › What the header says"
+goto g_bld "Continues in: Payers › Workflow Builder › Read a workflow"
+goto g_rules "Continues in: Payers › Rules & Instructions › Read the rules"
+goto g_test "Continues in: Payers › Test Workflow › Run a test case"
+goto g_hist "Continues in: Payers › History & Changes › Read what changed"
+goto g_site "Continues in: Payers › Sites › Clinic-wide payers, drafts in view"
+
+s1 --> p1 --> d1
+s2 --> p2 --> d1
+d1 -->|No| land
+d1 -->|Yes| d2
+d2 -->|No| nf --> cnf --> land
+d2 -->|Yes| d3
+d3 --> t1 & t2 & t3 & t4 & t5
+t1 & t2 & t3 & t4 & t5 --> ws
+land --> g_land
+land -.-> g_add
+ws --> g_head
+ws -->|Workflow Builder| g_bld
+ws -->|Rules & Instructions| g_rules
+ws -->|Test Workflow| g_test
+ws -->|History & Changes| g_hist
+land -.-> b1
+ws -.-> b2
+ws -.-> g_site

@@ -1,0 +1,5 @@
+{
+ "_about": "Settings and people (E1). designations: proposals for D permissions (F1 user.designate / user.designateApprove); role_changes: logged role changes, with raises waiting for a second person (settings.role). Both start empty; every change writes an audit row.",
+ "designations": [],
+ "role_changes": []
+}

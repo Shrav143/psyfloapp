@@ -1,0 +1,40 @@
+title: Denial Intelligence › A denial opened › Framework dimensions and their pop-ups
+route: /denials/D-3297
+intro: The card is titled with the denial's level-of-care framework and lists its six dimensions as compact rows, with no sentence under each. A row opens a pop-up with what the chart shows on it, the long text and its source. 'Full summary' in the card header opens all six long paragraphs to copy.
+dir: TD
+also: The card, and so the button, is left out for Late notice and Retro-authorization denied, which have no dimensions.
+---
+start s0 "A denial is on screen"
+process pfw "Framework = frameworkFor(level of care, diagnosis group, age)\nResidential 3.5 and withdrawal management: ASAM Criteria\nIOP or PHP: any substance use (alone or co-occurring) ASAM; a mental health condition alone LOCUS, or CALOCUS-CASII under 18"
+process pdx "Diagnosis: the one recorded with the denial; for a denial made from a queue case, that case's (I-2166, generalized anxiety, IOP, 24: LOCUS)"
+decision d0 "Does this kind of denial have dimensions?"
+process p9 "The card is not on the page"
+screen cd "Card titled 'ASAM Criteria' (or 'LOCUS', 'CALOCUS-CASII')\nSix rows in two columns (one on a narrow window): dot, 'D1 Acute intoxication and withdrawal potential', a word on the right ('Some concern')"
+
+click r1 "Click a row (a button: Tab to it, Enter or Space)"
+overlay m1 "Pop-up titled 'D1 Acute intoxication and withdrawal potential'\nSub line 'ASAM Criteria · Some concern'\nThe reading, the long paragraph, then 'Source' ('Progress note 10/19 · Session 5')"
+process pl "Long text: hand-written for this denial first, then the text for the dimension and its colour"
+click mc "Click 'Copy' (the dimension's name, word and paragraph) or 'Close'"
+
+click s1 "Click 'Full summary' in the card header"
+overlay o1 "Pop-up 'ASAM Criteria, full summary'\nSix blocks: dot, number and name, a word and the long paragraph, a small 'Copy' on each"
+process p1 "Focus moves into the text, Tab stays inside the pop-up"
+click c1 "Click 'Copy all' (footer) or 'Copy' on one dimension"
+decision d1 "Did the copy work?"
+toast t1 "Button reads 'Copied' for 2 seconds"
+toast t2 "'Select the text and press Ctrl or Cmd C'"
+click c4 "Press Esc, click X, 'Close' or the dimmed area (closes only this pop-up)"
+process p3 "Focus goes back to the row or to 'Full summary'"
+end e1 "Back on the denial page, nothing changed"
+
+s0 --> pfw --> d0
+pfw -.-> pdx
+d0 -->|No| p9
+d0 -->|Yes| cd
+cd --> r1 --> m1 --> pl
+m1 --> mc --> d1
+cd --> s1 --> o1 --> p1 --> c1 --> d1
+d1 -->|Yes| t1 --> e1
+d1 -->|No| t2 --> e1
+m1 --> c4
+o1 --> c4 --> p3 --> e1

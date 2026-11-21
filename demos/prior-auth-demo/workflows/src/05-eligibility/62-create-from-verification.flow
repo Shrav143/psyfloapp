@@ -1,0 +1,34 @@
+title: Authorizations › Eligibility & Benefits › Create an authorization from a verification
+route: /authorizations/eligibility/R-1042
+intro: A coverage check often ends with "now we need an authorization". Two buttons on the result carry the stored verification to New Case, so nothing is typed twice: 'Start authorization' (the type is Initial) and 'Create authorization from verification' (the type is still to choose).
+dir: TD
+also: Demo only: nothing is sent to a payer. New Case reads the stored verification and shows it in step 2 with 'Last verified' and 'Refresh verification'.
+---
+start s1 "On a result, read the buttons on the verdict band"
+decision q1 "Is the verdict 'Authorization first'?"
+click c1 "Click 'Start authorization'"
+process p1 "Opens /authorizations/new?verification=R-1042&type=initial\nAuthorization type is already Initial"
+click c2 "Click 'Create authorization from verification'\n(on every result, whatever the verdict)"
+process p2 "Opens /authorizations/new?verification=R-1042\nThe authorization type is still to be chosen"
+process p3 "New Case reads the stored verification\nPatient (initials, age), payer, program, member (masked), dates of service\nand the check itself, with its warnings"
+decision q2 "Is the verification still fresh, 24 demo hours or less?"
+process p4 "Step 2 shows it as the verification for this case\n'Last verified Tue 10:44 am, 2 min ago. Simulated source.'"
+process p5 "Step 2 offers 'Refresh verification' before going on"
+decision q3 "Is the check at a site the viewer can see?"
+screen o1 "A notice: not available at this site\nNothing is carried over"
+screen sc "New Case\nAuthorization type, the four steps"
+goto g1 "Continues in: Authorizations › New Case › How a case starts and resumes"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › The shared verification record"
+goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
+
+s1 --> q1
+q1 -->|Yes| c1 --> p1 --> q3
+q1 -->|No| c2
+c2 --> p2 --> q3
+q3 -->|No| o1
+q3 -->|Yes| p3 --> q2
+q2 -->|Yes| p4 --> sc
+q2 -->|No| p5 --> sc
+sc --> g1
+p3 -.-> g2
+s1 -.-> g3

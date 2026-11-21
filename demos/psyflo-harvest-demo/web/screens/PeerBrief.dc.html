@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Psyflo — P2P call notes</title></head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}.nav.on .n{background:rgba(255,255,255,.22)}
+</style>
+</helmet>
+<div class="u-app">
+<aside style="flex:0 0 240px"></aside>
+<main class="u-main">
+  <header class="u-head">
+    <h1 class="u-title">{{title}}</h1>
+    <sc-if value="{{chip}}"><span class="{{chipCls}}">{{chip}}</span></sc-if>
+    <span class="u-sp"></span>
+    <span class="u-date">{{today}}</span>
+  </header>
+
+  <sc-if value="{{none}}">
+    <div class="b2-one"><a class="u-btn" href="Authorizations.dc.html">Authorizations</a></div>
+  </sc-if>
+
+  <sc-if value="{{has}}">
+    <div class="b2-grid">
+      <section class="b2-col" aria-label="Facts">
+        <div class="b2-lbl">Call</div>
+        <div class="b2-kv"><b>{{callAt}}</b><button type="button" class="u-btn txt" onClick="{{schedule}}">{{dateBtn}}</button></div>
+        <div class="b2-lbl">Units</div>
+        <div class="b2-kv"><span class="{{unitsCls}}">{{unitsChip}}</span><span class="u-sub">{{unitsSub}}</span></div>
+        <sc-if value="{{outcome}}">
+          <div class="b2-lbl">Outcome</div>
+          <div class="b2-kv"><span class="u-chip watch">{{outcome.text}}</span><span class="u-sub">{{outcome.when}}</span></div>
+        </sc-if>
+        <div class="b2-lbl">Record</div>
+        <label class="u-tog"><input type="checkbox" id="p2pconsent" {{rec.consentChecked}} onChange="{{rec.setConsent}}"> Everyone agreed to be recorded</label>
+        <div class="b2-kv"><button type="button" class="{{rec.btnCls}}" onClick="{{rec.toggle}}">{{rec.btn}}</button><sc-if value="{{rec.status}}"><span class="{{rec.statusCls}}">{{rec.status}}</span></sc-if></div>
+        <textarea id="p2ptext" class="b2-ta sm" data-doc aria-label="Notes or transcript" placeholder="Notes or transcript" onInput="{{rec.setText}}">{{rec.text}}</textarea>
+        <div class="b2-kv"><button type="button" class="u-btn" onClick="{{rec.save}}">Save notes</button><sc-if value="{{rec.saved}}"><span class="u-sub">{{rec.saved}}</span></sc-if></div>
+      </section>
+
+      <section class="b2-col" aria-label="Call notes">
+        <div class="b2-doc" data-doc>
+          <h3>Opening</h3>
+          <p>{{openWith}}</p>
+          <h3>Points</h3>
+          <ul><sc-for list="{{points}}" as="p"><li><b>{{p.title}}</b> {{p.text}}</li></sc-for></ul>
+          <h3>Ask</h3>
+          <p>{{ask}}</p>
+          <h3>Questions to expect</h3>
+          <dl class="b2-qa" style="margin:0"><sc-for list="{{questions}}" as="q"><dt>{{q.q}}</dt><dd>{{q.a}}</dd></sc-for></dl>
+          <h3>Evidence</h3>
+          <ul><sc-for list="{{evidence}}" as="e"><li><sc-if value="{{e.pdf}}"><button type="button" class="u-link" onClick="{{pdf}}">{{e.text}}</button></sc-if><sc-if value="{{!e.pdf}}">{{e.text}}</sc-if></li></sc-for></ul>
+        </div>
+      </section>
+    </div>
+
+    <div class="b2-foot">
+      <a class="u-link b2-l" href="Authorizations.dc.html">← Authorizations</a>
+      <button type="button" class="u-btn" onClick="{{print}}">Print</button>
+      <button type="button" class="u-btn pri" onClick="{{logOutcome}}">{{outcomeBtn}}</button>
+    </div>
+  </sc-if>
+</main>
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,178 @@
+{
+  "_about": "Seeded tracker details for the request screens (Authorizations, Sent, Info request, Partials, Step-down, Peer-to-peer). Synthetic. Keyed by request id; 'fill' supplies tracker fields the seed row lacks (the live row always wins). Plan behaviours are demo assumptions · confirm per contract.",
+  "request_details": {
+    "R-0399": {
+      "school": "LC-MS2",
+      "fill": {
+        "pages": 9,
+        "receipt_confirmed": "2026-10-21T09:40",
+        "receipt_by": "cdiaz",
+        "signed_pdf": "R-0399_A.L._initial_signed.pdf"
+      },
+      "next": "SilverSummit decision overdue · Level 2.1 days since Oct 19 are unbillable until it is decided."
+    },
+    "R-0391": {
+      "fill": {
+        "sent": "2026-10-23T11:20",
+        "decision_due": "2026-10-30",
+        "pages": 14,
+        "signed_pdf": "R-0391_J.O._step_down_level1_initial_signed.pdf"
+      },
+      "units_note": "stepped down from Level 2.1 Oct 23 · new Level 1 initial",
+      "next": "Expect \"why a new initial and not a continued stay?\" — step-down summary (D1–D6 ratings now vs at admission) attached."
+    },
+    "R-0408": {
+      "fill": {
+        "sent": "2026-10-21T15:10",
+        "signed_pdf": "R-0408_K.T._initial_signed.pdf"
+      },
+      "info": {
+        "asked": "Please provide additional clinical information to support medical necessity for ASAM Level 1: (1) the ASAM six-dimension summary with a risk rating for each dimension; (2) frequency and amount of substance use in the last 30 days; (3) prior treatment episodes and outcomes.",
+        "items": [
+          "ASAM six-dimension summary with risk ratings",
+          "Frequency and amount of use in the last 30 days",
+          "Prior treatment episodes and outcomes"
+        ],
+        "answers": [
+          "ASAM assessment completed October 14 by Jordan Perez, LCADC<sup>1</sup>. D1 acute intoxication / withdrawal: 0 (no withdrawal history)<sup>1</sup>. D2 biomedical: 0<sup>1</sup>. D3 emotional, behavioral or cognitive: 2 — generalized anxiety (GAD-7 15), cannabis used to manage it<sup>1,2</sup>. D4 readiness to change: 1 — self-referred, wants to cut down for work<sup>1</sup>. D5 relapse / continued use: 2 — daily use, two failed attempts to stop on his own<sup>1</sup>. D6 recovery environment: 1 — lives with a supportive partner who does not use<sup>1</sup>. Recommended level: 1, outpatient<sup>1</sup>.",
+          "K.T. reports cannabis use on 28 of the last 30 days, about 1.5 g a day, mostly evenings<sup>1</sup>. Brief Addiction Monitor (October 14): 28 days of use, cravings rated 4 of 4<sup>2</sup>. UDS at assessment positive for THC only<sup>3</sup>.",
+          "Two self-directed attempts to stop (2024, March 2026), each lasting under two weeks<sup>1</sup>. No prior formal treatment episode. Primary care visit in May 2026 for anxiety; no medication started<sup>1</sup>."
+        ],
+        "sources": [
+          "ASAM assessment Oct 14",
+          "BAM and GAD-7 Oct 14",
+          "UDS result Oct 14",
+          "Screening call Oct 9"
+        ],
+        "dates": "Nov 2 – Jan 29"
+      }
+    },
+    "R-0402": {
+      "fill": {
+        "dates": "2026-11-02 to 2026-12-24",
+        "signed_pdf": "R-0402_D.W._initial_signed.pdf"
+      },
+      "units_note": "Molina offered 5 sessions (15 units) Oct 27",
+      "sessions_offered": 5,
+      "early_discharge_text": "Molina authorizes Level 2.1 five sessions at a time. IOP runs 3 days a week, so the next request must reach Molina after session 3 to be decided before session 5; Psyflo drafts it from the session 1–3 group notes and UDS results the day session 3 is processed. Need is unchanged: positive breath screen Oct 15 and 2 cocaine-positive UDS in the last 30 days (D5)."
+    },
+    "R-0388": {
+      "fill": {
+        "dates": "2026-10-26 to 2026-11-20",
+        "signed_pdf": "R-0388_T.N._continued_stay_signed.pdf"
+      },
+      "units_note": "36 units used up Oct 23 · continued stay denied Oct 26",
+      "brief": {
+        "open_with": "\"This is Jordan Perez, LCADC, NPI on the request. I'm calling about a 47-year-old woman in Level 2.1 IOP for severe opioid use disorder whose continued stay was denied on October 26 as 'abstinent, no longer meets medical necessity'.\"",
+        "criteria": [
+          {
+            "title": "D5 · Relapse, continued use or continued problem potential.",
+            "text": "Abstinent since Sep 14 — six weeks, all inside the Level 2.1 structure (UDS negative Sep 21, 28, Oct 5, 12, 19). Before admission: 3 relapses in 12 months, each within 2 weeks of leaving structured treatment, and an ED visit for overdose on Aug 30. Abstinence achieved with the structure is the reason to continue it, not to remove it."
+          },
+          {
+            "title": "D4 and D6 · Readiness and recovery environment.",
+            "text": "D4: engaged, attends 3 of 3 days, but still ambivalent about MAT (started naltrexone Oct 15). D6: lives with a partner who uses; sober-housing placement not available until Nov 20."
+          },
+          {
+            "title": "Step-down criteria not yet met.",
+            "text": "She has not yet shown she can keep abstinence with less structure (no trial of reduced days), her housing is unchanged, and naltrexone has been in place 2 weeks. Plan: step down to Level 1 once housing is secured, about Nov 20."
+          }
+        ],
+        "level_of_care": "Without Level 2.1 she returns to a home where her partner uses, with no structured days. Her last three relapses each came within two weeks of leaving structured care; the next step for her history is the ED, not Level 1.",
+        "questions": [
+          [
+            "\"She's abstinent. Why does she still need IOP?\"",
+            "Abstinent inside the structure. ASAM continued-service criteria look at D5 risk without the structure: three relapses within two weeks of discharge in the last year, and an overdose Aug 30."
+          ],
+          [
+            "\"Why not step her down to Level 1 now?\"",
+            "Step-down criteria aren't met: no sober housing until Nov 20 (D6), naltrexone two weeks in, no trial of fewer days. We are asking for 4 more weeks, to Nov 20, then Level 1."
+          ],
+          [
+            "\"What's different from her last episodes?\"",
+            "Naltrexone started Oct 15, sober housing booked, and a relapse plan written with her in group. Those need the four weeks to hold."
+          ],
+          [
+            "\"Is she attending?\"",
+            "18 of 18 IOP days since Sep 14, every UDS negative. Group notes and UDS results attached."
+          ]
+        ]
+      }
+    },
+    "R-0384": {
+      "fill": {
+        "sent": "2026-10-14T10:05",
+        "signed_pdf": "R-0384_E.C._initial_signed.pdf"
+      },
+      "units_note": "denied Oct 22 · provider type",
+      "denial_text": "Anthem's reviewer read \"Substance Use Agency Model\" as SUD-only and denied the mental-health code. Psyflo drafted a reconsideration that cites CCC of SN's enrollment for both SUD and mental health and S. Lane's own Anthem credentialing. A person signs and sends it; CCC of SN keeps seeing Eric meanwhile, and that choice is logged with the date."
+    }
+  },
+  "payer_history": [
+    {
+      "payer": "sentara",
+      "school": "CC-HS1",
+      "when": "Sep",
+      "requested": 72,
+      "offer": 15,
+      "sent": "Asked for the full 8 weeks with the ASAM summary and two positive UDS",
+      "award": 15,
+      "lesson": "Molina still approved 5 sessions at a time. What worked: the next request in after session 3, every time, so no IOP day went unauthorized."
+    }
+  ],
+  "denial_reasons": [
+    {
+      "reason": "\"Abstinent · no longer meets medical necessity\"",
+      "count": 9,
+      "check": "Continued-stay draft argues D5 risk without the Level 2.1 structure: dated negative UDS inside IOP, relapse history after past discharges, D4/D6 status, and which step-down criteria are not yet met."
+    },
+    {
+      "reason": "\"No UDS from the assessment\" (SilverSummit)",
+      "count": 3,
+      "check": "Not on SilverSummit's PA form, and they do not pay for it. Psyflo learned it from 3 denials since Sep 22 and blocks the Level 2.1 packet until the assessment-day UDS result is attached."
+    },
+    {
+      "reason": "\"Provider type not eligible\" for a mental-health code",
+      "count": 5,
+      "check": "Reconsideration cites the agency's enrollment for both SUD and mental health and the clinician's own NPI and plan credentialing."
+    },
+    {
+      "reason": "\"Level 1 PA required\" before session 24 (HPN)",
+      "count": 4,
+      "check": "Psyflo counts Level 1 sessions per client per plan and drafts the HPN request at session 20, so no session goes unpaid while the rule is argued."
+    },
+    {
+      "reason": "\"ASAM dimension ratings missing\" (CareSource)",
+      "count": 3,
+      "check": "CareSource packet uses CareSource's own form with the six ratings on page 1."
+    },
+    {
+      "reason": "\"Request received after start of service\"",
+      "count": 6,
+      "check": "Level 2.1 requests drafted on assessment day; the packet shows the fax or portal receipt time. No backdating, so a missed day is flagged as unbillable the same day."
+    },
+    {
+      "reason": "\"Timely filing exceeded\"",
+      "count": 7,
+      "check": "Filing clock per claim (180 days · confirm per contract); proof of the first submission kept for the reconsideration when the delay was the plan's."
+    }
+  ],
+  "events": [
+    { "at": "2026-10-26T09:20", "what": "Send pressed · faxed through Sfax · 72 units · Level 2.1 IOP · Nov 2 – Dec 24", "who": "jperez", "record": "R-0402" },
+    { "at": "2026-10-26T09:21", "what": "Delivery receipt · 12 pages delivered", "who": "Sfax", "record": "R-0402" },
+    { "at": "2026-10-27T15:30", "what": "Molina called: approving 5 sessions (15 units) at a time. Call logged; no reply sent yet.", "who": "dowens", "record": "R-0402" },
+    { "at": "2026-10-19T10:30", "what": "Send pressed · faxed through Sfax · ref F-2280 · assessment-day UDS attached", "who": "jperez", "record": "R-0399" },
+    { "at": "2026-10-19T10:31", "what": "Delivery receipt · 9 pages delivered", "who": "Sfax", "record": "R-0399" },
+    { "at": "2026-10-21T09:40", "what": "Receipt confirmed by phone", "who": "cdiaz", "record": "R-0399" },
+    { "at": "2026-10-24T08:00", "what": "No reply by the due date · overdue notice drafted for a clinician to send", "who": "Psyflo", "record": "R-0399" },
+    { "at": "2026-10-23T11:20", "what": "Send pressed · faxed through Sfax · ref F-2287 · CareSource form, ASAM ratings on page 1, step-down summary attached", "who": "jperez", "record": "R-0391" },
+    { "at": "2026-10-23T11:21", "what": "Delivery receipt · 14 pages delivered", "who": "Sfax", "record": "R-0391" },
+    { "at": "2026-10-21T15:10", "what": "Initial request uploaded in Availity in the clinician's own session (48 units · Level 1)", "who": "jperez", "record": "R-0408" },
+    { "at": "2026-10-28T17:40", "what": "Availity opened; the extension read Anthem's information request (ASAM summary) and started the 24-hour clock", "who": "jperez", "record": "R-0408" },
+    { "at": "2026-10-28T17:41", "what": "Reply drafted from the request already sent + the ASAM assessment and BAM; Jordan emailed and texted", "who": "Psyflo", "record": "R-0408" },
+    { "at": "2026-10-26T10:15", "what": "Continued stay denied by Molina: \"abstinent, no longer meets medical necessity\". Peer-to-peer requested by phone; 35 min on hold.", "who": "jperez", "record": "R-0388" },
+    { "at": "2026-10-26T11:03", "what": "Molina offered Nov 4, 2:00 pm with the plan medical director. First available.", "who": "jperez", "record": "R-0388" },
+    { "at": "2026-10-14T10:05", "what": "Initial request uploaded in Availity in the clinician's own session (12 sessions · 90837)", "who": "jperez", "record": "R-0384" },
+    { "at": "2026-10-22T16:20", "what": "Denied: \"provider type not eligible for 90837\" · read when Availity was opened · reconsideration drafted", "who": "jperez", "record": "R-0384" }
+  ]
+}

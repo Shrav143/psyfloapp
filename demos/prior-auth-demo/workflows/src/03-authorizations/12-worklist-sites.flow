@@ -1,0 +1,46 @@
+title: Authorizations › Worklist › Sites: what each viewer sees
+route: /authorizations
+intro: How the list follows the viewer and the site switch in the top bar. Every row, view count, deadline count, the average chance, the sidebar badge, the payer-signal count and the bulk review buttons are worked out from the records at the sites in view, so Site A plus Site B is Both sites. A viewer who may see one site never sees, counts, searches, signs or links to the other site's records.
+dir: TD
+also: Demo only: a record's site is fixed by the demo (the case ID decides, see src/data/sites.ts; a denial added from a letter carries its own site). The viewer is chosen in the Demo menu under 'Viewing as'; a fresh load starts as Jordan Perez on Both sites.
+---
+start s1 "Open Authorizations"
+start s2 "Demo menu › 'Viewing as' › pick a viewer"
+decision dV "How many sites may the viewer see?"
+process v1 "Two: Jordan Perez (UR coordinator) or Alex Morgan (clinic owner)"
+process v2 "One: Dr. Rivera sees Site A only, Sam Okafor sees Site B only"
+screen sw "Top bar switch\n'Both sites', 'Site A', 'Site B'"
+screen lk "Top bar shows a locked 'Site A only' (or 'Site B only')"
+click c1 "Click 'Both sites', 'Site A' or 'Site B'"
+store sc "The sites in view are kept for the session\nA new viewer starts on their only site, or on Both sites"
+
+process p1 "The list keeps only the rows at the sites in view\nA denial follows its own site; any other record follows its case"
+screen h1 "Title 'Authorizations' with a small 'Site A' tag when one site is in view"
+screen ch "View chips\nSite A: All 55, Needs attention 19, In progress 14, With the payer 20, Approved 17, Denied 4, Reviews this week 26\nSite B: All 40, 11, 5, 16, 15, 4, 21"
+doc eq "Both sites = Site A + Site B for every count\n95 = 55 + 40, 30 = 19 + 11, 47 = 26 + 21\nAn average does not add: it is worked out again"
+process sb "Sidebar badge on 'Authorizations': 19 = Site A 11 + Site B 8"
+process sg "Payer signal: Site A 'Review it' (one), Site B 'Review the three'"
+process fl "Search, every filter and ?quick= reach only rows in view\nA ?quick= for the other site's request is dropped; its ?review= opens nothing"
+process bu "'Draft all due reviews' and 'Sign all clean drafts' act only on reviews at the sites in view"
+click l1 "Open a case at the other site by its address\n/authorizations/case/ID"
+goto g1 "Continues in: Authorizations › Case page › A case at another site"
+goto g2 "Continues in: Authorizations › Reviews this week › Draft all due reviews and sign all clean drafts"
+goto g3 "Continues in: Authorizations › Worklist › Cardinal payer signal"
+
+s1 --> dV
+s2 --> sc
+dV -->|Two| v1 --> sw --> c1 --> sc
+dV -->|One| v2 --> lk
+sc --> p1
+lk --> p1
+p1 --> h1
+p1 --> ch
+p1 --> sb
+p1 --> sg
+p1 --> fl
+p1 --> bu
+ch -.-> eq
+sb -.-> eq
+sg -.-> g3
+bu -.-> g2
+fl --> l1 --> g1

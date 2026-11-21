@@ -1,0 +1,76 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Recommended actions'" }
+  at@{ shape: curv-trap, label: "<b>Recommended actions</b><br/>Cards on the left, a narrow side panel on the right" }
+  subgraph gL ["Left: the cards"]
+  fb@{ shape: curv-trap, label: "<b>Chip 'Focus: Meet payer criteria' with an X 'Clear focus'</b><br/>Only after 'Refine recommendations'" }
+  oc@{ shape: curv-trap, label: "<b>Open cards, compact</b><br/>One per recommendation not yet applied or dismissed<br/>After a refinement: in the new order, plus one marked 'Added for your focus'" }
+  ap@{ shape: curv-trap, label: "<b>'Applied (6)' (only when something is applied)</b><br/>One line each with a green tick and '+11 pts · applied'<br/>Click a line to open its bullets" }
+  dm@{ shape: curv-trap, label: "<b>'Dismissed (1)' (only when something is dismissed)</b><br/>Title struck through, the reason, 'Bring back'" }
+  ban@{ shape: odd, label: "One line 'Every recommendation is applied'" }
+  end
+  subgraph gR ["Right: the side panel"]
+  cnt@{ shape: rect, label: "'6 of 6 selected' ('None open' when nothing is left)" }
+  b1@{ shape: trap-t, label: "Click 'Apply selected (6)'" }
+  b3@{ shape: trap-t, label: "Click 'Refine recommendations'" }
+  b4@{ shape: trap-t, label: "Click 'Add clinical context'" }
+  b5@{ shape: trap-t, label: "Click 'Dismiss recommendations'" }
+  cx@{ shape: curv-trap, label: "<b>'Context you added'</b><br/>Each note with '+1 pt'<br/>Only once a note is added" }
+  end
+  off@{ shape: rect, label: "<b>Why a button is off</b><br/>Apply and Dismiss: no card is included<br/>All four: while the agents are updating the draft" }
+  tk@{ shape: trap-t, label: "Click a card's checkbox or title to leave it out or put it back" }
+  up@{ shape: rect, label: "<b>'N of 6 selected' and 'Apply selected (N)' follow</b><br/>Nothing is logged" }
+  dAll@{ shape: diam, label: "Is anything open?" }
+  dApp@{ shape: diam, label: "Is anything applied?" }
+  hs@{ shape: rect, label: "<b>Every dismissal, note, focus and added context lands in History at once</b><br/>flagged 'Logged decision'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › One card" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Apply selected" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Refine and add clinical context" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Add clinical context" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Dismiss and bring back" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › Case page › History" }
+  s1 --> at
+  at --> dAll
+  at --> fb
+  dAll -->|"Yes"| oc --> g1
+  dAll -->|"No"| dApp
+  dApp -->|"Yes"| ban
+  dApp -->|"No"| cnt
+  at --> ap
+  at --> dm
+  at --> cnt
+  oc --> tk --> up --> cnt
+  cnt --> b1 --> g2
+  cnt --> b3 --> g4
+  cnt --> b4 --> g6
+  cnt --> b5 --> g5
+  cnt --> off
+  at --> cx
+  b5 -.-> hs
+  b4 -.-> hs
+  hs --> g7
+  class s1 k_start
+  class at,fb,oc,ap,dm,cx k_screen
+  class ban k_toast
+  class cnt,off,up,hs k_process
+  class b1,b3,b4,b5,tk k_click
+  class dAll,dApp k_decision
+  class g1,g2,g4,g6,g5,g7 k_goto
+  style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

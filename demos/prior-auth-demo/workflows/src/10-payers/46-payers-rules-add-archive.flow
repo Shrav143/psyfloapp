@@ -1,0 +1,44 @@
+title: Payers › Rules & Instructions › Add or archive a rule
+route: /payers/summit?tab=rules
+intro: Every group has 'Add a rule'. A rule a person adds is not verified: it starts Unverified, with a source that says who entered it, and only 'Mark as verified' changes that. Archiving marks a rule Superseded: it stops applying, stays in the list struck through, and a workflow that points at it shows a warning until another rule is chosen. A rule read through from the payer's saved rules cannot be archived (edit it instead).
+dir: TD
+---
+start s1 "Open a group, click 'Add a rule'\nat the foot of the group"
+overlay dr "Add a rule (right-hand panel)\n'It starts Unverified.'\nThe group's structured values are all offered"
+input i1 "Type the title (required) and what it says"
+input i2 "Fill the structured values and the instructions"
+input i3 "Open 'Applies to and dates' if needed\nServices, request types, dates, product"
+click ca "Click 'Add rule'"
+decision d1 "Is the title empty?"
+toast e1 "'Add a title.'"
+overlay rm "Add this rule?\n'It is added Unverified. Workflows send it to manual review\nuntil a person marks it verified with a source.'"
+input ir "Type 'Reason for the edit' (required)"
+click cs "Click 'Save and log the edit'"
+store st "Rule saved in the library\nUnverified, 'Entered by Jordan Perez' as source, version 1, you as owner"
+store lg "Edit audit gets a 'Rules' line with the reason"
+screen out "New row in the group, Unverified\nThe group count and summary go up"
+
+start s2 "Open a rule row, click 'Archive'"
+decision dp "Is it a rule read through from the payer's saved rules?"
+process nb "No Archive button on that row\nEdit it to change what it says"
+overlay am "Archive the rule?\n'It is marked Superseded and stops applying.\nWorkflows that point at it will show a warning until you pick another rule.\nIt stays in the edit audit.'"
+input ar "Type 'Reason for the edit' (required)"
+click ac "Click 'Archive and log the edit'"
+store as "Rule is Superseded, effective until today\nShown struck through at the foot of the group\nNot counted in the group's summary"
+process wr "A workflow step that names it\nshows a warning in its checks\nand cannot be published until another rule is chosen"
+store lg2 "Edit audit gets a 'Rules' line"
+click cx "Click 'Cancel', the X or press Escape"
+endx x1 "Pop-up closes\nNothing changed"
+goto g1 "Continues in: Payers › Rules & Instructions › Mark a rule as verified"
+goto g2 "Continues in: Payers › Workflow Builder › Check a workflow before publishing"
+
+s1 --> dr --> i1 --> i2 --> i3 --> ca --> d1
+d1 -->|Yes| e1 --> i1
+d1 -->|No| rm --> ir --> cs --> st --> lg --> out --> g1
+dr --> cx --> x1
+rm --> cx
+s2 --> dp
+dp -->|Yes| nb
+dp -->|No| am --> ar --> ac --> as --> lg2
+as --> wr --> g2
+am --> cx

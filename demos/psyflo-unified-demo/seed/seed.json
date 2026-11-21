@@ -1,0 +1,141 @@
+{
+  "_about": "Synthetic seed data for the Psyflo x Harvest full-vision demo. Nothing is real. 'today' is Thu 2026-10-29. Every screen reads from this file; the four live flows write to the same store. The clients are adolescents (14 to 17) in Harvest's substance use treatment (ASAM Level 2.1 intensive outpatient, one at Level 1 outpatient); ratings are in seed/extra/asam.json.",
+  "today": "2026-10-29",
+  "org": {
+    "name": "Harvest Outreach Center",
+    "localities": ["Lynchburg City", "Campbell County"],
+    "sfax_account": "harvest-demo",
+    "group_npi": "on file",
+    "tax_id": "on file"
+  },
+  "schools": [
+    {"id": "LC-MS2", "name": "Lynchburg City · Main IOP", "locality": "Lynchburg City", "level": "iop"},
+    {"id": "LC-ES3", "name": "Lynchburg City · East IOP", "locality": "Lynchburg City", "level": "iop"},
+    {"id": "CC-ES1", "name": "Campbell County · IOP", "locality": "Campbell County", "level": "iop"},
+    {"id": "CC-ES2", "name": "Campbell County · West IOP", "locality": "Campbell County", "level": "iop"},
+    {"id": "CC-MS1", "name": "Campbell County · North IOP", "locality": "Campbell County", "level": "iop"},
+    {"id": "CC-HS1", "name": "Campbell County · South IOP", "locality": "Campbell County", "level": "iop"}
+  ],
+  "roles": ["direct_support", "supervisor", "clinician", "admin"],
+  "staff": [
+    {"id": "jperez", "name": "Jordan Perez", "initials": "JP", "credential": "LPC", "title": "Asst. Clinical Support Supervisor", "role": "clinician", "sites": "all", "signs_requests": true, "designations": ["approve.sra"]},
+    {"id": "dowens", "name": "Dana Owens", "initials": "DO", "credential": "", "title": "Program office", "role": "admin", "sites": "all"},
+    {"id": "cdiaz", "name": "Carla Diaz", "initials": "CD", "credential": "QMHP-C", "title": "Site supervisor", "role": "supervisor", "sites": ["CC-ES1", "CC-ES2"], "designations": ["send.packet", "payer.decision", "eligibility.run"]},
+    {"id": "khale", "name": "Kayla Hale", "initials": "KH", "credential": "QMHP-C", "title": "Direct support", "role": "direct_support", "sites": ["CC-ES1"], "review_mode": "spot_check"},
+    {"id": "rowens", "name": "R. Owens", "initials": "RO", "credential": "QMHP-T", "title": "Direct support · new hire", "role": "direct_support", "sites": ["CC-ES1"], "review_mode": "every_note", "reviewer": "cdiaz"},
+    {"id": "slane", "name": "S. Lane", "initials": "SL", "credential": "QMHP-C", "title": "Direct support", "role": "direct_support", "sites": ["CC-HS1"], "review_mode": "every_note", "reviewer": "cdiaz"},
+    {"id": "jreyes", "name": "J. Reyes", "initials": "JR", "credential": "QMHP-C", "title": "Direct support", "role": "direct_support", "sites": ["CC-ES1"], "review_mode": "spot_check"}
+  ],
+  "school_users": [
+    {"id": "rbell", "name": "R. Bell", "role": "school counselor", "school": "LC-MS2", "token": "sch-rbell-demo"},
+    {"id": "okafor", "name": "Mr. Okafor", "role": "assistant principal", "school": "LC-MS2", "token": "sch-okafor-demo"}
+  ],
+  "payers": [
+    {"id": "sentara", "name": "Sentara Health Plans", "channel": "fax", "decides_in_days": 7, "partial_rate": 0.74, "requests_this_year": 31, "tends_to_ask": "Calls to offer fewer units; counters with less after more information; asks whether Level 2.1 is still needed after a reassessment", "what_works": "Answer with dated counts (screens, groups attended), not context; quote the dimension ratings and the reassessment date; accept and plan the early discharge"},
+    {"id": "anthem", "name": "Anthem HealthKeepers Plus", "channel": "availity", "decides_in_days": 5, "partial_rate": 0.58, "requests_this_year": 44, "tends_to_ask": "Information requests inside 24 h; 'already connected to other services'", "what_works": "Name the prior service and its outcome under D5 (relapse and continued use); reply from the chart within the day"},
+    {"id": "humana", "name": "Humana Healthy Horizons", "channel": "fax", "decides_in_days": 6, "partial_rate": 0.50, "requests_this_year": 22, "tends_to_ask": "Receipt goes missing; decision on day 14", "what_works": "Receipt check call; cite the fax reference"},
+    {"id": "aetna", "name": "Aetna Better Health", "channel": "fax", "decides_in_days": 7, "partial_rate": 0.54, "requests_this_year": 26, "tends_to_ask": "'Can be managed at a lower level of care (outpatient)'", "what_works": "List prior outpatient treatment with dates and outcomes; show the D5 and D6 ratings and dated evidence that Level 1 has not been enough"},
+    {"id": "uhc", "name": "UnitedHealthcare Community Plan", "channel": "portal", "decides_in_days": 4, "partial_rate": 0.37, "requests_this_year": 19, "tends_to_ask": "Wants the ASAM assessment and the treatment plan attached", "what_works": "Different process; 2 active clients; circle back later"},
+    {"id": "ffs", "name": "Medicaid FFS · Acentra Health", "channel": "fax", "decides_in_days": 6, "partial_rate": 0.25, "requests_this_year": 4, "tends_to_ask": "", "what_works": "Too few to say"}
+  ],
+  "interventions": [
+    {"code": "SUD 1.1", "name": "Motivational interviewing"},
+    {"code": "SUD 1.2", "name": "Relapse prevention skills"},
+    {"code": "SUD 1.3", "name": "Cognitive behavioral skills for substance use"},
+    {"code": "SUD 1.4", "name": "Drug and alcohol refusal skills"},
+    {"code": "SUD 1.5", "name": "Contingency management", "rationale": "Small agreed rewards for negative screens and attended groups; paired with motivational interviewing so the goal stays the client's own."},
+    {"code": "SUD 2.1", "name": "Family session"},
+    {"code": "SUD 2.2", "name": "Recovery support planning"}
+  ],
+  "clients": [
+    {"id": "TW", "initials": "T.W.", "first_name": "Tyler", "age": 16, "sex": "M", "grade": 11, "school": "LC-MS2", "harvest_no": 4492, "guardian": {"name": "Denise Rivers", "relationship": "grandmother", "phone": "(434) 555-0147", "language": "en"},
+     "medicaid": {"status": "active", "plan": "humana", "effective": "2026-07-01", "checked_on": "2026-10-15T08:10", "checked_by": "jperez", "next_check": "2026-10-19"},
+     "iep": true, "clinician": "jperez", "stage": "in_service", "service_start": "2026-10-27", "referral": "REF-118",
+     "diagnosis": "F12.20, F17.290, F41.1", "substance": "Cannabis · nicotine vape", "goals": [
+       {"n": 1, "dim": 5, "name": "negative weekly screens", "objective": "T.W. will have a negative urine drug screen in 4 of 5 weekly screens.", "interventions": ["SUD 1.5", "SUD 1.1"]},
+       {"n": 2, "dim": 3, "name": "coping skill before use", "objective": "T.W. will use a taught coping skill before use in 4 of 5 high-risk situations.", "interventions": ["SUD 1.3", "SUD 1.4"]},
+       {"n": 3, "dim": 6, "name": "family and recovery supports", "objective": "T.W. will have one family session a week and identify and use two recovery supports.", "interventions": ["SUD 2.1", "SUD 2.2"]}],
+     "strengths": "Engaged grandmother; enjoys basketball and drawing; responds well to one-to-one adult attention.",
+     "timeline": {"referral": "2026-10-13", "family_link_opened": "2026-10-13", "family_link_submitted": "2026-10-14T19:52", "eligibility_checked": "2026-10-15T08:10", "screening": "2026-10-16T14:00", "consent_signed": "2026-10-19", "intake": "2026-10-20T11:52", "isp": "2026-10-21", "sra_processed": "2026-10-22", "sra_signed": "2026-10-22T14:04", "sent": "2026-10-22T14:06", "decision_due": "2026-10-29"}},
+    {"id": "MR", "initials": "M.R.", "age": 15, "sex": "M", "grade": 10, "school": "CC-ES1", "harvest_no": 3310, "guardian": {"name": "Monica Rowe", "relationship": "mother", "phone": "(434) 555-0162", "language": "en"},
+     "medicaid": {"status": "active", "plan": "anthem"}, "staff": "khale", "clinician": "jperez", "stage": "in_service", "service_start": "2026-08-18",
+     "diagnosis": "F10.20, F12.10, F32.1", "substance": "Alcohol · some cannabis",
+     "authorization": {"payer": "anthem", "units": 110, "used": 83, "start": "2026-08-18", "end": "2026-11-13"},
+     "goals": [
+       {"n": 1, "dim": 5, "name": "negative weekly screens", "objective": "M.R. will have a negative urine or breath alcohol screen in 4 of 5 weekly screens.", "interventions": ["SUD 1.2", "SUD 1.4", "SUD 1.5"]},
+       {"n": 2, "dim": 4, "name": "attend scheduled groups", "objective": "M.R. will attend 4 of 5 scheduled groups each week.", "interventions": ["SUD 1.1", "SUD 1.5"]},
+       {"n": 3, "dim": 6, "name": "family and recovery supports", "objective": "M.R. will have one family session a week and identify and use two recovery supports.", "interventions": ["SUD 2.1", "SUD 2.2"]}],
+     "quarter": {"days": 51, "goal_progress_days": [47, 44, 9], "guardian_calls": "11 of 12", "phq_a": [16, 14, 12], "dsm_parent": [21, 19, 18], "dsm_child": [17, 12, 9], "daily_rating": [1.9, 2.6, 3.4], "office_referrals_per_month": [2, 1, 0]}},
+    {"id": "DW", "initials": "D.W.", "age": 15, "sex": "M", "grade": 10, "school": "CC-HS1", "harvest_no": 4102, "guardian": {"name": "Tamika Wells", "relationship": "mother", "phone": "(434) 555-0171"}, "medicaid": {"status": "active", "plan": "sentara"}, "staff": "slane", "clinician": "jperez", "stage": "in_service",
+     "diagnosis": "F12.20, F10.10, F90.2", "substance": "Cannabis · alcohol",
+     "authorization": {"payer": "sentara", "units": 110, "used": 0, "start": "2026-10-29", "end": "2027-01-30", "assumed": true, "note": "Assumption for the demo: these 110 units are what a person has already entered in Lauris for the current window. They are not the payer's Oct 27 offer, and no units are added because of an offer: only an accepted decision changes them (request R-0402)."},
+     "incidents_3mo": 3, "safety_plan_date": "2026-10-03"},
+    {"id": "KT", "initials": "K.T.", "age": 16, "sex": "F", "grade": 11, "school": "LC-MS2", "harvest_no": 4480, "medicaid": {"status": "active", "plan": "anthem"}, "clinician": "jperez", "stage": "request_pending",
+     "diagnosis": "F10.20, F12.10", "substance": "Alcohol · cannabis"},
+    {"id": "TN", "initials": "T.N.", "age": 16, "sex": "F", "school": "CC-ES1", "harvest_no": 3402, "medicaid": {"status": "active", "plan": "sentara"}, "clinician": "jperez", "stage": "in_service_unpaid",
+     "diagnosis": "F15.20, F32.1", "substance": "Non-prescribed stimulants", "authorization": {"payer": "sentara", "units": 65, "used": 65, "exhausted": "2026-10-28", "assumed": true, "exhausted_basis": "65 of 65 units are recorded as used, so the date cannot be in the future: Oct 28 is an assumption (the last IOP day before the demo date) until the units log shows the day of the last note."}},
+    {"id": "EC", "initials": "E.C.", "first_name": "Ethan", "age": 15, "sex": "M", "school": "LC-ES3", "harvest_no": 4471, "medicaid": {"status": "active", "plan": "anthem"}, "clinician": "jperez", "stage": "denied_appeal",
+     "diagnosis": "F12.20, F17.290", "substance": "Cannabis · nicotine vape"},
+    {"id": "JT", "initials": "J.T.", "age": 16, "sex": "M", "school": "CC-ES1", "harvest_no": 3315, "staff": "khale", "stage": "in_service", "diagnosis": "F12.20, F32.1", "substance": "Cannabis", "authorization": {"units": 41}},
+    {"id": "DP", "initials": "D.P.", "age": 15, "sex": "M", "school": "CC-ES1", "harvest_no": 3320, "staff": "khale", "stage": "in_service", "diagnosis": "F12.20, F10.10", "substance": "Cannabis · alcohol", "authorization": {"units": 88}},
+    {"id": "AG", "initials": "A.G.", "age": 15, "sex": "F", "school": "CC-ES1", "harvest_no": 3322, "staff": "khale", "stage": "in_service", "diagnosis": "F17.290, F12.10, F32.1", "substance": "Nicotine vape · cannabis", "authorization": {"units": 102}},
+    {"id": "ES", "initials": "E.S.", "age": 15, "sex": "F", "school": "CC-ES1", "harvest_no": 3330, "staff": "khale", "stage": "no_authorization", "diagnosis": "F12.10, F17.290", "substance": "Cannabis · nicotine vape"},
+    {"id": "CB", "initials": "C.B.", "age": 14, "sex": "M", "school": "CC-ES1", "harvest_no": 3333, "staff": "khale", "stage": "in_service", "diagnosis": "F12.10, F17.290, F41.1", "substance": "Cannabis · nicotine vape", "authorization": {"units": 64}},
+    {"id": "LB", "initials": "L.B.", "age": 15, "sex": "M", "school": "CC-ES1", "harvest_no": 3340, "staff": "rowens", "stage": "in_service", "diagnosis": "F10.10, F12.10", "substance": "Alcohol · cannabis"},
+    {"id": "JO", "initials": "J.O.", "age": 17, "sex": "M", "grade": 12, "school": "LC-MS2", "harvest_no": 4400, "stage": "early_discharge_new_initial", "diagnosis": "F10.10, F12.20", "substance": "Alcohol · cannabis"},
+    {"id": "AM", "initials": "A.M.", "age": 16, "sex": "F", "school": "CC-ES2", "harvest_no": 3360, "stage": "in_service", "diagnosis": "F10.10, F13.10", "substance": "Alcohol · non-prescribed pills", "incidents_3mo": 3},
+    {"id": "LV", "initials": "L.V.", "age": 16, "sex": "F", "school": "CC-HS1", "harvest_no": 4110, "stage": "in_service", "diagnosis": "F10.10, F40.10", "substance": "Alcohol", "authorization": {"payer": "humana", "service": "after_school", "units": 60, "used": 22}},
+    {"id": "SB", "initials": "S.B.", "age": 14, "sex": "F", "school": "CC-MS1", "harvest_no": 4210, "stage": "in_service", "diagnosis": "F12.10, F41.1", "substance": "Cannabis", "authorization": {"payer": "uhc", "units": 80, "used": 66}},
+    {"id": "PG", "initials": "P.G.", "age": 17, "sex": "M", "school": "LC-MS2", "harvest_no": 4300, "stage": "in_service", "diagnosis": "F12.21, F41.1", "substance": "Cannabis · early remission", "authorization": {"payer": "aetna", "service": "outpatient", "units": 24, "used": 5}}
+  ],
+  "referrals": [
+    {"id": "REF-121", "client": "A.R., 14", "school": "LC-ES3", "received": "2026-10-28", "stage": "needs_screening", "source": "Family self-referral", "reason": "Cannabis use the family wants help with; no treatment so far", "next": "Family link opened · insurance step not done"},
+    {"id": "REF-120", "client": "B.K., 15", "school": "CC-MS1", "received": "2026-10-27", "stage": "needs_screening", "source": "Pediatric clinic", "reason": "THC positive at a well visit Oct 22", "next": "No Medicaid per the referral form · ask on the family link"},
+    {"id": "REF-119", "client": "S.L., 16", "school": "CC-ES2", "received": "2026-10-26", "stage": "waiting_on_school", "source": "Court diversion", "reason": "Alcohol citation Oct 10; diversion requires an assessment", "next": "Diversion paperwork missing · court liaison asked Oct 27"},
+    {"id": "REF-118", "client": "TW", "school": "LC-MS2", "received": "2026-10-13T14:18", "referred_by": "rbell", "stage": "in_service", "source": "School counselor", "reason": "Daily cannabis use; vape found Oct 6",
+     "form": {"medicaid_per_school": "yes_no_id", "iep": true, "guardian_informed": true,
+       "concerns": ["Substance use", "Anxiety and/or panic attacks", "Skips class / truancy", "Withdrawal / avoidance"],
+       "interventions_tried": "Weekly check-ins with the school counselor since September; a vape was found Oct 6 and the family was called; two counselor reports in October. The family was given information about outpatient counseling last year.",
+       "attachments": {"behaviour_report": true, "attendance_log": true, "schedule_and_grades": false}, "referral_for": ["TDT"]}},
+    {"id": "REF-117", "client": "N.P., 15", "school": "LC-MS2", "received": "2026-10-09", "stage": "screening_booked", "source": "Emergency department", "reason": "Emergency department visit Oct 7 after alcohol use; discharged with a referral", "next": "Fri Oct 31, 10:00 am · J. Perez"},
+    {"id": "REF-116", "client": "R.F., 14", "school": "CC-ES1", "received": "2026-10-06", "stage": "grant_program", "source": "School counselor", "reason": "Daily nicotine vaping and cannabis; family has no Medicaid", "next": "Routed Oct 8 · no Medicaid"}
+  ],
+  "requests": [
+    {"id": "R-0416", "client": "TW", "payer": "humana", "channel": "fax", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "initial", "units_requested": 150, "dates": "2026-10-27 to 2027-01-23", "stage": "submitted", "sent": "2026-10-22T14:06", "fax_ref": "F-2291", "receipt_confirmed": "2026-10-27T10:12", "receipt_by": "cdiaz", "decision_due": "2026-11-05", "signed_pdf": "R-0416_T.W._initial_signed.pdf", "pages": 11},
+    {"id": "R-0411", "client": "MR", "payer": "anthem", "channel": "availity", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "continued_stay", "units_requested": 150, "stage": "draft_ready", "renew_by": "2026-11-13"},
+    {"id": "R-0408", "client": "KT", "payer": "anthem", "channel": "availity", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "initial", "units_requested": 150, "stage": "info_requested", "sent": "2026-10-21", "info_requested_at": "2026-10-28T17:40", "reply_due": "2026-10-29T17:40"},
+    {"id": "R-0402", "client": "DW", "payer": "sentara", "channel": "fax", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "continued_stay", "units_requested": 150, "units_offered": 110, "stage": "partial_decide", "sent": "2026-10-13", "offer_call": "2026-10-27", "reply_by": "2026-10-30"},
+    {"id": "R-0399", "client": "A.L., 15", "payer": "humana", "channel": "fax", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "initial", "units_requested": 150, "stage": "overdue", "sent": "2026-10-12", "fax_ref": "F-2280", "decision_due": "2026-10-26"},
+    {"id": "R-0391", "client": "JO", "payer": "aetna", "channel": "fax", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "early_discharge_new_initial", "units_requested": 150, "stage": "submitted", "sent": "2026-10-23T11:20", "fax_ref": "F-2287", "decision_due": "2026-11-06", "pages": 14, "signed_pdf": "R-0391_J.O._early_discharge_new_initial_signed.pdf"},
+    {"id": "R-0388", "client": "TN", "payer": "sentara", "channel": "fax", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "peer_to_peer", "units_requested": 150, "units_awarded": 65, "stage": "peer_to_peer_booked", "p2p_at": "2026-12-09T14:00"},
+    {"id": "R-0384", "client": "EC", "payer": "anthem", "channel": "availity", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "initial", "units_requested": 90, "stage": "denied", "denied_on": "2026-10-22", "notice_date": "2026-10-22", "denial_reason": "already connected to other services", "appeal_deadline": "2026-12-21"},
+    {"id": "R-0395", "client": "SB", "payer": "uhc", "channel": "portal", "service": "TDT school day · H2016", "asam_level": "2.1", "type": "continued_stay", "units_requested": 150, "units_awarded": 80, "stage": "active"},
+    {"id": "R-0380", "client": "LV", "payer": "humana", "channel": "fax", "service": "TDT after-school · H2016-UG", "asam_level": "2.1", "type": "continued_stay", "units_requested": 60, "units_awarded": 60, "stage": "active"},
+    {"id": "R-0377", "client": "PG", "payer": "aetna", "channel": "fax", "service": "Outpatient", "asam_level": "1", "type": "continued_stay", "units_requested": 24, "units_awarded": 24, "stage": "active"}
+  ],
+  "notes_sample": [
+    {"client": "MR", "staff": "khale", "date": "2026-10-29", "type": "daily", "illustrative": true, "direct_time_min": 220, "units": 2, "objective": 1, "interventions": ["SUD 1.4", "SUD 1.2", "SUD 1.3"], "mood": "Craving 5 of 10 → 2 of 10", "progress": "Partial – skill used after prompt",
+     "contact_time": [["08:05", "08:35", "Check-in and craving ratings, group room"], ["09:50", "11:05", "Relapse prevention skills group"], ["11:40", "12:25", "Refusal skills practice, role play"], ["12:25", "13:05", "Individual session, motivational interviewing"], ["13:10", "13:40", "Recovery support planning and a coping skills walk"]],
+     "dictation": "ran the refusal skills role play with M.R. in group, he practiced saying no to a drink at a party twice, craving was a 5 before and a 2 after",
+     "enhanced": "Ran the refusal skills role play with M.R. in group; he practiced saying no to a drink at a party twice. He rated his craving 5 of 10 before and 2 of 10 after. Addresses Goal 1 (D5, negative weekly screens) with Drug and alcohol refusal skills (SUD 1.4)."},
+    {"client": "MR", "staff": "khale", "date": "2026-10-29", "type": "weekly_guardian", "contact": "Mother (family member) · phone", "duration_min": 14, "discussed": "Progress on Goal 1 this week (negative screens Oct 1 and Oct 13; no use since the Sept 27 party). Mother took the alcohol out of the kitchen cabinet on Tuesday and asked what to say if M.R. is invited out on Saturday. Weekend plan still unsettled. Asked about the Nov 13 renewal; told the request goes out next week.", "follow_up": "Bring a printed party plan card to Friday group. Next call Nov 5."},
+    {"client": "MR", "staff": "khale", "date": "2026-10-29", "type": "monthly_collateral", "collateral": "School counselor · R. Bell", "method": "In person · 11 min", "shared": "Counselor reports no use-related reports this month, down from 2 in August and 1 in September. Attendance Oct 1 to Oct 28: 19 of 20 days. A friend who drinks sits with M.R. at lunch; the counselor will change his lunch seat. Check-in with the assistant principal Oct 27: no concerns.", "coordination": "Harvest to share the attendance dates with the payer. Treatment plan shared with the counselor Oct 22 with the family's consent."}
+  ],
+  "incidents": [
+    {"date": "2026-10-28T14:40", "client": "DW", "school": "CC-HS1", "level": 2, "what": "Emergency department visit after alcohol and cannabis use; mother called the site supervisor 2:40 pm Oct 28", "state_portal_due": "2026-10-29T14:40", "status": "file_now"},
+    {"date": "2026-10-24", "client": "ES", "school": "CC-ES1", "level": 3, "what": "Found with a vape cartridge on campus (not during Harvest services); reported by the school counselor; still logged", "status": "complete"},
+    {"date": "2026-10-15", "client": "AM", "school": "CC-ES2", "level": 2, "what": "Overdose scare at a party, reported by her mother; safety plan updated Oct 16", "state_portal_filed": "2026-10-15T16:10", "status": "complete"},
+    {"date": "2026-09-29", "client": "MR", "school": "CC-ES1", "level": 3, "what": "Positive alcohol screen (EtG) Sept 29 after the Sept 27 lapse; clinician follow-up done Sept 30", "status": "complete"},
+    {"date": "2026-09-17", "client": "JO", "school": "LC-MS2", "level": 3, "what": "Left the program without permission during group and did not return; family reached the same hour; discharged Sept 18 after 5 missed groups", "status": "complete"}
+  ],
+  "school_checkins": [
+    {"client": "TW", "week_of": "2026-10-27", "by": "okafor", "answers": {"stayed_in_class": "Often", "got_along": "Often", "finished_work": "Rarely", "used_coping_skill": "Often"}},
+    {"client": "TW", "week_of": "2026-10-20", "by": "okafor", "answers": {"stayed_in_class": "Often", "got_along": "Rarely", "finished_work": "Rarely", "used_coping_skill": "Often"}}
+  ],
+  "counselor_counts": [{"client": "TW", "month": "2026-09", "office_referrals": 6}, {"client": "TW", "month": "2026-10", "office_referrals": 2}, {"client": "EC", "month": "2026-10", "office_referrals": 4}],
+  "analytics_baseline": {"source": "Sample data, illustrative", "provenance": "harvest_export", "period": "12 months to Oct 2026", "decided": 146, "partial": 0.57, "median_award_on_150": 92, "full_denials": 9, "appeals_attempted": 1, "appeals_overturned": 0, "median_decision_days": 6, "early_discharge_restarts": 11, "unpaid_hours": 312,
+    "monthly": [["Nov", 480, 330], ["Dec", 450, 300], ["Jan", 600, 420], ["Feb", 540, 390], ["Mar", 570, 400], ["Apr", 510, 360], ["May", 300, 210], ["Jun", 150, 120], ["Jul", 90, 90], ["Aug", 660, 450], ["Sep", 720, 480], ["Oct", 690, 470]]},
+  "compliance": {"month": "2026-10", "incident_reports": 14, "cps_reports": 3, "qi_checked": "11 of 12", "credentials_expiring_30d": 3,
+    "credentials": [["khale", "2026-11-12", "2027-03", "2027-08", "QMHP-C"], ["rowens", "2027-06", "2027-06", "2026-11-20", "QMHP-T"], ["slane", "2026-11-28", "2027-02", "2027-05", "QMHP-C"], ["jperez", "2027-09", "2027-09", "2027-01", "LPC · Jun 2027"]]},
+  "migration": {"last_export": "2026-10-29", "run_by": "dowens", "active_students": 52, "daily_notes": 9418, "assessments": 455, "missing_signatures": 17, "discharged_scheduled": "2026-11-15"}
+}

@@ -1,0 +1,80 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On the list, narrow the patients" }
+  sc0@{ shape: curv-trap, label: "<b>Table shows every patient, first 12 rows</b><br/>'Showing 12 of 37' at the right of the filter bar" }
+  subgraph gSearch ["Search"]
+  i1@{ shape: lean-r, label: "<b>Type in 'Search by case ID or initials'</b><br/>for example 'R-1042' or 'J.M.'" }
+  p1@{ shape: rect, label: "<b>Matches the case ID or the patient label</b><br/>(initials and age, or 'Member …4821'). Capitals do not matter<br/>Only patients inside the site view can match: a Site B case ID finds nothing for Site A staff" }
+  end
+  subgraph gMenus ["Menus"]
+  c1@{ shape: trap-t, label: "Click 'All payers'" }
+  o1@{ shape: win-pane, label: "<b>'All payers', then each payer</b><br/>Summit Medicaid HMO, Cardinal Health Plan, Evergreen, Beacon PPO, Harborview MA, Lakeshore Behavioral" }
+  c2@{ shape: trap-t, label: "Click 'All programs'" }
+  o2@{ shape: win-pane, label: "'All programs', 'Residential 3.5', 'IOP', 'PHP', 'Detox'" }
+  i2@{ shape: lean-r, label: "<b>Pick an option, or use the arrow keys and Enter</b><br/>Esc or a click outside closes the menu" }
+  end
+  subgraph gTiles ["Verdict tiles"]
+  c4@{ shape: trap-t, label: "<b>Click a tile</b><br/>'Cleared to bill', 'Authorization first', 'Fix before billing' or 'Re-check due'<br/>('Not checked' too, while one is listed)<br/>Hover shows its meaning as a tooltip" }
+  q1@{ shape: diam, label: "Was that tile already selected?" }
+  p2@{ shape: rect, label: "<b>Only that verdict is shown</b><br/>The tile is pressed and gets an outline; any other tile is released" }
+  p3@{ shape: rect, label: "The tile is released: all verdicts again" }
+  end
+  p4@{ shape: rect, label: "<b>Rows recompute: every active filter must match</b><br/>The count follows: 'Showing 5 of 37'" }
+  q2@{ shape: diam, label: "Any filter active?" }
+  p5@{ shape: rect, label: "<b>Every match is shown</b><br/>No 'Show more' button" }
+  p6@{ shape: rect, label: "Only the first 12 rows" }
+  c5@{ shape: trap-t, label: "Click 'Show 12 more' (small button under the table)" }
+  p7@{ shape: rect, label: "<b>Twelve more rows join the table</b><br/>The last click reads 'Show 1 more'" }
+  sc1@{ shape: curv-trap, label: "Table with the matches, two lines per patient" }
+  t0@{ shape: odd, label: "'Clear filters' appears in the filter bar" }
+  q3@{ shape: diam, label: "Any rows left?" }
+  em@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>with the button 'Clear filters'" }
+  c6@{ shape: trap-t, label: "Click 'Clear filters' (bar or empty state)" }
+  p8@{ shape: rect, label: "<b>Search emptied</b><br/>Payer and program back to 'All', no tile pressed" }
+  e1@{ shape: stadium, label: "Full list again, button gone" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › Open a patient or start a check" }
+  s1 --> sc0
+  sc0 --> i1 --> p1 --> p4
+  sc0 --> c1 --> o1 --> i2
+  sc0 --> c2 --> o2 --> i2
+  i2 --> p4
+  sc0 --> c4 --> q1
+  q1 -->|"No"| p2 --> p4
+  q1 -->|"Yes"| p3 --> p4
+  p4 --> q2
+  q2 -->|"No"| p6 --> c5 --> p7 --> sc0
+  q2 -->|"Yes"| p5 --> q3
+  p4 -.-> t0
+  q3 -->|"Yes"| sc1 --> g1
+  q3 -->|"No"| em --> c6
+  t0 --> c6
+  c6 --> p8 --> e1
+  class s1 k_start
+  class sc0,sc1,em k_screen
+  class i1,i2 k_input
+  class p1,p2,p3,p4,p5,p6,p7,p8 k_process
+  class c1,c2,c4,c5,c6 k_click
+  class o1,o2 k_overlay
+  class q1,q2,q3 k_decision
+  class t0 k_toast
+  class e1 k_end
+  class g1 k_goto
+  style gSearch fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gMenus fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gTiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

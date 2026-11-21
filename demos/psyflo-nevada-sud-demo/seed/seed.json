@@ -1,0 +1,1365 @@
+{
+  "_about": "Synthetic seed data for the Psyflo x Community Counseling Center of Southern Nevada demo (adult substance use treatment, ASAM criteria, Nevada Medicaid). Nothing is real. 'today' is Thu 2026-10-29. Every screen reads from this file; the live flows write to the same store. Phone numbers are 702-555-01xx demo numbers; NPIs are fake (1999000xxx).",
+  "today": "2026-10-29",
+  "org": {
+    "name": "Community Counseling Center of Southern Nevada",
+    "short": "CCC of SN",
+    "subtitle": "CCC of SN · SUD / ASAM",
+    "localities": [
+      "Las Vegas",
+      "Henderson"
+    ],
+    "state": "Nevada",
+    "provider_type": "Provider Type 17 · Specialty 215 · Substance Use Agency Model (SUAM) (demo assumption · confirm)",
+    "sfax_account": "ccc-sn-demo",
+    "group_npi": "on file",
+    "tax_id": "on file",
+    "funding": [
+      "Nevada Medicaid FFS",
+      "Medicaid MCOs",
+      "Ryan White Part A/C (payer of last resort)",
+      "SAPTA block grant",
+      "HOPWA",
+      "Sliding fee scale"
+    ]
+  },
+  "schools": [
+    {
+      "id": "LC-MS2",
+      "name": "Main clinic · Level 2.1 IOP",
+      "locality": "Las Vegas",
+      "level": "2.1",
+      "kind": "site"
+    },
+    {
+      "id": "LC-ES3",
+      "name": "Main clinic · Level 1 outpatient",
+      "locality": "Las Vegas",
+      "level": "1",
+      "kind": "site"
+    },
+    {
+      "id": "CC-ES1",
+      "name": "East Las Vegas · Level 2.1 IOP",
+      "locality": "Las Vegas",
+      "level": "2.1",
+      "kind": "site"
+    },
+    {
+      "id": "CC-ES2",
+      "name": "East Las Vegas · Level 1 outpatient",
+      "locality": "Las Vegas",
+      "level": "1",
+      "kind": "site"
+    },
+    {
+      "id": "CC-MS1",
+      "name": "Drug court track",
+      "locality": "Las Vegas",
+      "level": "2.1",
+      "kind": "track"
+    },
+    {
+      "id": "CC-HS1",
+      "name": "P&P / re-entry track",
+      "locality": "Henderson",
+      "level": "2.1",
+      "kind": "track"
+    }
+  ],
+  "roles": [
+    "direct_support",
+    "supervisor",
+    "clinician",
+    "admin"
+  ],
+  "staff": [
+    {
+      "id": "jperez",
+      "name": "Jordan Perez",
+      "initials": "JP",
+      "credential": "LCADC",
+      "title": "Clinical director · signs requests",
+      "role": "clinician",
+      "sites": "all",
+      "signs_requests": true,
+      "npi": "1999000101"
+    },
+    {
+      "id": "dowens",
+      "name": "Dana Owens",
+      "initials": "DO",
+      "credential": "",
+      "title": "Administrator · billing & authorizations",
+      "role": "admin",
+      "sites": "all"
+    },
+    {
+      "id": "cdiaz",
+      "name": "Carla Diaz",
+      "initials": "CD",
+      "credential": "LCSW",
+      "title": "Clinical lead · reviews notes",
+      "role": "clinician",
+      "sites": [
+        "CC-ES1",
+        "CC-ES2",
+        "CC-MS1"
+      ],
+      "npi": "1999000102"
+    },
+    {
+      "id": "khale",
+      "name": "Kayla Hale",
+      "initials": "KH",
+      "credential": "CADC",
+      "title": "Behavioral health tech · IOP",
+      "role": "direct_support",
+      "sites": [
+        "CC-ES1"
+      ],
+      "review_mode": "spot_check",
+      "npi": "1999000103"
+    },
+    {
+      "id": "rowens",
+      "name": "R. Owens",
+      "initials": "RO",
+      "credential": "CADC-I",
+      "title": "Counselor intern · new hire",
+      "role": "direct_support",
+      "sites": [
+        "CC-ES1"
+      ],
+      "review_mode": "every_note",
+      "reviewer": "cdiaz",
+      "npi": "1999000104"
+    },
+    {
+      "id": "slane",
+      "name": "S. Lane",
+      "initials": "SL",
+      "credential": "LCPC",
+      "title": "Mental health therapist",
+      "role": "direct_support",
+      "sites": [
+        "LC-ES3",
+        "CC-HS1"
+      ],
+      "review_mode": "every_note",
+      "reviewer": "cdiaz",
+      "npi": "1999000105"
+    },
+    {
+      "id": "jreyes",
+      "name": "J. Reyes",
+      "initials": "JR",
+      "credential": "PRSS",
+      "title": "Peer recovery support specialist",
+      "role": "direct_support",
+      "sites": [
+        "CC-MS1",
+        "CC-HS1"
+      ],
+      "review_mode": "spot_check",
+      "npi": "1999000106"
+    }
+  ],
+  "school_users": [
+    {
+      "id": "rbell",
+      "name": "R. Bell",
+      "role": "Case manager · Clark County drug court",
+      "org": "Clark County drug court",
+      "school": "CC-MS1",
+      "kind": "referral_partner"
+    },
+    {
+      "id": "okafor",
+      "name": "Mr. Okafor",
+      "role": "P&P officer",
+      "org": "Nevada Parole & Probation",
+      "school": "CC-HS1",
+      "kind": "referral_partner"
+    }
+  ],
+  "payers": [
+    {
+      "id": "sentara",
+      "name": "Molina Healthcare of Nevada",
+      "short": "Molina",
+      "channel": "fax",
+      "decides_in_days": 3,
+      "partial_rate": 0.71,
+      "requests_this_year": 412,
+      "tends_to_ask": "Approves Level 2.1 five sessions at a time; denies continued stay as \"abstinent, no longer meets medical necessity\"",
+      "what_works": "Send the next request after session 3 so it is decided before session 5 (Psyflo drafts it at session 3); argue D5 relapse risk with dated UDS results and show step-down criteria are not met; ask for the peer-to-peer the same day"
+    },
+    {
+      "id": "anthem",
+      "name": "Anthem Blue Cross Blue Shield (Nevada Medicaid)",
+      "short": "Anthem",
+      "channel": "availity",
+      "decides_in_days": 3,
+      "partial_rate": 0.38,
+      "requests_this_year": 486,
+      "tends_to_ask": "Information requests inside 24 h (wants the ASAM six-dimension summary); a new reviewer denied 90837 because \"substance use\" is in the provider type",
+      "what_works": "Attach the ASAM summary up front; for mental-health code denials cite CCC of SN's enrollment for both SUD and mental health (PT 17 / Sp 215 · confirm) and ask for a reconsideration in writing"
+    },
+    {
+      "id": "humana",
+      "name": "SilverSummit Healthplan",
+      "short": "SilverSummit",
+      "channel": "fax",
+      "decides_in_days": 4,
+      "partial_rate": 0.44,
+      "requests_this_year": 371,
+      "tends_to_ask": "Denies Level 2.1 initials without a urine drug screen from the assessment (not on their PA form, and they do not pay for it); fax receipts go missing",
+      "what_works": "Attach the assessment-day UDS result (Psyflo blocks the packet until it is there); call on day 2 to confirm receipt and cite the fax reference"
+    },
+    {
+      "id": "aetna",
+      "name": "CareSource Nevada",
+      "short": "CareSource",
+      "channel": "fax",
+      "decides_in_days": 4,
+      "partial_rate": 0.49,
+      "requests_this_year": 238,
+      "tends_to_ask": "Wants its own PA form, with the six ASAM dimension ratings on page 1",
+      "what_works": "Use CareSource's form; ratings table on page 1, the dimension narrative after it"
+    },
+    {
+      "id": "uhc",
+      "name": "Health Plan of Nevada (Medicaid)",
+      "short": "HPN",
+      "channel": "portal",
+      "decides_in_days": 3,
+      "partial_rate": 0.52,
+      "requests_this_year": 297,
+      "tends_to_ask": "Asks for prior authorization on Level 1 before session 24 (not following the 24-session rule); text pasted into portal boxes",
+      "what_works": "Cite the 24-session rule (confirm per contract) but request anyway so no session goes unpaid; paste the per-dimension text into the HPN portal boxes"
+    },
+    {
+      "id": "ffs",
+      "name": "Nevada Medicaid FFS · DHCFP",
+      "short": "NV Medicaid FFS",
+      "channel": "portal",
+      "decides_in_days": 5,
+      "partial_rate": 0.18,
+      "requests_this_year": 96,
+      "tends_to_ask": "No PA for the first 24 Level 1 sessions; PA required from the assessment at Level 2.1, no backdating",
+      "what_works": "Request on assessment day; a missed IOP day before approval is unbillable"
+    }
+  ],
+  "interventions": [
+    {
+      "code": "MI",
+      "name": "Motivational interviewing",
+      "dimension": "D4",
+      "rationale": "Builds the client's own reasons for change; used when readiness is mixed or after a lapse."
+    },
+    {
+      "code": "CBT-RP",
+      "name": "Relapse prevention (CBT)",
+      "dimension": "D5",
+      "rationale": "Maps high-risk situations and rehearses coping responses; the core skill of Level 2.1."
+    },
+    {
+      "code": "MAT-C",
+      "name": "MAT coordination",
+      "dimension": "D1/D2",
+      "rationale": "Coordinates with the outside buprenorphine or naltrexone prescriber; confirms adherence through UDS and prescriber contact."
+    },
+    {
+      "code": "SS",
+      "name": "Seeking Safety (trauma-informed)",
+      "dimension": "D3",
+      "rationale": "Present-focused coping for trauma and substance use together; no trauma processing in group."
+    },
+    {
+      "code": "PS",
+      "name": "Peer recovery support",
+      "dimension": "D6",
+      "rationale": "PRSS links the client to community recovery meetings, sober housing and transport."
+    },
+    {
+      "code": "RP-G",
+      "name": "Relapse prevention group",
+      "dimension": "D5",
+      "rationale": "IOP group practice of refusal skills, urge surfing and lapse plans."
+    },
+    {
+      "code": "FAM",
+      "name": "Family / support-person session",
+      "dimension": "D6",
+      "rationale": "With the client's consent, brings a support person in to plan for the recovery environment."
+    },
+    {
+      "code": "DSP 1.3",
+      "name": "Psychoeducation · substance use and recovery",
+      "legacy_code": true
+    },
+    {
+      "code": "DSP 1.4",
+      "name": "Urge surfing / grounding",
+      "legacy_code": true,
+      "rationale": "Brief body-based grounding used to ride out a craving before talking it through."
+    },
+    {
+      "code": "DSP 1.5",
+      "name": "Recovery support network building",
+      "legacy_code": true
+    },
+    {
+      "code": "DSP 1.6",
+      "name": "High-risk situation planning",
+      "legacy_code": true
+    },
+    {
+      "code": "DSP 1.9",
+      "name": "Refusal and conflict skills",
+      "legacy_code": true
+    },
+    {
+      "code": "DSP 1.4b",
+      "name": "Structured problem solving",
+      "legacy_code": true
+    },
+    {
+      "code": "Clinical 2.1",
+      "name": "Craving management",
+      "legacy_code": true
+    }
+  ],
+  "clients": [
+    {
+      "id": "TW",
+      "initials": "T.W.",
+      "first_name": "Travis",
+      "age": 34,
+      "school": "CC-MS1",
+      "level": "2.1",
+      "harvest_no": 4492,
+      "phone": "702-555-0147",
+      "emergency_contact": {
+        "name": "Dana W.",
+        "relationship": "sister",
+        "phone": "702-555-0148"
+      },
+      "referral_source": "drug_court",
+      "funding": "medicaid",
+      "medicaid": {
+        "status": "active",
+        "plan": "humana",
+        "effective": "2026-07-01",
+        "checked_on": "2026-10-15T08:10",
+        "checked_by": "jperez",
+        "next_check": "2026-10-22"
+      },
+      "clinician": "jperez",
+      "staff": "khale",
+      "stage": "in_service",
+      "service_start": "2026-10-26",
+      "referral": "REF-118",
+      "diagnosis": "F11.20 Opioid use disorder, severe · F10.20 Alcohol use disorder, moderate",
+      "medications": "Buprenorphine/naloxone 16 mg daily · outside prescriber",
+      "asam": {
+        "recommended": "2.1",
+        "dimensions": {
+          "D1": 2,
+          "D2": 1,
+          "D3": 2,
+          "D4": 2,
+          "D5": 3,
+          "D6": 3
+        },
+        "uds_at_assessment": {
+          "date": "2026-10-20",
+          "result": "Positive: buprenorphine (prescribed), fentanyl · EtG positive"
+        }
+      },
+      "goals": [
+        {
+          "n": 1,
+          "name": "D5 · relapse prevention",
+          "dimension": "D5",
+          "objective": "Travis will name 3 personal high-risk situations and use his written coping plan, with no fentanyl-positive UDS on 4 consecutive weekly screens.",
+          "interventions": [
+            "CBT-RP",
+            "RP-G"
+          ]
+        },
+        {
+          "n": 2,
+          "name": "D1/D2 · MAT adherence",
+          "dimension": "D1/D2",
+          "objective": "Travis will take buprenorphine as prescribed and keep every prescriber visit, confirmed by monthly prescriber contact and buprenorphine-positive UDS.",
+          "interventions": [
+            "MAT-C",
+            "MI"
+          ]
+        },
+        {
+          "n": 3,
+          "name": "D6 · recovery environment",
+          "dimension": "D6",
+          "objective": "Travis will attend 2 community recovery meetings a week, keep 4 of 4 weekly drug court check-ins, and submit a sober-housing application by Nov 30.",
+          "interventions": [
+            "PS",
+            "FAM"
+          ]
+        }
+      ],
+      "strengths": "Wants to keep his warehouse job and regain visitation with his daughter; 4 months abstinent in 2024 on buprenorphine; supportive sister.",
+      "timeline": {
+        "referral": "2026-10-13",
+        "eligibility_checked": "2026-10-15T08:10",
+        "screening": "2026-10-16T14:00",
+        "consent_signed": "2026-10-19",
+        "intake": "2026-10-20T11:52",
+        "uds_at_assessment": "2026-10-20",
+        "isp": "2026-10-21",
+        "sra_processed": "2026-10-22",
+        "sra_signed": "2026-10-22T14:04",
+        "sent": "2026-10-22T14:06",
+        "decision_due": "2026-10-29"
+      }
+    },
+    {
+      "id": "MR",
+      "initials": "M.R.",
+      "first_name": "Maria",
+      "age": 41,
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3310,
+      "phone": "702-555-0162",
+      "referral_source": "drug_court",
+      "funding": "medicaid",
+      "medicaid": {
+        "status": "active",
+        "plan": "anthem"
+      },
+      "staff": "khale",
+      "clinician": "jperez",
+      "stage": "in_service",
+      "service_start": "2026-08-31",
+      "diagnosis": "F15.20 Stimulant use disorder (methamphetamine), severe · F10.20 Alcohol use disorder, moderate",
+      "abstinent_since": "2026-09-24",
+      "authorization": {
+        "payer": "anthem",
+        "units": 36,
+        "used": 27,
+        "start": "2026-10-09",
+        "end": "2026-11-13",
+        "service": "Level 2.1 IOP · H0015"
+      },
+      "goals": [
+        {
+          "n": 1,
+          "name": "D5 · relapse prevention",
+          "dimension": "D5",
+          "objective": "Use a written craving plan before acting on cravings in 4 of 5 reported high-risk situations, with negative UDS on weekly screens.",
+          "interventions": [
+            "CBT-RP",
+            "RP-G",
+            "DSP 1.4"
+          ]
+        },
+        {
+          "n": 2,
+          "name": "D3 · trauma-related coping",
+          "dimension": "D3",
+          "objective": "Use a Seeking Safety coping skill when trauma reminders come up, reported in 4 of 5 groups.",
+          "interventions": [
+            "SS"
+          ]
+        },
+        {
+          "n": 3,
+          "name": "D6 · recovery environment",
+          "dimension": "D6",
+          "objective": "Move out of the shared apartment where others use, into sober housing, by Dec 15.",
+          "interventions": [
+            "PS",
+            "FAM"
+          ]
+        }
+      ],
+      "quarter": {
+        "days": 24,
+        "period": "IOP days attended Aug 31 – Oct 29",
+        "goal_progress_days": [
+          20,
+          17,
+          9
+        ],
+        "uds": "8 of 8 negative since Sep 24",
+        "phq9": [
+          14,
+          11,
+          8
+        ],
+        "gad7": [
+          13,
+          10,
+          8
+        ],
+        "bam_use_days": [
+          18,
+          4,
+          0
+        ],
+        "uds_negative_pct": [
+          40,
+          83,
+          100
+        ],
+        "attendance_pct": [
+          78,
+          92,
+          96
+        ],
+        "daily_rating": [
+          1.9,
+          2.6,
+          3.4
+        ],
+        "phq_a": [
+          14,
+          11,
+          8
+        ],
+        "dsm_parent": [
+          13,
+          10,
+          8
+        ],
+        "dsm_child": [
+          18,
+          4,
+          0
+        ],
+        "_aliases": "phq_a = PHQ-9, dsm_parent = GAD-7, dsm_child = BAM days of use (past 30): kept only for older code; read phq9 / gad7 / bam_use_days"
+      }
+    },
+    {
+      "id": "DW",
+      "initials": "D.W.",
+      "first_name": "Darnell",
+      "age": 52,
+      "school": "CC-HS1",
+      "level": "2.1",
+      "harvest_no": 4102,
+      "phone": "702-555-0171",
+      "referral_source": "pp",
+      "funding": "medicaid",
+      "medicaid": {
+        "status": "active",
+        "plan": "sentara"
+      },
+      "staff": "khale",
+      "clinician": "jperez",
+      "stage": "in_service",
+      "diagnosis": "F10.20 Alcohol use disorder, severe · F14.10 Cocaine use disorder, mild",
+      "authorization": {
+        "payer": "sentara",
+        "units": 15,
+        "sessions": 5,
+        "used": 0,
+        "start": "2026-11-02",
+        "end": "2026-11-13",
+        "service": "Level 2.1 IOP · H0015",
+        "note": "partial: 72 units requested, 5 sessions (15 units) offered Oct 27"
+      },
+      "uds_positive_30d": 2
+    },
+    {
+      "id": "KT",
+      "initials": "K.T.",
+      "first_name": "Kevin",
+      "age": 29,
+      "school": "LC-ES3",
+      "level": "1",
+      "harvest_no": 4480,
+      "phone": "702-555-0173",
+      "referral_source": "self",
+      "funding": "medicaid",
+      "medicaid": {
+        "status": "active",
+        "plan": "anthem"
+      },
+      "clinician": "jperez",
+      "stage": "request_pending",
+      "diagnosis": "F12.20 Cannabis use disorder, moderate · F41.1 Generalized anxiety disorder"
+    },
+    {
+      "id": "TN",
+      "initials": "T.N.",
+      "first_name": "Tanya",
+      "age": 47,
+      "sex": "F",
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3402,
+      "phone": "702-555-0174",
+      "referral_source": "hospital_ed",
+      "funding": "medicaid",
+      "medicaid": {
+        "status": "active",
+        "plan": "sentara"
+      },
+      "staff": "rowens",
+      "clinician": "jperez",
+      "stage": "in_service_unpaid",
+      "abstinent_since": "2026-09-14",
+      "diagnosis": "F11.20 Opioid use disorder, severe",
+      "authorization": {
+        "payer": "sentara",
+        "units": 36,
+        "used": 36,
+        "exhausted": "2026-10-23",
+        "service": "Level 2.1 IOP · H0015"
+      }
+    },
+    {
+      "id": "EC",
+      "initials": "E.C.",
+      "first_name": "Eric",
+      "age": 33,
+      "school": "LC-ES3",
+      "level": "1",
+      "harvest_no": 4471,
+      "phone": "702-555-0175",
+      "referral_source": "hiv_clinic",
+      "funding": "medicaid",
+      "medicaid": {
+        "status": "active",
+        "plan": "anthem"
+      },
+      "clinician": "jperez",
+      "staff": "slane",
+      "stage": "denied_appeal",
+      "diagnosis": "F10.20 Alcohol use disorder, moderate · F33.1 Major depressive disorder, recurrent, moderate"
+    },
+    {
+      "id": "JT",
+      "initials": "J.T.",
+      "age": 24,
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3315,
+      "staff": "khale",
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "anthem"
+      },
+      "authorization": {
+        "payer": "anthem",
+        "units": 36,
+        "used": 12,
+        "end": "2026-11-06"
+      },
+      "diagnosis": "F10.20 Alcohol use disorder, moderate · F32.1 Major depressive disorder, moderate"
+    },
+    {
+      "id": "DP",
+      "initials": "D.P.",
+      "age": 39,
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3320,
+      "staff": "khale",
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "sentara"
+      },
+      "authorization": {
+        "payer": "sentara",
+        "units": 15,
+        "sessions": 5,
+        "used": 9,
+        "end": "2026-11-03"
+      },
+      "diagnosis": "F11.20 Opioid use disorder, severe · F43.10 Post-traumatic stress disorder"
+    },
+    {
+      "id": "AG",
+      "initials": "A.G.",
+      "age": 31,
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3322,
+      "staff": "khale",
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "humana"
+      },
+      "authorization": {
+        "payer": "humana",
+        "units": 72,
+        "used": 30,
+        "end": "2026-12-01"
+      },
+      "diagnosis": "F10.20 Alcohol use disorder, severe · F41.1 Generalized anxiety disorder"
+    },
+    {
+      "id": "ES",
+      "initials": "E.S.",
+      "age": 44,
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3330,
+      "staff": "khale",
+      "stage": "no_authorization",
+      "funding": "grant",
+      "grant": "SAPTA block grant · no PA needed",
+      "diagnosis": "F14.20 Cocaine use disorder, moderate"
+    },
+    {
+      "id": "CB",
+      "initials": "C.B.",
+      "age": 57,
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3333,
+      "staff": "khale",
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "aetna"
+      },
+      "authorization": {
+        "payer": "aetna",
+        "units": 36,
+        "used": 21,
+        "end": "2026-11-20"
+      },
+      "diagnosis": "F12.20 Cannabis use disorder, moderate · F43.10 Post-traumatic stress disorder"
+    },
+    {
+      "id": "LB",
+      "initials": "L.B.",
+      "age": 28,
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3340,
+      "staff": "rowens",
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "anthem"
+      },
+      "diagnosis": "F10.20 Alcohol use disorder, moderate"
+    },
+    {
+      "id": "JO",
+      "initials": "J.O.",
+      "first_name": "Jasmine",
+      "age": 26,
+      "school": "CC-ES2",
+      "level": "1",
+      "harvest_no": 4400,
+      "stage": "early_discharge_new_initial",
+      "referral_source": "self",
+      "medicaid": {
+        "status": "active",
+        "plan": "aetna"
+      },
+      "step_down": {
+        "from": "2.1",
+        "to": "1",
+        "on": "2026-10-23"
+      },
+      "diagnosis": "F11.20 Opioid use disorder, severe, in early remission"
+    },
+    {
+      "id": "AM",
+      "initials": "A.M.",
+      "age": 36,
+      "school": "CC-ES2",
+      "level": "2.1",
+      "harvest_no": 3360,
+      "staff": "rowens",
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "ffs"
+      },
+      "diagnosis": "F11.20 Opioid use disorder, moderate · F33.1 Major depressive disorder, recurrent, moderate"
+    },
+    {
+      "id": "LV",
+      "initials": "L.V.",
+      "first_name": "Luis",
+      "age": 38,
+      "school": "CC-ES2",
+      "level": "1",
+      "harvest_no": 4110,
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "humana"
+      },
+      "sessions_to_date": 31,
+      "authorization": {
+        "payer": "humana",
+        "service": "Level 1 outpatient · H0004/H0005",
+        "units": 48,
+        "used": 22,
+        "end": "2026-11-25"
+      },
+      "diagnosis": "F10.20 Alcohol use disorder, moderate"
+    },
+    {
+      "id": "SB",
+      "initials": "S.B.",
+      "first_name": "Sam",
+      "age": 45,
+      "school": "LC-ES3",
+      "level": "1",
+      "harvest_no": 4210,
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "uhc"
+      },
+      "sessions_to_date": 14,
+      "authorization": {
+        "payer": "uhc",
+        "service": "Level 1 outpatient · H0004/H0005",
+        "units": 48,
+        "used": 36,
+        "end": "2026-11-12"
+      },
+      "diagnosis": "F11.20 Opioid use disorder, moderate · F32.1 Major depressive disorder, moderate"
+    },
+    {
+      "id": "PG",
+      "initials": "P.G.",
+      "first_name": "Paula",
+      "age": 58,
+      "school": "LC-ES3",
+      "level": "1",
+      "harvest_no": 4300,
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "aetna"
+      },
+      "authorization": {
+        "payer": "aetna",
+        "service": "Level 1 outpatient · H0004/H0005",
+        "units": 24,
+        "used": 5,
+        "end": "2026-12-09"
+      },
+      "diagnosis": "F12.20 Cannabis use disorder, moderate · F41.1 Generalized anxiety disorder"
+    }
+  ],
+  "referrals": [
+    {
+      "id": "REF-121",
+      "client": "A.R., 31",
+      "school": "LC-ES3",
+      "source": "self",
+      "source_label": "Self-referral",
+      "received": "2026-10-28",
+      "stage": "needs_screening",
+      "next": "Self-referral · insurance step not done · ask for the Medicaid ID on the screening call"
+    },
+    {
+      "id": "REF-120",
+      "client": "B.K., 44",
+      "school": "CC-HS1",
+      "source": "pp",
+      "source_label": "Nevada P&P",
+      "referred_by": "okafor",
+      "received": "2026-10-27",
+      "stage": "needs_screening",
+      "next": "No Medicaid on file per P&P · run the EVS check; likely grant-funded"
+    },
+    {
+      "id": "REF-119",
+      "client": "S.L., 27",
+      "school": "CC-ES2",
+      "source": "hospital_ed",
+      "source_label": "Hospital ED (UMC)",
+      "received": "2026-10-26",
+      "stage": "waiting_on_school",
+      "next": "ED discharge summary missing · asked the UMC social worker Oct 27"
+    },
+    {
+      "id": "REF-118",
+      "client": "TW",
+      "school": "CC-MS1",
+      "source": "drug_court",
+      "source_label": "Clark County drug court",
+      "received": "2026-10-13T14:18",
+      "referred_by": "rbell",
+      "stage": "in_service",
+      "form": {
+        "medicaid_per_school": "yes_with_id",
+        "medicaid_id": "99900449201",
+        "dob": "1992-03-14",
+        "iep": false,
+        "guardian_informed": true,
+        "client_consented": true,
+        "release_signed": "42 CFR Part 2 consent to drug court · signed Oct 13",
+        "case_manager": "R. Bell",
+        "counselor": "R. Bell (drug court case manager)",
+        "concerns": [
+          "Opioid use",
+          "Alcohol use",
+          "Missed court check-ins",
+          "Positive drug screens",
+          "Housing unstable"
+        ],
+        "interventions_tried": "Standard outpatient (Level 1) at another agency Jan–Apr 2026, nine sessions, stopped attending. Two detox admissions (Feb 2025, Aug 2026). Buprenorphine from an outside prescriber since Aug 2026. Three missed drug court check-ins and four positive drug screens since September.",
+        "attachments": {
+          "behaviour_report": true,
+          "attendance_log": true,
+          "schedule_and_grades": false
+        },
+        "attachment_labels": {
+          "behaviour_report": "Drug court case summary (UDS results)",
+          "attendance_log": "Drug court check-in log",
+          "schedule_and_grades": "Prior treatment records"
+        },
+        "referral_for": [
+          "Level 2.1 IOP"
+        ]
+      }
+    },
+    {
+      "id": "REF-117",
+      "client": "N.P., 36",
+      "school": "LC-MS2",
+      "source": "hiv_clinic",
+      "source_label": "HIV clinic partner",
+      "received": "2026-10-09",
+      "stage": "screening_booked",
+      "next": "Fri Oct 30, 10:00 am · ASAM assessment · J. Perez"
+    },
+    {
+      "id": "REF-116",
+      "client": "R.F., 50",
+      "school": "CC-ES1",
+      "source": "hiv_clinic",
+      "source_label": "HIV clinic partner",
+      "received": "2026-10-06",
+      "stage": "grant_program",
+      "next": "Routed Oct 8 · Ryan White / SAPTA grant · no Medicaid, no PA"
+    }
+  ],
+  "requests": [
+    {
+      "id": "R-0416",
+      "client": "TW",
+      "payer": "humana",
+      "channel": "fax",
+      "service": "Level 2.1 IOP · H0015",
+      "level": "2.1",
+      "type": "initial",
+      "units_requested": 72,
+      "units_basis": "9 units a week × 8 weeks (3 h a day, 3 days a week)",
+      "dates": "2026-10-26 to 2026-12-18",
+      "stage": "submitted",
+      "sent": "2026-10-22T14:06",
+      "fax_ref": "F-2291",
+      "receipt_confirmed": "2026-10-27T10:12",
+      "receipt_by": "cdiaz",
+      "decision_due": "2026-10-29",
+      "signed_pdf": "R-0416_T.W._initial_signed.pdf",
+      "pages": 11,
+      "attachments": [
+        "SilverSummit PA request",
+        "ASAM six-dimension summary",
+        "Treatment plan",
+        "UDS result · assessment day Oct 20"
+      ]
+    },
+    {
+      "id": "R-0411",
+      "client": "MR",
+      "payer": "anthem",
+      "channel": "availity",
+      "service": "Level 2.1 IOP · H0015",
+      "level": "2.1",
+      "type": "continued_stay",
+      "units_requested": 36,
+      "stage": "draft_ready",
+      "renew_by": "2026-11-13",
+      "draft_sources": {
+        "daily_notes": 24,
+        "weekly_calls": 8,
+        "monthly_collaterals": 2,
+        "uds_results": 9
+      },
+      "draft_source_labels": {
+        "daily_notes": "IOP group notes",
+        "weekly_calls": "individual sessions",
+        "monthly_collaterals": "drug court collateral contacts",
+        "uds_results": "UDS results"
+      },
+      "argument": "D5: abstinent 5 weeks inside the Level 2.1 structure; relapse risk remains high without it; step-down criteria not yet met"
+    },
+    {
+      "id": "R-0408",
+      "client": "KT",
+      "payer": "anthem",
+      "channel": "availity",
+      "service": "Level 1 outpatient · H0004/H0005",
+      "level": "1",
+      "type": "initial",
+      "units_requested": 48,
+      "stage": "info_requested",
+      "sent": "2026-10-21",
+      "info_requested_at": "2026-10-28T17:40",
+      "reply_due": "2026-10-29T17:40"
+    },
+    {
+      "id": "R-0402",
+      "client": "DW",
+      "payer": "sentara",
+      "channel": "fax",
+      "service": "Level 2.1 IOP · H0015",
+      "level": "2.1",
+      "type": "initial",
+      "units_requested": 72,
+      "units_offered": 15,
+      "sessions_offered": 5,
+      "stage": "partial_decide",
+      "sent": "2026-10-26",
+      "offer_call": "2026-10-27",
+      "reply_by": "2026-10-30",
+      "next_request_after_session": 3
+    },
+    {
+      "id": "R-0399",
+      "client": "A.L., 38",
+      "payer": "humana",
+      "channel": "fax",
+      "service": "Level 2.1 IOP · H0015",
+      "level": "2.1",
+      "type": "initial",
+      "units_requested": 72,
+      "stage": "overdue",
+      "sent": "2026-10-19",
+      "fax_ref": "F-2280",
+      "decision_due": "2026-10-23"
+    },
+    {
+      "id": "R-0391",
+      "client": "JO",
+      "payer": "aetna",
+      "channel": "fax",
+      "service": "Level 1 outpatient · H0004/H0005",
+      "level": "1",
+      "type": "early_discharge_new_initial",
+      "units_requested": 48,
+      "stage": "submitted",
+      "fax_ref": "F-2287"
+    },
+    {
+      "id": "R-0388",
+      "client": "TN",
+      "payer": "sentara",
+      "channel": "fax",
+      "service": "Level 2.1 IOP · H0015",
+      "level": "2.1",
+      "type": "peer_to_peer",
+      "units_requested": 36,
+      "units_awarded": 0,
+      "stage": "peer_to_peer_booked",
+      "denied_on": "2026-10-26",
+      "denial_reason": "abstinent in treatment · no longer meets medical necessity for Level 2.1",
+      "p2p_at": "2026-11-04T14:00",
+      "p2p_with": "Molina plan medical director"
+    },
+    {
+      "id": "R-0384",
+      "client": "EC",
+      "payer": "anthem",
+      "channel": "availity",
+      "service": "Outpatient therapy · 90837 (mental health)",
+      "level": "1",
+      "type": "initial",
+      "units_requested": 12,
+      "stage": "denied",
+      "denied_on": "2026-10-22",
+      "denial_reason": "provider type not eligible for 90837 · mental health",
+      "appeal_days_left": 51
+    },
+    {
+      "id": "R-0395",
+      "client": "SB",
+      "payer": "uhc",
+      "channel": "portal",
+      "service": "Level 1 outpatient · H0004/H0005",
+      "level": "1",
+      "type": "continued_stay",
+      "units_requested": 48,
+      "units_awarded": 48,
+      "stage": "active",
+      "dates": "2026-09-14 to 2026-12-11"
+    },
+    {
+      "id": "R-0380",
+      "client": "LV",
+      "payer": "humana",
+      "channel": "fax",
+      "service": "Level 1 outpatient · H0004/H0005",
+      "level": "1",
+      "type": "continued_stay",
+      "units_requested": 48,
+      "units_awarded": 48,
+      "stage": "active",
+      "dates": "2026-09-21 to 2026-12-18"
+    },
+    {
+      "id": "R-0377",
+      "client": "PG",
+      "payer": "aetna",
+      "channel": "fax",
+      "service": "Level 1 outpatient · H0004/H0005",
+      "level": "1",
+      "type": "continued_stay",
+      "units_requested": 24,
+      "units_awarded": 24,
+      "stage": "active",
+      "dates": "2026-10-12 to 2027-01-08"
+    }
+  ],
+  "notes_sample": [
+    {
+      "client": "MR",
+      "staff": "khale",
+      "date": "2026-10-29",
+      "type": "daily",
+      "label": "IOP group note",
+      "direct_time_min": 180,
+      "units": 3,
+      "objective": 1,
+      "interventions": [
+        "CBT-RP",
+        "RP-G",
+        "SS"
+      ],
+      "mood": "Anxious → steady",
+      "progress": "Progressing – plan used without a prompt",
+      "contact_time": [
+        [
+          "09:00",
+          "10:00",
+          "Process group · check-in and weekend review"
+        ],
+        [
+          "10:10",
+          "11:00",
+          "Relapse prevention skills (CBT-RP)"
+        ],
+        [
+          "11:00",
+          "11:50",
+          "Seeking Safety · grounding"
+        ],
+        [
+          "11:50",
+          "12:00",
+          "Recovery plan check and UDS collection"
+        ]
+      ],
+      "dictation": "maria talked about a craving on saturday when her old roommate came by, she used her plan and left for a meeting, UDS today collected, she led part of the grounding exercise",
+      "dictation_es": "maria habló de un antojo el sábado cuando llegó su antigua compañera de cuarto, usó su plan y se fue a una reunión, se tomó la muestra de orina hoy, dirigió parte del ejercicio de enraizamiento",
+      "enhanced": "In IOP group (3 h, 9:00 am–12:00 pm) M.R. described a strong craving on Saturday when a former roommate who uses came to her door. She used her written craving plan (left the apartment and went to a community recovery meeting) and did not use. Staff used relapse prevention (CBT-RP) to map the trigger and rehearse a refusal; in Seeking Safety she led part of the grounding exercise. UDS collected today. Addresses Plan Objective 1 (D5 relapse prevention) and Objective 3 (D6 recovery environment)."
+    },
+    {
+      "client": "MR",
+      "staff": "khale",
+      "date": "2026-10-29",
+      "type": "weekly_guardian",
+      "label": "Weekly individual session",
+      "contact": "Client · individual session in person",
+      "duration_min": 50,
+      "discussed": "Week 9 of IOP. Five weeks abstinent (8 of 8 UDS negative since Sep 24). Still living in the shared apartment where two people use; sober-housing waitlist call made Oct 27. Worried about the Nov 13 authorization end; told the continued-stay request goes out next week.",
+      "follow_up": "Bring the sober-housing intake form Monday. Next individual session Nov 5."
+    },
+    {
+      "client": "MR",
+      "staff": "khale",
+      "date": "2026-10-29",
+      "type": "monthly_collateral",
+      "label": "Collateral contact · drug court",
+      "collateral": "Drug court case manager · R. Bell",
+      "method": "Phone · 11 min (42 CFR Part 2 release on file)",
+      "shared": "Drug court reports all check-ins kept in October and no sanctions since September. Judge moved her to phase 2 on Oct 22. Next status hearing Nov 12.",
+      "coordination": "CCC of SN sends attendance and UDS results weekly under the signed release. Treatment plan shared with the case manager Oct 22."
+    }
+  ],
+  "incidents": [
+    {
+      "date": "2026-10-24",
+      "client": "AM",
+      "school": "CC-ES2",
+      "level": 2,
+      "what": "Opioid overdose outside the clinic after group; staff gave naloxone and called EMS; transported to UMC, returned to group Oct 27. Safety plan and naloxone kit reviewed.",
+      "state_portal_filed": "2026-10-25T09:10",
+      "status": "complete"
+    },
+    {
+      "date": "2026-10-15",
+      "client": "DW",
+      "school": "CC-HS1",
+      "level": 3,
+      "what": "Arrived at group intoxicated (positive breath screen); sent home with a ride and a safety check-in call; day not billed.",
+      "status": "complete"
+    }
+  ],
+  "school_checkins": [],
+  "counselor_counts": [],
+  "analytics_baseline": {
+    "period": "12 months to Oct 2026",
+    "decided": 1846,
+    "partial": 0.47,
+    "median_award_on_150": 45,
+    "median_award_on_72": 45,
+    "median_award_basis": "72-unit Level 2.1 initial (H0015)",
+    "full_denials": 214,
+    "appeals_attempted": 61,
+    "appeals_overturned": 23,
+    "median_decision_days": 3,
+    "early_discharge_restarts": 58,
+    "step_downs": 58,
+    "unpaid_hours": 1240,
+    "unbillable_iop_hours": 1240,
+    "_keys": "early_discharge_restarts = step-downs (2.1 → 1) that needed a new initial; unpaid_hours = IOP hours delivered with no authorization in place (missed PA days, denials, timely filing)",
+    "monthly": [
+      [
+        "Nov",
+        2480,
+        1710
+      ],
+      [
+        "Dec",
+        2350,
+        1590
+      ],
+      [
+        "Jan",
+        2760,
+        1880
+      ],
+      [
+        "Feb",
+        2610,
+        1760
+      ],
+      [
+        "Mar",
+        2840,
+        1950
+      ],
+      [
+        "Apr",
+        2700,
+        1820
+      ],
+      [
+        "May",
+        2790,
+        1830
+      ],
+      [
+        "Jun",
+        2650,
+        1740
+      ],
+      [
+        "Jul",
+        2880,
+        1900
+      ],
+      [
+        "Aug",
+        2960,
+        1930
+      ],
+      [
+        "Sep",
+        3050,
+        1990
+      ],
+      [
+        "Oct",
+        3120,
+        2010
+      ]
+    ]
+  },
+  "compliance": {
+    "month": "2026-10",
+    "incident_reports": 6,
+    "cps_reports": 0,
+    "overdose_reversals": 1,
+    "qi_checked": "11 of 12",
+    "credentials_expiring_30d": 2,
+    "credentials": [
+      [
+        "khale",
+        "2026-11-12",
+        "2027-03",
+        "2027-08",
+        "CADC"
+      ],
+      [
+        "rowens",
+        "2027-06",
+        "2027-06",
+        "2026-11-20",
+        "CADC-I (intern)"
+      ],
+      [
+        "slane",
+        "2026-11-28",
+        "2027-02",
+        "2027-05",
+        "LCPC"
+      ],
+      [
+        "jreyes",
+        "2027-04",
+        "2027-04",
+        "2027-02",
+        "PRSS"
+      ],
+      [
+        "cdiaz",
+        "2027-05",
+        "2027-05",
+        "2027-03",
+        "LCSW"
+      ],
+      [
+        "jperez",
+        "2027-09",
+        "2027-09",
+        "2027-01",
+        "LCADC · Jun 2027"
+      ]
+    ]
+  },
+  "migration": {
+    "last_export": "2026-10-29",
+    "run_by": "dowens",
+    "active_students": 124,
+    "active_clients": 124,
+    "daily_notes": 21640,
+    "assessments": 1912,
+    "missing_signatures": 23,
+    "discharged_scheduled": "2026-11-15"
+  }
+}

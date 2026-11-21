@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Psyflo — Additional info request</title></head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}.nav.on .n{background:rgba(255,255,255,.22)}
+</style>
+</helmet>
+<div class="u-app">
+<aside style="flex:0 0 240px"></aside>
+<main class="u-main">
+  <header class="u-head">
+    <h1 class="u-title">{{title}}</h1>
+    <sc-if value="{{chip}}"><span class="{{chipCls}}">{{chip}}</span></sc-if>
+    <span class="u-sp"></span>
+    <span class="u-date">{{today}}</span>
+  </header>
+
+  <sc-if value="{{none}}">
+    <div class="b2-one"><a class="u-btn" href="Authorizations.dc.html">Authorizations</a></div>
+  </sc-if>
+
+  <sc-if value="{{has}}">
+    <div class="b2-grid">
+      <section class="b2-col" aria-label="Questions">
+        <div class="b2-lbl">{{pf}} asked</div>
+        <sc-if value="{{hasQuestions}}">
+          <ol class="b2-q" data-doc><sc-for list="{{questions}}" as="q"><li>{{q.text}}</li></sc-for></ol>
+        </sc-if>
+        <div class="b2-lbl">Received</div>
+        <div>{{asked}}</div>
+        <sc-if value="{{hasDue}}"><div class="b2-lbl">Due</div><div>{{due}}</div></sc-if>
+        <sc-if value="{{hasSent}}"><div class="b2-lbl">Sent</div><div>{{sentAt}}</div></sc-if>
+      </section>
+
+      <section class="b2-col" aria-label="Reply">
+        <div class="b2-lbl">{{replyLabel}} <sc-if value="{{edited}}"><span class="u-chip info">Edited</span></sc-if></div>
+        <sc-if value="{{!editing}}">
+          <div class="b2-doc draft" data-doc>
+            <sc-for list="{{answers}}" as="a"><p class="b2-ans"><b>{{a.head}}</b> {{a.html}}</p></sc-for>
+          </div>
+          <sc-if value="{{hasSources}}">
+            <details class="b2-det"><summary>Sources · {{nSources}}</summary>
+              <ul class="b2-srcs" data-doc><sc-for list="{{sources}}" as="x"><li><span class="b2-src">{{x.n}}</span>{{x.label}}</li></sc-for></ul>
+            </details>
+          </sc-if>
+        </sc-if>
+        <sc-if value="{{editing}}">
+          <textarea id="irText" class="b2-ta" data-doc aria-label="Reply" onInput="{{setText}}">{{text}}</textarea>
+        </sc-if>
+      </section>
+    </div>
+
+    <div class="b2-foot">
+      <a class="u-link b2-l" href="Authorizations.dc.html">← Authorizations</a>
+      <sc-if value="{{editing}}">
+        <button type="button" class="u-btn txt" onClick="{{cancel}}">Cancel</button>
+        <button type="button" class="u-btn pri" onClick="{{save}}">Save</button>
+      </sc-if>
+      <sc-if value="{{canEdit}}"><button type="button" class="u-btn txt" onClick="{{edit}}">Edit as text</button></sc-if>
+      <sc-if value="{{alt}}"><button type="button" class="u-btn txt" {{sendAttrs}} onClick="{{fax}}">Send by fax</button></sc-if>
+      <sc-if value="{{canSend}}"><button type="button" class="u-btn pri" {{sendAttrs}} onClick="{{sendPrimary}}">{{primary}}</button></sc-if>
+      <sc-if value="{{portalAgain}}"><button type="button" class="u-btn pri" onClick="{{again}}">Open again</button></sc-if>
+    </div>
+  </sc-if>
+</main>
+</div>
+</x-dc>
+</body>
+</html>

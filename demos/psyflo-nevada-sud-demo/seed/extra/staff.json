@@ -1,0 +1,872 @@
+{
+  "_about": "Staff / review / compliance / analytics / settings seed for Community Counseling Center of Southern Nevada. Synthetic. Merged over seed.json. Lena Ortiz (credentialing & billing) joins the two-person auth and billing team.",
+  "staff": [],
+  "clients": [
+    {
+      "id": "NK",
+      "initials": "N.K.",
+      "age": 61,
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3341,
+      "staff": "rowens",
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "humana"
+      }
+    },
+    {
+      "id": "PS",
+      "initials": "P.S.",
+      "age": 22,
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3342,
+      "staff": "rowens",
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "uhc"
+      }
+    },
+    {
+      "id": "RD",
+      "initials": "R.D.",
+      "age": 49,
+      "school": "CC-ES1",
+      "level": "2.1",
+      "harvest_no": 3343,
+      "staff": "rowens",
+      "stage": "in_service",
+      "medicaid": {
+        "status": "active",
+        "plan": "sentara"
+      }
+    }
+  ],
+  "notes": [
+    {
+      "id": "rq-lb-1029",
+      "client": "LB",
+      "staff": "rowens",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-29",
+      "units": 3,
+      "direct_time_min": 180,
+      "objective": 1,
+      "interventions": [
+        "CBT-RP",
+        "RP-G"
+      ],
+      "processed_at": "2026-10-29T12:12",
+      "review": "pending",
+      "dictation": "L.B. talked about payday being a trigger, we made a plan for friday, he shared in group",
+      "enhanced": "In IOP group L.B. [[named payday as his main high-risk situation (cravings rated 7 of 10 last Friday)]]. Staff [[used relapse prevention (CBT-RP)]] to build a Friday plan: [[direct deposit to his sister's account, meeting at 6 pm]]. He shared the plan in group [[without a prompt]]. [[Addresses Plan Objective 1 · D5]]."
+    },
+    {
+      "id": "rq-nk-1029",
+      "client": "NK",
+      "staff": "rowens",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-29",
+      "units": 3,
+      "direct_time_min": 180,
+      "objective": 2,
+      "interventions": [
+        "PS"
+      ],
+      "processed_at": "2026-10-29T12:18",
+      "review": "pending",
+      "dictation": "N.K. was quiet, said she's lonely since her friend moved, J. Reyes gave her two meeting options near her bus line",
+      "enhanced": "N.K. [[was withdrawn in process group and said she has felt isolated since a friend moved away]]. Staff [[linked her with peer recovery support]]; the PRSS [[gave two community meetings on her bus line (Tue, Thu evenings)]] and she chose Tuesday. [[Addresses Plan Objective 2 · D6 recovery environment]]."
+    },
+    {
+      "id": "rq-ps-1028",
+      "client": "PS",
+      "staff": "rowens",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-28",
+      "units": 2,
+      "direct_time_min": 125,
+      "processed_at": "2026-10-28T12:30",
+      "review": "pending",
+      "dictation": "P.S. was observed in group. he participated. no problems.",
+      "enhanced": null
+    },
+    {
+      "id": "rq-rd-1028",
+      "client": "RD",
+      "staff": "rowens",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-28",
+      "units": 3,
+      "direct_time_min": 180,
+      "objective": 3,
+      "interventions": [
+        "MI"
+      ],
+      "processed_at": "2026-10-28T12:21",
+      "review": "pending",
+      "dictation": "R.D. said he isn't sure he needs to stop drinking completely, we did pros and cons, he agreed to try two weeks",
+      "enhanced": "R.D. [[said he was unsure he needs to stop drinking entirely]]. Staff [[used motivational interviewing (decisional balance, 15 minutes)]]; R.D. [[named 3 costs of drinking (job warning, BP, his son's visits)]] and agreed to a 2-week abstinence trial. [[Addresses Plan Objective 3 · D4 readiness]]."
+    },
+    {
+      "id": "rq-lb-1028",
+      "client": "LB",
+      "staff": "rowens",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-28",
+      "units": 3,
+      "direct_time_min": 180,
+      "objective": 1,
+      "interventions": [
+        "RP-G"
+      ],
+      "processed_at": "2026-10-28T12:12",
+      "review": "pending",
+      "dictation": "L.B. practiced saying no to his cousin in role play, did it twice",
+      "enhanced": "In relapse prevention group L.B. [[rehearsed refusing an offer from his cousin (2 role plays)]]; [[second attempt without staff coaching]]. [[Addresses Plan Objective 1 · D5]]."
+    },
+    {
+      "id": "rq-nk-1027",
+      "client": "NK",
+      "staff": "rowens",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-27",
+      "units": 3,
+      "direct_time_min": 180,
+      "objective": 2,
+      "interventions": [
+        "PS"
+      ],
+      "processed_at": "2026-10-27T12:05",
+      "review": "pending",
+      "dictation": "N.K. went to her first meeting with the peer specialist, said it was ok",
+      "enhanced": "N.K. [[attended her first community recovery meeting with the PRSS]] and [[rated it \"okay, will go back\"]]. [[Addresses Plan Objective 2 · D6]]."
+    },
+    {
+      "id": "rq-rd-1027",
+      "client": "RD",
+      "staff": "rowens",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-27",
+      "units": 3,
+      "direct_time_min": 180,
+      "objective": 3,
+      "interventions": [
+        "MI"
+      ],
+      "processed_at": "2026-10-27T12:17",
+      "review": "pending",
+      "dictation": "R.D. did ok today, participated with reminders",
+      "enhanced": "R.D. [[participated in 2 of 3 group segments after one prompt]]; staff [[used motivational interviewing (reflections on his goals)]]. [[Quiet day: engaged with prompts; ambivalence about abstinence unchanged]]. [[Addresses Plan Objective 3 · D4]]."
+    },
+    {
+      "id": "rq-dw-1028",
+      "client": "DW",
+      "staff": "slane",
+      "type": "daily",
+      "label": "Individual session note",
+      "date": "2026-10-28",
+      "units": 1,
+      "direct_time_min": 50,
+      "objective": 1,
+      "interventions": [
+        "MI"
+      ],
+      "processed_at": "2026-10-28T16:40",
+      "review": "pending",
+      "dictation": "Worked with D.W. on coping skills. D.W. was cooperative and engaged. Waiting to hear if IOP is approved.",
+      "enhanced": "D.W. [[said waiting for the IOP decision makes him want to drink]]; staff [[used motivational interviewing]] and he [[named one coping step (call his sponsor)]]. [[Addresses Plan Objective 1 · D5]]."
+    },
+    {
+      "id": "kh-jt-1023",
+      "client": "JT",
+      "staff": "khale",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-23",
+      "units": 3,
+      "objective": 1,
+      "review": "approved",
+      "processed_at": "2026-10-23T12:10",
+      "dictation": "J.T. participated in all three segments and shared his trigger list. UDS collected."
+    },
+    {
+      "id": "kh-dp-1022",
+      "client": "DP",
+      "staff": "khale",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-22",
+      "units": 3,
+      "objective": 1,
+      "review": "approved",
+      "processed_at": "2026-10-22T12:12",
+      "dictation": "D.P. participated with support. Used urge surfing once during group."
+    },
+    {
+      "id": "kh-jt-1026",
+      "client": "JT",
+      "staff": "khale",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-26",
+      "units": 3,
+      "objective": 1,
+      "review": "approved",
+      "processed_at": "2026-10-26T12:09",
+      "dictation": "J.T. participated in all three segments with staff support."
+    },
+    {
+      "id": "kh-dp-1027",
+      "client": "DP",
+      "staff": "khale",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-27",
+      "units": 3,
+      "objective": 2,
+      "review": "approved",
+      "processed_at": "2026-10-27T12:15",
+      "dictation": "D.P. participated with support. Shared his recovery plan with a peer."
+    },
+    {
+      "id": "kh-jt-1028",
+      "client": "JT",
+      "staff": "khale",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-28",
+      "units": 3,
+      "objective": 1,
+      "review": "approved",
+      "processed_at": "2026-10-28T12:11",
+      "dictation": "J.T. led the check-in. UDS collected."
+    },
+    {
+      "id": "kh-dp-1028",
+      "client": "DP",
+      "staff": "khale",
+      "type": "daily",
+      "label": "IOP group note",
+      "date": "2026-10-28",
+      "units": 3,
+      "objective": 1,
+      "review": "approved",
+      "processed_at": "2026-10-28T12:13",
+      "dictation": "D.P. participated with staff support."
+    },
+    {
+      "id": "kh-wk-jt",
+      "client": "JT",
+      "staff": "khale",
+      "type": "weekly_guardian",
+      "label": "Weekly individual session",
+      "date": "2026-10-26",
+      "review": "approved",
+      "processed_at": "2026-10-26T16:02"
+    },
+    {
+      "id": "kh-wk-dp",
+      "client": "DP",
+      "staff": "khale",
+      "type": "weekly_guardian",
+      "label": "Weekly individual session",
+      "date": "2026-10-27",
+      "review": "approved",
+      "processed_at": "2026-10-27T16:10"
+    },
+    {
+      "id": "kh-wk-ag",
+      "client": "AG",
+      "staff": "khale",
+      "type": "weekly_guardian",
+      "label": "Weekly individual session",
+      "date": "2026-10-27",
+      "review": "approved",
+      "processed_at": "2026-10-27T16:25"
+    },
+    {
+      "id": "kh-wk-es",
+      "client": "ES",
+      "staff": "khale",
+      "type": "weekly_guardian",
+      "label": "Weekly individual session",
+      "date": "2026-10-28",
+      "review": "approved",
+      "processed_at": "2026-10-28T16:05"
+    },
+    {
+      "id": "kh-wk-cb",
+      "client": "CB",
+      "staff": "khale",
+      "type": "weekly_guardian",
+      "label": "Weekly individual session",
+      "date": "2026-10-28",
+      "review": "approved",
+      "processed_at": "2026-10-28T16:20"
+    },
+    {
+      "id": "kh-mc-mr",
+      "client": "MR",
+      "staff": "khale",
+      "type": "monthly_collateral",
+      "label": "Collateral contact",
+      "date": "2026-10-08",
+      "review": "approved",
+      "processed_at": "2026-10-08T15:40"
+    },
+    {
+      "id": "kh-mc-jt",
+      "client": "JT",
+      "staff": "khale",
+      "type": "monthly_collateral",
+      "label": "Collateral contact",
+      "date": "2026-10-13",
+      "review": "approved",
+      "processed_at": "2026-10-13T15:35"
+    },
+    {
+      "id": "kh-mc-es",
+      "client": "ES",
+      "staff": "khale",
+      "type": "monthly_collateral",
+      "label": "Collateral contact",
+      "date": "2026-10-20",
+      "review": "approved",
+      "processed_at": "2026-10-20T15:50"
+    },
+    {
+      "id": "kh-mc-cb",
+      "client": "CB",
+      "staff": "khale",
+      "type": "monthly_collateral",
+      "label": "Collateral contact",
+      "date": "2026-10-22",
+      "review": "approved",
+      "processed_at": "2026-10-22T15:30"
+    }
+  ],
+  "staff_dashboard": {
+    "source": "CCC of SN's Client Record export · Oct 29",
+    "site_avg_24h": 84,
+    "staff": {
+      "khale": {
+        "students": 8,
+        "clients": 8,
+        "in_24h": 92,
+        "flags": [
+          "Goal 3 (D6 housing) untouched for M.R. (4 weeks)"
+        ],
+        "rejected": [
+          {
+            "client": "MR",
+            "form": "IOP group note",
+            "date": "2026-10-27",
+            "why": "\"observed\" in the intervention line. Say what you did, not what you saw.",
+            "href": "ExtCase.dc.html?client=MR"
+          }
+        ],
+        "goals": [
+          [
+            "Group notes in before 1 pm",
+            "4 of 5 days this week",
+            80
+          ],
+          [
+            "Vary interventions",
+            "3 different ones per client this week, goal 3",
+            100
+          ],
+          [
+            "Name the ASAM dimension in every note",
+            "18 of 22 notes this month",
+            82
+          ],
+          [
+            "Safety plan whenever overdose risk is mentioned",
+            "2 of 2",
+            100
+          ]
+        ]
+      },
+      "rowens": {
+        "students": 5,
+        "clients": 5,
+        "in_24h": 97,
+        "flags": [],
+        "rejected": [],
+        "goals": [
+          [
+            "Name the goal in every note",
+            "9 of 14 notes this month",
+            64
+          ],
+          [
+            "Say what you did, not what you saw",
+            "no \"observed\" in 11 of 14 notes",
+            79
+          ],
+          [
+            "New-hire weeks",
+            "week 9 of 12 · clinical supervision weekly (CADC-I)",
+            75
+          ]
+        ]
+      },
+      "slane": {
+        "students": 9,
+        "clients": 9,
+        "other_done": 1,
+        "in_24h": 61,
+        "status": "needs support",
+        "flags": [
+          "4 session notes not in Client Record since Oct 21"
+        ],
+        "rejected": [
+          {
+            "client": "DW",
+            "form": "session note",
+            "date": "2026-10-21",
+            "why": "units do not match the session time",
+            "href": "ExtCase.dc.html?client=DW"
+          },
+          {
+            "client": "EC",
+            "form": "session note",
+            "date": "2026-10-20",
+            "why": "no plan objective named",
+            "href": "ExtCase.dc.html?client=EC"
+          }
+        ],
+        "goals": [
+          [
+            "Session notes in within 24 h",
+            "61% this month · goal 90%",
+            61
+          ],
+          [
+            "Catch-up block",
+            "20 minutes after the last session, 2 of 5 days",
+            40
+          ]
+        ]
+      },
+      "jreyes": {
+        "students": 11,
+        "clients": 11,
+        "other_done": 6,
+        "in_24h": 95,
+        "flags": [],
+        "chip_flags": [
+          "2 naloxone kits handed out this week"
+        ],
+        "rejected": [],
+        "goals": []
+      }
+    },
+    "assessments_due": [
+      {
+        "client": "AG",
+        "staff": "khale",
+        "instrument": "BAM",
+        "note": "monthly Brief Addiction Monitor; 17 questions, about 5 minutes."
+      },
+      {
+        "client": "ES",
+        "staff": "khale",
+        "instrument": "PHQ-9",
+        "note": "every 30 days; grant report pulls it."
+      }
+    ],
+    "collateral_who": {
+      "DP": "P&P officer",
+      "AG": "outside prescriber",
+      "MR": "drug court case manager",
+      "JT": "outside prescriber",
+      "ES": "HIV clinic case manager",
+      "CB": "primary care"
+    },
+    "goal_watch": {
+      "MR": {
+        "touched": "Goal 1 D5 · 22 notes. Goal 2 D3 · 9.",
+        "warn": "Goal 3 D6 housing · 0 in 4 weeks",
+        "trend": "improving (BAM use days 18 → 0)",
+        "prompt": "Bring J. Reyes in on the sober-housing search."
+      },
+      "JT": {
+        "touched": "Goal 1 · 25. Goal 2 · 18. Goal 3 · 12.",
+        "trend": "flat (PHQ-9 12 → 11)",
+        "prompt": "Same intervention 6 times running; 2 alternatives suggested."
+      },
+      "DP": {
+        "touched": "Goal 1 · 20. Goal 2 · 20.",
+        "trend": "improving (GAD-7 9 → 6)",
+        "prompt": "Molina 5-session auth: next request after session 3."
+      },
+      "AG": {
+        "touched": "Goal 1 · 17. Goal 2 · 11. Goal 3 · 6.",
+        "trend": "improving (BAM use days 9 → 3)",
+        "prompt": "BAM due; ask it in the individual session."
+      },
+      "ES": {
+        "touched": "Goal 1 · 14. Goal 2 · 4.",
+        "trend": "flat",
+        "prompt": "Grant-funded (SAPTA): no PA, but notes still count for the grant report."
+      },
+      "CB": {
+        "touched": "Goal 1 · 19. Goal 2 · 15.",
+        "trend": "improving (PHQ-9 15 → 10)",
+        "prompt": "On track."
+      }
+    },
+    "patterns": [
+      {
+        "who": "S. Lane · backlog.",
+        "text": "Session notes slipped after Oct 21; 4 not in Client Record. Offer a 20-minute catch-up block."
+      },
+      {
+        "who": "Overdose follow-up.",
+        "text": "A.M. overdose Oct 24; naloxone given by staff. Group reviewed naloxone use Oct 27."
+      }
+    ]
+  },
+  "compliance": {
+    "incident_breakdown": "4 client · 2 staff · 5 Level 2.1 · 1 Level 1",
+    "highest_need": [
+      {
+        "client": "AM",
+        "what": "1 overdose (naloxone by staff) · 1 ED visit",
+        "status": "safety plan updated",
+        "chip": "g"
+      },
+      {
+        "client": "DW",
+        "what": "arrived intoxicated Oct 15 · 2 positive UDS",
+        "status": "case review Nov 3",
+        "chip": "y"
+      },
+      {
+        "client": "TN",
+        "what": "continued stay denied · attending unpaid",
+        "status": "peer-to-peer Nov 4",
+        "chip": "y"
+      }
+    ],
+    "critical_meeting": "2026-11-03",
+    "risk_trigger": {
+      "count": 0,
+      "text": "1 overdose this quarter · a second triggers a risk review"
+    },
+    "qi": [
+      {
+        "id": "1.1",
+        "text": "All staff naloxone and CPR trained · 22 of 24 current",
+        "status": "2 expiring",
+        "chip": "y",
+        "checked": "2026-10-28"
+      },
+      {
+        "id": "1.3",
+        "text": "Incident reports reviewed within 5 days · 6 of 6",
+        "status": "checked Oct 28",
+        "chip": "g",
+        "checked": "2026-10-28"
+      },
+      {
+        "id": "2.1",
+        "text": "Level 2.1 clients have a current ASAM review (every 30 days) · 41 of 42",
+        "status": "checked Oct 28",
+        "chip": "g",
+        "checked": "2026-10-28"
+      },
+      {
+        "id": "2.3",
+        "text": "Risk review held when triggered · none triggered",
+        "status": "log the check",
+        "chip": "n",
+        "checked": null
+      },
+      {
+        "id": "3.2",
+        "text": "Clinical supervision documented for every CADC-I monthly · 3 of 3",
+        "status": "checked Oct 28",
+        "chip": "g",
+        "checked": "2026-10-28"
+      }
+    ],
+    "supervision": [
+      {
+        "date": "2026-10-28",
+        "staff": "rowens",
+        "text": "clinical supervision · CADC-I hours, week 9 of 12 · reviewed 14 notes, dimension naming improving",
+        "signed": "jperez"
+      },
+      {
+        "date": "2026-10-27",
+        "staff": "slane",
+        "text": "administrative · note backlog plan: 20-min block, check-in Nov 3",
+        "signed": "cdiaz"
+      },
+      {
+        "date": "2026-10-24",
+        "staff": "jreyes",
+        "text": "peer supervision · overdose response reviewed; naloxone stock checked",
+        "signed": "jperez"
+      }
+    ]
+  },
+  "analytics_baseline": {
+    "source": "CCC of SN's Client Record export · Oct 29 + the auth tracker",
+    "by_locality": {
+      "cc": {
+        "label": "Level 2.1 IOP",
+        "n": 1104,
+        "partial": 0.58,
+        "awarded_ratio": 0.64,
+        "median_award_on_150": 45,
+        "median_award_on_72": 45,
+        "full_denials": 131,
+        "median_decision_days": 3,
+        "early_discharge_restarts": 58,
+        "unpaid_hours": 980,
+        "share": 0.6
+      },
+      "lc": {
+        "label": "Level 1 outpatient",
+        "n": 742,
+        "partial": 0.31,
+        "awarded_ratio": 0.81,
+        "median_award_on_150": 40,
+        "median_award_on_72": 40,
+        "full_denials": 83,
+        "median_decision_days": 4,
+        "early_discharge_restarts": 0,
+        "unpaid_hours": 260,
+        "share": 0.4
+      }
+    },
+    "payer_awarded": {
+      "sentara": 0.52,
+      "anthem": 0.74,
+      "aetna": 0.69,
+      "humana": 0.66,
+      "uhc": 0.71,
+      "ffs": 0.88
+    },
+    "division_report": [
+      {
+        "school": "CC-ES1",
+        "students": 42,
+        "clients": 42,
+        "office_referrals_change": "+31 pts",
+        "uds_negative_change": "+31 pts",
+        "incidents": 3
+      },
+      {
+        "school": "CC-ES2",
+        "students": 18,
+        "clients": 18,
+        "office_referrals_change": "+22 pts",
+        "uds_negative_change": "+22 pts",
+        "incidents": 1
+      },
+      {
+        "school": "CC-MS1",
+        "students": 21,
+        "clients": 21,
+        "office_referrals_change": "+27 pts",
+        "uds_negative_change": "+27 pts",
+        "incidents": 0
+      },
+      {
+        "school": "CC-HS1",
+        "students": 14,
+        "clients": 14,
+        "office_referrals_change": "+15 pts",
+        "uds_negative_change": "+15 pts",
+        "incidents": 1
+      },
+      {
+        "school": "LC-MS2",
+        "students": 17,
+        "clients": 17,
+        "office_referrals_change": "+24 pts",
+        "uds_negative_change": "+24 pts",
+        "incidents": 1
+      },
+      {
+        "school": "LC-ES3",
+        "students": 12,
+        "clients": 12,
+        "office_referrals_change": "n/a (Level 1)",
+        "uds_negative_change": "n/a (Level 1)",
+        "incidents": 0
+      }
+    ],
+    "_keys": "division_report: students = active clients; office_referrals_change = change in the share of negative UDS since admission (kept for older code; read uds_negative_change)"
+  },
+  "migration": {
+    "plans_cnas": 248,
+    "incident_rows": 6,
+    "discharged_total": "~4,300",
+    "tables": [
+      {
+        "name": "Clients · authorizations (by entitlement) · units",
+        "cadence": "weekly",
+        "rows_key": "active_students"
+      },
+      {
+        "name": "IOP group notes and session notes",
+        "cadence": "weekly",
+        "rows_key": "daily_notes"
+      },
+      {
+        "name": "Treatment plans · ASAM assessments",
+        "cadence": "weekly",
+        "rows_key": "plans_cnas"
+      },
+      {
+        "name": "Measures (BAM, PHQ-9, GAD-7) and UDS results",
+        "cadence": "monthly",
+        "rows_key": "assessments"
+      },
+      {
+        "name": "Incident reports",
+        "cadence": "monthly",
+        "rows_key": "incident_rows"
+      },
+      {
+        "name": "Discharged clients (2009–2026)",
+        "cadence": "once",
+        "rows_key": "discharged_total",
+        "scheduled": true
+      }
+    ],
+    "missing": [
+      {
+        "client": "MR",
+        "form": "ASAM 30-day review",
+        "date": "2026-09-30",
+        "what": "scanned copy found in Documents",
+        "status": "resolved"
+      },
+      {
+        "client": "JT",
+        "form": "Treatment plan",
+        "date": "2026-09-02",
+        "what": "no client signature anywhere",
+        "status": "client"
+      },
+      {
+        "client": "DP",
+        "form": "Release of information · P&P",
+        "date": "2026-10-10",
+        "what": "printed, not back",
+        "status": "client"
+      },
+      {
+        "client": "CB",
+        "form": "Treatment plan",
+        "date": "2026-09-15",
+        "what": "client signature line blank",
+        "status": "client"
+      },
+      {
+        "client": "AG",
+        "form": "ASAM 30-day review",
+        "date": "2026-07-30",
+        "what": "signed by the counselor, not the LCADC",
+        "status": "clinician"
+      }
+    ]
+  },
+  "library": [
+    {
+      "kind": "Consent",
+      "name": "AI recording of screening and assessment",
+      "note": "in the consent packet · 42 CFR Part 2 notice · attorney review pending (demo)",
+      "status": "in packet",
+      "chip": "g"
+    },
+    {
+      "kind": "Consent",
+      "name": "Note enhancement",
+      "note": "staff notice · in onboarding",
+      "status": "in packet",
+      "chip": "g"
+    },
+    {
+      "kind": "Consent",
+      "name": "Release of information · referral partners",
+      "note": "drug court, P&P · 42 CFR Part 2 compliant",
+      "status": "in packet",
+      "chip": "g"
+    },
+    {
+      "kind": "Consent",
+      "name": "Scope",
+      "note": "Medicaid clients needing a PA · grant-only clients' records never read",
+      "status": "enforced",
+      "chip": "n"
+    },
+    {
+      "kind": "Consent",
+      "name": "Business associate / QSOA agreement",
+      "note": "",
+      "status": "signed Oct 3",
+      "chip": "g"
+    },
+    {
+      "kind": "Knowledge",
+      "name": "ASAM Criteria · six dimensions and continued-service criteria",
+      "note": "dimension names and level definitions",
+      "status": "current",
+      "chip": "g"
+    },
+    {
+      "kind": "Knowledge",
+      "name": "CCC of SN's intervention list and rationale",
+      "note": "MI, CBT-RP, MAT coordination, Seeking Safety, peer support, groups",
+      "status": "current",
+      "chip": "g"
+    },
+    {
+      "kind": "Knowledge",
+      "name": "Nevada Medicaid Services Manual Ch. 400 · DPBH/SAPTA certification",
+      "note": "checked weekly for changes",
+      "status": "Oct 2026",
+      "chip": "g"
+    },
+    {
+      "kind": "Knowledge",
+      "name": "Each MCO's provider manual and PA forms",
+      "note": "5 plans · checked monthly",
+      "status": "Molina updated Oct 20",
+      "chip": "y"
+    },
+    {
+      "kind": "Knowledge",
+      "name": "DSM-5-TR · ICD-10 F10–F19 codes",
+      "note": "citation library · reviewed quarterly",
+      "status": "current",
+      "chip": "g"
+    },
+    {
+      "kind": "Knowledge",
+      "name": "Timely filing rules per plan (180 days · confirm)",
+      "note": "",
+      "status": "tracking",
+      "chip": "n"
+    }
+  ]
+}

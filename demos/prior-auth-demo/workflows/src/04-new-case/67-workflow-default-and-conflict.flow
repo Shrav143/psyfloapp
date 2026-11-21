@@ -1,0 +1,48 @@
+title: Authorizations › New Case › Workflow › Default process and equal matches
+route: /authorizations/new/:draftId (the Workflow line under the stepper)
+intro: When no published workflow fits the case, New Case uses a clearly labelled default process for the request type and invents no payer rule. When two published workflows are equally specific, nothing is picked silently: the line names both, the default is used, and a person chooses in a small side panel. The choice is written to the case's history with who made it.
+dir: TD
+also: The default is illustrative. It is not payer policy and it never claims a payer rule. The wording of the default is the same for each request type: 'Default process for a concurrent review. No payer workflow matches. Illustrative, not payer policy.'
+---
+start s1 "The case's payer, level of care and Authorization type are known"
+process p1 "The published workflows are matched"
+decision d1 "What did the match find?"
+
+group gNone "Nothing matches"
+  store n1 "The labelled default for the request type is stored on the draft\n'Default process for a concurrent review'"
+  store n2 "History: 'Default workflow applied: Default process for a concurrent review'\nDetail: the match explanation"
+  screen n3 "Workflow line\n'Workflow: Default process for a concurrent review'\nPill 'Illustrative default'\nNo version or payer after the name"
+  click n4 "Hover over the info icon"
+  overlay n5 "'Default process for a concurrent review. No payer workflow matches. Illustrative, not payer policy.'"
+endgroup
+
+group gConf "Two workflows are equally specific"
+  store c1 "The default is stored on the draft for now"
+  screen c2 "Workflow line\n'Workflow: Default process for a ... Illustrative default'\nIn amber: '<Workflow A> and <Workflow B> match equally. The default is used until you choose.'\nButton 'Choose a workflow'"
+  click c3 "Click 'Choose a workflow'"
+  overlay c4 "Side panel 'Choose a workflow'\nOne radio choice per workflow: name, version, request type, services, effective date, why it matched"
+  input c5 "Pick one"
+  click c6 "Click 'Use this workflow'"
+  click c7 "Click 'Keep the default for now', press Escape, or click outside"
+  process c8 "The panel closes\nThe default stays"
+  store c9 "The choice is stored on the case with the names it was chosen among\nThe workflow replaces the default (it is pinned once the workflow has run past Intake)"
+  store c10 "History: 'Workflow chosen: Initial Authorization, Residential SUD v3 (Initial Authorization, IOP matched equally)'\nDetail: who chose and why they matched"
+  toast c11 "'Workflow applied'\n'Initial Authorization, Residential SUD, version 3 is what this case follows now.'"
+endgroup
+
+decision d2 "Does the case change so the same two no longer compete?"
+process p2 "The choice no longer holds\nA fresh match is made (before the workflow has run past Intake), or offered for review (after)"
+goto g1 "Continues in: Authorizations › New Case › Workflow › Match and pin the payer workflow"
+goto g2 "Continues in: Authorizations › New Case › Workflow › The case changed after the workflow started"
+end e1 "The case follows the workflow a person chose"
+end e2 "The case follows the default, clearly labelled"
+
+s1 --> p1 --> d1
+d1 -->|No match| n1 --> n2 --> n3 --> e2
+n3 --> n4 --> n5
+d1 -->|Equal matches| c1 --> c2 --> c3 --> c4 --> c5 --> c6 --> c9 --> c10 --> c11 --> e1
+c4 --> c7 --> c8 --> e2
+d1 -->|One best match| g1
+c11 --> d2
+d2 -->|Yes| p2 --> g2
+d2 -->|No| e1

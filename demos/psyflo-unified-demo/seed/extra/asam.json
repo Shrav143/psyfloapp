@@ -1,0 +1,696 @@
+{
+ "_about": "ASAM multidimensional assessments (The ASAM Criteria, 3rd edition dimensions). One row per assessment: the clinician's dimensional risk rating (0 none to 4 severe) and a note per dimension. The level of care that a set of ratings fits is derived at read time by web/js/shared/asam.js, never stored here. `level_recommended` is the clinician's own recommendation. Synthetic data; shown as 'Illustrative sample'.",
+ "asam_assessments": [
+  {
+   "id": "ASM-TW-1",
+   "client": "TW",
+   "date": "2026-10-16",
+   "kind": "initial",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0,
+     "note": "Last cannabis use Oct 14. No withdrawal symptoms; no alcohol or opioid use."
+    },
+    "2": {
+     "rating": 0,
+     "note": "No medical conditions and no medications."
+    },
+    "3": {
+     "rating": 2,
+     "note": "Generalized anxiety symptoms (GAD-7 11). Denies thoughts of suicide. Safety plan reviewed Oct 16."
+    },
+    "4": {
+     "rating": 2,
+     "note": "Came to intake willingly. Wants to stay eligible for basketball; unsure he wants to stop all use."
+    },
+    "5": {
+     "rating": 3,
+     "note": "Cannabis daily for 8 months. Two quit attempts (Aug, Sept) each lasted under a week. THC screen positive Oct 16."
+    },
+    "6": {
+     "rating": 2,
+     "note": "Lives with his grandmother, who does not use. Two friends who use daily are his main contacts after class."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-16",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-MR-1",
+   "client": "MR",
+   "date": "2026-08-12",
+   "kind": "initial",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 1,
+     "note": "Last drink Aug 9. Mild tremor on day 2, resolved without medication."
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 2,
+     "note": "PHQ-9 16. Denies thoughts of suicide."
+    },
+    "4": {
+     "rating": 3,
+     "note": "Referred by his mother. Does not see drinking as a problem yet."
+    },
+    "5": {
+     "rating": 3,
+     "note": "Drinking 3 to 4 times a week since spring; four failed attempts to cut down."
+    },
+    "6": {
+     "rating": 3,
+     "note": "Stepfather drinks daily in the home. Mother works two jobs."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-08-12",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-MR-2",
+   "client": "MR",
+   "date": "2026-10-14",
+   "kind": "reassessment",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0,
+     "note": "No alcohol since Sept 27. No withdrawal signs at any visit."
+    },
+    "2": {
+     "rating": 0,
+     "note": "No medical conditions."
+    },
+    "3": {
+     "rating": 2,
+     "note": "Depressive symptoms persist (PHQ-9 12, down from 16 in August). Denies thoughts of suicide. Seeing the psychiatrist monthly."
+    },
+    "4": {
+     "rating": 2,
+     "note": "Attended 41 of 48 scheduled groups since Aug 18. Names two goals of his own."
+    },
+    "5": {
+     "rating": 2,
+     "note": "One lapse Sept 27 (two drinks at a party). Negative screens Oct 1 and Oct 13."
+    },
+    "6": {
+     "rating": 2,
+     "note": "Stepfather moved out in September. Mother supports treatment. Still sees drinking peers on weekends."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-14",
+   "provenance": "seed",
+   "plan": "Step down to Level 1 when D3 is 1 or lower and there is no use for 30 days."
+  },
+  {
+   "id": "ASM-DW-1",
+   "client": "DW",
+   "date": "2026-07-21",
+   "kind": "initial",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0
+    },
+    "2": {
+     "rating": 1
+    },
+    "3": {
+     "rating": 2,
+     "note": "ADHD with anxiety. PHQ-9 9."
+    },
+    "4": {
+     "rating": 3,
+     "note": "Ambivalent; wants to keep sports eligibility."
+    },
+    "5": {
+     "rating": 3,
+     "note": "Cannabis most days since age 13, alcohol at parties."
+    },
+    "6": {
+     "rating": 3,
+     "note": "Older brother uses cannabis in the home."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-07-21",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-DW-2",
+   "client": "DW",
+   "date": "2026-10-09",
+   "kind": "reassessment",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0,
+     "note": "No withdrawal symptoms. Last use Oct 5."
+    },
+    "2": {
+     "rating": 1,
+     "note": "ADHD medication managed by his pediatrician. Blood pressure normal."
+    },
+    "3": {
+     "rating": 2,
+     "note": "ADHD with anxiety (PHQ-9 9, GAD-7 10). Safety plan reviewed Oct 3."
+    },
+    "4": {
+     "rating": 2,
+     "note": "Attended 8 of 10 scheduled groups. Wants to keep sports eligibility."
+    },
+    "5": {
+     "rating": 3,
+     "note": "THC screen positive Oct 5. Reported drinking at a party Oct 4. Two quit attempts in the period, each under a week."
+    },
+    "6": {
+     "rating": 3,
+     "note": "Older brother uses cannabis in the home. Mother works nights."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-09",
+   "provenance": "seed",
+   "plan": "Reassess within 7 days of any emergency visit or new incident."
+  },
+  {
+   "id": "ASM-KT-1",
+   "client": "KT",
+   "date": "2026-10-09",
+   "kind": "initial",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 2,
+     "note": "Binge drinking on weekends (5 to 8 drinks). Tremor and nausea after a binge in August. Last drink Oct 4; no symptoms in the last 30 days."
+    },
+    "2": {
+     "rating": 1,
+     "note": "Mild anemia noted by her pediatrician in September; on iron."
+    },
+    "3": {
+     "rating": 1,
+     "note": "PHQ-9 6. Denies thoughts of suicide."
+    },
+    "4": {
+     "rating": 3,
+     "note": "Referred through juvenile court diversion. Does not think her drinking is a problem; agreed to try treatment to close the case."
+    },
+    "5": {
+     "rating": 3,
+     "note": "Seven drinking episodes in the 30 days before intake. Two quit attempts failed within days. Prior weekly counseling Jan to Apr 2026 did not reduce use."
+    },
+    "6": {
+     "rating": 2,
+     "note": "Lives with her father and stepmother; alcohol is kept unlocked in the home. A supportive aunt lives nearby."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-09",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-TN-1",
+   "client": "TN",
+   "date": "2026-10-01",
+   "kind": "initial",
+   "assessor": "jperez",
+   "level_recommended": "2.5",
+   "dims": {
+    "1": {
+     "rating": 1,
+     "note": "Last use of a non-prescribed stimulant Sept 28. Fatigue and low mood for 3 days afterward; no medical withdrawal."
+    },
+    "2": {
+     "rating": 1,
+     "note": "Weight loss of 8 pounds in 2 months. Pediatrician follow-up scheduled."
+    },
+    "3": {
+     "rating": 3,
+     "note": "Major depression (PHQ-9 18). Passive thoughts of death; no plan. Safety plan completed Oct 1. Psychiatry visit booked."
+    },
+    "4": {
+     "rating": 2,
+     "note": "Agreed to treatment. Wants to return to the track team."
+    },
+    "5": {
+     "rating": 3,
+     "note": "Non-prescribed stimulants 4 to 5 days a week since June. Three use episodes in the 14 days before intake."
+    },
+    "6": {
+     "rating": 3,
+     "note": "Shares a bedroom with a cousin who sells pills. Mother works two jobs and is rarely home in the evening."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-01",
+   "provenance": "seed",
+   "plan": "Level 2.5 was recommended. The family cannot provide transport for 20 hours a week, so Level 2.1 with added psychiatry is requested."
+  },
+  {
+   "id": "ASM-EC-1",
+   "client": "EC",
+   "date": "2026-10-12",
+   "kind": "initial",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0,
+     "note": "Last use Oct 11. No withdrawal symptoms."
+    },
+    "2": {
+     "rating": 0,
+     "note": "No medical conditions."
+    },
+    "3": {
+     "rating": 1,
+     "note": "PHQ-9 5. Denies thoughts of suicide."
+    },
+    "4": {
+     "rating": 3,
+     "note": "Says use is \"not a big deal\". Came to intake because the school required it."
+    },
+    "5": {
+     "rating": 3,
+     "note": "Four counselor referrals in 30 days: THC screen positive Oct 5, found with a vape Oct 12 and Oct 19, reported use before class Oct 26."
+    },
+    "6": {
+     "rating": 3,
+     "note": "Parents separated in September. He moves between two homes and neither sets rules on use. An older cousin supplies vapes."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-12",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-JO-1",
+   "client": "JO",
+   "date": "2026-10-20",
+   "kind": "initial",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0,
+     "note": "No withdrawal symptoms. Last use Oct 11."
+    },
+    "2": {
+     "rating": 0,
+     "note": "No medical conditions."
+    },
+    "3": {
+     "rating": 1,
+     "note": "PHQ-9 4. Denies thoughts of suicide."
+    },
+    "4": {
+     "rating": 2,
+     "note": "Returned on his own after the family moved. Asked to restart."
+    },
+    "5": {
+     "rating": 2,
+     "note": "One lapse Oct 11, three weeks after leaving care Sept 18. Negative screens Oct 15 and Oct 20."
+    },
+    "6": {
+     "rating": 1,
+     "note": "New address since September. Lives with his aunt, who supports treatment. Changed schools in October."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-20",
+   "provenance": "seed",
+   "plan": "Early discharge Sept 18 after 5 missed groups during the move; a new initial request is made at Level 2.1."
+  },
+  {
+   "id": "ASM-SB-1",
+   "client": "SB",
+   "date": "2026-07-08",
+   "kind": "initial",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 2
+    },
+    "4": {
+     "rating": 3,
+     "note": "Ambivalent at intake."
+    },
+    "5": {
+     "rating": 3,
+     "note": "Daily cannabis; positive screens in July."
+    },
+    "6": {
+     "rating": 2
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-07-08",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-SB-2",
+   "client": "SB",
+   "date": "2026-09-24",
+   "kind": "reassessment",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 2,
+     "note": "Anxiety (GAD-7 9). Sees the psychiatrist monthly."
+    },
+    "4": {
+     "rating": 2,
+     "note": "Attends consistently; 36 of 40 groups."
+    },
+    "5": {
+     "rating": 2,
+     "note": "One lapse Sept 6. Negative screens since Sept 13."
+    },
+    "6": {
+     "rating": 2,
+     "note": "Lives with both parents; a sibling vapes."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-09-24",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-LV-1",
+   "client": "LV",
+   "date": "2026-06-24",
+   "kind": "initial",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 2
+    },
+    "4": {
+     "rating": 3
+    },
+    "5": {
+     "rating": 3,
+     "note": "Weekend drinking, 3 episodes a month before intake."
+    },
+    "6": {
+     "rating": 3,
+     "note": "Parents divorced; changes homes weekly."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-06-24",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-LV-2",
+   "client": "LV",
+   "date": "2026-09-10",
+   "kind": "reassessment",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 2,
+     "note": "Social anxiety (GAD-7 12)."
+    },
+    "4": {
+     "rating": 2,
+     "note": "Attends evening groups regularly."
+    },
+    "5": {
+     "rating": 2,
+     "note": "No use since July 30. Negative screens."
+    },
+    "6": {
+     "rating": 3,
+     "note": "Alternating homes; no alcohol rules at her father's house."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-09-10",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-PG-1",
+   "client": "PG",
+   "date": "2026-09-04",
+   "kind": "reassessment",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 2,
+     "note": "Anxiety (GAD-7 10)."
+    },
+    "4": {
+     "rating": 2
+    },
+    "5": {
+     "rating": 3,
+     "note": "One lapse Aug 11; negative screens since."
+    },
+    "6": {
+     "rating": 2,
+     "note": "Living with his father."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-09-04",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-PG-2",
+   "client": "PG",
+   "date": "2026-10-02",
+   "kind": "reassessment",
+   "assessor": "jperez",
+   "level_recommended": "1",
+   "dims": {
+    "1": {
+     "rating": 0,
+     "note": "No withdrawal symptoms."
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 1,
+     "note": "GAD-7 6. Sees his counselor weekly."
+    },
+    "4": {
+     "rating": 1,
+     "note": "Attended every scheduled group before the step-down on Sept 8."
+    },
+    "5": {
+     "rating": 2,
+     "note": "No use since Aug 11. Six negative screens."
+    },
+    "6": {
+     "rating": 1,
+     "note": "Lives with his father, who supports treatment. Back at school full time."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-02",
+   "provenance": "seed",
+   "plan": "Continue Level 1. Move back to Level 2.1 if two screens are positive or D5 rises to 3."
+  },
+  {
+   "id": "ASM-JT-1",
+   "client": "JT",
+   "date": "2026-10-06",
+   "kind": "reassessment",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 2,
+     "note": "Depressive symptoms (PHQ-9 11)."
+    },
+    "4": {
+     "rating": 2
+    },
+    "5": {
+     "rating": 2,
+     "note": "No use since Sept 14."
+    },
+    "6": {
+     "rating": 2,
+     "note": "Stable home; friends who use at school."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-06",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-DP-1",
+   "client": "DP",
+   "date": "2026-09-30",
+   "kind": "reassessment",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 1
+    },
+    "4": {
+     "rating": 2
+    },
+    "5": {
+     "rating": 3,
+     "note": "Two lapses in September; screen positive Sept 22."
+    },
+    "6": {
+     "rating": 2,
+     "note": "Cousin lives in the home and uses."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-09-30",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-AG-1",
+   "client": "AG",
+   "date": "2026-10-12",
+   "kind": "reassessment",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 2,
+     "note": "PHQ-9 10."
+    },
+    "4": {
+     "rating": 2
+    },
+    "5": {
+     "rating": 2,
+     "note": "No use since Sept 29."
+    },
+    "6": {
+     "rating": 2
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-12",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-CB-1",
+   "client": "CB",
+   "date": "2026-09-18",
+   "kind": "reassessment",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 0
+    },
+    "2": {
+     "rating": 1,
+     "note": "Asthma, controlled."
+    },
+    "3": {
+     "rating": 2,
+     "note": "GAD-7 9."
+    },
+    "4": {
+     "rating": 2
+    },
+    "5": {
+     "rating": 2,
+     "note": "No use since Aug 30."
+    },
+    "6": {
+     "rating": 2
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-09-18",
+   "provenance": "seed"
+  },
+  {
+   "id": "ASM-AL-1",
+   "client": "A.L., 15",
+   "date": "2026-10-05",
+   "kind": "initial",
+   "assessor": "jperez",
+   "level_recommended": "2.1",
+   "dims": {
+    "1": {
+     "rating": 1,
+     "note": "Last drink Oct 2. Mild shakiness the next morning; none since."
+    },
+    "2": {
+     "rating": 0
+    },
+    "3": {
+     "rating": 2,
+     "note": "PHQ-9 10. Denies thoughts of suicide."
+    },
+    "4": {
+     "rating": 2,
+     "note": "Agreed to attend after a family meeting."
+    },
+    "5": {
+     "rating": 3,
+     "note": "Drinking and cannabis on most weekends; four episodes in 30 days."
+    },
+    "6": {
+     "rating": 2,
+     "note": "Lives with her mother; older sister uses in the home."
+    }
+   },
+   "source": "ASAM multidimensional assessment · 2026-10-05",
+   "provenance": "seed"
+  }
+ ]
+}

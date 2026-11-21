@@ -1,0 +1,116 @@
+/* The mock Lauris EHR, in its own browser tab. The look follows the mock Lauris of the Unified demo: slate header and left nav with a gold marker, white page, blue links and primary button.
+   Every rule sits under .lauris so none of it reaches the Psyflo screens. green (.g) = already in Lauris, yellow (.y) = the Psyflo extension typed it, check it. */
+
+.lauris { display: flex; flex-direction: column; height: 100vh; min-height: 0; background: #F2F3F5; color: #222; }
+.lauris *, .lauris *::before, .lauris *::after { box-sizing: border-box; }
+
+/* ---- the browser around the page (not Lauris itself) ---- */
+.lauris .lb-bar { flex: none; background: #DEE1E6; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #202124; }
+.lauris .lb-tabs { display: flex; align-items: flex-end; gap: 4px; padding: 6px 12px 0; height: 36px; }
+.lauris .lb-dots { display: flex; gap: 7px; align-items: center; align-self: center; margin-right: 10px; padding-bottom: 4px; }
+.lauris .lb-dots i { width: 11px; height: 11px; border-radius: 50%; background: #B9BDC4; display: block; }
+.lauris .lb-tab { display: flex; align-items: center; gap: 8px; height: 30px; max-width: 320px; padding: 0 14px; border: 0; border-radius: 8px 8px 0 0; background: transparent; color: #4A4F57; font: 12px system-ui, -apple-system, "Segoe UI", sans-serif; cursor: pointer; white-space: nowrap; }
+.lauris .lb-tab:hover { background: rgba(255, 255, 255, 0.5); }
+.lauris .lb-tab[aria-current="page"] { background: #fff; color: #202124; cursor: default; font-weight: 600; }
+.lauris .lb-tab span { overflow: hidden; text-overflow: ellipsis; }
+.lauris .lb-fav { width: 14px; height: 14px; border-radius: 3px; flex: none; display: grid; place-items: center; font-size: 9px; font-weight: 700; color: #fff; }
+.lauris .lb-fav.ps { background: #151B24; color: #F0B44C; }
+.lauris .lb-fav.la { background: #2F3A4A; color: #E0A030; }
+.lauris .lb-nav { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; background: #fff; border-bottom: 1px solid #D9DCE1; }
+.lauris .lb-btn { display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; color: #5F6368; }
+.lauris .lb-btn[aria-disabled="true"] { opacity: 0.55; cursor: default; }
+.lauris .lb-url { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px; border-radius: 14px; background: #F1F3F4; color: #3C4043; font-size: 12px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.lauris .lb-url svg { flex: none; color: #5F6368; }
+.lauris .lb-url span { overflow: hidden; text-overflow: ellipsis; }
+.lauris .lb-ext { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 10px 0 9px; border: 0; border-radius: 8px; background: #151B24; color: #fff; font: 600 12px "DM Sans Var", "DM Sans", system-ui, sans-serif; cursor: pointer; }
+.lauris .lb-ext:hover { background: #222A35; }
+.lauris .lb-ext i { width: 8px; height: 8px; border-radius: 50%; background: #3DBE8B; flex: none; }
+.lauris .lb-ext b { font-weight: 700; }
+.lauris .lb-ext b em { color: #F0B44C; font-style: normal; }
+.lauris .lb-ext .n { min-width: 18px; height: 18px; padding: 0 5px; display: inline-grid; place-items: center; border-radius: 999px; background: #F0B44C; color: #151B24; font-size: 11px; font-weight: 700; }
+.lauris .lb-ext[aria-pressed="false"] { background: #fff; color: #151B24; box-shadow: inset 0 0 0 1px #C9CDD3; }
+.lauris .lb-ext[aria-pressed="false"] b { color: #151B24; }
+
+/* ---- below the toolbar: the Lauris app and the docked extension ---- */
+.lauris .lb-body { flex: 1; min-height: 0; display: flex; }
+.lauris .lb-app { flex: 1; min-width: 0; display: flex; flex-direction: column; font-family: Arial, Helvetica, sans-serif; font-size: 13px; color: #222; background: #F2F3F5; }
+.lauris .lb-panel { flex: 0 0 400px; width: 400px; border-left: 1px solid #D9D4CC; background: #fff; overflow-y: auto; overflow-x: hidden; }
+
+.lauris .l-top { flex: none; background: #2F3A4A; color: #fff; padding: 0 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; height: 38px; white-space: nowrap; overflow: hidden; }
+.lauris .l-top .ar { color: #E0A030; }
+.lauris .l-top .cap { font-weight: 400; font-size: 11px; color: #8E99A6; overflow: hidden; text-overflow: ellipsis; }
+.lauris .l-top .clk { font-weight: 400; font-size: 11px; color: #C8CFD8; }
+.lauris .l-top .r { margin-left: auto; font-weight: 400; font-size: 11px; color: #C8CFD8; display: flex; gap: 10px; align-items: center; }
+.lauris .l-top .r .dead { color: #C8CFD8; cursor: default; }
+
+.lauris .l-wrap { flex: 1; min-height: 0; display: flex; }
+.lauris .l-side { flex: 0 0 190px; background: #2F3A4A; padding: 6px 0; display: flex; flex-direction: column; overflow: auto; }
+.lauris .lnav { display: flex; align-items: center; gap: 9px; padding: 8px 14px; font-size: 12px; color: #C8CFD8; text-decoration: none; border: 0; background: transparent; width: 100%; text-align: left; font-family: inherit; cursor: pointer; }
+.lauris a.lnav:hover { background: #3C4756; color: #fff; }
+.lauris .lnav.on { background: #3C4756; color: #fff; border-left: 3px solid #E0A030; padding-left: 11px; }
+.lauris .lnav.inert { cursor: default; }
+.lauris .lnav .b { margin-left: auto; background: #C2410C; color: #fff; border-radius: 999px; font-size: 10px; padding: 0 6px; font-weight: 700; }
+.lauris .l-sep { border-top: 1px solid #46525F; margin: 8px 0; }
+.lauris .l-main { flex: 1; min-width: 0; padding: 12px 20px 40px; overflow: auto; }
+.lauris .lnav:focus-visible, .lauris .lb-tab:focus-visible, .lauris .lb-ext:focus-visible { outline: 2px solid #5FC0BE; outline-offset: -2px; }
+
+/* ---- page parts ---- */
+.lauris .l-main a { color: #1F6FBF; }
+.lauris .l-main h2 { font-size: 15px; margin: 4px 0 10px; color: #1F3B6B; font-weight: 700; }
+.lauris .l-main .muted { color: #777; }
+.lauris .l-main .small { font-size: 11px; }
+.lauris .l-main .card { background: #fff; border: 1px solid #DDE1E6; border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; }
+.lauris .l-main .hdr { display: flex; align-items: center; gap: 14px; background: #fff; border: 1px solid #DDE1E6; border-radius: 4px; padding: 8px 14px; flex-wrap: wrap; }
+.lauris .l-main .hdr .av { width: 36px; height: 36px; border-radius: 50%; background: #DDE1E6; flex: 0 0 36px; display: grid; place-items: center; color: #1F3B6B; font-weight: 700; font-size: 12px; }
+.lauris .l-main .hdr .nm { font-weight: 700; font-size: 15px; color: #1F3B6B; }
+.lauris .l-main .hdr .sub { font-size: 11px; color: #666; }
+.lauris .l-main .hdr .units { margin-left: auto; font-size: 12px; color: #1F6FBF; font-weight: 700; text-align: right; display: flex; flex-direction: column; gap: 3px; align-items: flex-end; }
+.lauris .l-main .tabs { display: flex; gap: 18px; margin: 6px 0 10px; border-bottom: 1px solid #DDE1E6; flex-wrap: wrap; }
+.lauris .l-main .tab { font-size: 12px; color: #555; padding: 8px 0; border: 0; border-bottom: 2px solid transparent; background: transparent; font-family: inherit; cursor: default; }
+.lauris .l-main .tab.on { color: #222; font-weight: 700; border-bottom-color: #E0A030; }
+.lauris .l-main .lbl { display: block; font-size: 11px; color: #666; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+.lauris .l-main .in { width: 100%; border: 1px solid #C9CDD3; background: #fff; padding: 6px 8px; border-radius: 3px; min-height: 30px; font: 13px Arial, Helvetica, sans-serif; color: #222; display: block; }
+.lauris .l-main .in.g { background: #E6F4EA; }
+.lauris .l-main .in.y { background: #FFF8E6; border-color: #E8C56A; }
+.lauris .l-main textarea.in { resize: vertical; line-height: 1.45; min-height: 96px; }
+.lauris .l-main .in.box { line-height: 1.45; white-space: pre-wrap; min-height: 72px; cursor: text; text-align: left; }
+.lauris .l-main .in.box:hover { border-color: #8E99A6; }
+.lauris .l-main .in.box:focus-visible, .lauris .l-main textarea.in:focus-visible { outline: 2px solid #1F6FBF; outline-offset: 1px; }
+.lauris .l-main .in.box.empty { color: #8A929C; }
+.lauris .l-main .in mark { background: #FFE58A; color: #222; padding: 0 1px; border-radius: 2px; }
+.lauris .l-main .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.lauris .l-main .fld { margin-bottom: 12px; }
+.lauris .l-main .fld-h { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; flex-wrap: wrap; }
+.lauris .l-main .fld-h .lbl { margin: 0; }
+.lauris .l-main .tag { font-size: 10px; font-weight: 700; border-radius: 3px; padding: 1px 6px; border: 1px solid transparent; text-transform: none; letter-spacing: 0; }
+.lauris .l-main .tag.g { background: #E1F2E7; color: #1E6B40; border-color: #B5D9C3; }
+.lauris .l-main .tag.y { background: #FFF1D6; color: #8A5A00; border-color: #EDCB86; }
+.lauris .l-main .note { font-size: 11px; color: #8A5A00; margin-top: 3px; }
+.lauris .l-main .lb { display: inline-flex; align-items: center; justify-content: center; min-height: 30px; padding: 0 14px; border: 1px solid #9AA3AE; background: linear-gradient(#fff, #E9ECF0); border-radius: 3px; font: 12px Arial, sans-serif; color: #222; cursor: pointer; text-decoration: none; }
+.lauris .l-main .lb:hover { background: #E9ECF0; }
+.lauris .l-main .lb.pri { background: #1F6FBF; color: #fff; border-color: #1A5EA3; }
+.lauris .l-main .lb.pri:hover { background: #1A5EA3; }
+.lauris .l-main .lb[disabled] { opacity: 0.55; cursor: not-allowed; }
+.lauris .l-main .lb:focus-visible { outline: 2px solid #1F6FBF; outline-offset: 2px; }
+.lauris .l-main .actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+.lauris .l-main .flash { background: #E6F4EA; border: 1px solid #9ED3AE; color: #1D5F33; padding: 8px 12px; border-radius: 3px; margin-bottom: 10px; font-weight: 700; }
+.lauris .l-main .flash.r { background: #FBE9E4; border-color: #E9B4A6; color: #8A2E1C; }
+.lauris .l-main .flash.w { background: #FFF4E5; border-color: #F0C27A; color: #7A4B00; }
+.lauris .l-main .tscroll { overflow-x: auto; background: #fff; border: 1px solid #DDE1E6; border-radius: 4px; }
+.lauris .l-main .list { width: 100%; border-collapse: collapse; background: #fff; min-width: 560px; }
+.lauris .l-main .list th { background: #E9ECF0; text-align: left; font-size: 11px; padding: 7px 8px; border-bottom: 1px solid #DDE1E6; color: #444; white-space: nowrap; }
+.lauris .l-main .list td { padding: 7px 8px; border-bottom: 1px solid #EEF0F3; font-size: 12px; }
+.lauris .l-main .list tr:hover td { background: #F7F9FB; }
+.lauris .l-main .list td a { white-space: nowrap; font-weight: 700; }
+.lauris .l-main .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; align-items: end; background: #fff; border: 1px solid #DDE1E6; border-radius: 4px; padding: 10px 12px; margin-bottom: 10px; }
+.lauris .l-main .st { display: inline-block; border-radius: 3px; padding: 1px 7px; font-size: 11px; font-weight: 700; border: 1px solid transparent; white-space: nowrap; }
+.lauris .l-main .st.g { background: #E1F2E7; color: #1E6B40; border-color: #B5D9C3; }
+.lauris .l-main .st.n { background: #EEF0F3; color: #3B4656; border-color: #D5D9DF; }
+.lauris .l-main .st.r { background: #FBE5E0; color: #9B2C17; border-color: #EBB3A8; }
+.lauris .l-main .st.y { background: #FFF1D6; color: #8A5A00; border-color: #EDCB86; }
+.lauris .l-main .ltabs { display: flex; gap: 18px; border-bottom: 1px solid #DDE1E6; margin: 0 0 10px; }
+.lauris .l-main .more { margin-top: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lauris * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}

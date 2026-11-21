@@ -1,0 +1,11 @@
+body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:17px;line-height:1.45}
+a{color:#217A78}a:hover{color:#15605E}
+*{box-sizing:border-box}
+label{display:block;font-size:15px;font-weight:600;margin-bottom:6px}
+.in{width:100%;border:1.5px solid #C9CDD3;border-radius:10px;padding:12px 14px;font:inherit;font-size:17px;background:#fff;min-height:50px;color:#151B24}
+.rad{display:flex;gap:10px}
+.rad label{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:500;margin:0;border:1.5px solid #C9CDD3;border-radius:10px;min-height:50px;background:#fff;font-size:16px}
+.rad label.on{border-color:#217A78;background:#DDF1EF;color:#15605E;font-weight:600}
+.rad input{width:18px;height:18px;margin:0;accent-color:#217A78}
+.btn{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:12px;font:inherit;font-weight:600;font-size:17px;border:0;width:100%;text-decoration:none}
+.btn.p{background:#217A78;color:#fff}

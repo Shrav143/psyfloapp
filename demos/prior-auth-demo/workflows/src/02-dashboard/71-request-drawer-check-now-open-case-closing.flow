@@ -1,0 +1,54 @@
+title: Dashboard › Request drawer › Check now, Open case and closing
+route: /dashboard?request=R-1021
+intro: The footer of the drawer holds up to three buttons, and the drawer can be closed four ways. 'Check now' only fakes a payer check in the demo; it never moves a request to another stage.
+dir: TD
+---
+start s1 "Request drawer is open"
+decision d1 "Is the stage Preparing? (not sent yet)"
+screen f1 "Footer: 'Open case' only\nNo 'Check now' because nothing has been sent"
+screen f2 "Footer: 'Check now' (green), 'Open case'"
+decision d2 "Is it a denial? (ID starts with D-)"
+screen f3 "Footer also has 'Open in Denial Intelligence'"
+
+click c1 "Click 'Check now'"
+process p1 "Button shows a spinner for 1.2 seconds"
+agent a1 "Navigator checks the payer (demo: simulated)"
+store w1 "History gets 'Navigator checked: under review'\nThe chip text in lower case"
+decision d3 "Is the stage Received or Under review?"
+store w2 "What happens next becomes 'Navigator checks again in 30 minutes'"
+toast t1 "'Navigator checked'\n'R-1021 is still under review at Cardinal. It checks again in 30 minutes.'"
+end e1 "Drawer stays open\nNo stage changes"
+
+click c2 "Click 'Open case'"
+goto g1 "Continues in: Authorizations › Case page › Ways in\n/authorizations/case/ followed by the case ID"
+click c3 "Click 'Open in Denial Intelligence'"
+goto g2 "Continues in: Denial Intelligence › A denial opened\n/denials/D-3318"
+
+group gClose "Closing the drawer"
+  click x1 "Click the X 'Close'"
+  click x2 "Press Escape"
+  click x3 "Click the dimmed page outside the drawer"
+  click x4 "Browser Back (when a click opened it)"
+endgroup
+process p2 "?request is removed from the address\nFilters and paging stay as they were"
+end e2 "Drawer closed, table as before"
+process p3 "Escape closes one layer at a time\nA pop-up opened from the drawer closes first; the next Escape closes the drawer"
+
+s1 --> d1
+d1 -->|Yes| f1
+d1 -->|No| f2
+f1 --> d2
+f2 --> d2
+d2 -->|Yes| f3
+d2 -->|No| c2
+f3 --> c3 --> g2
+f3 --> c2
+f2 --> c1 --> p1 --> a1 --> w1 --> d3
+d3 -->|Yes| w2 --> t1
+d3 -->|No| t1
+t1 --> e1
+c2 --> g1
+f1 --> c2
+s1 --> x1 & x2 & x3 & x4
+x1 & x2 & x3 & x4 --> p2 --> e2
+x2 -.-> p3

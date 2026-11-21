@@ -1,0 +1,50 @@
+title: Dashboard › Requests table › Order, rows and paging
+route: /dashboard
+intro: The table card, the one list on the page. Rows come in the page's own order (the ones that need you today first, then the longest in their state) until a heading is clicked. A click on a row or its case ID opens the request drawer and adds one history entry. Eight rows show at a time.
+dir: TD
+---
+start s1 "Dashboard is open\nThe table card under Do next"
+screen sc1 "Card header\nTitle '40 authorizations' and one quiet sentence\n'Longest in their state first, with what needs you today on top.'\nControls on the right"
+screen sc2 "Nine columns\nCase, Payer, Service, Status, Days in state, Units, Window, Next action, Owner\nNo Open button, no progress bars, no icons on the rows"
+process p1 "Every heading is a button that sorts the rows"
+process p2 "Rows start in the page's own order\n1 the ones that need you today, 2 everyone else\nInside each group the longest in its state first"
+decision d0 "Do any rows match the controls?"
+screen em "'No authorizations match'\nwith 'Clear filters'"
+
+group gRow "One row (example: P-1499)"
+  screen r1 "Row\nCase ID with initials and age under it, payer, service, status, days in state with the median, units, window, next action, owner"
+  click c1 "Click anywhere on the row"
+  click c2 "Click the underlined case ID, e.g. 'P-1499'"
+endgroup
+process p3 "Address gets ?request=P-1499\nOne new history entry, so one press of the browser Back button closes the drawer"
+overlay o1 "Request drawer opens on the right"
+goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
+goto g2 "Continues in: Dashboard › Requests table › Read a row: units, window, next action and owner"
+goto g3 "Continues in: Dashboard › Table controls › Clear filters and empty states"
+goto g4 "Continues in: Dashboard › Requests table › Sort the rows"
+goto g5 "Continues in: Dashboard › Requests table › Days in state and the CMS decision time"
+
+decision d1 "Are there more rows than are shown?"
+screen sc3 "Under the table\n'Showing 8 of 40', '32 not shown' and 'Show 8 more'"
+click c4 "Click 'Show 8 more'"
+process p5 "Eight more rows are added\nWith fewer than 8 left the button shows that number, e.g. 'Show 5 more'"
+end e1 "All rows shown\n'Showing 40 of 40'; no button"
+process p6 "Changing any menu, chip, toggle or the sort goes back to the first 8 rows"
+screen sc4 "With cases saved in New Case that have no row yet\nA line under the table with all statuses or Awaiting sign-off: '2 more are being prepared in New Case.' and 'Open Active cases'\n(the link opens Authorizations, All view)"
+goto g6 "Continues in: Authorizations › In progress › Drafts being prepared"
+
+s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
+d0 -->|No| em --> g3
+d0 -->|Yes| r1
+r1 --> c1 & c2
+c1 --> p3
+c2 --> p3
+p3 --> o1 --> g1
+r1 -.-> g2
+p1 -.-> g4
+d0 -->|Yes| d1
+d1 -->|Yes| sc3 --> c4 --> p5 --> d1
+d1 -->|No| e1
+sc3 -.-> p6
+d1 -.-> sc4 -.-> g6
+r1 -.-> g5

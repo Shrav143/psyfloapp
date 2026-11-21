@@ -1,0 +1,44 @@
+title: Payers › History & Changes › A change with no drafts
+route: /payers/harborview?tab=history
+intro: Not every change touches a draft. Harborview's portal form change and Evergreen's phone notice change find no unsent draft for their payer, so the banner, the button and the confirm step change their wording, and the change still closes properly. Cardinal's change, which finds one draft, is in the diagram before this one. A payer with nothing waiting shows only history.
+dir: TD
+---
+start s1 "Open 'History & Changes'\nfor a payer"
+decision dp "Is a change waiting?"
+screen up "One quiet line\n'Nothing is waiting for you. Changes here are demo data...'\nOnly the 'What changed' history below"
+process hv "Harborview's waiting change\n'Portal form change', effective 10/18\nThe request form now asks for the expected length of stay and a second contact.\nThe old form closes 10/31."
+process ev "Evergreen's waiting change\n'Reference number on notice calls', effective 10/22\nIt adds 'Notice call reference number' to the Residential 3.5 list"
+decision dn "Does the payer have an unsent draft at a site in view?\nRead live: requests in 'Preparing'\nand saved New Case drafts not sent, at the sites in view"
+toast none "'No open drafts are affected.\nNew drafts for Harborview use the change once you apply it.'\nButtons: 'Acknowledge change', then 'Review & apply changes'\nwhose pop-up reads 'Apply to new drafts?'\nNote: 'Acknowledging records who saw it. Applying makes new drafts use the change.'"
+process why0 "P-1499 is not listed: it is an answer on a request\nHarborview already has. R-0975 is the same for Evergreen"
+toast one "'Scribe can redraft the 1 draft that is not yet sent: I-2207.'\nButtons: 'Acknowledge change', then 'Review & apply changes'\nwhose pop-up reads 'Update 1 draft?'"
+click ca0 "Click 'Acknowledge change' and confirm,\nthen 'Review & apply changes'"
+overlay mn "Apply to new drafts?\nNothing is redrafted until you confirm.\nNo open drafts are affected.\nHarborview will use the change for every new draft from now on."
+agent a1 "Packet is setting the change up for new drafts\n(demo: 1.5 seconds)"
+agent a2 "Integrity is checking the document lists\n(demo: 1.5 seconds)"
+decision dd "Does the change add documents?"
+store da "Document lists gain the change's new rows\nEvergreen: 'Notice call reference number'\nEdit log: one 'Documents' entry"
+process dn0 "Harborview adds none: the change is about a form,\nnot the list"
+store s0 "No drafts touched\nNo update recorded for Authorizations\nChange cleared, no 'checked' date is written"
+store hh0 "'What changed' gets a new top row\n'Portal form change: acknowledged and applied'\n'No open drafts needed an update. New drafts use the change.'"
+toast t0 "'No open drafts to update'\nThe change is applied for Harborview.\nNew drafts use it from now on."
+process nb "No 'Drafts updated' bell notification\nSidebar badge drops by one\nRow loses 'Change waiting', dot turns green"
+click cx "Click 'Cancel', press Escape,\nclick the X or the dimmed area"
+endx x1 "Modal closes, change stays waiting"
+end e1 "The change is applied and the payer has nothing waiting"
+goto g1 "Continues in: Payers › History & Changes › Review and apply a change"
+goto g2 "Continues in: Payers › History & Changes › Acknowledge a change"
+
+s1 --> dp
+dp -->|No| up --> e1
+dp -->|Yes| hv --> dn
+dp -->|Yes| ev --> dn
+dn -->|No| none --> why0
+dn -->|Yes| one --> g1
+why0 --> ca0 --> mn
+mn --> a1 --> a2 --> dd
+dd -->|Yes| da --> s0
+dd -->|No| dn0 --> s0
+s0 --> hh0 --> t0 --> nb --> e1
+mn --> cx --> x1
+ca0 -.-> g2

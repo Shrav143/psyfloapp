@@ -1,0 +1,80 @@
+title: Authorizations › New Case › Review & submit › The draft and the summary
+route: /authorizations/new/:draftId (step 4 of 4, 'Review & submit')
+intro: Step 4 starts with what is missing (next diagram), then lists the whole case in one short summary, then shows the packet the payer will read: the medical-necessity summary Scribe drafted, which can be edited, with a chip for every chart page it came from. It is the same summary the case page's Draft tab shows: an edit made in either place is read in the other. The validation summary (closed until opened), the checks and the Sign card are in the diagrams after it.
+dir: TD
+---
+start s1 "Click 'Continue to Review & submit' on Clinical documentation\nOr click step 4 in the stepper at any time\nOr 'Review and sign' on a ready draft row in Authorizations"
+screen sc "Review & submit\nNo sentence under the title\nThe stepper: 'Review & submit' current"
+decision dReady "Have all ten agents finished?"
+screen sNot "One line 'The packet is built when the agents finish'\nButton 'Open Authorization preparation' (Clinical documentation, at its last section)\nChecks and Validation summary are not shown yet\nThe Sign card says 'After the agents finish'"
+
+group gLayout "Layout"
+  screen sL "Left column\n1 'What is missing' (the one alert) · 2 'Summary' · 3 the Medical-necessity summary · 4 the Validation summary (closed)"
+  screen sR "Right column\nChecks (names only), Approval chance, the Sign card"
+  screen sF "Footer bar\n'Back', 'Save as draft'"
+endgroup
+
+screen sSum "Card 'Summary'\nTen rows, worked out from the draft, never typed"
+process pRows "Patient · Payer · Request · Service · Dates and length · Eligibility · Existing authorization · Documentation · Medical necessity · Outstanding"
+process pEx "Examples\nPatient: 'J.M., 34 · existing patient R-1042', or 'T.W., 41 · born 03/02/1985 · Female · new patient'\nRequest: 'Concurrent review · recorded as Continued stay'\nDates and length: '10/22/2026 to 11/11/2026 · 21 days (the usual length)'\nEligibility: 'Coverage active, benefits covered, authorization required. Checked 2 min ago, simulated source.'\nExisting authorization: 'AU-I-2144 · ... · 32 of 48 units left, ends 11/19/2026' or 'None. This starts a new stay.'\nDocumentation: '3 of 4 ready, 1 required document missing'\nOutstanding: 'Nothing outstanding' or '2 to acknowledge, 1 note'"
+screen sNarr "Card 'Medical-necessity summary'\nSections: Clinical picture, the type's own section, the level-of-care reason, Current severity, Plan"
+process pCtx "A paragraph 'Context added.' shows when notes were added on the case page\nIt is shown here but not edited here"
+process pNote "A draft Payers redrafted after a payer change shows one line above\n'Updated for a payer change on 10/20'"
+screen sChance "Approval chance card\nRing and 'Strong · likely 83-92%'\n'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'"
+
+group gChip "Source chips"
+  click cChip "Click a chip under a section\nFor example 'Psychiatric eval p.3'"
+  process pChips "Chips appear only for documents that are in the case"
+  overlay oSrc "Drawer with the document's name\nPage 1 of 3, the cited passage boxed under 'Evidence'"
+  click cCloseSrc "Press Escape or close the drawer"
+endgroup
+
+group gEdit "Edit the summary"
+  click cEdit "Click 'Edit' on the summary card\nOr 'Edit the summary' under What is missing"
+  overlay oEdit "Each section becomes a text box under its heading\nHeader buttons 'Cancel' and 'Save changes'"
+  input iText "Change the text of any section"
+  click cCancel "Click 'Cancel'"
+  click cSave "Click 'Save changes'"
+  store stNarr "Summary saved on the draft as edited\nThe case page's Draft tab now reads this text"
+  agent aInt "Integrity re-checks the edits (demo: simulated)\nChecks show 'Re-checking' for about 1 second\nThe Sign card is off meanwhile"
+  decision dEmpty "Is any section empty?"
+  toast tOk "'Integrity re-checked your edits'\n'Every sentence still traces to the chart.'"
+  toast tEmpty "'Integrity re-checked your edits'\n'One section is empty. You can still sign it, and the summary will say so.'"
+  process pEmpty "The empty section reads 'This section is empty.' in red\nThe check 'Every sentence traced to the chart' warns\n'What is missing' lists it to acknowledge, with 'Edit the summary'"
+endgroup
+process pLost "Edits are lost when the summary is rebuilt\nAfter a new answer, a tick in 'To raise it further', 'Send back to Scribe', or a change to the details or documents"
+
+click cBack "Click 'Back'"
+click cSaveD "Click 'Save as draft'"
+toast tSaved "'Draft saved'\n'R-1701 is in Authorizations.'"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
+goto gVal "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks"
+goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+goto gPrep "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left"
+goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
+goto gDraft "Continues in: Authorizations › Case page › Draft › Read and edit"
+goto gJust "Continues in: Authorizations › New Case › Authorization preparation › Justification by type"
+
+s1 --> sc --> dReady
+dReady -->|No| sNot --> gPrep
+dReady -->|Yes| sL & sR & sF
+sL --> gMis
+sL --> sSum --> pRows --> pEx
+sL --> sNarr
+sL --> gVal
+sR --> sChance
+sR --> gVal
+sR --> gSign
+sNarr --> pCtx
+sL --> pNote
+sNarr -.-> gDraft
+sNarr -.-> gJust
+sNarr --> cChip --> pChips --> oSrc --> cCloseSrc
+sNarr --> cEdit --> oEdit --> iText
+iText --> cCancel
+iText --> cSave --> stNarr --> aInt --> dEmpty
+dEmpty -->|No| tOk
+dEmpty -->|Yes| tEmpty --> pEmpty
+stNarr -.-> pLost
+sF --> cBack --> gPrep
+sF --> cSaveD --> tSaved --> gSave

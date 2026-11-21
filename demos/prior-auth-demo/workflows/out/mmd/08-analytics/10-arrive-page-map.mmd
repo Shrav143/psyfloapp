@@ -1,0 +1,75 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Analytics' in the sidebar" }
+  sc@{ shape: curv-trap, label: "<b>Analytics</b><br/>'Where approvals are won and lost, by payer and by kind of case.'<br/>One quiet note: 'Demo values: this is sample data. ...'" }
+  subgraph gTop ["Header and filters"]
+  m3@{ shape: curv-trap, label: "Button 'Monthly report'" }
+  m1@{ shape: curv-trap, label: "<b>Four menus: 'This quarter', 'All payers', 'All programs', 'All diagnosis groups'</b><br/>'Clear filters' once one is picked<br/>'Site view: Both sites' follows the top bar switch" }
+  end
+  subgraph gFig ["Six headline figures, each with 12 months beside it"]
+  t1@{ shape: curv-trap, label: "<b>'Approval rate' 71% · 'First-pass approval'</b><br/>'Denial rate' 29% · 'Preventable denials' 207" }
+  t2@{ shape: curv-trap, label: "<b>'Average decision time' 2.4 days, with the share past the CMS time</b><br/>'Appeals overturned' 56%" }
+  end
+  subgraph gCards ["Cards, top to bottom"]
+  c1@{ shape: curv-trap, label: "<b>'Approvals and denials by month'</b><br/>Rate or Count" }
+  c2@{ shape: curv-trap, label: "<b>'Payer scorecard'</b><br/>One row per payer and an 'All payers' row" }
+  c3@{ shape: curv-trap, label: "<b>'Payer by case mix'</b><br/>A grid of approval rates, with four tabs" }
+  c4@{ shape: curv-trap, label: "<b>'Denial reasons'</b><br/>Pareto, preventable donut, reasons by diagnosis group" }
+  c5@{ shape: curv-trap, label: "<b>'Site A and Site B'</b><br/>Only for someone who sees both sites" }
+  end
+  subgraph gDetail ["'Detailed breakdowns' (all folded, one summary line each)"]
+  d1@{ shape: curv-trap, label: "<b>'Length of stay and units'</b><br/>'Process health'" }
+  d2@{ shape: curv-trap, label: "<b>'Common denial reasons by payer'</b><br/>'How FLO's advice and drafts perform'<br/>'What helps most'" }
+  end
+  p1@{ shape: rect, label: "<b>Every figure, chart, table and list is worked out from one set of case records</b><br/>So a number and the cases behind it always agree<br/>A figure behind fewer than 20 decisions shows a dash" }
+  p2@{ shape: rect, label: "<b>Every number follows the site view</b><br/>A one-site viewer such as Dr. Rivera sees only that site, and no comparison card<br/>Site A plus Site B always equals Both sites" }
+  p3@{ shape: rect, label: "<b>Other screens feed this page</b><br/>Appeal rulings and accepted denials from Denial Intelligence<br/>Dismissed recommendations from Authorizations<br/>Open requests on the Dashboard (the live workload)" }
+  g1@{ shape: subproc, label: "Continues in: Analytics › Filters and the site view" }
+  g2@{ shape: subproc, label: "Continues in: Analytics › Headline figures" }
+  g3@{ shape: subproc, label: "Continues in: Analytics › Trend by month" }
+  g4@{ shape: subproc, label: "Continues in: Analytics › Payer scorecard" }
+  g5@{ shape: subproc, label: "Continues in: Analytics › Payer by case mix" }
+  g6@{ shape: subproc, label: "Continues in: Analytics › Denial reasons" }
+  g7@{ shape: subproc, label: "Continues in: Analytics › Site comparison" }
+  g8@{ shape: subproc, label: "Continues in: Analytics › Detailed breakdowns" }
+  g9@{ shape: subproc, label: "Continues in: Analytics › Monthly report › Open and build" }
+  s1 --> sc
+  sc --> m3 & m1
+  m1 --> t1 & t2
+  t1 & t2 --> c1 --> c2 --> c3 --> c4 --> c5 --> d1 & d2
+  sc -.-> p1
+  sc -.-> p2
+  sc -.-> p3
+  m1 --> g1
+  t1 & t2 --> g2
+  c1 --> g3
+  c2 --> g4
+  c3 --> g5
+  c4 --> g6
+  c5 --> g7
+  d1 & d2 --> g8
+  m3 --> g9
+  class s1 k_start
+  class sc,m3,m1,t1,t2,c1,c2,c3,c4,c5,d1,d2 k_screen
+  class p1,p2,p3 k_process
+  class g1,g2,g3,g4,g5,g6,g7,g8,g9 k_goto
+  style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gFig fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gCards fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gDetail fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,59 @@
+title: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available
+route: /authorizations/new/:draftId (step 3 of 4, Documents list)
+intro: Two more buttons on a document row. 'Replace' swaps a file for another one and Reader reads it again. 'Mark not available' says the document does not exist, with a short reason. The checklist counts it as handled, and the review warns when the payer requires it.
+dir: TD
+---
+start s1 "On step 3, look at a document row"
+decision dRow "Does the row have a file?"
+
+group gReplace "Replace"
+  click cRep "Click 'Replace' (next to the eye and the x)"
+  input iFile "Choose one file in the picker"
+  process pSwap "The new file takes the old file's place in that slot"
+  agent aRead "Reader reads the new file for about 1 second\nRow shows 'Reader is reading'"
+  process pClean "Demo: a replacement is read clean\nRow shows 'NEW FILE · N checks passed'"
+  decision dAfter "Had the agents already run?"
+  toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
+endgroup
+
+group gMark "Mark not available"
+  click cMark "Click 'Mark not available'\n(on an empty row, next to 'Add file' and 'Use sample file')"
+  overlay oWhy "Editor opens under the row\n'Why is it not available?' with a box, 'Mark not available' and 'Cancel'"
+  input iWhy "Type a few words, up to 80 characters\n'For example: the patient has not had one done yet'"
+  decision dText "Is there a reason?"
+  process pOff "'Mark not available' stays switched off"
+  click cDo "Click 'Mark not available', or press Enter"
+  click cEsc "Click 'Cancel', or press Escape in the box"
+  process pNo "Editor closes; nothing changes"
+  store stMark "The reason is saved with the case\nAny file in that slot is taken out"
+endgroup
+
+group gRow "What the row and the page say"
+  decision dReq "Does the payer's list require the document?"
+  process rReq "Row shows an amber box\n'Marked not available: REASON · Summit asks for it, so the review will warn.'"
+  process rRec "Row shows a ticked box\n'Marked not available: REASON · You can sign without it.'"
+  process pReady "Counts as ready in 'N of M ready'\nIt is not listed as 'Not in yet' in the footer"
+  click cUndo "Click 'Undo'"
+  process pUndo "The mark is removed\nThe row is missing again"
+  click cAdd "Click 'Add file'\nThe file replaces the mark"
+endgroup
+
+goto gRev "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks"
+goto gQ "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question"
+goto gRec "Continues in: Authorizations › New Case › Clinical documentation › Clinical summary and document rows"
+
+s1 --> dRow
+dRow -->|Yes| cRep --> iFile --> pSwap --> aRead --> pClean --> dAfter
+dAfter -->|Yes| tStale
+dAfter -->|No| gRec
+tStale --> gRec
+dRow -->|No| cMark --> oWhy --> iWhy --> dText
+dText -->|No| pOff --> iWhy
+dText -->|Yes| cDo --> stMark --> dReq
+oWhy --> cEsc --> pNo
+dReq -->|Yes| rReq --> pReady
+dReq -->|No, recommended| rRec --> pReady
+pReady --> cUndo --> pUndo --> dRow
+pReady --> cAdd --> pSwap
+rReq --> gRev
+pReady -.->|No psychiatric evaluation, or no document for the lower-level reason| gQ

@@ -1,0 +1,426 @@
+{
+ "_about": "Referrals group (screens 2, 6, 7, 9, 10, 40). History referrals (history:true) are the rest of this year so the per-site table on Referrals counts from the list (31 this year). Every referral carries a source (court diversion, pediatric clinic, school counselor, emergency department, family self-referral). Plus: A.R.'s opened family link and today's screening call, this week's items on Do next, and the family-link question settings.",
+ "referrals": [
+  {
+   "id": "REF-115",
+   "client": "Z.E., 14",
+   "school": "LC-ES3",
+   "received": "2026-10-02",
+   "stage": "screening_booked",
+   "source": "Pediatric clinic",
+   "history": true,
+   "next": "Mon Nov 2, 10:00 am · J. Perez",
+   "screening": {
+    "who": "jperez",
+    "when": "2026-11-02T10:00"
+   }
+  },
+  {
+   "id": "REF-114",
+   "client": "P.H., 14",
+   "school": "CC-HS1",
+   "received": "2026-10-01",
+   "stage": "declined",
+   "source": "School counselor",
+   "history": true,
+   "next": "Family declined services",
+   "closed": "2026-10-10"
+  },
+  {
+   "id": "REF-113",
+   "client": "Q.S., 15",
+   "school": "CC-ES2",
+   "received": "2026-09-30",
+   "stage": "declined",
+   "source": "Family self-referral",
+   "history": true,
+   "next": "Family moved out of the area",
+   "closed": "2026-10-09"
+  },
+  {
+   "id": "REF-112",
+   "client": "H.C., 14",
+   "school": "CC-ES1",
+   "received": "2026-09-28",
+   "stage": "declined",
+   "source": "Pediatric clinic",
+   "history": true,
+   "next": "Family chose outpatient elsewhere",
+   "closed": "2026-10-07"
+  },
+  {
+   "id": "REF-111",
+   "client": "U.N., 16",
+   "school": "CC-MS1",
+   "received": "2026-09-24",
+   "stage": "in_intake",
+   "source": "Court diversion",
+   "history": true,
+   "next": "Intake Oct 27 · ASAM assessment in Lauris"
+  },
+  {
+   "id": "REF-110",
+   "client": "R.T., 15",
+   "school": "LC-MS2",
+   "received": "2026-09-21",
+   "stage": "declined",
+   "source": "School counselor",
+   "history": true,
+   "next": "Family declined services",
+   "closed": "2026-09-30"
+  },
+  {
+   "id": "REF-109",
+   "client": "O.R., 14",
+   "school": "CC-ES1",
+   "received": "2026-09-14",
+   "stage": "in_service",
+   "source": "Emergency department",
+   "history": true,
+   "started": "2026-10-12",
+   "next": "Started IOP Oct 12"
+  },
+  {
+   "id": "REF-108",
+   "client": "A.F., 15",
+   "school": "LC-MS2",
+   "received": "2026-09-08",
+   "stage": "in_service",
+   "source": "School counselor",
+   "history": true,
+   "started": "2026-10-03",
+   "next": "Started IOP Oct 3"
+  },
+  {
+   "id": "REF-107",
+   "client": "F.J., 15",
+   "school": "CC-HS1",
+   "received": "2026-09-02",
+   "stage": "in_service",
+   "source": "Court diversion",
+   "history": true,
+   "started": "2026-10-02",
+   "next": "Started IOP Oct 2"
+  },
+  {
+   "id": "REF-106",
+   "client": "V.M., 16",
+   "school": "CC-HS1",
+   "received": "2026-05-18",
+   "stage": "grant_program",
+   "source": "Family self-referral",
+   "history": true,
+   "next": "Routed May 21 · no Medicaid"
+  },
+  {
+   "id": "REF-105",
+   "client": "I.D., 14",
+   "school": "CC-ES1",
+   "received": "2026-05-11",
+   "stage": "grant_program",
+   "source": "School counselor",
+   "history": true,
+   "next": "Routed May 14 · Medicaid lapsed"
+  },
+  {
+   "id": "REF-104",
+   "client": "C.N., 16",
+   "school": "LC-MS2",
+   "received": "2026-05-04",
+   "stage": "grant_program",
+   "source": "Pediatric clinic",
+   "history": true,
+   "next": "Routed May 7 · no Medicaid"
+  },
+  {
+   "id": "REF-103",
+   "client": "B.M., 15",
+   "school": "CC-ES1",
+   "received": "2026-04-27",
+   "stage": "in_service",
+   "source": "School counselor",
+   "history": true,
+   "started": "2026-05-20",
+   "next": "Started IOP May 20"
+  },
+  {
+   "id": "REF-102",
+   "client": "D.S., 14",
+   "school": "LC-MS2",
+   "received": "2026-04-20",
+   "stage": "in_service",
+   "source": "Court diversion",
+   "history": true,
+   "started": "2026-05-12",
+   "next": "Started IOP May 12"
+  },
+  {
+   "id": "REF-101",
+   "client": "W.K., 17",
+   "school": "CC-HS1",
+   "received": "2026-04-13",
+   "stage": "in_service",
+   "source": "Emergency department",
+   "history": true,
+   "started": "2026-05-08",
+   "next": "Started IOP May 8"
+  },
+  {
+   "id": "REF-100",
+   "client": "Y.L., 14",
+   "school": "CC-ES2",
+   "received": "2026-03-30",
+   "stage": "in_service",
+   "source": "School counselor",
+   "history": true,
+   "started": "2026-04-21",
+   "next": "Started IOP Apr 21"
+  },
+  {
+   "id": "REF-099",
+   "client": "L.P., 15",
+   "school": "CC-ES1",
+   "received": "2026-03-23",
+   "stage": "in_service",
+   "source": "Pediatric clinic",
+   "history": true,
+   "started": "2026-04-13",
+   "next": "Started IOP Apr 13"
+  },
+  {
+   "id": "REF-098",
+   "client": "K.L., 16",
+   "school": "LC-MS2",
+   "received": "2026-03-16",
+   "stage": "in_service",
+   "source": "School counselor",
+   "history": true,
+   "started": "2026-04-04",
+   "next": "Started IOP Apr 4"
+  },
+  {
+   "id": "REF-097",
+   "client": "G.A., 15",
+   "school": "CC-HS1",
+   "received": "2026-03-02",
+   "stage": "in_service",
+   "source": "Family self-referral",
+   "history": true,
+   "started": "2026-03-25",
+   "next": "Started IOP Mar 25"
+  },
+  {
+   "id": "REF-096",
+   "client": "S.D., 14",
+   "school": "LC-ES3",
+   "received": "2026-02-23",
+   "stage": "in_service",
+   "source": "School counselor",
+   "history": true,
+   "started": "2026-03-13",
+   "next": "Started IOP Mar 13"
+  },
+  {
+   "id": "REF-095",
+   "client": "N.G., 15",
+   "school": "CC-ES1",
+   "received": "2026-02-17",
+   "stage": "in_service",
+   "source": "Court diversion",
+   "history": true,
+   "started": "2026-03-08",
+   "next": "Started IOP Mar 8"
+  },
+  {
+   "id": "REF-094",
+   "client": "M.B., 17",
+   "school": "LC-MS2",
+   "received": "2026-02-09",
+   "stage": "in_service",
+   "source": "School counselor",
+   "history": true,
+   "started": "2026-02-26",
+   "next": "Started IOP Feb 26"
+  },
+  {
+   "id": "REF-093",
+   "client": "T.B., 16",
+   "school": "CC-HS1",
+   "received": "2026-01-26",
+   "stage": "in_service",
+   "source": "Emergency department",
+   "history": true,
+   "started": "2026-02-15",
+   "next": "Started IOP Feb 15"
+  },
+  {
+   "id": "REF-092",
+   "client": "E.W., 14",
+   "school": "CC-ES1",
+   "received": "2026-01-20",
+   "stage": "in_service",
+   "source": "Pediatric clinic",
+   "history": true,
+   "started": "2026-02-04",
+   "next": "Started IOP Feb 4"
+  },
+  {
+   "id": "REF-091",
+   "client": "J.H., 16",
+   "school": "LC-MS2",
+   "received": "2026-01-12",
+   "stage": "in_service",
+   "source": "School counselor",
+   "history": true,
+   "started": "2026-01-24",
+   "next": "Started IOP Jan 24"
+  }
+ ],
+ "screenings": [
+  {
+   "referral": "REF-121",
+   "client": "A.R., 14",
+   "who": "jperez",
+   "when": "2026-10-29T14:00",
+   "status": "booked"
+  },
+  {
+   "referral": "REF-115",
+   "client": "Z.E., 14",
+   "who": "jperez",
+   "when": "2026-11-02T10:00",
+   "status": "booked"
+  }
+ ],
+ "family_links": [
+  {
+   "referral": "REF-121",
+   "client": "A.R., 14",
+   "token": "ar-demo",
+   "sent_at": "2026-10-28T10:05",
+   "opened_at": "2026-10-28T18:12",
+   "steps": {
+    "guardian": true,
+    "best_time": true
+   },
+   "answers": {
+    "guardian_name": "Gloria Reed",
+    "relationship": "grandmother",
+    "best_time": "Afternoons"
+   }
+  }
+ ],
+ "reminders": [
+  {
+   "id": "rem-mr-weekly",
+   "for": "jperez",
+   "kind": "weekly_call",
+   "record": "MR",
+   "due": "2026-10-30",
+   "text": "Weekly family call · M.R. · mother",
+   "href": "ExtWeekly.dc.html?client=MR",
+   "btn": "Open in Lauris"
+  },
+  {
+   "id": "rem-dp-collateral",
+   "for": "jperez",
+   "kind": "collateral",
+   "record": "DP",
+   "due": "2026-10-30",
+   "text": "Monthly collateral · D.P. · school counselor",
+   "href": "ExtMonthly.dc.html?client=DP",
+   "btn": "Open in Lauris"
+  },
+  {
+   "id": "rem-critical-1103",
+   "for": "jperez",
+   "kind": "meeting",
+   "record": "compliance",
+   "due": "2026-11-03",
+   "text": "Critical meeting · D.W., A.M., J.O., L.V.",
+   "href": "Compliance.dc.html",
+   "btn": "Agenda"
+  }
+ ],
+ "settings": {
+  "family_link": {
+   "questions": [
+    {
+     "key": "guardian",
+     "label": "Family member name and relationship",
+     "ask": true,
+     "required": true,
+     "goes": "Screening · CNA header"
+    },
+    {
+     "key": "phone",
+     "label": "Best phone number",
+     "ask": true,
+     "required": true,
+     "goes": "Screening · CNA header"
+    },
+    {
+     "key": "insurance",
+     "label": "Teen's insurance and Medicaid ID",
+     "sub": "Runs the eligibility check",
+     "ask": true,
+     "required": true,
+     "goes": "Eligibility check · screening",
+     "locked": true
+    },
+    {
+     "key": "dob",
+     "label": "Teen's date of birth",
+     "ask": true,
+     "required": false,
+     "goes": "Eligibility check"
+    },
+    {
+     "key": "consent",
+     "label": "Consent to be called about the teen",
+     "ask": true,
+     "required": true,
+     "goes": "Psyflo only"
+    },
+    {
+     "key": "best_time",
+     "label": "Best time to call",
+     "ask": true,
+     "required": false,
+     "goes": "Psyflo only"
+    },
+    {
+     "key": "transport",
+     "label": "Can you get to an in-person intake?",
+     "sub": "Flags families who need transport",
+     "ask": true,
+     "required": false,
+     "goes": "Psyflo only · screening note"
+    },
+    {
+     "key": "language",
+     "label": "Preferred language",
+     "ask": true,
+     "required": false,
+     "goes": "Screening · CNA header"
+    },
+    {
+     "key": "address",
+     "label": "Home address",
+     "ask": false,
+     "required": false,
+     "goes": "Screening (if on)"
+    },
+    {
+     "key": "household",
+     "label": "Who else lives in the home",
+     "ask": false,
+     "required": false,
+     "goes": "CNA (if on)"
+    }
+   ],
+   "message": "Hi, this is Harvest Outreach Center. [Referral partner] asked us to reach out about support for your teen. Could you answer a few quick questions so we can call you? [link] · Reply STOP to opt out.",
+   "expires_days": 7
+  }
+ }
+}

@@ -1,0 +1,17 @@
+{
+ "_about": "Provenance of seeded figures (build brief rule 7). harvest_export = labelled 'Sample data, illustrative': Harvest never computed these numbers (T-045, T-067). case_backed = counted from stored requests and notes. illustrative = the v3 cohort (ids COH-...). Screens read this key; never sum across datasets.",
+ "provenance": {
+  "label_harvest_export": "Sample data, illustrative",
+  "analytics_baseline": "harvest_export",
+  "staff_dashboard": "harvest_export",
+  "payer_stats": "harvest_export",
+  "payer_history": "harvest_export",
+  "denial_reasons": "harvest_export",
+  "migration": "harvest_export",
+  "compliance": "harvest_export",
+  "notes": {
+   "payer_stats": "payers[].decides_in_days, partial_rate, requests_this_year, tends_to_ask and what_works are seeded sample figures, not Harvest's data.",
+   "decides_in_days": "The payer decision days in the seed are illustrative; the decision clock comes from the rules table (decision.*)."
+  }
+ }
+}

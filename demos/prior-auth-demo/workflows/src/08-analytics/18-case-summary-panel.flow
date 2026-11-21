@@ -1,0 +1,30 @@
+title: Analytics › Case summary panel
+route: /analytics
+intro: One payer decision in plain words, opened from a case table row. It shows who and what was asked, what the payer decided and why, what was done about it, and a short neutral timeline. Initials and age only.
+dir: TD
+also: Most cases are past cases with no page in the demo. The real ones link to their pages: the open denials (for example D-3318, D-3297, D-3306) and the approvals behind the Case Manager ledger. R-1042's earlier intensive outpatient authorization opens R-1042.
+---
+start s1 "Click a row in a case table (payer panel or case list panel)"
+overlay o1 "Panel on top of the others: case id, initials and age, payer\nButton 'Copy summary'"
+screen a1 "Outcome: 'Approved as requested', 'Approved in part' or 'Denied'\n'7 of 14 days approved' with a bar\nThe reason and a tag 'Preventable' or 'Not preventable', with one sentence on what that means"
+screen a2 "Facts: payer, program, request type, diagnosis group, population, site, decided date, time to decision, CMS decision time (within it, past it, or not applicable), more information asked or not"
+screen a3 "'What was done': peer-to-peer (no call, booked, changed the decision, stood), appeal (none, filed, overturned, partly restored, upheld), accepted or not"
+screen a4 "'Timeline': request sent, information requested, decision, peer-to-peer, appeal, accepted, each with a date"
+decision q1 "Does the case exist in the demo?"
+click c1 "Click 'Open case'"
+goto g1 "Continues in: Authorizations › Case page › Ways in"
+click c2 "Click 'Open the denial' (a denial that is in Denial Intelligence)"
+goto g2 "Continues in: Denial Intelligence › Open denials list"
+screen n1 "'A past case: it has no page in this demo.' No link"
+click b1 "Click 'Copy summary'"
+process b2 "Copies the case lines\nToast 'Case summary copied'\nMarked as demo data"
+input k1 "Press Escape"
+process k2 "Closes this layer only\nThe panel below stays"
+end e1 "Back on the list or the payer panel"
+
+s1 --> o1 --> a1 --> a2 --> a3 --> a4 --> q1
+q1 -->|Yes| c1 --> g1
+q1 -->|Yes| c2 --> g2
+q1 -->|No| n1
+o1 --> b1 --> b2
+o1 --> k1 --> k2 --> e1

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Psyflo × Harvest</title>
+<meta name="theme-color" content="#151B24">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="stylesheet" href="/css/tokens.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/flo.css">
+<!-- the open screen's own CSS goes here, after the kit, so a screen can always override -->
+<style id="scrcss"></style>
+</head>
+<body>
+<a class="ui-skip" href="#main" data-ui-skip>Skip to main content</a>
+<!-- Presenter dock: a ribbon ABOVE the product viewport. Hidden by default in Presentation mode (Ctrl+Shift+P or ?present=1); always open in Explore mode. -->
+<div id="dock" class="sh-dock" data-state="hidden" data-mode="presentation" role="region" aria-label="Presenter tools" hidden></div>
+<div class="sh-app" id="app">
+  <div id="rail" class="sh-rail" hidden></div>
+  <div id="stage"><div id="topbar" class="sh-top" role="region" aria-label="Assistant and notifications" hidden></div><div id="root"><div class="sh-loading" role="status">Loading the demo…</div></div></div>
+</div>
+<div id="ui-overlays"></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="sh-announce" class="ui-sr" role="status" aria-live="polite"></div>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>

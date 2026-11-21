@@ -1,0 +1,35 @@
+title: Authorizations › Case page › Framework: ASAM or LOCUS
+route: /authorizations/case/I-2289?tab=draft
+intro: Which level-of-care framework a case's six dimensions come from. ASAM Criteria for substance use and co-occurring conditions; LOCUS for adults, CALOCUS-CASII under 18, when the condition is mental health alone at IOP or PHP. The name, the scale and the criteria text follow the case.
+dir: TD
+also: Demo only: four IOP and PHP requests have a mental health diagnosis alone (I-2289 major depressive disorder, recurrent, severe; P-1637 posttraumatic stress disorder; P-1649 bipolar I disorder, current episode depressed; I-2166 generalized anxiety disorder). Every other demo diagnosis is substance use or co-occurring. Payer criteria such as InterQual or MCG are the payer's, never a framework here.
+---
+start s1 "A case page opens"
+decision d1 "Level of care?"
+decision d2 "Is a substance use disorder part of the diagnosis?"
+decision d3 "Age under 18?"
+process as "ASAM Criteria\nsix dimensions, risk rating 0 to 4\nNone, Low, Moderate, High, Severe"
+process lo "LOCUS · adult mental health\nsix dimensions, rating 1 to 5\nMinimal, Mild, Moderate, Serious, Extreme"
+process ca "CALOCUS-CASII · child and adolescent\nsix dimensions, rating 1 to 5"
+screen rl "Rail: the framework's name, its scale, and six rows\nRisk of harm, Function, Co-morbidity, Environment, History, Engagement for LOCUS"
+click it "Hover or focus the info icon 'Which framework applies'"
+overlay why "One line, e.g. 'LOCUS applies: a mental health condition with no substance use disorder, adult, at IOP.'"
+click row "Click a row"
+overlay pop "Pop-up: rating of the scale's maximum, what the chart shows, the source page"
+process cr "Criteria & risk follows the case\nASAM: 'A substance use disorder diagnosis, with severity', readiness, relapse risk\nLOCUS: 'A mental health diagnosis, with severity', engagement, risk of harm"
+goto g1 "Continues in: Authorizations › Case page › Criteria & risk"
+goto g2 "Continues in: Authorizations › Case page › Clinical picture"
+
+s1 --> d1
+d1 -->|Residential 3.5 or withdrawal management| as
+d1 -->|IOP or PHP| d2
+d2 -->|Yes, alone or co-occurring| as
+d2 -->|No, mental health alone| d3
+d3 -->|No| lo
+d3 -->|Yes| ca
+as --> rl
+lo --> rl
+ca --> rl
+rl --> it --> why
+rl --> row --> pop --> g2
+rl --> cr --> g1

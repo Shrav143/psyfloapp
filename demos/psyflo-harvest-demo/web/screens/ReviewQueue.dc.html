@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Psyflo — Chart review</title></head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}.nav.on .n{background:rgba(255,255,255,.22)}
+.b3-lbl{font-size:12px;line-height:16px;font-weight:600;color:var(--ink-3);margin:16px 0 6px;display:flex;align-items:center;gap:6px}
+.b3-box{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px;line-height:20px;background:var(--paper)}
+.b3-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.b3-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:20px}
+.b3-x{margin-left:auto}
+.b3-row-who{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;min-width:0}
+</style>
+</helmet>
+<div class="u-app">
+<aside style="flex:0 0 240px"></aside>
+<main class="u-main">
+  <div class="u-head">
+    <h1 class="u-title">{{title}}</h1>
+    <nav class="u-seg" aria-label="Documentation views">
+      <a href="StaffDashboard.dc.html">{{viewNote}}</a>
+      <a class="on" href="ReviewQueue.dc.html" aria-current="page">{{viewReview}}</a>
+    </nav>
+    <select class="u-sel" aria-label="Site" onChange="{{pickSite}}"><sc-for list="{{sites}}" as="o"><option value="{{o.id}}" {{o.sel}}>{{o.name}}</option></sc-for></select>
+    <span class="u-sp"></span><span class="u-date">{{today}}</span>
+  </div>
+
+  <sc-if value="{{empty}}"><div class="u-card"><b>{{emptyText}}</b></div></sc-if>
+  <sc-if value="{{!empty}}">
+    <div class="u-rows">
+      <sc-for list="{{rows}}" as="r">
+        <div class="u-row b3-click" style="--cols:88px minmax(0,1fr) auto" onClick="{{r.open}}">
+          <span><span class="u-chip info">{{r.date}}</span></span>
+          <span class="b3-row-who"><span class="who">{{r.who}}</span><span class="what">{{r.staff}} · {{r.what}}</span></span>
+          <button type="button" class="u-btn" data-note="{{r.id}}" onClick="{{r.open}}">Review</button>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{cur}}">
+    <div class="u-scrim" onClick="{{close}}"></div>
+    <aside class="u-drawer" role="dialog" aria-modal="true" aria-label="Chart review" tabindex="-1">
+      <div style="display:flex;align-items:center;gap:8px">
+        <h2>{{cur.heading}}</h2><span class="u-mut">{{cur.staffLine}}</span>
+        <button type="button" class="u-btn txt b3-x" onClick="{{close}}" aria-label="Close">✕</button>
+      </div>
+      <div class="b3-chips">
+        <sc-if value="{{cur.units}}"><span class="u-chip info">{{cur.units}}</span></sc-if>
+        <span class="u-chip {{cur.goalChip}}">{{cur.goal}}</span>
+        <sc-if value="{{cur.iv}}"><span class="u-chip info">{{cur.iv}}</span></sc-if>
+        <sc-if value="{{cur.same}}"><span class="u-chip watch">{{cur.same}}</span></sc-if>
+      </div>
+      <div class="b3-lbl">{{cur.wroteLabel}}</div>
+      <div class="b3-box" data-doc>{{cur.wrote}}</div>
+      <div class="b3-lbl">Enhanced</div>
+      <div class="b3-box" data-doc>{{cur.enhanced}}</div>
+      <div class="b3-lbl">{{cur.docChecks}} {{cur.help}} <span class="u-chip {{cur.checksChip}}">{{cur.checksText}}</span></div>
+      <div class="b3-chips"><sc-for list="{{cur.failed}}" as="f"><span class="u-chip late">{{f}}</span></sc-for></div>
+      <div class="b3-act">
+        <button type="button" class="u-btn pri" onClick="{{approve}}">Approve</button>
+        <button type="button" class="u-btn" onClick="{{ret}}">Return with note</button>
+        <button type="button" class="u-btn txt" onClick="{{madeup}}">That didn't happen</button>
+      </div>
+    </aside>
+  </sc-if>
+</main>
+</div>
+</x-dc>
+</body>
+</html>

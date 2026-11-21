@@ -1,0 +1,83 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Intake is open on an initial or a retroactive authorization" }
+  s2@{ shape: stadium, label: "<b>'Continues in' from Payers or Eligibility & Benefits:</b><br/>a new payer or a verification fills the coverage" }
+  subgraph gPat ["Patient"]
+  iIni@{ shape: lean-r, label: "Type 'Initials' (upper case, at most 8 characters)" }
+  iDob@{ shape: lean-r, label: "Pick 'Date of birth'" }
+  pAge@{ shape: rect, label: "<b>Age is worked out from the date of birth on the demo day and shown beside it</b><br/>The age box is then read only" }
+  iAge@{ shape: lean-r, label: "A draft that has only an age (from a referral) keeps its age, editable" }
+  iSex@{ shape: lean-r, label: "Pick 'Sex': Female, Male, Other or not stated" }
+  end
+  subgraph gCov ["Coverage"]
+  iPayer@{ shape: lean-r, label: "Pick 'Payer'" }
+  pPlans@{ shape: rect, label: "<b>'Plan type' offers the payer's own plans, the first one picked</b><br/>Summit: HMO. Beacon: PPO, HMO, EPO. Harborview: Medicare Advantage, D-SNP" }
+  iPlan@{ shape: lean-r, label: "Pick another 'Plan type'" }
+  iMem@{ shape: lean-r, label: "Type 'Member ID'" }
+  end
+  subgraph gReq ["Request"]
+  iLoc@{ shape: lean-r, label: "Pick 'Level of care': Residential 3.5, IOP, PHP, Detox" }
+  iType@{ shape: lean-r, label: "<b>Pick 'Request type': Initial request or Admission</b><br/>A retroactive request records Retro-authorization and shows no choice" }
+  iStart@{ shape: lean-r, label: "<b>Pick 'Requested start date'</b><br/>Retroactive: 'First date of service' and 'Last date of service'" }
+  iDx@{ shape: lean-r, label: "<b>Search 'Primary diagnosis (ICD-10)' by code or name, pick one</b><br/>The first chip is the primary" }
+  iSite@{ shape: lean-r, label: "<b>'Site': Site A or Site B with both sites in view</b><br/>One site in view, or a case with its id: the site name only" }
+  end
+  subgraph gMore ["More, folded"]
+  cMore@{ shape: trap-t, label: "<b>Click 'More'</b><br/>Its summary names what is filled, e.g. 'Referral source'" }
+  m1@{ shape: lean-r, label: "'Secondary insurance': None or a payer, then its member ID" }
+  m2@{ shape: lean-r, label: "'Requested end date': empty asks for the usual length" }
+  m3@{ shape: lean-r, label: "'Attending clinician' and 'Clinician NPI' (10 digits, else '10 digits')" }
+  m4@{ shape: lean-r, label: "'Referral source' (a referral fills it with the organization and the clinician)" }
+  m5@{ shape: lean-r, label: "'Guardian': initials and relationship, only when the patient is under 18" }
+  end
+  st@{ shape: cyl, label: "<b>Each change is written to the draft at once</b><br/>After the agents ran, a change clears their work" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
+  sMark@{ shape: curv-trap, label: "<b>A field an import filled says 'From EMR', 'From file' or 'From screenshot' under it</b><br/>until the person changes it" }
+  pState@{ shape: rect, label: "<b>The Intake state on the stepper follows</b><br/>Complete once patient, payer, service and dates are in" }
+  gImp@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Review what was found and apply" }
+  gSite@{ shape: subproc, label: "Continues in: Authorizations › New Case › Sites and scope" }
+  gStates@{ shape: subproc, label: "Continues in: Authorizations › New Case › Step states" }
+  s1 --> iIni --> iDob --> pAge
+  s1 --> iAge
+  iDob --> iSex
+  s1 --> iPayer --> pPlans --> iPlan --> iMem
+  s2 --> iPayer
+  s1 --> iLoc --> iType --> iStart --> iDx --> iSite
+  iSite -.-> gSite
+  s1 --> cMore --> m1 & m2 & m3 & m4 & m5
+  iIni --> st
+  iSex --> st
+  iMem --> st
+  iDx --> st
+  m5 --> st
+  st -.-> tStale
+  st --> pState -.-> gStates
+  s1 -.-> sMark -.-> gImp
+  class s1,s2 k_start
+  class iIni,iDob,iAge,iSex,iPayer,iPlan,iMem,iLoc,iType,iStart,iDx,iSite,m1,m2,m3,m4,m5 k_input
+  class pAge,pPlans,pState k_process
+  class cMore k_click
+  class st k_store
+  class tStale k_toast
+  class sMark k_screen
+  class gImp,gSite,gStates k_goto
+  style gPat fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gCov fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gReq fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gMore fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

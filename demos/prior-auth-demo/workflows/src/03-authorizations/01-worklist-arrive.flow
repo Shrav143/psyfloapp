@@ -1,0 +1,60 @@
+title: Authorizations › Worklist › Arrive and read the views
+route: /authorizations
+intro: Authorizations is one workspace for every authorization, from preparation to the payer's decision and the approved authorization's reviews. The page is a title, the payer signal, one row of view chips with counts, the filter bar and one table. Every part has its own diagram; this one shows the ways in and how the page is laid out.
+dir: TD
+also: Demo only: the counts are the seed data for Both sites (95 rows: 19 in progress, 36 with the payer, 32 approved, 8 denied; 30 need attention; 47 reviews due this week). There is no subtitle and there are no figure tiles: the view chips carry the counts. Case Manager is no longer a page; its functions are views and rows of this list.
+---
+start s1 "Click 'Authorizations' or 'All Authorizations' in the sidebar"
+start s2 "Demo menu › Suggested path › 'Authorizations: every request in one list' (step 2)\nor 'Authorizations: reviews this week' (step 7, opens ?view=reviews)"
+start s3 "On a case page or the ledger case page: click 'Back to Authorizations' or the 'Authorizations' crumb"
+start s4 "An old Case Manager address (/manager, /active) or a link from another tab"
+goto gOld "Continues in: Authorizations › Old links › Case Manager addresses and links from other tabs"
+
+decision dA "Is the address plain /authorizations, and was a view or a filter used since the page was loaded?"
+process pR "The last view and filters come back\nA reload forgets them; ?quick= and ?review= are never brought back"
+process pN "The address decides the view and the filters\nNone named: All, no filter"
+screen pg "Authorizations\nTitle, payer signal, view chips, filter bar, one table"
+process sb "Sidebar: 'All Authorizations' turns green under 'Authorizations'\nThe 'Authorizations' badge reads 19: open requests due now or within 24 hours"
+
+screen hd "Title 'Authorizations', with a small 'Site A' tag when one site is in view\nButton 'New Case' on the right, no subtitle"
+process hb "Buttons before 'New Case' follow the view\nReviews this week: 'Draft all due reviews' and 'Sign all clean drafts'\nWith the payer: '4 sent today', only when something was sent today"
+click cN "Click 'New Case'"
+goto gN "Continues in: Authorizations › New Case › How a case starts and resumes"
+click cS "Click '4 sent today'"
+process pS "Go to /dashboard?stage=received"
+goto gS "Continues in: Dashboard › Lifecycle › Click a state to filter the table"
+goto gR "Continues in: Authorizations › Reviews this week › Draft all due reviews and sign all clean drafts"
+
+screen bn "One-line payer signal banner\nOnly while a request at the sites in view is affected and it was not dismissed"
+goto gB "Continues in: Authorizations › Worklist › Cardinal payer signal"
+screen ch "View chips with counts, in three groups\n'All 95' and 'Needs attention 30'\n'In progress 19', 'With the payer 36', 'Approved 32', 'Denied 8'\n'Reviews this week 47'"
+goto gV "Continues in: Authorizations › Worklist › Pick a view"
+screen fb "Filter bar\nSearch, 'All payers', 'All services', 'All request types', 'Any deadline', 'More'"
+goto gF "Continues in: Authorizations › Worklist › Search and filter"
+
+screen tb "Table card\n'95 authorizations' on the left\n'Approval chance, open requests 79%' and an info icon on the right"
+process av "The average is worked out from the In progress and With the payer rows that pass the filters"
+click ci "Hover or focus the info icon 'About units and approval chance'"
+overlay oi "Tip: units or days left are worked out at the usual pace; 'Runs out before review' appears only when that pace uses the approval up first\nApproval chance: Strong 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request\nEsc closes it"
+screen tr "One row per authorization, 15 a page\nPatient / request, Status, Next action, Deadline, Owner, Chance and the row's own button"
+goto gT "Continues in: Authorizations › Worklist › Read a row"
+goto gW "Continues in: Authorizations › Worklist › What makes a row"
+
+s1 --> dA
+s2 --> dA
+s3 --> dA
+s4 --> gOld
+dA -->|Yes| pR --> pg
+dA -->|No| pN --> pg
+pg --> sb
+pg --> hd --> hb
+hd --> cN --> gN
+hb --> cS --> pS --> gS
+hb -.-> gR
+pg --> bn --> gB
+pg --> ch --> gV
+pg --> fb --> gF
+pg --> tb --> av
+tb --> ci --> oi
+tb --> tr --> gT
+tr -.-> gW

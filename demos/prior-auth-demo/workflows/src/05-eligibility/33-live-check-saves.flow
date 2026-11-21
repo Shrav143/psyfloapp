@@ -1,0 +1,81 @@
+title: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved
+route: /authorizations/eligibility/verify
+intro: When the last step ticks, the demo saves the check as a verification record, then opens the result. A patient already on the list gets the record refreshed. Anyone else is added as a new check at the site in view. Scripted answers keep it predictable. If Verify is paused in Settings nothing could be asked, and the check is saved as 'Not checked'.
+dir: TD
+also: Demo only: answers are scripted from the member ID and the plan. A known patient keeps the verdict it already had. The record is the same one New Case reads and writes.
+---
+start s1 "Last step ticks, the timer pill reads 'Opening the result'"
+wait w1 "Half a second"
+decision qp "Is Verify paused in Settings?"
+decision q1 "Opened from a case that is a row on the list?"
+decision q2 "J.M.'s card (sample 'Authorization first' or the referral): Summit, Residential 3.5, member ID ending 4821?"
+store st1 "Existing record updated\n'Checked just now', its re-check time cleared, date of service as typed"
+process p1 "The card matches J.M., case R-1042"
+process p2 "Answers are not asked again\nThe row keeps its verdict"
+
+group gPaused "Verify is paused"
+  store sp1 "Known patient: the last result is kept with the warning\n'Verification service unavailable', check time unchanged"
+  store sp2 "Anyone else: a new check with no answers\nEligibility, benefits and authorization 'Not checked'\nWarning 'Verification service unavailable'"
+  process sp3 "Verdict 'Not checked' · Coverage 'Not checked'\nButtons 'Open Settings' and 'Re-check'"
+endgroup
+
+group gNew "A new patient"
+  process n1 "Check gets the next ID: V-1001, V-1002 ...\nThe ID is picked so it belongs to the site in view\n(Site A when both are in view). Initials and age only if known from a referral or a case"
+  process n2 "Member ID kept as '…1234' (last four)\nScripted answers from the member ID and plan"
+  decision n3 "Which scripted answer?"
+  process n4 "ID ends 1012\nEligibility 'Lapsed 10/12'"
+  process n5 "ID ends 9999\nEligibility 'Not found'"
+  process n6 "Evergreen with Detox\nClinic not enrolled"
+  process n7 "Beacon with IOP or PHP\nAuthorization 'Not required'"
+  process n8 "Harborview with PHP\nBenefits 'Limited'"
+  process n10 "ID ends 3030\nBenefits 'Not covered', authorization 'Not required'"
+  process n11 "ID ends 6060\nAnother plan found: it pays first"
+  process n12 "ID ends 9090\nAuthorization 'On file' with every day or unit used\nfor example '14 of 14 days'"
+  process n13 "ID ends 7070\nCoverage ended 09/30, the member is with another plan since 10/01"
+  process n14 "ID ends 8080\nCoverage active, but the plan has the member under another ID"
+  process n15 "ID ends 5050\nCoverage active, the service was not confirmed"
+  process n16 "ID ends 4040\nThe clinic's enrollment could not be confirmed"
+  process n17 "ID ends 2020\nNo rule on file for the authorization"
+  process n9 "Anything else\nActive, covered, authorization 'Required'"
+  store st2 "New verification record added for the site in view\nIt is a row at once on the Eligibility list"
+endgroup
+
+process p3 "List counts, tiles and sidebar badge recompute from the records inside the site view"
+process p7 "Counts, tiles and badge stay as they were\nOnly the check time and date of service changed"
+decision q3 "Is the verdict 'Cleared to bill'?"
+process p4 "Badge unchanged"
+process p5 "Badge goes up by one"
+process p6 "Opens /authorizations/eligibility/V-1001\nor the existing case ID\nIf the check began from a referral, ?referral= (and ?case=) go along, so the result has its back link"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › The shared verification record"
+
+s1 --> w1 --> qp
+qp -->|Yes, known patient| sp1 --> sp3
+qp -->|Yes, anyone else| sp2 --> sp3
+qp -->|No| q1
+sp3 --> p6
+q1 -->|Yes| st1
+q1 -->|No| q2
+q2 -->|Yes| p1 --> st1
+q2 -->|No| n1 --> n2 --> n3
+st1 --> p2 --> p7 --> p6
+n3 -->|Lapsed| n4 --> st2
+n3 -->|Not found| n5 --> st2
+n3 -->|Not enrolled| n6 --> st2
+n3 -->|No authorization| n7 --> st2
+n3 -->|Limited| n8 --> st2
+n3 -->|Not covered| n10 --> st2
+n3 -->|Other plan| n11 --> st2
+n3 -->|Limit reached| n12 --> st2
+n3 -->|Payer changed| n13 --> st2
+n3 -->|ID mismatch| n14 --> st2
+n3 -->|Benefit not confirmed| n15 --> st2
+n3 -->|Provider not confirmed| n16 --> st2
+n3 -->|Requirement unknown| n17 --> st2
+n3 -->|Otherwise| n9 --> st2
+st2 --> p3
+p3 --> q3
+q3 -->|Yes| p4 --> p6
+q3 -->|No| p5 --> p6
+p6 --> g1
+st2 -.-> g2

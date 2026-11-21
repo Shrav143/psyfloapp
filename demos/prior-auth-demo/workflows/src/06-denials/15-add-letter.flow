@@ -1,0 +1,62 @@
+title: Denial Intelligence › Add a denial letter
+route: /denials
+intro: 'Add a denial letter' is on the right of the dashboard's title row (and in the empty state when no denial is open). It opens a right-hand panel: drop a letter, import a file or paste a screenshot of it, or use a sample; add a note; 'Analyze the denial'; four agents work; the new denial is listed first on the dashboard and belongs to the site in view. Closing the panel does not stop the agents. In the demo a letter is not really read: a sample letter's facts fill the new denial, with what an import read put over them.
+dir: TD
+also: Demo only: any dropped file is accepted and only its name and size are kept. The sample used depends on the file name length, or on how many letters were added before.
+---
+start s1 "Dashboard title row: click 'Add a denial letter'"
+start s1b "Empty state 'No open denials': click 'Add a denial letter'"
+overlay sc1 "Right-hand panel 'Add a denial letter'\nDrop area, the import's 'Import a file' and 'Paste a screenshot'\nPill 'Identifiers removed on upload', 'Use sample letter', a note box, 'Analyze the denial'"
+process pk "The state lives on the page, not in the panel: a typed note, a chosen letter and a running analysis survive closing the panel"
+
+input i1 "Drop a file on the area, or click it (Enter or Space) to choose one\n'Drop the denial letter, or click to choose a PDF or DOCX'"
+click c1 "Click 'Use sample letter'"
+process p1 "Next sample letter in turn: Beacon, Summit, then Harborview"
+click ci "Click 'Paste a screenshot' and press Ctrl or Cmd V, or 'Import a file' (CSV with a field mapping, or a PDF)"
+process pr "The shared import (the same one New Case and Eligibility use): FLO reads the screenshot or the file (demo: simulated)\nwhat it found is listed for review, nothing is applied until 'Apply'"
+process pi "After the person reviews what was read and clicks 'Apply': payer, dates, days or units requested and approved, and the reason\nshow as pills under the letter row; the reason picks the kind of denial"
+screen fr "Letter row: the file name, or 'From a pasted screenshot'\nA small X removes it and brings the choices back"
+
+input i2 "Type a note (optional) 'Note, such as a payer call'"
+click c3 "Click 'Analyze the denial'"
+decision d1 "Is a letter chosen?"
+toast t1 "'Add the letter first, or use the sample letter.'"
+
+screen sc2 "Progress list replaces the form\nOne line per agent, a spinner on the one working, a tick when done"
+agent a1 "Reader is reading the letter and removing identifiers"
+agent a2 "Advocate is checking the notice, the deadline and the payer's own criteria"
+agent a3 "Historian is comparing similar decisions and appeals"
+agent a4 "Integrity is checking every statement against the chart"
+wait w1 "About 1.25 seconds per step, 5 seconds in all (demo: simulated)"
+click cx "Press Escape, click X or the dimmed area while the agents work"
+process px "Panel closes, focus returns to 'Add a denial letter'; the agents keep going"
+decision d2 "Is the person still on the dashboard?"
+endx e1 "Work is dropped and no denial is added"
+
+store st1 "New open denial created\nSite = the site in view (Site A when both are in view)\nId = the next free number from D-3340 that the site rule places at that site\nChip 'Analyzed', letter name and note saved"
+toast t2 "'The analysis is ready'\n'D-3340 was added to Open denials.'"
+toast t3 "Notification 'Denial analyzed' from Advocate, linking to /denials/D-3340"
+process p5 "Panel closes, filters and the figure are cleared\nThe new row is listed first, highlighted, with the pill 'New', and its id link has focus\nThe badge and 'Open' go up by one, for that site and for Both sites"
+goto g5 "Continues in: Denial Intelligence › Open denials list"
+goto g2 "Continues in: Denial Intelligence › A denial opened › Recommended next step"
+goto g4 "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links"
+
+s1 --> sc1
+s1b --> sc1
+sc1 -.-> pk
+sc1 --> i1 --> fr
+sc1 --> c1 --> p1 --> fr
+sc1 --> ci --> pr --> pi --> fr
+sc1 --> i2 --> c3
+fr --> c3
+c3 --> d1
+d1 -->|No| t1 --> sc1
+d1 -->|Yes| sc2 --> a1 --> a2 --> a3 --> a4
+sc2 --> w1
+sc2 --> cx --> px
+a4 --> d2
+d2 -->|No, left the page| e1
+d2 -->|Yes| st1 --> t2 --> p5 --> g5
+st1 --> t3
+p5 --> g2
+st1 -.-> g4

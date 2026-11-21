@@ -1,0 +1,4 @@
+{
+  "_about": "E4 Analytics. analytics_agg is a DERIVED projection key: the server computes it for each signed-in actor from the full state when /api/state is read (server/psyflo/actions/x-analytics.js, web/js/shared/analytics/casebacked.js digest). The stored value is always {}. It carries only aggregates whose small groups are already suppressed, so an administrator or a site supervisor never receives clinical text. The seeded baseline (analytics_baseline) is labelled 'Sample data, illustrative' (provenance harvest_export); the illustrative cohort (COH-001..120) is generated in web/js/shared/analytics/cohort.js and is not stored.",
+  "analytics_agg": {}
+}
