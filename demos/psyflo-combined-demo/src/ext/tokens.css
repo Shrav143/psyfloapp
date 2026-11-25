@@ -1,0 +1,14 @@
+/* Design tokens. The look is the Unified demo's: paper, navy, teal, marigold. The extension panel and the demo chrome use these;
+   the mock Lauris keeps its own look (src/ext/lauris/lauris.css) because it stands for a product that is not Psyflo's. These are scoped names (--paper, --navy, ...) that the platform's Tailwind theme (--color-*) does not use. */
+:root {
+  --paper: #F8F6F2; --card: #FFFFFF; --line: #E5E0D6; --line-strong: #CFC8BA;
+  --ink: #151B24; --ink-2: #3F4752; --ink-3: #5A6370;
+  --navy: #151B24; --navy-2: #222A35; --navy-line: #323C4A;
+  --teal: #217A78; --teal-hover: #15605E; --teal-on-dark: #5FC0BE; --teal-tint: #E1F0EF;
+  --gold: #F0B44C; --gold-tint: #FCEFD0;
+  --danger: #8A2E1C; --danger-bg: #FBE7E2; --warn: #6F4A05; --warn-bg: #FCEFD0;
+  --ok: #1D4F43; --ok-bg: #E3EFEA; --neutral: #3F4752; --neutral-bg: #EFEBE4; --info: #1F4E8C; --info-bg: #DCE8F7;
+  /* the two colors that mean the same thing in the EHR and in the panel */
+  --typed: #FFF8E6; --typed-line: #E8C56A; --typed-mark: #FFE58A; --saved: #E6F4EA;
+  --sans: "DM Sans Var", "DM Sans Variable", "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}

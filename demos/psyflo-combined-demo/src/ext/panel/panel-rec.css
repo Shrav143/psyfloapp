@@ -1,0 +1,43 @@
+/* Recommendations for an authorization form (Scan & Enhance on a prior authorization). Everything sits under .psy. */
+.psy .rec-seg { margin: 10px 14px 0; flex: none; }
+.psy .rec-strip { display: flex; flex-direction: column; gap: 4px; background: #FBFAF7; }
+.psy .rec-strip .p-title { font-size: 15px; margin: 0; }
+.psy .rec-chance { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-top: 2px; font-size: 13px; }
+.psy .rec-chance .lbl { color: var(--ink-3); font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.psy .rec-chance b { font-size: 15px; }
+.psy .rec-chance .to { color: var(--ok); }
+.psy .rec-list, .psy .rec-plain { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.psy .rec-list > li { display: block; }
+.psy .rec-card { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.psy .rec-card.typed { background: var(--typed); border-color: var(--typed-line); }
+.psy .rec-top { display: flex; align-items: flex-start; gap: 8px; }
+.psy .rec-n { flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--neutral-bg); color: var(--neutral); font-size: 11px; font-weight: 700; display: grid; place-items: center; margin-top: 1px; }
+.psy .rec-tick { flex: none; width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--teal); cursor: pointer; }
+.psy .rec-ok { flex: none; color: var(--ok); margin-top: 1px; }
+.psy .rec-title { flex: 1; min-width: 0; border: 0; background: none; padding: 0; text-align: left; font-size: 13.5px; font-weight: 700; line-height: 1.35; color: var(--ink); }
+.psy .rec-title[disabled] { cursor: default; }
+.psy .rec-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-left: 28px; }
+.psy .rec-line { margin: 0 0 0 28px; font-size: 12.5px; color: var(--ink-2); }
+.psy .rec-ask { margin-left: 28px; }
+.psy .rec-err { margin: 4px 0 0; font-size: 11.5px; color: var(--danger); font-weight: 600; }
+.psy .rec-why { margin: 0 0 0 28px; padding: 7px 9px; border-radius: 8px; background: var(--paper); font-size: 12.5px; color: var(--ink-2); }
+.psy .rec-foot { display: flex; align-items: center; gap: 6px; margin-left: 28px; }
+.psy .rec-btn { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; text-decoration: none; }
+.psy .rec-quote { margin-left: 26px; }
+.psy .rec-quote blockquote { margin: 0; padding: 6px 9px; border-left: 3px solid #D6CDB8; border-radius: 0 8px 8px 0; background: var(--paper); font-size: 12.5px; color: var(--ink-2); }
+.psy .rec-done { display: flex; align-items: center; gap: 6px; margin: 4px 0 8px; font-weight: 700; color: var(--ink-3); }
+.psy .rec-done.ok { color: var(--ok); }
+.psy .rec-plain { gap: 2px; font-size: 12.5px; color: var(--ink-3); }
+.psy .rec-plain li { display: flex; align-items: flex-start; gap: 6px; }
+.psy .rec-plain li svg { margin-top: 3px; flex: none; }
+.psy .rec-foot-bar { box-shadow: 0 -8px 16px rgba(21, 27, 36, 0.06); }
+.psy .rec-or { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 12px; color: var(--ink-3); }
+.psy .rec-or .p-link { display: inline-flex; align-items: center; gap: 3px; }
+.psy .p-btn.danger { color: var(--danger); border-color: #E7C2B8; }
+.psy .p-btn.danger:hover { background: var(--danger-bg); }
+.psy .rec-plist { list-style: none; margin: 6px 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.psy .rec-pitem { width: 100%; text-align: left; border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 6px 9px; font-weight: 600; font-size: 12.5px; }
+.psy .rec-pitem:hover { background: var(--paper); }
+.psy { position: relative; }
+.psy .rec-dlg { position: absolute; inset: 0; z-index: 20; background: rgba(21, 27, 36, 0.45); display: grid; place-items: center; padding: 16px; }
+.psy .rec-dlg .box { width: 100%; background: var(--card); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 12px 32px rgba(21, 27, 36, 0.3); }
