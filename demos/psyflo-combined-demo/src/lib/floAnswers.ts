@@ -316,8 +316,8 @@ export function answerFor(q: string, all: AppState, route: FloRoute): FloAnswer 
     return {
       text: `${asked}Start with this: ${sentence(doLine(first))}`,
       lines: rest.map((i) => sentence(doLine(i))),
-      note: "This is the Do next list on the Dashboard, worked out from today's demo data.",
-      link: { label: "Open Do next on the Dashboard", to: paths.dashboard() },
+      note: "These are the red rows at the top of the Dashboard table, worked out from today's demo data.",
+      link: { label: "Open the Dashboard", to: paths.dashboard() },
     };
   }
   return { text: "I did not find an answer to that in the demo data. Try one of the suggestions below.", fallback: true };
