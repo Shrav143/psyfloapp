@@ -23,11 +23,11 @@ export function PayersLandingPage() {
   const shown = rows.filter((r) => !q.trim() || `${r.name} ${r.org} ${r.product}`.toLowerCase().includes(q.trim().toLowerCase()));
   return (
     <Page>
-      <PageHeader title="Payers" sub="Open a payer to tell the agents anything Psyflo does not know about it." actions={<Button variant="primary" icon={Plus} onClick={() => setAdding(true)}>Add a payer</Button>} />
+      <PageHeader title="Payer settings" sub="Open a payer to tell the agents anything Psyflo does not know about it." actions={<Button variant="primary" icon={Plus} onClick={() => setAdding(true)}>Add a payer</Button>} />
       <Card className="overflow-hidden">
         <div className="px-6 pt-5 pb-4"><SearchInput className="max-w-[340px]" value={q} onChange={setQ} placeholder="Search payers" /></div>
         {shown.length ? (
-          <ul aria-label="Payers" data-testid="payers-list">
+          <ul aria-label="Payer settings" data-testid="payers-list">
             {shown.map((r) => {
               const n = notes.filter((x) => x.payerId === r.id && x.active).length;
               return (

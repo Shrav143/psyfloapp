@@ -43,9 +43,9 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/authorizations" element={<AuthorizationsPage />} />
           <Route path="/authorizations/case/:id" element={<CaseRoute />} />
-          <Route path="/authorizations/eligibility" element={<EligibilityListPage />} />
-          <Route path="/authorizations/eligibility/verify" element={<VerifyPage />} />
-          <Route path="/authorizations/eligibility/:id" element={<ResultPage />} />
+          <Route path="/eligibility" element={<EligibilityListPage />} />
+          <Route path="/eligibility/verify" element={<VerifyPage />} />
+          <Route path="/eligibility/:id" element={<ResultPage />} />
           <Route path="/denials" element={<DenialsPage />} />
           <Route path="/denials/:id" element={<DenialPage />} />
           <Route path="/denials/:id/brief" element={<BriefPage />} />

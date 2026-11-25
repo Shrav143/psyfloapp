@@ -5,18 +5,18 @@ One page with a **toggle at the top**: **Extension** | **Psyflo platform**. It i
 | Side | What it is |
 |---|---|
 | **Extension** (the demo opens here) | The clinic's EHR, a mock called Lauris Online, with the **Psyflo extension** docked on its right: the six-icon design (Scribe, History, Patients, Scan & Enhance, Help, Settings). |
-| **Psyflo platform** | The Psyflo web app: Dashboard, Authorizations (with Eligibility & Benefits), Denial Intelligence, Analytics, Payers, Settings. |
+| **Psyflo platform** | The Psyflo web app: Dashboard, Authorizations, Eligibility & Benefits (its own tab, at `/eligibility`), Denial Intelligence, Analytics, Payer settings (under Connections), Settings. |
 
 Everything is demo data. Nothing is sent anywhere. Published (private) as https://claude.ai/artifact/SDenJ5iEfakqVzNsoX6c5z.
 
 ## The platform, simplified
 
 - **No New Case** (intake and clinical documentation happen in the EHR) and **no EMR Connect** (Psyflo is not integrated with anything). Their screens, routes and links are gone.
-- **Eligibility & Benefits** stays, under Authorizations.
+- **Eligibility & Benefits** stays, as its own tab next to Authorizations (no group or dropdown, no duplicate "All Authorizations").
 - **Dashboard** is a summary read at a glance. Menus on top (two for dates: *Updated* and *Due*; then payer, program, request type; the site switch is in the top bar), six icon tiles with a number each
   (red = needs a person now, yellow = coming up, grey = with the payer, red scale = denied, green = active, hourglass = expiring), and one table grouped by colour.
   The old "Do next" list is the first group of the table (*Needs attention*). Rows are icons: status, program, request type, time left, units left (with an hourglass when they end within 7 days) and one round button for the next step. Every icon has a tooltip. The tiles filter the table.
-- **Payers** is a plain list and one page per payer. Above: **Tell the agents about this payer**, a box where the clinic writes what Psyflo does not know (a process, a habit), picks which agents read it, and sees what the agents will read. Below: the rules Psyflo already follows for that payer. No workflow builder, no test workflow, no history tab.
+- **Payer settings** (under Connections) is a plain list and one page per payer. Above: **Tell the agents about this payer**, a box where the clinic writes what Psyflo does not know (a process, a habit), picks which agents read it, and sees what the agents will read. Below: the rules Psyflo already follows for that payer. No workflow builder, no test workflow, no history tab.
 
 ## What the extension does here
 

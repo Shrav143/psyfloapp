@@ -44,7 +44,7 @@ export function routeOf(pathname: string): FloRoute {
   if (c) return { kind: "case", id: decodeURIComponent(c[1]) };
   if (pathname === "/authorizations" || pathname === "/manager" || pathname.startsWith("/manager/")) return { kind: "manager" };
   if (pathname === "/denials" || pathname.startsWith("/denials/")) return { kind: "denials" };
-  if (pathname === "/authorizations/eligibility" || pathname.startsWith("/authorizations/eligibility/")) return { kind: "eligibility" };
+  if (pathname === "/eligibility" || pathname.startsWith("/eligibility/")) return { kind: "eligibility" };
   return { kind: "other" };
 }
 export const routeKey = (r: FloRoute): string => (r.kind === "case" ? `case:${r.id}` : r.kind);
@@ -122,7 +122,7 @@ function missingAnswer(id: string, guessed: boolean, s: AppState): FloAnswer {
     return { text: `${lead}No document is missing for ${head}, but Integrity has ${plural(failing.length, "check")} open.`, lines: failing.map((x) => `${x.label}: ${x.note}`), link };
   }
   const docs = s.payerConfig[c.payerId]?.docs[c.program] ?? [];
-  const docLine = open.some((o) => o.kind === "missing") && docs.length ? [`${payer.shortName} asks for ${plural(docs.length, "document")} at ${level}. The saved list is on Payers.`] : [];
+  const docLine = open.some((o) => o.kind === "missing") && docs.length ? [`${payer.shortName} asks for ${plural(docs.length, "document")} at ${level}. The saved list is in payer settings.`] : [];
   const draft = s.caseDrafts.find((x) => x.caseId === id && x.saved && !x.sent);
   const draftLine = draft && draft.unmet > 0 ? [`The New Case draft also holds ${plural(draft.unmet, "payer requirement")} the case does not meet yet.`] : [];
   return { text: `${lead}${head} has ${plural(open.length, "open item")} in the draft.`, lines: [...open.map((o) => `${KIND[o.kind]}: ${o.text}.`.replace(/\.\.$/, ".")), ...docLine, ...draftLine], note: READING, link };
@@ -177,7 +177,7 @@ function expiryAnswer(id: string, guessed: boolean, s: AppState): FloAnswer {
 function requireAnswer(payerId: PayerId, program: Program | undefined, caseId: string | undefined, s: AppState): FloAnswer {
   const payer = payerById(payerId);
   const cfg = s.payerConfig[payerId];
-  const link = { label: `Open Payers, ${payer.shortName}, Documents`, to: paths.payers(payerId, "documents") };
+  const link = { label: `Open payer settings, ${payer.shortName}`, to: paths.payers(payerId, "documents") };
   if (!cfg) return { text: `${payer.name} has no saved workflow in the demo data yet, so I have nothing to read for it.`, link };
   const titles = (p: Program): string[] => cfg.docs[p].map((d) => d.title);
   const scope = caseId ? `${caseId}: ` : "";

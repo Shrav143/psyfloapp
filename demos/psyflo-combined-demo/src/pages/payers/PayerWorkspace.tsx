@@ -35,7 +35,7 @@ export function PayerWorkspace({ id }: { id: string }) {
   const reach = payerById(id as never)?.reachedBy ?? cfg.reachedBy;
   return (
     <Page>
-      <Crumbs items={[{ label: "Payers", to: paths.payers() }, { label: row.name }]} />
+      <Crumbs items={[{ label: "Payer settings", to: paths.payers() }, { label: row.name }]} />
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <h1 className="font-serif text-[24px] leading-tight font-semibold">{row.name}</h1>
         <span className="text-[13px] text-muted">{row.product} · {stateName(row.state)}</span>

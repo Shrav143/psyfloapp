@@ -13,12 +13,12 @@ export const paths = {
   /** The one Authorizations workspace. `view` is one of all, attention, progress, payer, approved, denied or reviews. */
   authorizations: (view?: "all" | "attention" | "progress" | "payer" | "approved" | "denied" | "reviews") => `/authorizations${view ? `?view=${view}` : ""}`,
   case: (id: string, tab?: "actions" | "picture" | "criteria" | "risk" | "draft") => `/authorizations/case/${id}${tab ? `?tab=${tab}` : ""}`,
-  eligibility: () => "/authorizations/eligibility",
+  eligibility: () => "/eligibility",
   eligibilityVerify: (q?: { referral?: string; case?: string }) => {
     const s = new URLSearchParams(q as Record<string, string> | undefined).toString();
-    return `/authorizations/eligibility/verify${s ? `?${s}` : ""}`;
+    return `/eligibility/verify${s ? `?${s}` : ""}`;
   },
-  eligibilityResult: (id: string) => `/authorizations/eligibility/${id}`,
+  eligibilityResult: (id: string) => `/eligibility/${id}`,
   /** No id: the dashboard of open denials, where `payer` and `reason` narrow the table (Analytics rows link here). An id: that denial's page. */
   denials: (id?: string, filter?: { payer?: string; reason?: string }) => {
     const s = new URLSearchParams({ ...(filter?.payer ? { payer: filter.payer } : {}), ...(filter?.reason ? { reason: filter.reason } : {}) }).toString();

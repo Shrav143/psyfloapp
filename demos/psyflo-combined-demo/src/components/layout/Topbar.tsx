@@ -18,7 +18,7 @@ const PATH: [string, string][] = [
   ["Authorizations: every request in one list", paths.authorizations()],
   ["Eligibility & Benefits: verify a patient", paths.eligibilityVerify()],
   ["Denial Intelligence: D-3318", paths.denials("D-3318")],
-  ["Payers: Cardinal, Changes", paths.payers("cardinal", "changes")],
+  ["Payer settings: Cardinal", paths.payers("cardinal")],
   ["Authorizations: reviews this week", paths.authorizations("reviews")],
 ];
 

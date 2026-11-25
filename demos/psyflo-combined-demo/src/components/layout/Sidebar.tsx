@@ -120,19 +120,13 @@ export function Sidebar() {
 
   const main: Item[] = [
     { to: paths.dashboard(), label: "Dashboard", icon: LayoutDashboard, badge: dash, match: ["/dashboard"] },
-    {
-      to: paths.authorizations(), label: "Authorizations", icon: ClipboardList, badge: queue,
-      subs: [
-        // The same page as the parent: the one worklist. It is the highlighted item on the worklist and on a case page.
-        { to: paths.authorizations(), label: "All Authorizations", icon: ListChecks, isOn: (p) => p === "/authorizations" || p.startsWith("/authorizations/case") },
-        { to: paths.eligibility(), label: "Eligibility & Benefits", icon: ShieldCheck, badge: eb },
-      ],
-    },
+    { to: paths.authorizations(), label: "Authorizations", icon: ClipboardList, badge: queue, match: ["/authorizations"] },
+    { to: paths.eligibility(), label: "Eligibility & Benefits", icon: ShieldCheck, badge: eb, match: ["/eligibility"] },
     { to: paths.denials(), label: "Denial Intelligence", icon: Scale, badge: denials, match: ["/denials"] },
     { to: paths.analytics(), label: "Analytics", icon: BarChart3, match: ["/analytics"] },
   ];
   const conn: Item[] = [
-    { to: paths.payers(), label: "Payers", icon: Building2, badge: payers, match: ["/payers"] },
+    { to: paths.payers(), label: "Payer settings", icon: Building2, badge: payers, match: ["/payers"] },
   ];
 
   return (

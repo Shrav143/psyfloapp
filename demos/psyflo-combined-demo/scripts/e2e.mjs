@@ -290,7 +290,7 @@ const browser = await chromium.launch();
   const page = await fresh(browser);
   await toPlatform(page);
   const nav = (await page.getByRole("navigation", { name: "Main" }).innerText()).replace(/\s+/g, " ");
-  check("J1 the sidebar has no New Case and no EMR Connect, and keeps Eligibility and Payers", !/New Case/i.test(nav) && !/EMR/i.test(nav) && /Payers/.test(nav) && /Denial Intelligence/.test(nav));
+  check("J1 the sidebar has no New Case and no EMR Connect, and keeps Eligibility and Payers", !/New Case/i.test(nav) && !/EMR/i.test(nav) && /Payer settings/.test(nav) && /Eligibility & Benefits/.test(nav) && !/All Authorizations/.test(nav) && (await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: /^Authorizations/ }).count()) === 1 && /Denial Intelligence/.test(nav));
   const body = (await page.locator("main").innerText()).replace(/\s+/g, " ");
   check("J2 the dashboard has no Do next card and no Lifecycle card", !/Do next/i.test(body) && !/Lifecycle/i.test(body));
   check("J3 it is six icon tiles with a number each", (await page.locator(`${T("dash-tiles")} [data-tile]`).count()) === 6);
@@ -308,7 +308,7 @@ const browser = await chromium.launch();
   check("J7 a row's icon button opens that request", (await page.getByRole("dialog").count()) >= 1);
   await page.keyboard.press("Escape");
   // payers
-  await page.getByRole("link", { name: /^Payers/ }).first().click();
+  await page.getByRole("link", { name: /^Payer settings/ }).first().click();
   await wait(page, 500);
   check("J8 Payers is a plain list with how many notes each payer has", (await page.locator(`${T("payers-list")} li`).count()) >= 6);
   await page.locator('[data-payer="cardinal"]').click();
@@ -321,11 +321,9 @@ const browser = await chromium.launch();
   await page.getByRole("button", { name: /What the agents will read/ }).click();
   check("J11 the prompt the agents read includes the note", /drug screen on every continued-stay/.test(await page.locator(T("payer-prompt")).innerText()));
   // eligibility stays
-  await page.getByRole("link", { name: /^Authorizations/ }).first().click();
-  await wait(page, 400);
-  await page.getByRole("link", { name: /Eligibility/ }).first().click();
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: /^Eligibility/ }).click();
   await wait(page, 500);
-  check("J12 Eligibility & Benefits is still there", /Eligibility/.test(await page.locator("main").innerText()));
+  check("J12 Eligibility & Benefits is its own tab, and Authorizations is not lit while it is open", /Eligibility/.test(await page.locator("main").innerText()) && (await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: /^Authorizations/ }).getAttribute("class") ?? "").indexOf("bg-forest") < 0);
   await page.close();
 }
 
