@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Psyflo phone app: say what happened</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+body{margin:0;background:#F8F6F2;color:#1B1B19;font-family:'DM Sans',system-ui,sans-serif;font-size:16px;line-height:1.45}
+*{box-sizing:border-box}
+a{color:#15605E}
+.pm{width:100%;height:844px;background:#F8F6F2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.pm :focus-visible{outline:2px solid #217A78;outline-offset:2px}
+.pm-head{background:#151B24;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.pm-who{margin-left:auto;font-size:13px;color:#D3D9DE;text-align:right}
+.pm-bar{background:#fff;border-bottom:1px solid #E5DCD0;padding:8px 8px 8px 16px;display:flex;align-items:center;gap:8px;min-height:68px;flex:0 0 auto}
+.pm-pid{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.pm-av{width:44px;height:44px;border-radius:50%;background:#E1F0EF;color:#15605E;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex:0 0 44px}
+.pm-av--none{background:#EFE8DE;color:#5A544B;font-size:18px}
+.pm-pt{display:flex;flex-direction:column;min-width:0}.pm-pt b{font-size:18px;line-height:1.2}.pm-pt span{font-size:13px;color:#5A544B;line-height:1.3}
+.pm-pt .pm-pn{color:#6F4A05;font-weight:600}
+.pm-chg{display:inline-flex;align-items:center;justify-content:center;min-width:56px;min-height:48px;padding:0 10px;font-weight:600;color:#15605E;text-decoration:underline;font-size:15px}
+.pm-main{flex:1;overflow-y:auto;padding:12px 16px 16px;display:flex;flex-direction:column;gap:18px}
+.pm-main>section{display:flex;flex-direction:column;gap:8px}
+.pm h2{margin:0;font-size:14px;font-weight:600;color:#5A544B}
+.pm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pm-card{background:#fff;border:1px solid #E5DCD0;border-radius:12px;padding:12px 14px}
+.pm-card b{font-size:16px}
+.pm-sub{font-size:13px;color:#5A544B}
+.pm-chips{display:flex;flex-wrap:wrap;gap:8px}
+.pm-chip{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px;border-radius:24px;border:2px solid #857F75;background:#fff;color:#1B1B19;font:inherit;font-weight:600;font-size:16px;cursor:pointer}
+.pm-chip.on{border-color:#217A78;background:#E1F0EF;color:#15605E}
+.pm-dot{width:9px;height:9px;border-radius:50%;background:transparent;border:1.5px solid transparent}
+.pm-dot.ok{background:#1D4F43}.pm-dot.wait{background:#B9791B}
+.pm-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border-radius:12px;font:inherit;font-weight:600;font-size:16px;border:0;padding:0 16px;text-decoration:none;cursor:pointer;width:100%}
+.pm-btn.p{background:#217A78;color:#fff}.pm-btn.o{background:#fff;color:#1B1B19;border:2px solid #857F75}.pm-btn.r{background:#8A2E1C;color:#fff}
+.pm-btn.s{width:auto;min-height:48px;padding:0 14px}
+.pm-btn[disabled],.pm-btn[aria-disabled="true"]{background:#EFE8DE;color:#5A544B;border:0;cursor:not-allowed}
+.pm-row{display:flex;gap:8px;align-items:center}.pm-row>*{flex:1}
+.pm-time{font-size:30px;font-weight:700;letter-spacing:-.01em;line-height:1.1;font-variant-numeric:tabular-nums}
+.pm-figs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pm-fig{background:#fff;border:1px solid #E5DCD0;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.pm-fig span{font-size:12px;color:#5A544B;font-weight:600}.pm-fig b{font-size:18px;line-height:1.2}.pm-fig i{font-style:normal;display:block;margin-top:2px}
+.pm-ent{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid #E5DCD0}
+.pm-ent:first-child{border-top:0}
+.pm-ent .t{font-weight:600}.pm-ent .w{font-size:14px;color:#5A544B}
+.pm-in{width:100%;border:2px solid #857F75;border-radius:10px;padding:10px 12px;font:inherit;font-size:16px;background:#fff;min-height:48px;color:#1B1B19}
+textarea.pm-in{min-height:96px;resize:vertical;line-height:1.5}
+label.pm-l{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+.pm-note{font-size:13px;color:#5A544B}
+.pm-warn{background:#FCEFD0;color:#6F4A05;border-radius:12px;padding:10px 12px;font-size:14px}
+.pm-bad{background:#FBE7E2;color:#8A2E1C;border-radius:12px;padding:10px 12px;font-size:14px}
+.pm-ok{background:#E3EFEA;color:#1D4F43;border-radius:12px;padding:10px 12px;font-size:14px}
+.pm-foot{flex:0 0 auto;background:#fff;border-top:1px solid #E5DCD0;padding:10px 16px 8px;display:flex;flex-direction:column;gap:6px}
+.pm-tabs{display:flex;justify-content:space-around}
+.pm-tabs a{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 14px;font-size:14px;font-weight:600;color:#5A544B;text-decoration:none}
+.pm-tabs a.on{color:#15605E;box-shadow:inset 0 -3px 0 #217A78}
+.pm-rev{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #E5DCD0}.pm-rev:first-child{border-top:0}
+.pm-rev .i{font-weight:700;min-width:44px}.pm-rev .x{flex:1;min-width:0;font-size:14px}.pm-rev .x span{display:block;color:#5A544B;font-size:13px}
+.pm-sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:2px solid #217A78;border-radius:16px 16px 0 0;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 -8px 24px rgba(0,0,0,.18);z-index:5}
+.pm-scrim{position:absolute;inset:0;background:rgba(21,27,36,.45);z-index:4}
+.pm-sheet h2{font-size:18px;color:#1B1B19}
+.pm-demo{font-size:12px;color:#5A544B;text-align:center;line-height:16px;padding:2px 0 0}
+</style>
+</helmet>
+
+<div class="pm">
+  <header class="pm-head">
+    <svg role="img" aria-label="psyflo" viewBox="0 0 3191 1060" width="70" height="23"><g transform="translate(-6.0,780.0) scale(1,-1)"><path d="M66 -220V504H186L201 434Q217 456 239.0 474.5Q261 493 291.5 504.5Q322 516 363 516Q434 516 488.0 481.0Q542 446 573.5 386.5Q605 327 605 251Q605 175 573.0 115.5Q541 56 487.0 22.0Q433 -12 364 -12Q308 -12 267.5 8.5Q227 29 201 65V-220ZM332 106Q372 106 402.5 124.0Q433 142 450.0 175.0Q467 208 467 251Q467 294 450.0 327.5Q433 361 402.5 379.5Q372 398 332 398Q293 398 262.5 379.5Q232 361 214.5 328.0Q197 295 197 252Q197 209 214.5 175.5Q232 142 262.5 124.0Q293 106 332 106Z" fill="#FFFFFF"></path></g><g transform="translate(624.0,780.0) scale(1,-1)"><path d="M272 -12Q203 -12 152.0 10.0Q101 32 72.0 71.0Q43 110 39 159H173Q178 140 190.0 124.5Q202 109 222.0 100.0Q242 91 270 91Q297 91 314.0 98.5Q331 106 339.5 119.0Q348 132 348 146Q348 167 336.0 178.5Q324 190 301.0 197.0Q278 204 245 211Q209 218 174.5 228.5Q140 239 113.0 255.0Q86 271 70.0 296.0Q54 321 54 358Q54 403 78.0 438.5Q102 474 148.0 495.0Q194 516 259 516Q350 516 403.0 475.0Q456 434 466 362H339Q333 385 312.5 398.5Q292 412 258 412Q222 412 203.0 399.0Q184 386 184 365Q184 351 196.5 340.0Q209 329 232.0 321.5Q255 314 288 307Q346 295 390.0 279.5Q434 264 459.0 235.5Q484 207 484 153Q484 105 458.0 67.5Q432 30 384.5 9.0Q337 -12 272 -12Z" fill="#FFFFFF"></path></g><g transform="translate(1105.0,780.0) scale(1,-1)"><path d="M130 -220 252 56H222L20 504H167L311 179L441 504H584L273 -220Z" fill="#FFFFFF"></path></g><g transform="translate(1734.0,780.0) scale(1,-1)"><path d="M89 0V549Q89 612 110.0 649.0Q131 686 170.5 703.0Q210 720 263 720H325V605H283Q251 605 237.5 592.5Q224 580 224 549V0ZM20 391V504H333V391Z" fill="#5FC0BE"></path></g><g transform="translate(2080.0,780.0) scale(1,-1)"><path d="M66 0V720H201V0Z" fill="#5FC0BE"></path></g><g transform="translate(2322.0,780.0) scale(1,-1)"><path d="M304 -12Q232 -12 174.5 21.5Q117 55 83.5 114.5Q50 174 50 251Q50 330 83.5 389.5Q117 449 175.0 482.5Q233 516 305 516Q378 516 435.5 482.5Q493 449 526.5 389.5Q560 330 560 252Q560 174 526.5 114.5Q493 55 435.0 21.5Q377 -12 304 -12ZM304 105Q338 105 364.5 121.0Q391 137 406.5 170.0Q422 203 422 252Q422 301 406.5 333.5Q391 366 364.5 382.5Q338 399 305 399Q273 399 246.0 382.5Q219 366 203.5 333.5Q188 301 188 252Q188 203 203.5 170.0Q219 137 245.5 121.0Q272 105 304 105Z" fill="#5FC0BE"></path></g><g transform="translate(2922.0,780.0) scale(1,-1)"><path d="M127 -5Q89 -5 66.0 17.5Q43 40 43 73Q43 106 66.0 128.5Q89 151 127 151Q163 151 186.0 128.5Q209 106 209 73Q209 40 186.0 17.5Q163 -5 127 -5Z" fill="#F0B44C"></path></g></svg>
+    <div class="pm-who">{{who}}</div>
+  </header>
+  <div class="pm-bar" role="region" aria-label="Selected student">{{bar}}</div>
+  <main class="pm-main" id="pm-main">
+    <h1 class="pm-sr">Say what happened</h1>
+
+    <sc-if value="{{offline}}"><div class="pm-bad" role="status"><b>You are offline.</b> You can type, but nothing can be saved until you are back online.</div></sc-if>
+
+    <sc-if value="{{noClient}}">
+      <sc-if value="{{bad}}"><div class="pm-bad" role="alert"><b>{{badIni}} is not on your list.</b> Nothing was opened. Pick one of your students.</div></sc-if>
+      <section aria-labelledby="pm-h-pick">
+        <h2 id="pm-h-pick">Who is this about?</h2>
+        <sc-if value="{{hasPick}}"><div class="pm-card" style="padding:4px 14px"><sc-for list="{{pickList}}" as="p"><button type="button" class="pm-btn o" style="margin:8px 0;justify-content:flex-start;gap:12px" onClick="{{p.pick}}"><b>{{p.ini}}</b><span class="pm-sub">{{p.line}}</span></button></sc-for></div></sc-if>
+        <sc-if value="{{!hasPick}}"><div class="pm-card"><b>No students on this phone list</b><div class="pm-sub">Sign in as direct support staff to try it.</div></div></sc-if>
+        <div class="pm-note">Psyflo never picks a student for you.</div>
+      </section>
+    </sc-if>
+
+    <sc-if value="{{hasClient}}">
+      <section aria-labelledby="pm-h-say">
+        <h2 id="pm-h-say">What happened</h2>
+
+        <sc-if value="{{showMic}}"><sc-if value="{{isConsent}}"><div class="pm-card" role="group" aria-labelledby="pm-c-t"><b id="pm-c-t">Use the microphone?</b>
+          <div class="pm-sub" style="margin-top:4px">Your browser turns speech into text. In some browsers the browser maker's speech service hears the audio. Psyflo keeps the text, not the audio. The answer is recorded for today.</div>
+          <div class="pm-note" style="margin-top:4px"><b>Demo data · nothing is real.</b> Do not say anything real.</div>
+          <div class="pm-row" style="margin-top:10px"><a class="pm-btn p" href="#allow">Allow today</a><a class="pm-btn o" href="#typeinstead">Type instead</a></div></div></sc-if>
+        <sc-if value="{{isDenied}}"><div class="pm-card" role="alert" style="border-color:#8A2E1C"><b>The microphone is blocked</b>
+          <div class="pm-sub" style="margin-top:4px">Allow it for this site in your browser settings, then try again. Or type it: nothing is lost.</div>
+          <div class="pm-row" style="margin-top:10px"><a class="pm-btn p" href="#retry">Try again</a><a class="pm-btn o" href="#typeinstead">Type instead</a></div></div></sc-if>
+        <sc-if value="{{isNoMic}}"><div class="pm-card" role="alert" style="border-color:#8A2E1C"><b>No microphone was found</b>
+          <div class="pm-sub" style="margin-top:4px">Check that this phone has a microphone that is not in use by another app. Or type it.</div>
+          <div class="pm-row" style="margin-top:10px"><a class="pm-btn p" href="#retry">Try again</a><a class="pm-btn o" href="#typeinstead">Type instead</a></div></div></sc-if>
+        <sc-if value="{{isUnsupported}}"><div class="pm-card"><b>This browser cannot turn speech into text</b>
+          <div class="pm-sub" style="margin-top:4px">Type what happened. Chrome on a phone can use the microphone.</div></div></sc-if></sc-if>
+
+        <sc-if value="{{isListening}}"><div class="pm-card" role="status" style="border-color:#8A2E1C"><div class="pm-row" style="gap:8px"><b style="flex:1">Listening</b><span class="pm-sub" id="mictime" style="flex:0 0 auto">0:00</span></div>
+          <div id="heard" style="font-size:16px;margin-top:6px">"{{heard}}"</div>
+          <a class="pm-btn r" style="margin-top:10px" href="#mic">Stop listening</a>
+          <div class="pm-note" style="margin-top:6px">Listening stops when the screen locks or you leave this page.</div></div></sc-if>
+        <sc-if value="{{!isListening}}"><div><label class="pm-l" for="spoken">Say it, or type what happened</label><textarea class="pm-in" id="spoken" placeholder="A few plain sentences about what you did" onInput="{{typed}}">{{spoken}}</textarea></div></sc-if>
+
+        <sc-if value="{{micOn}}"><div class="pm-row"><a class="pm-btn o" href="#mic">{{micBtn}}</a><sc-if value="{{presenter}}"><a class="pm-btn o" href="#example">Use the example</a></sc-if></div>
+          <div class="pm-note"><a href="#micoff">Turn the microphone off</a></div></sc-if>
+        <sc-if value="{{!micOn}}"><sc-if value="{{presenter}}"><a class="pm-btn o" href="#example">Use the example</a></sc-if></sc-if>
+        <sc-if value="{{micNote}}"><div class="pm-note" role="status">{{micNote}}</div></sc-if>
+      </section>
+
+      <sc-if value="{{hasDraft}}"><section aria-labelledby="pm-h-rev">
+        <h2 id="pm-h-rev">Review</h2>
+        <div class="pm-card" style="background:#FFFDF7;border-color:#F0B44C">
+          <div class="pm-row" style="gap:6px"><b style="flex:1">In note language</b><span style="flex:0 0 auto">{{stateChip}}</span></div>
+          <sc-if value="{{!fixing}}"><div style="margin-top:8px;line-height:1.5">{{phone}}</div></sc-if>
+          <sc-if value="{{fixing}}"><textarea class="pm-in" style="margin-top:8px;min-height:120px" aria-label="Fix the wording" onInput="{{fixInput}}">{{phone}}</textarea></sc-if>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"><sc-for list="{{chips}}" as="c"><span class="pm-sub" style="background:#E1F0EF;color:#15605E;border-radius:999px;padding:2px 10px;font-weight:600" title="{{c.from}}">{{c.text}}</span></sc-for></div>
+          <sc-if value="{{hasFlag}}"><div class="pm-warn" style="margin-top:8px" role="status"><sc-for list="{{flagged}}" as="f"><div>You wrote "{{f.w}}". Say what you did. It is not changed for you.</div></sc-for></div></sc-if>
+          <sc-if value="{{hasQuestions}}"><div style="margin-top:8px"><div class="pm-sub"><b>Not in your words yet</b>. These stay blank for you to fill in:</div><sc-for list="{{questions}}" as="q"><div class="pm-sub">· {{q.q}}</div></sc-for></div></sc-if>
+          <sc-if value="{{notSaved}}"><a class="pm-btn o" style="margin-top:10px" href="#fix">{{fixLabel}}</a></sc-if>
+        </div>
+      </section></sc-if>
+
+      <sc-if value="{{saved}}"><section aria-labelledby="pm-h-lau">
+        <h2 id="pm-h-lau">Ready in Lauris</h2>
+        <div class="pm-ok" role="status"><b>Saved.</b> {{readyLine}}</div>
+        <a class="pm-btn o" href="#edit">Change it</a>
+      </section></sc-if>
+    </sc-if>
+  </main>
+
+  <footer class="pm-foot">
+    <sc-if value="{{canSave}}"><a class="pm-btn p" href="#use">{{primaryLabel}}</a></sc-if>
+    <sc-if value="{{canSaveNot}}"><sc-if value="{{saved}}"><a class="pm-btn p" href="#done">Done</a></sc-if></sc-if>
+    <sc-if value="{{canSaveNot}}"><sc-if value="{{!saved}}"><sc-if value="{{hasDraft}}"><button type="button" class="pm-btn p" disabled>{{primaryLabel}}</button></sc-if><sc-if value="{{!hasDraft}}"><a class="pm-btn o" href="#done">Done</a></sc-if></sc-if></sc-if>
+    <nav class="pm-tabs" aria-label="Phone"><a class="on" href="MobileApp.dc.html">Today</a><a href="MobileAssess.dc.html">Assessments <span class="pm-sub">({{dueN}})</span></a></nav>
+    <div class="pm-demo">Demo data · nothing is real</div>
+  </footer>
+
+  <sc-if value="{{confirming}}"><div class="pm-scrim"></div><div class="pm-sheet" role="dialog" aria-modal="true" aria-labelledby="pm-conf-t">
+    <h2 id="pm-conf-t">{{confirmTitle}}</h2><div class="pm-sub">{{confirmLine}}</div>
+    <a class="pm-btn p" href="#confirm">{{confirmYes}}</a>
+    <a class="pm-btn o" href="#change">Change</a>
+    <a class="pm-btn o" href="#cancelconfirm">Back</a></div></sc-if>
+  <sc-if value="{{changing}}"><div class="pm-scrim"></div><div class="pm-sheet" role="dialog" aria-modal="true" aria-labelledby="pm-pick-t">
+    <h2 id="pm-pick-t">Change student</h2>
+    <div style="max-height:360px;overflow-y:auto"><sc-for list="{{pickList}}" as="p"><button type="button" class="pm-btn o" style="margin:6px 0;justify-content:flex-start;gap:12px" onClick="{{p.pick}}"><b>{{p.ini}}</b><span class="pm-sub">{{p.line}}</span></button></sc-for></div>
+    <a class="pm-btn o" href="#closepick">Cancel</a></div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+title: Dashboard › Requests table › Days in state and the CMS decision time
+route: /dashboard
+intro: The Days in state cell shows how long a request has been where it is, the payer's median under it, and, for Medicaid managed care payers (Summit, Cardinal, Evergreen), the CMS decision time. Under the CMS prior authorization rule from 2026 a standard decision is due in 7 calendar days. The demo shows it; it never blocks anything.
+dir: TD
+also: Real world: CMS-0057-F, from 1 January 2026, asks impacted payers to decide standard requests within 7 calendar days and expedited requests within 72 hours. State rules differ, so the note says 'Check your state.' Demo only: the days are counted on the demo clock.
+---
+start s1 "A row in the table\nThe Days in state cell"
+screen a1 "The number\n'35 m', '14 h' or '3.2 d' since the request entered its state"
+decision d1 "Is there a median for this state?"
+screen a2 "'median 2 d' under the number\nThe payer's usual time in this state, from the demo data"
+decision d2 "How long compared with the median?"
+screen a3 "Plain number"
+screen a4 "Ochre number\nOver 1.5 × the median"
+screen a5 "Terracotta number\nOver 2 × the median; Caller phones the payer"
+decision d3 "Is the request Submitted or Decision pending, at a Medicaid managed care payer?"
+screen b0 "No CMS clock\nCommercial, Medicare Advantage and carve-out payers, and every other state"
+process b1 "Count the days since the request went to the payer"
+decision d4 "How many days?"
+screen b2 "Nothing extra\nBefore day 5"
+screen b3 "Ochre hint 'Day 5 of 7' (or 'Day 6 of 7', 'Day 7 of 7') and an info icon"
+screen b4 "Ochre flag 'Past 7 days' and an info icon\nOn the 8th day"
+overlay b5 "Info icon: hover, focus or click\n'CMS rule for Medicaid managed care: decide within 7 calendar days (72 hours if expedited). Check your state.'\nEscape closes it"
+process b6 "The Lifecycle chip 'Decision pending' says 'N past 7 days' in ochre"
+process b7 "Next action becomes 'Chase the payer' from day 5\nA request past the CMS time goes first on Do next"
+start s2 "Demo menu › Fast-forward 1 day, several times\nFor example 4 days for R-1021 (Cardinal, Decision pending)"
+process p1 "The clock moves; days in state and the CMS days grow together"
+goto g1 "Continues in: Dashboard › Do next › How the list is chosen and ordered"
+goto g2 "Continues in: Dashboard › Header › Check all now and the demo clock"
+
+s1 --> a1 --> d1
+d1 -->|Yes| a2 --> d2
+d1 -->|No| d3
+d2 -->|Within 1.5 ×| a3 --> d3
+d2 -->|Over 1.5 ×| a4 --> d3
+d2 -->|Over 2 ×| a5 --> d3
+d3 -->|No| b0
+d3 -->|Yes| b1 --> d4
+d4 -->|Under 4 days| b2
+d4 -->|4 to 7 days| b3 --> b5
+d4 -->|7 days or more| b4 --> b5
+b4 --> b6
+b3 --> b7
+b4 --> b7
+b7 --> g1
+s2 --> p1 --> d4
+p1 -.-> g2

@@ -1,0 +1,19 @@
+{
+  "_about": "Sample series for Analytics (KPIs) and the Payer scorecard. Synthetic: Harvest has not calculated these yet, so every screen that shows them carries a 'Sample data' tag. Weekly series are Monday dates, oldest first; the Analytics screen replaces the last Timely point with the live count from the notes the panel reported.",
+  "kpi_series": {
+    "weeks": ["2026-09-07", "2026-09-14", "2026-09-21", "2026-09-28", "2026-10-05", "2026-10-12", "2026-10-19", "2026-10-26"],
+    "all": {
+      "timely": [74, 77, 79, 76, 82, 84, 83, 86],
+      "minutes": [14.2, 13.5, 12.8, 12.4, 11.1, 10.2, 9.4, 8.7]
+    },
+    "cc": {
+      "timely": [76, 78, 80, 77, 83, 85, 84, 87],
+      "minutes": [14.0, 13.3, 12.6, 12.1, 10.9, 10.0, 9.2, 8.5]
+    },
+    "lc": {
+      "timely": [70, 74, 76, 74, 79, 81, 80, 83],
+      "minutes": [14.6, 14.0, 13.2, 13.0, 11.6, 10.8, 10.0, 9.2]
+    }
+  },
+  "payer_full_denials": { "sentara": 3, "anthem": 3, "humana": 1, "aetna": 1, "uhc": 1, "ffs": 0 }
+}

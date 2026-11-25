@@ -1,0 +1,48 @@
+title: Denial Intelligence › Open denials list
+route: /denials
+intro: The dashboard of open denials, the first thing Denial Intelligence shows. A slim title row, six small figures that filter the table, payer chips, and one table of denials at the sites in view, soonest deadline first. A row opens the denial's own page. Settled denials are behind the 'Closed' figure. The figure and the sort live in the address, so Back from a denial returns to the same view.
+dir: TD
+---
+start s1 "Arrive on /denials"
+screen tr "Title row\n'Denial Intelligence' with an (i) that reads 'Authorization denials only. Claim denials are handled in billing...'\nA 'Site A' tag when the view is narrowed; button 'Add a denial letter' on the right"
+goto g5 "Continues in: Denial Intelligence › Add a denial letter"
+screen fg "Figures, each a button that filters\n'Open 8', 'Deadlines this week 4', 'To decide 2', 'Peer-to-peer booked 2', 'Appeals in progress 4'\nthen, apart, 'Closed 0'"
+process pc "Counts = denials at the sites in view\nBoth sites is Site A plus Site B; a one-site viewer never counts the other site"
+click cf "Click a figure"
+process pf "The table shows only those rows; the figure is outlined\nAddress ?view=week, decide, call, appeal or closed; 'Open' clears it"
+goto g3 "Continues in: Denial Intelligence › Open denials list › Filter by payer and reason"
+
+screen tb "Table, one row per denial\nDenial, Patient (initials, age), Payer, Level of care, Denied ('7 of 14 days', '48 to 30 units'),\nChance, Next step and its date, Deadline (time left), Owner (the agent)"
+process p3 "Default order: newly analyzed letters first, marked 'New', then time left, soonest first\nFiled appeals have no deadline of ours ('—'), so they come last, in id order"
+process p5 "At the start: D-3318, D-3297, D-3306, D-3290, D-3301, then D-3272, D-3279, D-3284"
+process p7 "Deadline pill: red with a dot under 2 days, ochre under 7 days, grey otherwise; 'Passed' when time is up"
+process pn "Next step: 'Peer-to-peer call' with the booked time, 'Appeal letter, drafting' with the due date,\n'Payer's decision' or 'Reviewer's decision' with the expected date, or the recommended word for a denial still to decide"
+click cs "Click a column heading (a button: Tab to it, Enter or Space)"
+process ps "Sorts by that column; again reverses it; Chance starts highest first\naria-sort names the direction, address ?sort="
+
+click c1 "Click a row, or Tab to its id link and press Enter"
+goto g2 "Continues in: Denial Intelligence › A denial opened"
+screen cl "Figure 'Closed': the denials settled here\nOutcome column ('Accepted', 'Overturned on appeal', 'Partly restored on the call') and the date it closed"
+decision d1 "Any rows to show?"
+screen e1 "'No open denials' with 'Add a denial letter' and 'Open the Dashboard'"
+screen e2 "'No denials match these filters' with 'Clear filters'"
+screen e3 "'No closed denials yet'"
+goto g6 "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links"
+goto g4 "Continues in: Dashboard › Arrive › What the page shows"
+
+s1 --> tr --> fg --> pc
+tr --> g5
+fg --> cf --> pf --> tb
+pf -.-> g3
+fg --> tb --> p3 --> p5
+tb --> p7
+tb --> pn
+tb --> cs --> ps
+tb --> c1 --> g2
+cf -.->|Closed| cl --> c1
+tb --> d1
+d1 -->|No open denial at all| e1 --> g4
+d1 -->|Filters hide them all| e2
+d1 -->|Closed and none yet| e3
+e1 -.-> g5
+pc -.-> g6

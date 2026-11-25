@@ -1,0 +1,50 @@
+title: Authorizations › In progress › How a draft row's status and deadline are decided
+route: /authorizations?view=progress
+intro: A saved draft's row is worked out from how far the agents have got and from the kind of request. The status chip, the next-action line, the owner and the button follow the agents; the due pill follows the request type. All of it follows the demo clock, so Fast-forward turns 'Notice due in 5 h' into 'Overdue'.
+dir: TD
+also: The next-action cell shows the first sentence of the agent line. A red due pill puts the row in Act now, whatever else it says.
+---
+start s1 "A saved draft that is not a request yet is drawn as a row"
+decision d1 "Is an agent waiting for an answer?"
+process a1 "'Needs your input', button 'Answer'\nOwner: the agent who asked (Scribe, or Packet for a recertification)\nLine says what is needed"
+decision d2 "Have all ten agents finished?"
+process a2 "'Ready to sign', button 'Review and sign'\nOwner: Integrity\n'Integrity and Scrubber passed.'"
+decision d3 "Has the run started?"
+process a3 "'Agents working', button 'Watch' (outlined)\nOwner follows the next agent: Reader, Verify, Criteria, Historian, Placement, Forecaster, Scribe, Integrity, Packet, Scrubber\nLine, e.g. 'Packet is assembling the forms and attachments'"
+process a5 "An agent could not finish: still 'Agents working'\nLine 'Verify could not reach Cardinal's portal.'\nIt counts in 'Needs attention'"
+process a4 "'Intake not finished', button 'Continue'\nOwner: Reader\n'Intake is not finished.'"
+process c1 "Chance\nStarts low and climbs while the first six agents finish, then holds\n'None' while intake is unfinished"
+
+group gDue "Due pill by request type"
+  decision d4 "What type of request?"
+  process u1 "Admission: 'Notice due in 5 h'\nRed under 24 h, amber after"
+  process u2 "Retro-authorization: 'Window closes in 18 h'\nRed under 24 h, amber after"
+  process u3 "Recertification: 'Expires in 3 days'\nAmber under 4 days, grey after"
+  process u4 "Continued stay: 'Review due 4:00 pm'\nA time when under a day, a weekday after. Amber"
+  process u5 "Initial request: 'Packet due Thu'\nGrey"
+  process u6 "Any clock that has passed: 'Overdue' in red"
+  process u7 "No type or no clock yet: 'None'"
+endgroup
+
+process bd "Deadline band: a red pill is Act now\nOtherwise under a day Within 24 hours, under 7 days the week, else later"
+end e1 "Row is drawn with its chip, line, owner, pill and button"
+
+s1 --> d1
+d1 -->|Yes| a1
+d1 -->|No| d2
+d2 -->|Yes| a2
+d2 -->|No| d3
+d3 -->|Yes| a3
+d3 -->|No| a4
+a3 -.-> a5
+a1 & a2 & a3 & a4 --> c1
+c1 --> d4
+d4 -->|Admission| u1
+d4 -->|Retro-authorization| u2
+d4 -->|Recertification| u3
+d4 -->|Continued stay| u4
+d4 -->|Initial request| u5
+d4 -->|Not set| u7
+u1 & u2 & u3 & u4 & u5 -.-> u6
+u1 & u2 & u3 & u4 & u5 & u6 & u7 --> bd
+bd --> e1

@@ -1,0 +1,81 @@
+title: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions
+route: /authorizations/new/:draftId (step 2 of 4, the summary's warnings and 'What you can do')
+intro: A check can end with warnings. Each says what was found and what to do next, in one line, and none of them traps the person. A section 'What you can do' offers one action each. Coverage that is confirmed inactive, or a check that could not run, can be gone past with a documented exception: a short reason, kept on the case and written to the request's History. Only coverage confirmed inactive with no documented exception stops the final send.
+dir: TD
+also: Demo only: the check is scripted from the last four digits of the member ID. 1012 lapsed, 9999 not found, 8080 known under another ID, 7070 moved to another plan, 3030 service not covered, 5050 benefit not confirmed, 4040 clinic enrollment not confirmed, 2020 no authorization rule on file, 6060 another plan pays first, 9090 every day used.
+---
+start s1 "A check ends with warnings\nThe summary lists each in one quiet block 'Warnings'"
+decision d1 "Which warning?"
+
+group gW "The warnings, and what to do"
+  process w1 "**Coverage is not active**\n'Check the member ID and the dates, or ask the plan. You can go on with a documented exception.'\nMember ID ending 1012, or coverage ended"
+  process w2 "**The payer changed**\n'Switch the case to the new plan and check again.'"
+  process w3 "**Member ID does not match**\n'Correct the member ID in Intake, or call the plan.'\nEnding 8080 or 9999"
+  process w4 "**Benefit not confirmed**\n'Ask the plan to confirm the benefit before the request is signed.'\nEnding 5050"
+  process w5 "**Service not covered**\n'Check the level of care, or ask the plan about an exception.'\nEnding 3030"
+  process w6 "**Provider participation not confirmed**\n'Confirm the clinic is in network with this plan.'\nEnding 4040"
+  process w7 "**Verification service unavailable**\n'Resume Verify in Settings and refresh, or go on with a documented exception.'\nVerify paused in Settings, or a refresh that could not run"
+  process w8 "**Authorization requirement unknown**\n'Ask the payer. Until then the request is prepared as if one is needed.'\nEnding 2020, or a payer added on Payers that does not cover the level of care"
+endgroup
+
+screen sAct "Section 'What you can do'\nOne short button per warning"
+click a1 "Click 'Switch this case to Cardinal'"
+store sa1 "Payer and plan type change\nThe old check is let go and Verify checks the new plan"
+click a2 "Click 'Correct the member ID in Intake'"
+click a3 "Click 'Change the level of care in Intake'"
+goto gIntake "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
+click a4 "Click the link 'Open Settings to resume Verify'"
+goto gSettings "Continues in: Settings › Pause › What the rest of the app shows"
+process pResume "After Verify is resumed, 'Refresh verification' runs the check"
+
+group gDoc "A documented exception"
+  click b1 "Click 'Continue with a documented exception'\n(coverage not active or member ID mismatch)\nor 'Continue without a verification' (the check could not run)"
+  input iWhy "Type the reason\n'Why go on without confirmed coverage?'\n'Why go on without a verification?'"
+  decision dText "Is there a reason?"
+  process pOff "'Document and continue' stays switched off"
+  click cOk "Click 'Document and continue'"
+  click cCancel "Click 'Cancel'"
+  store st "The reason is kept on the case with what it is about\n'Documented exception. ...' and 'Undo'"
+  click cUndo "Click 'Undo'"
+endgroup
+
+group gEffect "What it changes"
+  process e1 "Eligibility & Benefits: Blocked becomes Needs attention\nThe warning becomes a note"
+  process e2 "Review & submit: the item 'Coverage' stops blocking\nIt says 'You went on with a documented exception: ...'"
+  store e3 "After sending, the request's History says\n'You went on without confirmed coverage and said why'\n'You went on without a verification and said why'"
+endgroup
+process pAck "A warning with no documented exception and no block\nReview & submit lists it to acknowledge\nSigning needs the tick-box 'I reviewed the warning ... and want to sign anyway.'"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
+goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+
+s1 --> d1
+d1 -->|Coverage| w1
+d1 -->|Payer| w2
+d1 -->|Member ID| w3
+d1 -->|Benefit| w4
+d1 -->|Service| w5
+d1 -->|Network| w6
+d1 -->|Unavailable| w7
+d1 -->|Requirement| w8
+w1 --> sAct
+w2 --> sAct
+w3 --> sAct
+w5 --> sAct
+w7 --> sAct
+w4 --> pAck
+w6 --> pAck
+w8 --> pAck
+sAct --> a1 --> sa1
+sAct --> a2 --> gIntake
+sAct --> a3 --> gIntake
+sAct --> a4 --> gSettings
+a4 -.-> pResume
+sAct --> b1 --> iWhy --> dText
+dText -->|No| pOff --> iWhy
+dText -->|Yes| cOk --> st
+iWhy --> cCancel
+st --> cUndo
+st --> e1
+st --> e2 --> gMis
+st --> e3 --> gSign
+pAck --> gMis

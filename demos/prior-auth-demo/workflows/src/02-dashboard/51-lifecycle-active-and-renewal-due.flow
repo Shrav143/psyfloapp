@@ -1,0 +1,32 @@
+title: Dashboard › Lifecycle › Active and Renewal due open Authorizations
+route: /dashboard
+intro: Active and Renewal due describe approved authorizations on the Case Manager ledger, not rows of the Dashboard table, so they are links with a small arrow and not filters. A click opens Authorizations on the All view with the matching Showing chip, and the number of rows there is the number on the chip. The chips' screen-reader label still says 'Opens Case Manager.'
+dir: TD
+---
+start s1 "Dashboard is open\nTwo chips with an arrow after the five state chips"
+process p1 "Take the ledger cases at the sites in view\nPayer, Program and Request type menus do not change these two counts"
+decision d1 "Which chip?"
+process a1 "Active = approved with units or days left, and the approval has not ended\n(example: 40; 22 at Site A and 18 at Site B)\nQuiet line '6 approved today'"
+process a2 "Renewal due = approved, and the clinical review is due, or the approval ends within 7 days, or already ended\n(example: 19)\nQuiet line 'next: R-0856, 2 h'"
+click c1 "Click 'Active' (or 'Renewal due')\nIt is a link, so Tab and Enter work and a right click can open it in a new tab"
+process p2 "Authorizations opens on the All view\nAddress /authorizations?view=all&show=active or show=renewal"
+screen sc "Authorizations\nThe worklist with the chip 'Showing Active (approved, units left)' or 'Showing Renewal due (review due or ending within 7 days)'\n'Clear filters' appears"
+decision d2 "Is the viewer limited to one site?"
+screen s1b "Only that site's cases\nSite A: Active 22, Renewal due 10; Site B: 18 and 9"
+click c2 "Click 'Clear filters' on Authorizations"
+process p3 "The filter goes and the address loses ?show="
+end e1 "Every authorization in the All view is listed again"
+goto g1 "Continues in: Authorizations › Worklist › Deadline, More and the Showing chip"
+goto g2 "Continues in: Authorizations › Approved › Approved authorizations and their units"
+goto g3 "Continues in: Dashboard › Sites › What each site sees and out-of-site links"
+
+s1 --> p1 --> d1
+d1 -->|Active| a1 --> c1
+d1 -->|Renewal due| a2 --> c1
+c1 --> p2 --> sc
+sc --> d2
+d2 -->|Yes| s1b
+sc --> c2 --> p3 --> e1
+sc --> g1
+sc -.-> g2
+s1b -.-> g3

@@ -1,0 +1,64 @@
+title: Payers › Rules & Instructions › Try it on a case
+route: /payers/cardinal?tab=documents
+intro: 'Try it on a case' lets Reader read a chart against this payer's list. The chart is either a sample chart for a case still in 'Preparing', or text pasted into 'Paste chart text'. It is read only and sends nothing. A document only counts as missing when the payer's list actually asks for it.
+dir: TD
+---
+start s1 "Look at the card 'Try it on a case'\nbelow the document list\nin the Clinical documentation group\nCheck a chart against this list\nIts info icon holds the note on keyword matching"
+decision hc "Is any case in 'Preparing' at a site in view?\n(the Case menu lists only those; a case at the other site is never offered)"
+toast nc "Menu shows 'No cases to check'"
+process df "Case starts as the first 'Preparing' case for this payer,\nelse the first 'Preparing' case at all\nCardinal: I-2207"
+input pk "Pick a 'Case'\nR-1042 · J.M., 34 (Residential 3.5)\nI-2207 · T.R., 29 (IOP)\nR-0988, R-1101, I-2262"
+input pt "Type or paste in 'Paste chart text' (optional)\nHint: with text here, Reader checks it against the level\nof care list above instead of the case's chart"
+process clr "Picking a case or changing the text\nclears any earlier result"
+decision dt "Is there pasted text?\nBlank or spaces only counts as none"
+decision dg "Is there a case or pasted text?"
+endx xnc "'Check this chart' stays greyed out\nPaste text, or wait for a case to be prepared"
+click ck "Click 'Check this chart'"
+process busy "Button reads 'Reader is reading the chart' with a spinner"
+agent rd "Reader reads the chart\n(demo: about 2 seconds, scripted)"
+decision lv "Still on Payers after 2 seconds?"
+endx drop "Result dropped"
+
+group gC "A case's sample chart"
+  process lc "'Level of care' switches to the case's program\nand the list on the left shows that list"
+  process mt "Match the chart's known gaps against this payer's list\nA gap counts only if a list title contains it\nThe case's own payer does not matter"
+  process gp "Sample charts lack\nR-1042: therapy note\nI-2207: attendance record, remaining treatment goals\nR-1101: urine drug screen, nursing note with withdrawal scale\nR-0988 and I-2262: nothing"
+endgroup
+
+group gT "Pasted text"
+  process pl "Uses the level of care shown on the left\nThe chosen case is not used"
+  process kw "Keyword check, the same text always gives the same answer\nA document is found when the text uses its name or a usual word\nfor it: CIWA or COWS for the withdrawal scale, UDS for the urine screen, h&p\nA document someone added is found when all its own words appear"
+endgroup
+
+decision dn "Is anything still needed?"
+toast r1 "Ochre banner '5 of 6 ready'\nStill needed: an attendance record for the last 14 days.\nCardinal usually asks for it.\nA long list shows four, then 'and N more'"
+toast r0 "Green banner '9 of 9 ready'\nNothing is missing. Reader found every document\nin the chart (or 'in the text')."
+toast ft1 "'Checked I-2207 against Cardinal's IOP list.'\nLink 'Open the request'"
+toast ft2 "'Checked the pasted text against Cardinal's IOP list, by keyword.'\nNo link: no case was used"
+click ol "Click 'Open the request'"
+goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
+process why "Edit the list and check again to see it change\nCardinal's list asks for 'Remaining treatment goals' only after\nits criteria change is updated, so I-2207 then reads '5 of 7 ready'"
+toast info "'New Case checks documents against this same list.\nPasted text is matched by keyword, so a document that\nis named differently can be missed.'"
+goto g2 "Continues in: Payers › Rules & Instructions › Edit the document list"
+goto g3 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
+
+s1 --> hc
+hc -->|No| nc --> pt
+hc -->|Yes| df --> pk --> pt
+pt --> clr --> dg
+dg -->|No| xnc
+dg -->|Yes| ck --> busy --> rd --> lv
+lv -->|No| drop
+lv -->|Yes| dt
+dt -->|Yes, the text is read| pl --> kw --> dn
+dt -->|No, the case's chart is read| lc --> mt --> dn
+mt -.-> gp
+dn -->|Yes| r1
+dn -->|No| r0
+r1 --> ft1
+r0 --> ft1
+kw -.-> ft2
+ft1 --> ol --> g1
+ft1 --> why --> g2
+s1 -.-> info
+info -.-> g3

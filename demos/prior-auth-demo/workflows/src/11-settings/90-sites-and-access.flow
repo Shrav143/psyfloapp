@@ -1,0 +1,41 @@
+title: Settings › Sites and access › Read the roles and switch with View as
+route: /settings
+intro: A closed card on Settings that shows the rule the demo follows on every screen: access is by site (minimum necessary). A small table lists the four demo roles and the sites each can see, and 'View as' switches to a role, exactly as 'Viewing as' in the Demo menu does. It shows the rule; it is not an admin tool, so there is nothing to edit.
+dir: TD
+also: Demo only. The viewer is not saved between reloads. Settings itself is clinic-wide: the agents, their levels and Pause all are the same for every viewer.
+---
+start s1 "Open Settings\nThe card 'Sites and access' is the first card, closed\nSummary: 'Two sites, four roles'"
+click cOpen "Click the card header, or Tab to it and press Enter or Space"
+screen o1 "Card opens\nTwo short paragraphs, then a table: 'Person and role', 'Can see', 'Viewing as'"
+process t1 "'Access is by site (minimum necessary). A person sees only the sites they work at, and every view and export respects it: lists, counts, charts, searches and downloads leave out the other site's patients.'"
+process t2 "'A link to a record at a site someone cannot see opens a notice that names no patient. Agents, payers and these settings are clinic-wide. Roles are fixed in this demo, so use View as to see each one.'"
+
+group gRows "The four rows"
+  process r1 "Jordan Perez, UR coordinator\nSite A and Site B"
+  process r2 "Alex Morgan, clinic owner\nSite A and Site B"
+  process r3 "Dr. Rivera, Clinician, Site A\nSite A only"
+  process r4 "Sam Okafor, Billing, Site B\nSite B only"
+endgroup
+
+process cur "The row of the current viewer shows a 'Viewing now' tag instead of a button"
+click cView "Click 'View as' on another row, for example 'View as Dr. Rivera'"
+store st "The viewer changes, and the site view becomes that person's sites\nSame as 'Viewing as' in the Demo menu"
+toast tt "'Now viewing as Dr. Rivera'\n'Clinician, Site A. Only Site A is visible; the other site's records are not available.'"
+process fl "The page itself does not change\nThe tag moves to Dr. Rivera's row\nThe top bar shows 'Site A only', the sidebar user card shows 'Dr. Rivera', badges recount"
+click cClose "Click the header again"
+process cl "Card closes"
+endx nx "There is no edit control: no site picker per person, no add or remove a role, no Save"
+goto g1 "Continues in: Global shell › Demo menu › Viewing as"
+goto g2 "Continues in: Who can see what › Roles, sites and a record at the other site"
+end e1 "Whoever is viewing now sees only their sites, on every screen"
+
+s1 --> cOpen --> o1
+o1 --> t1 & t2
+o1 --> r1 & r2 & r3 & r4
+r1 --> cur
+r3 --> cView
+cView --> st --> tt --> fl --> e1
+o1 --> cClose --> cl
+o1 -.-> nx
+st -.-> g1
+e1 --> g2

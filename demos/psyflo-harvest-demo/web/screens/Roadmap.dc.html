@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Psyflo — Roadmap</title></head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}.nav.on .n{background:rgba(255,255,255,.22)}
+.rm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.rm-tile{display:flex;flex-direction:column;gap:14px;background:#fff;border:1px solid #E6E1D9;border-radius:12px;padding:16px;color:#151B24;text-decoration:none;min-height:116px}
+.rm-tile:hover{border-color:#217A78}
+.rm-ic{width:36px;height:36px;border-radius:8px;background:#DDF1EF;color:#15605E;display:flex;align-items:center;justify-content:center}
+.rm-t{font-weight:600;font-size:16px;line-height:24px}
+</style>
+</helmet>
+<div class="u-app">
+<aside style="flex:0 0 240px"></aside>
+<main class="u-main">
+  <div class="u-head"><h1 class="u-title">Roadmap</h1><span class="u-sp"></span><span class="u-date">{{today}}</span></div>
+  <div class="rm-grid">
+    <sc-for list="{{tiles}}" as="t">
+      <a class="rm-tile" href="{{t.href}}">
+        <span class="rm-ic"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">{{t.icon}}</svg></span>
+        <span class="rm-t">{{t.title}}</span>
+        <span><span class="u-chip info">Later</span></span>
+      </a>
+    </sc-for>
+  </div>
+</main>
+</div>
+</x-dc>
+</body>
+</html>

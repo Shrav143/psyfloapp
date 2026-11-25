@@ -1,0 +1,68 @@
+title: Authorizations › New Case › Authorization preparation › Finished, paused or left
+route: /authorizations/new/:draftId (step 3 of 4, the 'Authorization preparation' section after the run)
+intro: What the person can do when the ten agents are done, when the run stops, when they go Back, and when they reopen a draft that already ran. Changing the details or the documents after the agents ran starts the run over: a toast says so and a banner in the section says it again. An agent that cannot finish waits for Retry or Skip, and an agent paused in Settings holds the run.
+dir: TD
+---
+start s1 "Scrubber finishes\nThe last of ten agents"
+start s2 "Click 'Back' on Review & submit\nIt opens Clinical documentation at this section"
+toast t1 "Section header: 'Authorization preparation' with the pill 'Done'\nThe ten rows fold under 'All ten agents' with the total time"
+process p1 "'Continue to Review & submit' appears in the bar\n'Pause all agents' and 'Skip ahead' go away"
+process pStop "The run stops for a question, an agent that could not finish, a pause in Settings, or when the page is closed"
+goto gFail "Continues in: Authorizations › New Case › Authorization preparation › An agent could not finish"
+goto gPause "Continues in: Authorizations › New Case › Authorization preparation › Paused in Settings"
+decision dWhat "What does the person do?"
+
+click cTick "Tick or untick a 'To raise it further' box"
+process pTick "Chance moves; the summary is rebuilt on the next step"
+click cReview "Click 'Continue to Review & submit'"
+goto gReview "Continues in: Authorizations › New Case › Review & submit › The draft and the summary"
+click cBack "Click 'Back'"
+click cStep "Click 'Intake', 'Eligibility & Benefits' or 'Clinical documentation' in the stepper"
+process pLock "The stepper opens 'Review & submit' at any time\nBefore the agents finish it says 'The packet is built when the agents finish' and offers 'Open Authorization preparation'"
+screen sRec "The step that was clicked\nEverything is as it was left"
+decision dEdit "Does the person change the records?"
+process pSame "Nothing changed\nThe agents' work is kept"
+click cCont "Click 'Clinical documentation' in the stepper"
+process pDirect "The section shows the run as it was\nNo 'Start the agents?' question"
+store stStale "A change to the patient, payer, member ID, level of care, request type, dates, diagnoses, reason, proposed change or retro reason\nOr a document added, removed or replaced"
+process pReset "The run starts over: all ten agents back to 'Waiting'\nAnswers, ticked boxes, summary edits and a send-back note are cleared"
+toast tToast "Toast on the step: 'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
+toast tBanner "In the section once the agents start again: 'Records changed after the last run. The agents are running again.'\nIt goes away when all ten are done"
+click cCont2 "Click 'Start the agents' in the section"
+overlay oConf "Start the agents?"
+goto gStart "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
+goto gQ "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question"
+end eBack "The section shows the run as it was\nFinished agents stay finished"
+
+group gResume "Opening a draft that already ran"
+  start s3 "Click 'Continue', 'Watch', 'Answer' or 'Review and sign'\non a draft row in Authorizations › In progress\nOr 'Open in review and sign' / 'Send to payer' on a case page"
+  process pOpen "The page opens that draft from its address\nIt is not reset\nA draft made from a request opens on Review & submit when it is ready, else on Clinical documentation at Authorization preparation"
+  decision dFar "How far did the agents get?"
+  process rNone "None yet\nOpens on the step it was left on: Intake, Eligibility & Benefits or Clinical documentation"
+  process rMid "Some of the ten, or saved at the old step 4\nOpens Clinical documentation scrolled to Authorization preparation; the run carries on"
+  process rAsk "Waiting on a question\nOpens there too, and the question pop-up shows at once"
+  process rAll "All ten\nOpens step 4 'Review & submit'"
+endgroup
+
+s1 --> t1 --> p1 --> pStop --> dWhat
+s2 --> p1
+pStop -.-> gFail
+pStop -.-> gPause
+dWhat --> cTick --> pTick
+dWhat --> cReview --> gReview
+dWhat --> cBack --> sRec
+dWhat --> cStep --> sRec
+cStep -.-> pLock
+sRec --> dEdit
+dEdit -->|No| pSame --> cCont --> pDirect --> eBack
+dEdit -->|Yes| stStale --> pReset --> tToast --> cCont2 --> oConf --> gStart
+oConf --> tBanner
+
+s3 --> pOpen --> dFar
+dFar -->|0 of 10| rNone
+dFar -->|1 to 9, no question| rMid
+dFar -->|1 to 9, question open| rAsk
+dFar -->|10 of 10| rAll
+rMid --> gStart
+rAsk --> gQ
+rAll --> gReview

@@ -1,0 +1,77 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open the Verify page" }
+  sc@{ shape: curv-trap, label: "<b>Strip 'Try a sample' at the foot of 'Patient and service'</b><br/>Seven small chips and 'More samples'" }
+  qs@{ shape: diam, label: "Is R-1042 (Site A) in the site view?" }
+  ps@{ shape: rect, label: "'Authorization first' is left out: a Site B view never touches a Site A case" }
+  q1@{ shape: diam, label: "Click which chip?" }
+  subgraph gPick ["What each chip fills in"]
+  p1@{ shape: rect, label: "<b>'Cleared to bill'</b><br/>Beacon PPO, IOP, member ending 2468<br/>Beacon asks for no authorization for IOP" }
+  p0@{ shape: rect, label: "<b>'Authorization first'</b><br/>J.M., 34, Summit Medicaid HMO, Residential 3.5, member SM7403964821<br/>The check updates R-1042" }
+  p2@{ shape: rect, label: "<b>'Coverage lapsed'</b><br/>Summit Medicaid HMO, Residential 3.5, member ending 1012" }
+  p3@{ shape: rect, label: "<b>'Not found'</b><br/>Lakeshore Behavioral, IOP, member ending 9999" }
+  p4@{ shape: rect, label: "<b>'Not covered'</b><br/>Beacon PPO, Residential 3.5, member ending 3030" }
+  p5@{ shape: rect, label: "<b>'Another plan pays first'</b><br/>Summit Medicaid HMO, IOP, member ending 6060" }
+  p6@{ shape: rect, label: "<b>'Limit reached'</b><br/>Cardinal Health Plan, Residential 3.5, member ending 9090" }
+  end
+  pf@{ shape: rect, label: "<b>Payer, member ID, date of birth, program and date of service are all filled</b><br/>The chip turns green. 'Check now' is on" }
+  c1@{ shape: trap-t, label: "Click 'Check now'" }
+  ck@{ shape: rect, label: "<b>Live check runs about 10 seconds</b><br/>Chips and fields lock. 'Skip ahead' speeds it up<br/>The member ID ending decides the answer" }
+  subgraph gRes ["Result: verdict, the fact behind it, rows"]
+  r1@{ shape: curv-trap, label: "<b>'Cleared to bill' · Authorization 'Not required'</b><br/>Eligibility 'Eligible', Benefits 'Covered', Patient pays 'Copay $40 per day, ...'<br/>'Beacon does not require one for IOP · 10/21/2026 to 10/31/2026'" }
+  r0@{ shape: curv-trap, label: "<b>R-1042 · 'Authorization first' · Authorization 'In progress'</b><br/>Button 'Start authorization'" }
+  r2@{ shape: curv-trap, label: "<b>'Fix before billing' · Coverage 'Lapsed 10/12'</b><br/>Eligibility 'Needs a fix', 'Effective 01/01/2026, lapsed 10/12/2026'<br/>Button 'Request retro-eligibility'" }
+  r3@{ shape: curv-trap, label: "<b>'Fix before billing' · Coverage 'Not found'</b><br/>'No coverage found for these details'; Benefits and What this service needs 'Not checked'<br/>No 'Patient pays' row, no dates. Button 'Ask Caller to phone the payer'" }
+  r4@{ shape: curv-trap, label: "<b>'Fix before billing' · Benefits 'Not covered'</b><br/>Row 'The service is not covered' in the side panel's 'Payment checks'" }
+  r5@{ shape: curv-trap, label: "<b>'Fix before billing' · Other insurance 'Another plan pays first'</b><br/>Row 'Another plan pays first', chip 'Other plan', in the side panel" }
+  r6@{ shape: curv-trap, label: "<b>'Fix before billing' · Limit '14 of 14 days used'</b><br/>Benefits '... · All 14 days used'<br/>Row 'Every authorized day is used', chip 'Limit reached'" }
+  end
+  sd@{ shape: rect, label: "<b>The list already holds a patient for each reason</b><br/>R-1101 lapsed, R-0975 ended, R-1118 not covered<br/>I-2275 another plan pays first, R-0921 limit reached" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › More samples: checks that need a look" }
+  s1 --> sc --> qs
+  qs -->|"Yes"| q1
+  qs -->|"No"| ps --> q1
+  q1 -->|"Cleared to bill"| p1 --> pf
+  q1 -->|"Authorization first"| p0 --> pf
+  q1 -->|"Coverage lapsed"| p2 --> pf
+  q1 -->|"Not found"| p3 --> pf
+  q1 -->|"Not covered"| p4 --> pf
+  q1 -->|"Another plan pays first"| p5 --> pf
+  q1 -->|"Limit reached"| p6 --> pf
+  pf --> c1 --> ck
+  ck -->|"Ends 2468"| r1
+  ck -->|"J.M.'s card"| r0
+  ck -->|"Ends 1012"| r2
+  ck -->|"Ends 9999"| r3
+  ck -->|"Ends 3030"| r4
+  ck -->|"Ends 6060"| r5
+  ck -->|"Ends 9090"| r6
+  r1 & r0 & r2 & r3 & r4 & r5 & r6 --> g1
+  sc -.-> sd --> g2
+  sc -.-> g3
+  class s1 k_start
+  class sc,r1,r0,r2,r3,r4,r5,r6 k_screen
+  class qs,q1 k_decision
+  class ps,p1,p0,p2,p3,p4,p5,p6,pf,ck,sd k_process
+  class c1 k_click
+  class g1,g2,g3 k_goto
+  style gPick fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRes fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

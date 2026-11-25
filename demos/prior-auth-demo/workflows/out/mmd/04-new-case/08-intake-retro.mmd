@@ -1,0 +1,79 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Pick 'Retroactive authorization' in 'Authorization type'</b><br/>Or open ?type=retro" }
+  sc@{ shape: curv-trap, label: "<b>Intake · Retroactive authorization</b><br/>The row of ways in without 'Referrals', then the form, then one card for the reason and the documents" }
+  gWays@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
+  gForm@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows" }
+  dRule@{ shape: diam, label: "Is a payer chosen, and has it a Backdating rule on file?" }
+  pNoLine@{ shape: rect, label: "No line until a payer is chosen" }
+  tRule@{ shape: odd, label: "<b>One line above the form</b><br/>'Summit's Backdating rule: ...'" }
+  tNo@{ shape: odd, label: "<b>One amber line: 'No rule on file for Riverbend. Check with the payer.'</b><br/>Review & submit adds a note 'Retroactive rule'" }
+  gPayers@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
+  sDup@{ shape: curv-trap, label: "'This looks like a request that already exists' only when one matches" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Possible duplicate" }
+  sReq@{ shape: curv-trap, label: "<b>Request section: 'Level of care', 'First date of service', 'Last date of service'</b><br/>No 'Request type': it is 'Retro-authorization'" }
+  iFrom@{ shape: lean-r, label: "'First date of service' (required)" }
+  iTo@{ shape: lean-r, label: "<b>'Last date of service' (required)</b><br/>Without it Review & submit asks the person to acknowledge it; the first date is what blocks" }
+  dBad@{ shape: diam, label: "Is the last date before the first?" }
+  tBad@{ shape: odd, label: "Field error: 'Before the first date'" }
+  sWhy@{ shape: curv-trap, label: "<b>'WHY IT WAS NOT OBTAINED AHEAD OF TIME'</b><br/>Four reasons to click, and 'Reason'" }
+  cChip@{ shape: trap-t, label: "<b>Click a reason</b><br/>'Coverage was pending when the patient was admitted', 'The patient was admitted after hours or on a weekend, and the notice window passed', 'The payer was not known on the day of admission', 'The notice was sent but the payer has no record of it'" }
+  iReason@{ shape: lean-r, label: "Type or edit the 'Reason'" }
+  dReason@{ shape: diam, label: "Is the reason empty?" }
+  tReason@{ shape: odd, label: "<b>Review & submit lists 'Why it was not obtained ahead of time' to acknowledge</b><br/>'The payer will ask why no authorization was in place. Add the reason.'" }
+  sDoc@{ shape: curv-trap, label: "<b>'SUPPORTING DOCUMENTS'</b><br/>Drop zone 'Admission order, eligibility check, attendance'" }
+  iDrop@{ shape: lean-r, label: "Drop supporting documents, or click to choose files" }
+  aRead@{ shape: hex, label: "<b>Reader sorts the files into the document list</b><br/>Shown as chips with the file names" }
+  st@{ shape: cyl, label: "<b>The request is recorded as 'Retro-authorization'</b><br/>Dates of service, the reason and the files are kept on the case" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Retroactive authorization" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
+  cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
+  cCont@{ shape: trap-t, label: "Click 'Continue to Eligibility & Benefits'" }
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New Case › Save as draft and leave" }
+  s1 --> sc
+  sc -.-> gWays
+  sc -.-> gForm
+  sc --> dRule
+  dRule -->|"No payer yet"| pNoLine
+  dRule -->|"Rule on file"| tRule
+  dRule -->|"No rule on file"| tNo -.-> gPayers
+  sc --> sDup -.-> gDup
+  sc --> sReq --> iFrom --> iTo --> dBad
+  dBad -->|"Yes"| tBad --> iTo
+  dBad -->|"No"| sWhy
+  sWhy --> cChip --> iReason
+  sWhy --> iReason --> dReason
+  dReason -->|"Yes"| tReason --> sDoc
+  dReason -->|"No"| sDoc
+  sDoc --> iDrop --> aRead --> st
+  sDoc --> st
+  st --> gElig
+  st --> gDocs
+  st --> cSave --> gSave
+  st --> cCont --> gElig
+  class s1 k_start
+  class sc,sDup,sReq,sWhy,sDoc k_screen
+  class gWays,gForm,gPayers,gDup,gElig,gDocs,gSave k_goto
+  class dRule,dBad,dReason k_decision
+  class pNoLine k_process
+  class tRule,tNo,tBad,tReason k_toast
+  class iFrom,iTo,iReason,iDrop k_input
+  class cChip,cSave,cCont k_click
+  class aRead k_agent
+  class st k_store

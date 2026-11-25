@@ -1,0 +1,60 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  pg@{ shape: curv-trap, label: "<b>Under the header card</b><br/>one card, three figures" }
+  subgraph gT1 ["Approval chance"]
+  t1@{ shape: curv-trap, label: "<b>'Approval chance' (or 'Chance to overturn' on a denial)</b><br/>Ring counts up over about a second<br/>'62% → 88%'" }
+  t1b@{ shape: rect, label: "<b>Pill 'Moderate · 57–66%' and a short caption</b><br/>'with every action', 'up to 88% with the rest' or 'now'<br/>Strong 80+, Moderate 55–79, At risk below 55" }
+  ni@{ shape: trap-t, label: "Hover or focus the info icon 'About the approval chance'" }
+  n2@{ shape: win-pane, label: "'Decision support for documentation and workflow only. It does not recommend or decide care, never blocks a request and is never shown to payers or patients.'" }
+  end
+  subgraph gT2 ["How sure are we"]
+  t2@{ shape: curv-trap, label: "<b>'How sure are we'</b><br/>High, Medium or Benchmark estimate<br/>'1,248 similar cases'" }
+  si@{ shape: trap-t, label: "Hover or focus 'About the similar cases'" }
+  dBm@{ shape: diam, label: "Fewer than 100 similar cases from you and the network?" }
+  t2a@{ shape: win-pane, label: "'212 yours, 806 from the network, 230 benchmark.'" }
+  t2b@{ shape: win-pane, label: "'Little history for this payer and level of care: 210 of 238 are benchmark cases.'" }
+  end
+  subgraph gT3 ["Days likely granted"]
+  t3@{ shape: curv-trap, label: "<b>'Days likely granted' 11 of 14 days</b><br/>IOP counts units" }
+  di@{ shape: trap-t, label: "Hover or focus 'About the days likely granted'" }
+  t3a@{ shape: win-pane, label: "'62% chance of all 14, otherwise most likely 7.'" }
+  t3b@{ shape: rect, label: "On a denial: 'Days in question' 7 of 14 days, no info icon" }
+  end
+  esc@{ shape: trap-t, label: "Esc or move away" }
+  gT@{ shape: subproc, label: "Continues in: Authorizations › Case page › Tabs and deep links" }
+  ap@{ shape: cyl, label: "<b>Applying actions moves the ring, the range and the days</b><br/>Adding clinical context moves them by a point each (up to three)<br/>Refining the recommendations moves the number after the arrow" }
+  pg --> t1 --> t1b
+  t1 --> ni --> n2 --> esc
+  pg --> t2 --> si --> dBm
+  dBm -->|"No"| t2a --> esc
+  dBm -->|"Yes"| t2b --> esc
+  pg --> t3 --> di --> t3a --> esc
+  t3 -.-> t3b
+  pg --> gT
+  t1b -.-> ap
+  class pg,t1,t2,t3 k_screen
+  class t1b,t3b k_process
+  class ni,si,di,esc k_click
+  class n2,t2a,t2b,t3a k_overlay
+  class dBm k_decision
+  class gT k_goto
+  class ap k_store
+  style gT1 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gT2 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gT3 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

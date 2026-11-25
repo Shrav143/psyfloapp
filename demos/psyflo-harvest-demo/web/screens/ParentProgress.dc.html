@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How the child is doing — Harvest Outreach Center</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared phone look: C_CSS in js/screens/MobileApp.js */
+.c-mon{display:grid;grid-template-columns:44px minmax(0,1fr) 36px;gap:10px;align-items:center;margin-top:8px}
+</style>
+</helmet>
+<div class="c-ph">
+  {{hd}}
+  <main class="c-bd">
+    <sc-if value="{{empty}}"><div class="c-card"><b>{{t.emptyTitle}}</b></div><sc-if value="{{example}}"><button type="button" class="c-btn" onClick="{{example}}">{{t.example}}</button></sc-if></sc-if>
+    <sc-if value="{{trend}}"><section class="c-card"><h2 class="c-sec">{{t.goodDays}} <span class="u-chip ok">{{trend.chip}}</span></h2>
+      <sc-for list="{{trend.rows}}" as="m"><div class="c-mon"><span class="c-mut">{{m.label}}</span><div class="c-bar"><i style="width:{{m.pct}}%"></i></div><b style="text-align:right">{{m.v}}</b></div></sc-for></section></sc-if>
+    <sc-if value="{{goals.length}}"><section class="c-card"><h2 class="c-sec">{{t.goals}}</h2>
+      <sc-for list="{{goals}}" as="g"><div style="margin-top:12px"><div style="display:flex;align-items:baseline;gap:8px"><b style="font-weight:600">{{g.name}}</b><span class="u-chip {{g.cls}}" style="margin-left:auto">{{g.chip}}</span></div><div class="c-bar" style="margin-top:6px"><i style="width:{{g.pct}}%"></i></div></div></sc-for></section></sc-if>
+    <sc-if value="{{office}}"><section class="c-card"><h2 class="c-sec">{{t.office}} <span class="u-chip {{office.cls}}">{{office.chip}}</span></h2>
+      <sc-for list="{{office.rows}}" as="m"><div class="c-mon"><span class="c-mut">{{m.label}}</span><div class="c-bar y"><i style="width:{{m.pct}}%"></i></div><b style="text-align:right">{{m.v}}</b></div></sc-for></section></sc-if>
+    <sc-if value="{{practice.length}}"><section class="c-card"><button type="button" class="c-lnk" onClick="{{togglePractice}}" aria-expanded="{{practiceOpen}}">{{t.practice}}</button>
+      <sc-if value="{{showPractice}}"><div data-doc style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"><sc-for list="{{practice}}" as="p"><span class="u-chip">{{p}}</span></sc-for></div></sc-if></section></sc-if>
+    <div style="display:flex;align-items:center;gap:12px"><span class="c-sec" style="flex:1;margin:0">{{t.yours}}<span class="c-mut c-sm" style="font-weight:400"> {{lastMine}}</span></span><a class="c-btn sm" href="#survey">{{t.start}}</a></div>
+  </main>
+  {{ft}}
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

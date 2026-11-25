@@ -1,0 +1,76 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Edit payer'</b><br/>in the payer header" }
+  m@{ shape: win-pane, label: "<b>Edit payer details</b><br/>Admins can edit. Every edit is logged." }
+  subgraph gF ["Fields"]
+  i1@{ shape: lean-r, label: "Type 'Plan line'" }
+  i2@{ shape: lean-r, label: "<b>Pick 'Reached by'</b><br/>Portal, Phone, Fax, Portal and phone,<br/>Portal and fax, Phone and fax,<br/>Portal, phone and fax" }
+  i3@{ shape: lean-r, label: "<b>Type 'Notice due'</b><br/>Example: 24 hours" }
+  i4@{ shape: lean-r, label: "<b>Type 'Backup route'</b><br/>Example: phone as backup" }
+  i5@{ shape: lean-r, label: "<b>Type the 'Portal', 'Phone' and 'Fax' lines</b><br/>They feed the reach lines in Rules & Instructions › Submission methods" }
+  i6@{ shape: lean-r, label: "<b>Type 'Reason for the edit' (required)</b><br/>Saved with your name, the time,<br/>the old text and the new text" }
+  end
+  dv@{ shape: diam, label: "Is the saved 'Reached by' one of the seven?" }
+  okv@{ shape: rect, label: "<b>The menu shows the saved value</b><br/>A payer added with Portal, Phone and Fax<br/>reads 'Portal, phone and fax', not 'Portal'" }
+  ev@{ shape: odd, label: "<b>Menu is empty ('Pick how it is reached')</b><br/>Red line under it names the old value, then:<br/>'is not one of the listed ways.<br/>Pick one from the list.'" }
+  dk@{ shape: diam, label: "Is 'Reached by' one of the seven?" }
+  blk@{ shape: rect, label: "<b>Save does nothing</b><br/>The red line stays until a listed value is picked" }
+  cs@{ shape: trap-t, label: "Click 'Save and log the edit'" }
+  d1@{ shape: diam, label: "Is the reason empty?" }
+  er@{ shape: odd, label: "Add a reason. It goes in the edit log." }
+  diff@{ shape: rect, label: "<b>Compare each field with what is saved</b><br/>Plan line, Reached by, Notice due, Backup route,<br/>and each 'How to reach' line" }
+  d2@{ shape: diam, label: "Did anything change?" }
+  t0@{ shape: odd, label: "'Nothing changed'" }
+  st@{ shape: cyl, label: "<b>Payer details saved</b><br/>Header, plan line and 'How to reach' update<br/>A payer added with 'Add a payer' keeps its<br/>entry for other screens in step" }
+  lg@{ shape: cyl, label: "<b>One edit log entry per changed field</b><br/>Area 'Payer details', with before, after and reason" }
+  nt@{ shape: cyl, label: "<b>Bell notification 'Evergreen details edited'</b><br/>opens the payer's History & Changes tab" }
+  t1@{ shape: odd, label: "<b>'Payer details saved'</b><br/>The edit is in the log with your reason." }
+  nb@{ shape: rect, label: "<b>No 'edit applies to new drafts only' banner</b><br/>Payer details are not part of a draft" }
+  e1@{ shape: stadium, label: "<b>Modal closes</b><br/>Header shows the new values" }
+  x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved" }
+  cx@{ shape: trap-t, label: "Click 'Cancel'" }
+  cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area<br/>Escape with the 'Reached by' menu open closes the menu first" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Edit log" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Agent instructions and the combined prompt" }
+  s1 --> m --> dv
+  dv -->|"Yes"| okv --> i1
+  dv -->|"No, an old value"| ev --> i1
+  i1 --> i2 --> i3 --> i4 --> i5 --> i6 --> cs --> dk
+  dk -->|"No"| blk --> i2
+  dk -->|"Yes"| d1
+  d1 -->|"Yes"| er --> i6
+  d1 -->|"No"| diff --> d2
+  d2 -->|"No"| t0 --> x1
+  d2 -->|"Yes"| st --> lg --> nt --> t1 --> nb --> e1
+  lg -.-> g1
+  i5 -.-> g2
+  m --> cx --> x1
+  m --> cesc --> x1
+  class s1 k_start
+  class m k_overlay
+  class i1,i2,i3,i4,i5,i6 k_input
+  class dv,dk,d1,d2 k_decision
+  class okv,blk,diff,nb k_process
+  class ev,er,t0,t1 k_toast
+  class cs,cx,cesc k_click
+  class st,lg,nt k_store
+  class e1 k_end
+  class x1 k_endx
+  class g1,g2 k_goto
+  style gF fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

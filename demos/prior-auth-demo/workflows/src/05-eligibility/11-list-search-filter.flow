@@ -1,0 +1,59 @@
+title: Authorizations › Eligibility & Benefits › List › Search, filter and page
+route: /authorizations/eligibility
+intro: Search, two menus and the verdict tiles all narrow the same table, and they work together. The tiles are the verdict filter (there is no verdict menu). Every one of them starts from the patients inside the site view. Nothing is kept in the address, so leaving the page clears them.
+dir: TD
+---
+start s1 "On the list, narrow the patients"
+screen sc0 "Table shows every patient, first 12 rows\n'Showing 12 of 37' at the right of the filter bar"
+
+group gSearch "Search"
+  input i1 "Type in 'Search by case ID or initials'\nfor example 'R-1042' or 'J.M.'"
+  process p1 "Matches the case ID or the patient label\n(initials and age, or 'Member …4821'). Capitals do not matter\nOnly patients inside the site view can match: a Site B case ID finds nothing for Site A staff"
+endgroup
+
+group gMenus "Menus"
+  click c1 "Click 'All payers'"
+  overlay o1 "'All payers', then each payer\nSummit Medicaid HMO, Cardinal Health Plan, Evergreen, Beacon PPO, Harborview MA, Lakeshore Behavioral"
+  click c2 "Click 'All programs'"
+  overlay o2 "'All programs', 'Residential 3.5', 'IOP', 'PHP', 'Detox'"
+  input i2 "Pick an option, or use the arrow keys and Enter\nEsc or a click outside closes the menu"
+endgroup
+
+group gTiles "Verdict tiles"
+  click c4 "Click a tile\n'Cleared to bill', 'Authorization first', 'Fix before billing' or 'Re-check due'\n('Not checked' too, while one is listed)\nHover shows its meaning as a tooltip"
+  decision q1 "Was that tile already selected?"
+  process p2 "Only that verdict is shown\nThe tile is pressed and gets an outline; any other tile is released"
+  process p3 "The tile is released: all verdicts again"
+endgroup
+
+process p4 "Rows recompute: every active filter must match\nThe count follows: 'Showing 5 of 37'"
+decision q2 "Any filter active?"
+process p5 "Every match is shown\nNo 'Show more' button"
+process p6 "Only the first 12 rows"
+click c5 "Click 'Show 12 more' (small button under the table)"
+process p7 "Twelve more rows join the table\nThe last click reads 'Show 1 more'"
+screen sc1 "Table with the matches, two lines per patient"
+toast t0 "'Clear filters' appears in the filter bar"
+decision q3 "Any rows left?"
+screen em "'No patients match these filters'\nwith the button 'Clear filters'"
+click c6 "Click 'Clear filters' (bar or empty state)"
+process p8 "Search emptied\nPayer and program back to 'All', no tile pressed"
+end e1 "Full list again, button gone"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › List › Open a patient or start a check"
+
+s1 --> sc0
+sc0 --> i1 --> p1 --> p4
+sc0 --> c1 --> o1 --> i2
+sc0 --> c2 --> o2 --> i2
+i2 --> p4
+sc0 --> c4 --> q1
+q1 -->|No| p2 --> p4
+q1 -->|Yes| p3 --> p4
+p4 --> q2
+q2 -->|No| p6 --> c5 --> p7 --> sc0
+q2 -->|Yes| p5 --> q3
+p4 -.-> t0
+q3 -->|Yes| sc1 --> g1
+q3 -->|No| em --> c6
+t0 --> c6
+c6 --> p8 --> e1

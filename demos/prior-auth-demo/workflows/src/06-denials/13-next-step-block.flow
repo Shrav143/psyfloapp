@@ -1,0 +1,55 @@
+title: Denial Intelligence › A denial opened › Next step and where it stands
+route: /denials/D-3318
+intro: There is no separate next-step block. The route under way, or the one that settled the denial, says where it stands inside its own choice in Your options, with its buttons, primary first. The code checks the states in this order and shows the first that fits. The other choices keep their chance; a route that is no longer open shows dimmed, with a reason when there is one.
+dir: TD
+---
+start s1 "A denial is on screen"
+decision d1 "Accepted?"
+screen t1 "Accept choice: pill 'Accepted 10/20' and the link 'Plan the step-down'\nThe two other choices dimmed"
+click c1 "Click 'Plan the step-down'"
+goto g1 "Continues in: Authorizations › Denied › Step-down plans from accepted denials"
+
+decision d2a "Payer's decision on the appeal recorded as Overturned or Partly overturned?"
+screen t2a "Written appeal choice: pill 'Overturned on appeal' or 'Partly overturned on appeal'"
+decision d2 "Call outcome logged as Overturned or Partly restored?"
+screen t2 "Peer-to-peer choice: pill 'Overturned on the call' or 'Partly restored on the call'"
+process pc "Settled: the header drops the read and the chance; no 'Compare the options'\nThe dashboard lists it under 'Closed'"
+
+decision d3 "Chip is 'Appeal filed', 'Second-level appeal filed' or 'External review'?"
+screen t3 "Written appeal choice, outlined\n'Appeal filed 10/05 · decision 11/02' (or 'External review 10/09 · decision 11/20')\nButtons 'Record the payer's decision' (primary), 'View the appeal'"
+goto g3 "Continues in: Denial Intelligence › Written appeal › After filing"
+goto g3a "Continues in: Denial Intelligence › Written appeal › Record the payer's decision"
+
+decision d4 "Chip is 'Appeal drafting'?"
+screen t4 "Written appeal choice, outlined\n'Advocate is drafting · due 11/30', or 'Drafted, ready to sign · due 11/30'\nButton 'Open the draft' (primary)\nTitled 'Second-level appeal' or 'External review' on a later level"
+goto g4 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
+
+decision d6 "Chip is 'Call booked'?"
+screen t6 "Peer-to-peer choice, outlined\n'Call booked Wed 10/21, 9–11 am'\nButtons 'Open the brief' (primary), 'Change the time'"
+process p2 "Calls booked at the start show the time from the denial's data; later ones the time that was picked"
+goto g5 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
+goto g6 "Continues in: Denial Intelligence › Peer-to-peer › The brief"
+
+process po "Other routes while one is under way: their own button stays ('Draft the appeal', 'Accept the decision')\nA call that was upheld reads 'Upheld on the call'; a closed call window reads 'Window closed'"
+process p1 "None of the above: nothing is under way\nChips 'Analyzed' and 'Resubmitting'"
+goto g7 "Continues in: Denial Intelligence › A denial opened › Recommended next step"
+
+s1 --> d1
+d1 -->|Yes| t1 --> c1 --> g1
+t1 --> pc
+d1 -->|No| d2a
+d2a -->|Yes| t2a --> pc
+d2a -->|No| d2
+d2 -->|Yes| t2 --> pc
+d2 -->|No| d3
+d3 -->|Yes| t3 --> g3a
+t3 --> g3
+d3 -->|No| d4
+d4 -->|Yes| t4 --> g4
+t4 -.-> po
+d4 -->|No| d6
+d6 -->|Yes| t6 --> g6
+t6 --> g5
+t6 -.-> p2
+t6 -.-> po
+d6 -->|No| p1 --> g7

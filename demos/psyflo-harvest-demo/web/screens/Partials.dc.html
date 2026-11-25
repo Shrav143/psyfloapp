@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Psyflo — Partial approval</title></head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}.nav.on .n{background:rgba(255,255,255,.22)}
+</style>
+</helmet>
+<div class="u-app">
+<aside style="flex:0 0 240px"></aside>
+<main class="u-main">
+  <header class="u-head">
+    <h1 class="u-title">{{title}}</h1>
+    <sc-if value="{{chip}}"><span class="{{chipCls}}">{{chip}}</span></sc-if>
+    <span class="u-sp"></span>
+    <span class="u-date">{{today}}</span>
+  </header>
+
+  <sc-if value="{{none}}">
+    <div class="b2-one"><a class="u-btn" href="Authorizations.dc.html">Authorizations</a></div>
+  </sc-if>
+
+  <sc-if value="{{isDenial}}">
+    <div class="u-card b2-one">
+      <div class="b2-line"><span class="{{den.cls}}">{{den.chip}}</span> · {{den.text}}</div>
+      <a class="u-btn pri" href="{{den.href}}">Guardian letter</a>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showFacts}}">
+    <div class="b2-grid">
+      <section class="b2-col" aria-label="Offer">
+        <div class="b2-lbl">Offer</div>
+        <div class="u-bar b2-bar {{barCls}}"><i style="width:{{pct}}%"></i></div>
+        <div class="b2-big"><b>{{units}}</b> units · {{weeks}} of {{reqWeeks}} weeks</div>
+        <sc-if value="{{reason}}">
+          <div class="b2-lbl">Reason</div>
+          <div class="b2-kv"><span class="u-chip watch">{{reason}}</span>{{reasonHelp}}</div>
+        </sc-if>
+        <sc-if value="{{last}}">
+          <details class="b2-last"><summary>Last time with {{last.pf}} <b>{{last.seq}}</b></summary><div>{{last.note}}</div></details>
+        </sc-if>
+      </section>
+
+      <section class="b2-col" aria-label="Decide">
+        <sc-if value="{{isOffer}}">
+          <div class="b2-lbl">Decide</div>
+          <div class="b2-opts" role="radiogroup" aria-label="Decide" onKeydown="{{key}}">
+            <sc-for list="{{opts}}" as="o">
+              <button type="button" id="{{o.id}}" role="radio" aria-checked="{{o.on}}" tabindex="{{o.tab}}" class="b2-opt {{o.cls}}" onClick="{{o.pick}}">
+                <span class="b2-dot"></span><b>{{o.title}}</b><span class="b2-os">{{o.sub}}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{isDone}}">
+          <div class="b2-lbl">Logged</div>
+          <div class="u-card"><b>{{done.title}}</b><span class="u-sub">{{done.when}}</span></div>
+        </sc-if>
+      </section>
+    </div>
+    <div class="b2-foot">
+      <a class="u-link b2-l" href="Authorizations.dc.html">← Authorizations</a>
+      <sc-if value="{{isOffer}}"><button type="button" class="u-btn pri" onClick="{{log}}">Log decision</button></sc-if>
+      <sc-if value="{{isDone}}"><a class="u-btn pri" href="{{done.href}}">{{done.btn}}</a></sc-if>
+    </div>
+  </sc-if>
+</main>
+</div>
+</x-dc>
+</body>
+</html>

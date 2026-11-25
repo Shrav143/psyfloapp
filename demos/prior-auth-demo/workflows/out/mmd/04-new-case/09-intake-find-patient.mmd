@@ -1,0 +1,104 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Intake, type Concurrent review, Reauthorization or Modification</b><br/>No patient chosen yet" }
+  s2@{ shape: stadium, label: "<b>Open a link with ?patient=CASE-ID</b><br/>(the Dashboard's 'Start renewal')" }
+  sc1@{ shape: curv-trap, label: "<b>Card 'Find the patient'</b><br/>The type's line, then 'The patient already exists, so no one is added.'<br/>Search box 'Find a patient'" }
+  i1@{ shape: lean-r, label: "<b>Type initials or a case ID</b><br/>'Initials or case ID, for example J.M. or R-1042'<br/>'Searches Site A only. Initials and case IDs; a name never enters the app.'" }
+  p1@{ shape: rect, label: "<b>Search runs on the patients at the sites in view only</b><br/>Initials with or without dots, or a case ID" }
+  d1@{ shape: diam, label: "Any match?" }
+  tNo@{ shape: odd, label: "<b>'No patient at Site A matches “Q.Z.”. Check the initials or the case ID.'</b><br/>A patient at the other site is never listed, and never counted" }
+  sList@{ shape: curv-trap, label: "<b>Up to 6 rows</b><br/>Initials, age, case ID · payer · levels of care<br/>With both sites in view: the site too<br/>Pill with the latest authorization: Active, Expiring soon, None left, Not approved yet, or 'No authorization'" }
+  pMore@{ shape: rect, label: "'3 more. Type more of the initials or the case ID to narrow it down.'" }
+  cPick@{ shape: trap-t, label: "Click a row" }
+  dSite@{ shape: diam, label: "Is the patient at a site in view?" }
+  pGuard@{ shape: rect, label: "<b>Nothing happens</b><br/>A link or a stale list cannot bring in the other site's patient" }
+  st1@{ shape: cyl, label: "<b>The case is linked to the patient, their treatment episode and authorization</b><br/>Payer, member ID (last four), level of care and site come from the patient<br/>No new patient is made" }
+  pStart@{ shape: rect, label: "<b>The request starts the day after the approval ends, or today when it already has</b><br/>A modification starts today" }
+  subgraph gAfter ["Once a patient is chosen"]
+  sPat@{ shape: curv-trap, label: "<b>Patient card</b><br/>'J.M., 34 R-1042'<br/>'Summit Medicaid HMO · member ID …4821 · Site A'<br/>Button 'Change patient'" }
+  cChange@{ shape: trap-t, label: "Click 'Change patient'" }
+  pClear@{ shape: rect, label: "<b>Patient, episode, authorization and the check are let go</b><br/>The search shows again" }
+  dEp@{ shape: diam, label: "More than one treatment episode?" }
+  iEp@{ shape: lean-r, label: "<b>Pick 'Which treatment episode?'</b><br/>Level of care and label, payer, and each authorization's status and dates" }
+  dAu@{ shape: diam, label: "More than one authorization in the episode?" }
+  iAu@{ shape: lean-r, label: "<b>Pick 'Which authorization?'</b><br/>Label and id, a status pill, the approved dates" }
+  sCard@{ shape: curv-trap, label: "<b>Authorization card</b><br/>Status pill, 'Approved dates', 'Authorized', 'Left', 'Expires on'<br/>Button 'History'" }
+  cHist@{ shape: trap-t, label: "Click 'History'" }
+  oHist@{ shape: win-pane, label: "<b>Drawer 'Authorization history'</b><br/>Under the title: initials, age · level of care · authorization ID<br/>Each line: text, who acted (the payer, an agent or a person), when" }
+  cEsc@{ shape: trap-t, label: "Press Escape or close the drawer" }
+  dNone@{ shape: diam, label: "Does the patient have an authorization on file?" }
+  tNone@{ shape: odd, label: "'This patient has no authorization on file.'" }
+  end
+  dStatus@{ shape: diam, label: "What state is the authorization in?" }
+  n1@{ shape: rect, label: "<b>None left</b><br/>'No days are left, so the next stretch needs a request now.'" }
+  n2@{ shape: rect, label: "<b>Expiring soon</b><br/>'3 days left and the approval ends soon. Ask before it runs out.'" }
+  n3@{ shape: rect, label: "<b>Not approved yet</b><br/>'Nothing is approved yet. A review follows an approval, so check this is the right authorization.'" }
+  n4@{ shape: rect, label: "<b>Closed</b><br/>'This request was decided and no approved window is open.'" }
+  n5@{ shape: rect, label: "<b>Active</b><br/>No sentence" }
+  pNext@{ shape: rect, label: "<b>Intake goes on with the type's own cards: the dates and, for a modification, the proposed change</b><br/>The sentence is one quiet line, never a banner" }
+  gType@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Concurrent review" }
+  gRe@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Reauthorization / renewal" }
+  gMod@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Modification / extension" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Possible duplicate" }
+  gSite@{ shape: subproc, label: "Continues in: Authorizations › New Case › Sites and scope" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Concurrent review" }
+  s1 --> sc1 --> i1 --> p1 --> d1
+  d1 -->|"No"| tNo --> i1
+  d1 -->|"Yes"| sList --> cPick --> dSite
+  sList --> pMore
+  dSite -->|"No"| pGuard
+  dSite -->|"Yes"| st1 --> pStart --> sPat
+  s2 --> dSite
+  sPat --> cChange --> pClear --> sc1
+  sPat --> dEp
+  dEp -->|"Yes"| iEp --> dAu
+  dEp -->|"No"| dAu
+  dAu -->|"Yes"| iAu --> sCard
+  dAu -->|"No"| dNone
+  dNone -->|"Yes"| sCard
+  dNone -->|"No"| tNone
+  sCard --> cHist --> oHist --> cEsc
+  sCard --> dStatus
+  dStatus -->|"None left"| n1
+  dStatus -->|"Expiring soon"| n2
+  dStatus -->|"Not approved yet"| n3
+  dStatus -->|"Closed"| n4
+  dStatus -->|"Active"| n5
+  n1 --> pNext
+  n2 --> pNext
+  n3 --> pNext
+  n4 --> pNext
+  n5 --> pNext
+  pNext --> gType
+  pNext --> gRe
+  pNext --> gMod
+  sc1 -.-> gSite
+  sCard -.-> gDup
+  pStart -.-> gElig
+  class s1,s2 k_start
+  class sc1,sList,sPat,sCard k_screen
+  class i1,iEp,iAu k_input
+  class p1,pMore,pGuard,pStart,pClear,n1,n2,n3,n4,n5,pNext k_process
+  class d1,dSite,dEp,dAu,dNone,dStatus k_decision
+  class tNo,tNone k_toast
+  class cPick,cChange,cHist,cEsc k_click
+  class st1 k_store
+  class oHist k_overlay
+  class gType,gRe,gMod,gDup,gSite,gElig k_goto
+  style gAfter fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

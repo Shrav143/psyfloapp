@@ -1,0 +1,31 @@
+title: Payers › Workflow Builder › Configure a step › Payer rules
+route: /payers/summit?tab=builder
+intro: Rule steps (submission window, backdating, no-authorization exemption, continued stay, units and duration, clinical criteria, submission method, appeal deadline, peer-to-peer) point at a rule in the payer's central library. The workflow holds only the pointer, so a change to the rule is seen by every workflow that uses it and no policy text is copied.
+dir: TD
+---
+start s1 "Select a rule step\nsuch as 'Submission window'"
+screen rp "Rule picker for that group\nOne card per rule of that kind: its title, a chip Verified, Needs review, Unverified or Superseded,\nits source ('Demo sample rules, version 2026.3'), dates in force, version,\nthe services and request types it covers"
+decision d1 "Does the payer have a rule of this kind?"
+screen e1 "'Summit has no rule of this kind on file. With none chosen, the step cannot say what the payer requires and sends the case to manual review.'"
+click c1 "Tick a rule"
+process p1 "The step points at that rule\nSeeded rules are demo samples, so the chip says 'Unverified'"
+decision d2 "Does the step point at a rule that was deleted?"
+screen w1 "'A rule this step points at no longer exists in the library. Choose again, or the workflow cannot be published.'"
+click c2 "Click 'Open in Rules & Instructions'"
+process p2 "Leaves the builder for that rule's group (asks first if there are unsaved changes)"
+screen adv "Advanced: 'If the rule is unverified'\n'Go on and show a warning' (default) or 'Send to manual review'"
+process p3 "Unverified rules never read as certain\nA test run lists each rule it read with its chip"
+process p4 "Checks warn: 'uses ... which is unverified'\nThis does not block publishing"
+end e2 "The step points at the right rule and says what to do when it is unverified"
+goto g1 "Continues in: Payers › Rules & Instructions › Read the rules"
+goto g2 "Continues in: Payers › Rules & Instructions › Mark a rule as verified"
+
+s1 --> rp --> d1
+d1 -->|No| e1 --> p4
+d1 -->|Yes| c1 --> p1 --> d2
+d2 -->|Yes| w1 --> p4
+d2 -->|No| p4
+rp --> c2 --> p2 --> g1
+rp --> adv --> p3 --> p4
+p4 --> e2
+p2 --> g2

@@ -1,0 +1,19 @@
+body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.45}
+a{color:#217A78}a:hover{color:#15605E}
+*{box-sizing:border-box}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+.in{width:100%;border:1px solid #C9CDD3;border-radius:8px;padding:10px 12px;font:inherit;font-size:15px;background:#fff;min-height:44px;color:#151B24}
+textarea.in{min-height:96px;resize:vertical}
+.g2{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:14px}
+.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#525B66;font-weight:700;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #151B24}
+.ck{display:flex;align-items:center;gap:10px;min-height:36px;font-size:15px}
+.ck input{width:20px;height:20px;margin:0;accent-color:#217A78}
+.rad{display:flex;gap:18px;align-items:center;min-height:44px}
+.rad label{display:flex;align-items:center;gap:8px;font-weight:500;margin:0}
+.rad input{width:20px;height:20px;margin:0;accent-color:#217A78}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:8px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;border:1px solid transparent;text-decoration:none}
+.btn.p{background:#217A78;color:#fff}.btn.p:hover{background:#15605E;color:#fff}
+.btn.o{background:#fff;color:#151B24;border-color:#D9D4CC}
+.note{font-size:13px;color:#525B66}

@@ -1,0 +1,49 @@
+{
+  "_about": "Extra synthetic seed for the school portal, parent portal and phone screens (3, 4, 5, 8, 11, 12, 20, 21, 22, 30, 31, 39). Merged over seed.json. All numbers are 555-01xx demo numbers.",
+  "org": { "phone": "(434) 555-0120", "phone_hours": "Mon–Fri, 8 am – 5 pm" },
+  "teacher_students": { "okafor": ["TW", "KT"] },
+  "school_goals": {
+    "TW": { "goal": "staying in class when frustrated", "es": "quedarse en clase cuando se frustra" },
+    "KT": { "goal": "asking for help before shutting down" },
+    "JO": { "goal": "morning arrival routine", "flag": "attendance flag" }
+  },
+  "counselor_counts": [
+    { "client": "KT", "month": "2026-09", "office_referrals": 1 },
+    { "client": "KT", "month": "2026-10", "office_referrals": 1 },
+    { "client": "JO", "month": "2026-09", "office_referrals": 4 },
+    { "client": "JO", "month": "2026-10", "office_referrals": 3 }
+  ],
+  "school_checkins": [
+    { "client": "KT", "week_of": "2026-10-27", "by": "okafor", "answers": { "stayed_in_class": "Always", "got_along": "Often", "finished_work": "Often", "used_coping_skill": "Often" } },
+    { "client": "KT", "week_of": "2026-10-13", "by": "okafor", "answers": { "stayed_in_class": "Always", "got_along": "Always", "finished_work": "Often", "used_coping_skill": "Often" } },
+    { "client": "JO", "week_of": "2026-10-20", "by": "rbell", "answers": { "stayed_in_class": "Rarely", "got_along": "Often", "finished_work": "Rarely", "used_coping_skill": "Rarely" } }
+  ],
+  "shares": [
+    { "id": "sh-seed-kt", "client": "KT", "by": "rbell", "text": "Math, 9:40 am · Mr. Okafor says he put his head down during the quiz and would not start. Asked for help after one prompt and finished half.", "at": "2026-10-29T09:52" },
+    { "id": "sh-seed-jo", "client": "JO", "by": "rbell", "text": "Front office, 8:35 am · Arrived 40 minutes late, upset about the bus. Went to the TDT room first and joined 2nd period.", "at": "2026-10-29T08:41" }
+  ],
+  "enrollment_packet": ["Intake information", "Rights and responsibilities", "Privacy notice", "Insurance and fees", "Emergency contacts", "Consent for services", "Release of information · school"],
+  "portal_tasks": [
+    { "id": "pt-tw-release", "client": "TW", "form": "Release of information · school", "why": "So Harvest and Tyler's school can talk about how he is doing at school", "status": "waiting", "at": "2026-10-19T19:25" }
+  ],
+  "parent_progress": {
+    "TW": { "goal": "Staying calm when upset", "goal_es": "Mantener la calma cuando se enoja", "good": 4, "of": 5, "label": "in his first week", "label_es": "en su primera semana", "source": "daily notes, week of Oct 27" }
+  },
+  "assessments_due": [
+    { "client": "AG", "staff": "khale", "instrument": "SUDS", "kind": "suds", "due": "2026-10-30", "about": "Two questions · about a minute · third of the semester" },
+    { "client": "ES", "staff": "khale", "instrument": "DSM cross-cutting (child)", "kind": "dsm", "due": "2026-10-30", "about": "Child version · 25 questions · about 8 minutes" }
+  ],
+  "assessment_history": [
+    { "client": "MR", "staff": "khale", "instrument": "PHQ-A", "date": "2026-10-14", "score": 11, "prev": 14 },
+    { "client": "DP", "staff": "khale", "instrument": "GAD-7", "date": "2026-10-09", "score": 6, "prev": 9 },
+    { "client": "CB", "staff": "khale", "instrument": "SUDS", "date": "2026-10-02", "score": 3 }
+  ],
+  "appeal_drafts": {
+    "R-0384": {
+      "en": "I am Ethan's guardian. I am appealing Anthem's decision of October 22. Ethan's school counseling has not stopped his behavior at school: 4 office referrals this month. Harvest's program is the only daily support available to him. Please review the attached records and approve the 90 units requested.",
+      "es": "Soy el tutor de Ethan. Apelo la decisión de Anthem del 22 de octubre. La consejería escolar de Ethan no ha detenido su conducta en la escuela: 4 reportes a la oficina este mes. El programa de Harvest es el único apoyo diario disponible para él. Por favor revisen los documentos adjuntos y aprueben las 90 unidades solicitadas.",
+      "attached": "Denial letter · the request · 6 daily notes · school counselor's letter",
+      "attached_es": "Carta de negación · la solicitud · 6 notas diarias · carta de la consejera escolar"
+    }
+  }
+}

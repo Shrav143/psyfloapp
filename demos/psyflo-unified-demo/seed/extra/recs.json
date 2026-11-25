@@ -1,0 +1,143 @@
+{
+ "_about": "Recommendations (R6). rec_outcomes is an ILLUSTRATIVE SAMPLE: how often a kind of recommendation was applied and how often the request or reply that included it was approved or overturned. It is demo data, not Harvest's history and not a prediction; every screen that shows it says so. rec_baseline is the sample starting approval rate the expected figure builds from. rec_decisions holds what clinicians did with each suggestion (the suggestions themselves are computed from stored records, web/js/shared/recs.js).",
+ "rec_baseline": {
+  "approval": 62,
+  "basis": "Illustrative sample"
+ },
+ "rec_outcomes": [
+  {
+   "family": "level-cite",
+   "label": "State why the ratings support the level asked",
+   "applied": 389,
+   "success": 91,
+   "lift": 9
+  },
+  {
+   "family": "level-reason",
+   "label": "Give the reason beyond the ratings for the level asked",
+   "applied": 276,
+   "success": 85,
+   "lift": 12
+  },
+  {
+   "family": "dim-cite",
+   "label": "Cite the dated records behind a dimension rating",
+   "applied": 312,
+   "success": 88,
+   "lift": 7
+  },
+  {
+   "family": "dim-add",
+   "label": "Document a dimension that has no record on file",
+   "applied": 241,
+   "success": 84,
+   "lift": 8
+  },
+  {
+   "family": "reassess",
+   "label": "Reassess before the request or reply goes out",
+   "applied": 198,
+   "success": 83,
+   "lift": 10
+  },
+  {
+   "family": "prior",
+   "label": "Document the lower level of care already tried",
+   "applied": 267,
+   "success": 86,
+   "lift": 11
+  },
+  {
+   "family": "risk",
+   "label": "Say what is likely to happen at a lower level of care",
+   "applied": 203,
+   "success": 82,
+   "lift": 6
+  },
+  {
+   "family": "isp",
+   "label": "Add treatment plan goal progress as counts",
+   "applied": 154,
+   "success": 79,
+   "lift": 4
+  },
+  {
+   "family": "renewal",
+   "label": "Start the renewal before the lead time runs out",
+   "applied": 418,
+   "success": 93,
+   "lift": 5
+  },
+  {
+   "family": "window",
+   "label": "Reply inside the payer's stated window",
+   "applied": 356,
+   "success": 89,
+   "lift": 13
+  },
+  {
+   "family": "cite-asam",
+   "label": "Cite the ASAM dimensions that support the level",
+   "applied": 331,
+   "success": 87,
+   "lift": 10
+  },
+  {
+   "family": "answer-reason",
+   "label": "Answer the payer's stated reason with dated records",
+   "applied": 289,
+   "success": 84,
+   "lift": 9
+  },
+  {
+   "family": "units",
+   "label": "State what the offered units cover and when they run out",
+   "applied": 172,
+   "success": 76,
+   "lift": 4
+  },
+  {
+   "family": "p2p",
+   "label": "Ask which criterion was unmet and which records were read",
+   "applied": 226,
+   "success": 81,
+   "lift": 6
+  },
+  {
+   "family": "note-wording",
+   "label": "Replace a flagged word with what was done",
+   "applied": 512,
+   "success": 90,
+   "lift": 3
+  },
+  {
+   "family": "note-missing",
+   "label": "Fill an empty required element",
+   "applied": 478,
+   "success": 92,
+   "lift": 5
+  },
+  {
+   "family": "note-units",
+   "label": "Match units to the direct minutes",
+   "applied": 144,
+   "success": 94,
+   "lift": 6
+  },
+  {
+   "family": "note-boilerplate",
+   "label": "Say it in your own words today",
+   "applied": 97,
+   "success": 77,
+   "lift": 2
+  },
+  {
+   "family": "note-evidence",
+   "label": "Cite the record behind a statement",
+   "applied": 120,
+   "success": 80,
+   "lift": 3
+  }
+ ],
+ "rec_decisions": []
+}

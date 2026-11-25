@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Psyflo — Referral</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45}
+*{box-sizing:border-box}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}
+.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}
+.nav.on .n{background:rgba(255,255,255,.22)}
+</style>
+</helmet>
+<div class="u-app">
+  <aside style="flex:0 0 240px"></aside>
+  <main class="u-main" style="max-width:920px">
+    <div class="u-head">
+      <a class="u-link" href="{{back}}" aria-label="Back to {{backLabel}}" title="{{backLabel}}">←</a>
+      <h1 class="u-title">{{title}}</h1>
+      <span class="u-sp"></span>
+      <label class="b1-fund">{{fundLabel}} <select id="b1-fund" class="u-sel" onChange="{{setFunding}}"><sc-for list="{{fundOpts}}" as="o"><option value="{{o.v}}" {{o.sel}}>{{o.t}}</option></sc-for></select></label>
+    </div>
+    <div class="u-filters" style="margin-bottom:8px">
+      <sc-if value="{{canSend}}"><button type="button" class="{{sendCls}}" onClick="{{sendLink}}">{{sendLabel}}</button></sc-if>
+      <sc-if value="{{canBook}}"><button type="button" class="{{bookCls}}" onClick="{{book}}">{{bookLabel}}</button></sc-if>
+      <sc-if value="{{hasCall}}"><span class="u-mut">{{callText}}</span><a class="u-link" href="{{callHref}}">{{callLabel}}</a></sc-if>
+      <sc-if value="{{held}}"><span class="u-chip r">{{holdText}}</span><button type="button" class="u-btn txt" onClick="{{lift}}">Lift hold</button></sc-if>
+    </div>
+    <sc-if value="{{hasLink}}"><div style="margin:0 0 8px"><a class="u-link b1-url" href="{{link}}" target="_blank" rel="noopener">{{link}}</a></div></sc-if>
+
+    <h2 class="u-sec">{{checkHead}}</h2>
+    <ul class="u-list b1-check">
+      <sc-for list="{{items}}" as="i">
+        <li><span class="u-ic {{i.ic}}" aria-hidden="true">{{i.mark}}</span><span class="lab">{{i.label}}</span><span class="u-mut">{{i.note}}</span><sc-if value="{{i.proof}}"><button type="button" class="b1-ico" title="Screenshot" aria-label="Screenshot" onClick="{{i.showProof}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M4 18l5-5 4 4 3-3 4 4"></path></svg></button></sc-if><sc-if value="{{i.btn}}"><button type="button" class="u-btn" aria-disabled="{{i.off}}" title="{{i.tip}}" onClick="{{i.fn}}">{{i.btn}}</button></sc-if></li>
+      </sc-for>
+    </ul>
+
+    <h2 class="u-sec">{{critHead}} <span class="u-chip n">{{critChip}}</span></h2>
+    <ul class="b1-crit">
+      <sc-for list="{{critRows}}" as="c"><li tabindex="0" title="{{c.tip}}"><span class="u-ic {{c.ic}}" aria-hidden="true">{{c.mark}}</span>{{c.label}}</li></sc-for>
+    </ul>
+  </main>
+</div>
+</x-dc>
+</body>
+</html>

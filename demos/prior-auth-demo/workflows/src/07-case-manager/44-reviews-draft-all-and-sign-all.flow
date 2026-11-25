@@ -1,0 +1,62 @@
+title: Authorizations › Reviews this week › Draft all due reviews and sign all clean drafts
+route: /authorizations?view=reviews (the two header buttons)
+intro: Two buttons in the header of Reviews this week work on the whole week at the sites in view (a one-site viewer never drafts or signs the other site's reviews). 'Draft all due reviews' makes Cadence draft every review that has no draft yet, unless Cadence is paused in Settings. 'Sign all clean drafts' signs every draft whose four Integrity checks passed, in one step, and leaves out anything that needs a closer look.
+dir: TD
+also: Both buttons work on the same set: every review due this week at the sites in view, whatever the search and filters show. The dialog's number is the number signed (with Payer set to Cardinal it says 29 and signs 29; 33 once 'Draft all due reviews' has run). The buttons show only on this view.
+---
+start s1 "Authorizations › Reviews this week is open"
+
+group gDraft "Draft all due reviews"
+  click c1 "Click 'Draft all due reviews'"
+  decision dp "Is Cadence paused in Settings?"
+  toast tp "'Cadence is paused in Settings'\n'It drafts no reviews until you resume it there.'\n(the button also says so on hover)"
+  process pp "Nothing changes: no spinner, no drafts"
+  process p1 "Button shows a spinner and is disabled for about 1.3 seconds"
+  agent a1 "Cadence drafts every review due this week that has no draft\n4 at the start: the weekend reviews I-2150, I-2170, I-2144 and I-2157"
+  decision dn "Was any review waiting for a draft?"
+  store sd "Each one moves from 'Not drafted yet' to 'Drafted'\nIts seven-part text and four green Integrity checks are added"
+  toast t1 "'Cadence drafted 4 reviews'\n'They are marked Drafted in the list. Integrity checked each one and all four checks passed.'"
+  toast t0 "'Nothing to draft'\n'Every review due this week already has a draft or a question for you.'"
+  process p2 "Those rows read 'Drafted' with 'Review and sign'\nClean drafts go from 29 to 33"
+endgroup
+
+group gSign "Sign all clean drafts"
+  decision d1 "Is any review due this week at the sites in view a clean draft?\n(drafted, and all four checks passed; filters do not matter)"
+  process x1 "Button 'Sign all clean drafts' is greyed out"
+  click c2 "Click 'Sign all clean drafts'"
+  overlay o1 "Dialog 'Sign all clean drafts'\nSubtitle '33 reviews with all four checks passed'\n(29 if 'Draft all due reviews' has not run)"
+  screen b1 "'Only drafts whose four Integrity checks all passed are signed.'"
+  screen b2 "Banner 'Only a licensed clinician signs'\nDropdown 'Signing clinician' (Heather K., LISW-S or Dr. R. Lindqvist, MD)"
+  input i1 "Tick 'I reviewed these 33 drafts and they reflect the record. The level of care in each is my clinical judgment.'"
+  decision d2 "Is the box ticked?"
+  process x2 "Button 'Sign 33 reviews' stays greyed"
+  click c3 "Click 'Sign 33 reviews'"
+  store st1 "Those clean drafts are saved as 'Signed' by the chosen clinician, stamped with the demo clock\nCadence books a next review for each\nDrafts with an amber check, reviews needing an update and reviews with no draft stay as they were"
+  toast t2 "'33 reviews signed'\n'Heather K., LISW-S signed every draft whose four checks passed. Cadence booked the next review for each. The others wait for a closer look.'"
+  process p3 "Dialog closes\nThose rows read 'Signed' and show their own button again\nThe header button is greyed out; the sidebar badge is unchanged"
+  click c4 "Click 'Cancel', the X, the dimmed area, or press Escape"
+  process p4 "Dialog closes, nothing is signed"
+  toast t3 "'No clean drafts to sign'\n'Every draft left has a check that needs a look. Open each one to sign it.'\n(not seen on screen: the button is greyed out first)"
+endgroup
+
+goto g1 "Continues in: Authorizations › Reviews this week › After a review is signed"
+goto g2 "Continues in: Authorizations › Reviews this week › Sign a review"
+end e1 "Week's clean reviews are signed"
+endx e2 "Nothing signed"
+end e3 "Due reviews are drafted"
+endx e4 "Nothing was drafted"
+
+s1 --> c1 --> dp
+dp -->|Yes| tp --> pp --> e4
+dp -->|No| p1 --> a1 --> dn
+dn -->|Yes| sd --> t1 --> p2 --> e3
+dn -->|No| t0 --> e4
+s1 --> d1
+d1 -->|No| x1 --> e2
+d1 -->|Yes| c2 --> o1 --> b1 --> b2 --> i1 --> d2
+d2 -->|No| x2 -.-> i1
+d2 -->|Yes| c3 --> st1 --> t2 --> p3 --> g1
+p3 --> e1
+p3 -.-> g2
+o1 --> c4 --> p4 --> e2
+d1 -.-> t3

@@ -1,0 +1,33 @@
+title: Payers › Workflow Builder › Duplicate or archive a workflow
+route: /payers/summit?tab=builder
+intro: Duplicate makes a separate draft with the same steps, which keeps a link to the original. Archive retires a workflow: new cases stop using it, cases that follow it keep their version, and its history stays. An archived workflow can be read and duplicated, not edited or published.
+dir: TD
+---
+start s1 "Click 'More' in the bar"
+screen mn "'Duplicate' - 'A new draft with the same steps'\n'Version history' - 'Earlier versions and who saved them'\n'Archive' - 'Retire it. It stops being used for new cases'"
+click c1 "Click 'Duplicate'"
+decision d1 "Unsaved changes?"
+overlay o0 "'Leave without saving?'"
+store st1 "A copy is made: 'Name (copy)', version 1, Draft\nIt keeps a link to the workflow it came from\nStarts today, owner is the person viewing\nEdit log entry 'Copied from ...'"
+process p1 "The copy opens on the canvas, selected in the bar"
+click c2 "Click 'Archive'"
+overlay o1 "'Archive this workflow?'\n'An archived workflow is retired: new cases no longer use it. Cases already in progress keep it. It stays in the version history and can be duplicated into a new draft.'\n'Reason (optional)', 'Cancel', 'Archive'"
+click c3 "Click 'Archive'"
+store st2 "Status becomes Archived, a version line is kept with the reason"
+toast t1 "'Summit Initial Authorization is archived'\n'It no longer matches new cases. Cases that follow it keep their version.'"
+screen ar "The workflow stays in the list with an Archived pill\nNotice 'This workflow is archived, so it is read only. Duplicate it to start a new draft.'\n'Save draft' and 'Publish' are dimmed, 'Archive' is dimmed in the menu,\nevery setting and tool that changes something is dimmed"
+decision d2 "Was it the only published workflow for its payer?"
+process p2 "New cases for that payer use the labelled default process\nuntil another workflow is published"
+click c4 "Click 'Cancel', X or Escape"
+endx e2 "Nothing archived"
+end e1 "A copy is ready to edit, or the workflow is retired"
+
+s1 --> mn
+mn --> c1 --> d1
+d1 -->|Yes| o0 --> st1
+d1 -->|No| st1
+st1 --> p1 --> e1
+mn --> c2 --> o1 --> c3 --> st2 --> t1 --> ar --> d2
+d2 -->|Yes| p2 --> e1
+d2 -->|No| e1
+o1 --> c4 --> e2

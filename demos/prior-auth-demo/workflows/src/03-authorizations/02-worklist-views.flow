@@ -1,0 +1,60 @@
+title: Authorizations › Worklist › Pick a view
+route: /authorizations?view=approved
+intro: Seven view chips narrow the one table. In progress, With the payer, Approved and Denied say where a request is in its life and add up to All. Needs attention and Reviews this week cut across them, so they sit apart and are never added in. The filters narrow every count; the chosen view narrows only the table.
+dir: TD
+also: Demo only, Both sites at the start: 19 + 36 + 32 + 8 = 95. A request with the payer can still need someone (P-1499 waits on an answer to the payer's question), so it counts in With the payer and in Needs attention.
+---
+screen ch "View chips under the payer signal\nThe chosen one has a green outline"
+click c1 "Click a chip, for example 'Approved'"
+decision d1 "Is that chip already the chosen one (and not All)?"
+process p1 "That view is chosen\nThe address gets ?view=approved (All has no ?view=)\nThe entry is replaced, so Back does not walk through views"
+process p0 "Back to All\n?view= leaves the address"
+process pk "Search and filters stay as they are\nThe table goes back to page 1 and keeps its sort"
+
+group gL "Life views: they add up to All"
+  process v1 "**In progress**\nPreparing and Ready to sign: not sent yet\nSaved New Case drafts: Intake not finished, Needs your input, Agents working, Ready to sign"
+  process v2 "**With the payer**\nWith the payer, Submitted, Under review, Info requested"
+  process v3 "**Approved**\nApproved or Partial approval, with units or days used"
+  process v4 "**Denied**\nDenial route or Denied, and Accepted denials with a step-down to plan"
+endgroup
+
+group gX "Views that cut across"
+  process v5 "**Needs attention**\nA person has to act: not sent yet, a question for you, a denial with a deadline, a ledger case that needs action, a review that needs your update, a step-down to plan"
+  process v6 "**Reviews this week**\nRows whose continued-stay review is due before the end of Sunday"
+endgroup
+process v0 "**All**\nEvery row at the sites in view"
+
+process rv "Reviews this week changes the table\nColumn 'Review' shows the review's status; 'Due' shows 'Review 2 · Tue 10/20, 8:30 am'\nRows go by review time; each row's button is the review's own"
+process hb "The header follows the view\nReviews this week adds 'Draft all due reviews' and 'Sign all clean drafts'\nWith the payer adds 'N sent today'"
+process cnt "Every chip's count follows the search and every filter\nThe chosen view does not change the other chips' counts"
+decision d3 "Does the view have a row after the filters?"
+end e1 "The table lists the view's rows"
+goto gE "Continues in: Authorizations › Worklist › Search and filter"
+
+start s2 "Open a link with ?view=, for example /authorizations?view=reviews"
+decision d2 "Is it attention, progress, payer, approved, denied or reviews?"
+process ig "The value is ignored: All"
+
+goto gA "Continues in: Authorizations › Approved › Approved authorizations and their units"
+goto gP "Continues in: Authorizations › In progress › Drafts being prepared"
+goto gD "Continues in: Authorizations › Denied › Step-down plans from accepted denials"
+goto gR "Continues in: Authorizations › Reviews this week › The view"
+goto gW "Continues in: Authorizations › With the payer › A request sent today joins the list"
+
+ch --> c1 --> d1
+d1 -->|No| p1 --> pk
+d1 -->|Yes| p0 --> pk
+pk --> d3
+d3 -->|Yes| e1
+d3 -->|No: 'No authorizations match'| gE
+ch -.-> cnt
+p1 --> v0 & v1 & v2 & v3 & v4 & v5 & v6
+v1 -.-> gP
+v3 -.-> gA
+v4 -.-> gD
+v2 -.-> gW
+v6 --> rv --> gR
+p1 -.-> hb
+s2 --> d2
+d2 -->|Yes| p1
+d2 -->|No| ig --> pk

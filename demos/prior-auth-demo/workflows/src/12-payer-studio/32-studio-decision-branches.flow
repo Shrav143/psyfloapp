@@ -1,0 +1,37 @@
+title: Payers › Workflow Builder › Decision branches
+route: /payers/summit?tab=builder
+intro: A Decision step has one exit per branch plus 'Otherwise'. The first branch whose condition holds is followed. Adding, renaming, reordering or removing a branch changes the exits on the step at once, and a removed branch takes its line with it.
+dir: TD
+---
+start s1 "Select a Decision step\nor add one from 'Conditions' in the list"
+screen br "'Branches'\n'Branches are checked from the top. The first one that holds is followed; if none do, the case follows Otherwise.'\nEach branch: its name, up and down arrows, a bin, and a condition builder\nFixed row: 'Otherwise: when no branch above holds.'"
+click c1 "Click 'Add a branch'"
+process p1 "'Branch 2' appears with one starting condition\nThe step gets another exit on the canvas, labelled with the branch name"
+input i1 "Rename the branch"
+process p2 "The exit's label and the label on its line change with the name"
+click c2 "Click the up or down arrow on a branch"
+process p3 "The order changes, and the order is the order they are checked"
+click c3 "Click the bin on a branch"
+decision d1 "Did the branch have a line to another step?"
+process p4 "The line is removed with the branch\nThe other branches and Otherwise keep theirs"
+process p5 "The branch is simply removed"
+screen w1 "A branch with no line shows\n'This branch does not lead anywhere yet. Connect it below, under Next steps.'\nOtherwise with no line shows 'It does not lead anywhere yet.'"
+click c4 "Under 'Next steps', pick where each branch leads"
+process p6 "Lines are drawn; the labels on them are the branch names"
+decision d2 "Does every exit lead somewhere?"
+process p7 "The checks stay quiet"
+process p8 "Checks list 'Needs fixing' for the exit, with 'Go to node'\nPublishing is blocked until it is connected"
+end e1 "The Decision routes every case somewhere"
+goto g1 "Continues in: Payers › Workflow Builder › Check a workflow before publishing"
+
+s1 --> br
+br --> c1 --> p1 --> i1 --> p2
+br --> c2 --> p3
+br --> c3 --> d1
+d1 -->|Yes| p4 --> w1
+d1 -->|No| p5 --> w1
+p2 --> w1
+p3 --> w1
+w1 --> c4 --> p6 --> d2
+d2 -->|Yes| p7 --> e1
+d2 -->|No| p8 --> g1

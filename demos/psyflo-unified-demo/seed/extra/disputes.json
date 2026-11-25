@@ -1,0 +1,694 @@
+{
+ "_about": "Denial Intelligence seed (E3). `disputes` is the working layer over a request that needs a payer-decision response; request.stage stays the only lifecycle and the dispute status is derived from it (web/js/shared/sel/disputes.js, reconciled after every action by server/psyflo/actions/x-disputes.js). `dispute_evidence` are dated records the workspace reads (synthetic, provenance 'seed': shown as Illustrative sample). `drafting_rules` is the list of rules Psyflo applies to every draft (read by Settings and the payer guidance drawer). Synthetic data only.",
+ "disputes": [
+  {
+   "id": "DI-0402",
+   "request": "R-0402",
+   "client": "DW",
+   "payer": "sentara",
+   "issue": "partial",
+   "status": "decide",
+   "path": null,
+   "owner": "jperez",
+   "backup": "cdiaz",
+   "opened": "2026-10-27",
+   "closed": null,
+   "units": {
+    "requested": 150,
+    "offered": 110
+   },
+   "notice": {
+    "date": "2026-10-27",
+    "via": "phone",
+    "doc_ref": null,
+    "source": "Call log · Oct 27, 3:30 pm · S. Lane"
+   },
+   "concerns": [
+    {
+     "text": "\"We'd really like to give you 110.\"",
+     "source": "Call log · Sentara called Oct 27, 3:30 pm",
+     "date": "2026-10-27"
+    },
+    {
+     "text": "Asked whether ASAM Level 2.1 is still needed for the remaining units after the Oct 9 reassessment",
+     "source": "Call log · Sentara called Oct 27, 3:30 pm",
+     "date": "2026-10-27"
+    }
+   ],
+   "docs": {},
+   "tried": [],
+   "excluded": [],
+   "provenance": "seed"
+  },
+  {
+   "id": "DI-0408",
+   "request": "R-0408",
+   "client": "KT",
+   "payer": "anthem",
+   "issue": "info",
+   "status": "info-req",
+   "path": "info",
+   "owner": "jperez",
+   "backup": "cdiaz",
+   "opened": "2026-10-28",
+   "closed": null,
+   "units": {
+    "requested": 150,
+    "offered": null
+   },
+   "notice": {
+    "date": "2026-10-28",
+    "via": "availity",
+    "doc_ref": "Availity request for information · Oct 28, 5:40 pm",
+    "source": "Read from the open Availity page by the extension · Oct 28, 5:40 pm"
+   },
+   "concerns": [
+    {
+     "text": "Frequency and amount of alcohol and other substance use in the last 30 days, with any urine drug screen or breath alcohol results",
+     "source": "Availity request for information · item 1",
+     "date": "2026-10-28"
+    },
+    {
+     "text": "Withdrawal history and current withdrawal risk",
+     "source": "Availity request for information · item 2",
+     "date": "2026-10-28"
+    },
+    {
+     "text": "Prior treatment at a lower level of care and its outcome",
+     "source": "Availity request for information · item 3",
+     "date": "2026-10-28"
+    },
+    {
+     "text": "Current living situation and recovery supports",
+     "source": "Availity request for information · item 4",
+     "date": "2026-10-28"
+    },
+    {
+     "text": "Current ASAM dimensional ratings and the level of care requested",
+     "source": "Availity request for information · item 5",
+     "date": "2026-10-28"
+    }
+   ],
+   "docs": {},
+   "tried": [],
+   "excluded": [],
+   "provenance": "seed"
+  },
+  {
+   "id": "DI-0388",
+   "request": "R-0388",
+   "client": "TN",
+   "payer": "sentara",
+   "issue": "partial",
+   "status": "p2p",
+   "path": "p2p",
+   "owner": "jperez",
+   "backup": "cdiaz",
+   "opened": "2026-10-27",
+   "closed": null,
+   "units": {
+    "requested": 150,
+    "offered": 65
+   },
+   "notice": {
+    "date": "2026-10-27",
+    "via": "phone",
+    "doc_ref": null,
+    "source": "Call log · Oct 27, 10:15 am · J. Perez"
+   },
+   "concerns": [
+    {
+     "text": "Partial award: 65 of 150 units. The payer's reason was not recorded.",
+     "source": "Call log · Oct 27, 10:15 am (48 min on hold)",
+     "date": "2026-10-27"
+    }
+   ],
+   "p2p": {
+    "ref": null,
+    "reviewer": null,
+    "source": "Slot offered by Sentara on Oct 27 (call log)"
+   },
+   "docs": {},
+   "tried": [],
+   "excluded": [],
+   "provenance": "seed"
+  },
+  {
+   "id": "DI-0384",
+   "request": "R-0384",
+   "client": "EC",
+   "payer": "anthem",
+   "issue": "denial",
+   "status": "appeal-prep",
+   "path": "appeal",
+   "owner": "jperez",
+   "backup": "cdiaz",
+   "opened": "2026-10-22",
+   "closed": null,
+   "units": {
+    "requested": 90,
+    "offered": 0
+   },
+   "notice": {
+    "date": "2026-10-22",
+    "via": "availity",
+    "doc_ref": "Availity determination notice · Oct 22",
+    "source": "Read from the open Availity page · Oct 22, 4:20 pm"
+   },
+   "concerns": [
+    {
+     "text": "\"Already connected to other services; Level 1 outpatient is appropriate\"",
+     "source": "Availity determination notice · Oct 22",
+     "date": "2026-10-22"
+    },
+    {
+     "text": "\"Does not meet ASAM Level 2.1 criteria\"",
+     "source": "Availity determination notice · Oct 22",
+     "date": "2026-10-22"
+    }
+   ],
+   "docs": {
+    "appeal": {
+     "seeded": true,
+     "gen": {
+      "at": "2026-10-26T10:00",
+      "by": "Psyflo",
+      "sim": true,
+      "seeded": true
+     },
+     "sections": [
+      {
+       "key": "letter",
+       "title": "Letter",
+       "text": "I am Ethan's guardian. I am appealing Anthem's decision of October 22. Ethan's weekly counseling has not stopped his use: four counselor reports in October, including a positive THC screen on Oct 5. Harvest's intensive outpatient program is the only structured daily support available to him. Please review the attached records and approve the 90 units requested.",
+       "evidence": [],
+       "missing": [],
+       "seeded": true
+      }
+     ],
+     "reviewed": null,
+     "sent": null,
+     "versions": []
+    }
+   },
+   "tried": [],
+   "excluded": [],
+   "provenance": "seed"
+  }
+ ],
+ "dispute_evidence": [
+  {
+   "id": "EV-DW-01",
+   "client": "DW",
+   "kind": "use_episode",
+   "date": "2026-10-04",
+   "label": "Reported alcohol use",
+   "quote": "Reported drinking at a party on Oct 4 (about four drinks).",
+   "source": "Group note · Oct 7",
+   "provenance": "seed",
+   "substance": "alcohol"
+  },
+  {
+   "id": "EV-DW-02",
+   "client": "DW",
+   "kind": "use_episode",
+   "date": "2026-10-05",
+   "label": "Urine drug screen · THC positive",
+   "quote": "Urine drug screen positive for THC on Oct 5.",
+   "source": "Urine drug screen log · Oct 5",
+   "provenance": "seed",
+   "substance": "cannabis",
+   "result": "positive"
+  },
+  {
+   "id": "EV-DW-03",
+   "client": "DW",
+   "kind": "use_episode",
+   "date": "2026-10-21",
+   "label": "Reported cannabis use",
+   "quote": "Reported cannabis use on Oct 21 and left group early.",
+   "source": "Group note · Oct 21",
+   "provenance": "seed",
+   "substance": "cannabis"
+  },
+  {
+   "id": "EV-DW-04",
+   "client": "DW",
+   "kind": "engagement",
+   "date": "2026-10-09",
+   "label": "Attendance",
+   "quote": "Attended 8 of 10 scheduled groups from Sept 28 to Oct 9.",
+   "source": "Attendance log · Oct 9",
+   "provenance": "seed"
+  },
+  {
+   "id": "EV-DW-05",
+   "client": "DW",
+   "kind": "mh_screen",
+   "date": "2026-10-09",
+   "label": "PHQ-9 and GAD-7",
+   "quote": "PHQ-9 9 and GAD-7 10 on Oct 9; denies thoughts of suicide.",
+   "source": "Screening record · Oct 9",
+   "provenance": "seed",
+   "instrument": "PHQ-9",
+   "score": 9
+  },
+  {
+   "id": "EV-DW-06",
+   "client": "DW",
+   "kind": "safety_plan",
+   "date": "2026-10-03",
+   "label": "Safety plan reviewed",
+   "quote": "Safety plan reviewed with the family on Oct 3.",
+   "source": "Clinical record · safety plan",
+   "provenance": "seed",
+   "dim": 3
+  },
+  {
+   "id": "EV-DW-07",
+   "client": "DW",
+   "kind": "environment",
+   "date": "2026-10-09",
+   "label": "Home environment",
+   "quote": "An older brother uses cannabis in the home; his mother works nights and is out until 7 am.",
+   "source": "Family session note · Oct 9",
+   "provenance": "seed"
+  },
+  {
+   "id": "EV-DW-08",
+   "client": "DW",
+   "kind": "medical",
+   "date": "2026-10-08",
+   "label": "Medical review",
+   "quote": "ADHD medication is managed by his pediatrician; blood pressure was normal on Oct 8.",
+   "source": "Pediatrician letter · Oct 8",
+   "provenance": "seed"
+  },
+  {
+   "id": "EV-DW-09",
+   "client": "DW",
+   "kind": "prior_service",
+   "date": "2026-06-30",
+   "label": "Weekly outpatient counseling, Level 1 · Blue Ridge Behavioral Health",
+   "quote": "Weekly outpatient counseling from March to June 2026, 12 sessions; use continued weekly and he was referred to IOP in July.",
+   "source": "Provider discharge summary",
+   "provenance": "seed",
+   "dim": 5,
+   "provider": "Blue Ridge Behavioral Health",
+   "from": "2026-03",
+   "to": "2026-06",
+   "sessions": 12,
+   "outcome": "Use continued weekly; referred to IOP in July 2026."
+  },
+  {
+   "id": "EV-KT-01",
+   "client": "KT",
+   "kind": "use_episode",
+   "date": "2026-10-09",
+   "label": "Screening call · reported use",
+   "quote": "At the screening call on Oct 9 the family reported drinking on 7 of the last 30 days, five to eight drinks each time.",
+   "source": "Screening call · Oct 9",
+   "provenance": "seed",
+   "substance": "alcohol"
+  },
+  {
+   "id": "EV-KT-02",
+   "client": "KT",
+   "kind": "engagement",
+   "date": "2026-10-09",
+   "label": "Stated readiness",
+   "quote": "At intake she said she is not sure drinking is a problem and agreed to try treatment to close the court diversion case.",
+   "source": "Intake note · Oct 9",
+   "provenance": "seed"
+  },
+  {
+   "id": "EV-KT-03",
+   "client": "KT",
+   "kind": "mh_screen",
+   "date": "2026-10-09",
+   "label": "PHQ-9",
+   "quote": "PHQ-9 6 on Oct 9; denies thoughts of suicide.",
+   "source": "Screening record · Oct 9",
+   "provenance": "seed",
+   "instrument": "PHQ-9",
+   "score": 6
+  },
+  {
+   "id": "EV-KT-04",
+   "client": "KT",
+   "kind": "environment",
+   "date": "2026-10-09",
+   "label": "Home environment",
+   "quote": "Alcohol is kept unlocked in the home. Her aunt lives nearby and has offered to help with rides.",
+   "source": "Family session note · Oct 9",
+   "provenance": "seed"
+  },
+  {
+   "id": "EV-KT-05",
+   "client": "KT",
+   "kind": "prior_service",
+   "date": "2026-04-30",
+   "label": "Weekly outpatient counseling, Level 1 · Piedmont Counseling",
+   "quote": "Weekly outpatient counseling from January to April 2026, 9 sessions; drinking episodes did not decrease (four in March, five in April).",
+   "source": "Piedmont Counseling discharge letter",
+   "provenance": "seed",
+   "dim": 5,
+   "provider": "Piedmont Counseling",
+   "from": "2026-01",
+   "to": "2026-04",
+   "sessions": 9,
+   "outcome": "Ended in April 2026 when the family lost transportation. Drinking episodes did not decrease during or after treatment (four in March, five in April)."
+  },
+  {
+   "id": "EV-TN-01",
+   "client": "TN",
+   "kind": "use_episode",
+   "date": "2026-10-10",
+   "label": "Reported stimulant use",
+   "quote": "Reported using a non-prescribed stimulant on Oct 10.",
+   "source": "Group note · Oct 10",
+   "provenance": "seed",
+   "substance": "stimulant"
+  },
+  {
+   "id": "EV-TN-02",
+   "client": "TN",
+   "kind": "use_episode",
+   "date": "2026-10-16",
+   "label": "Urine drug screen · amphetamine positive",
+   "quote": "Urine drug screen positive for amphetamine on Oct 16.",
+   "source": "Urine drug screen log · Oct 16",
+   "provenance": "seed",
+   "substance": "stimulant",
+   "result": "positive"
+  },
+  {
+   "id": "EV-TN-03",
+   "client": "TN",
+   "kind": "use_episode",
+   "date": "2026-10-20",
+   "label": "Reported stimulant use",
+   "quote": "Reported using a non-prescribed stimulant on Oct 20 before an evening group.",
+   "source": "Group note · Oct 20",
+   "provenance": "seed",
+   "substance": "stimulant"
+  },
+  {
+   "id": "EV-TN-04",
+   "client": "TN",
+   "kind": "use_episode",
+   "date": "2026-10-25",
+   "label": "Urine drug screen · amphetamine positive",
+   "quote": "Urine drug screen positive for amphetamine on Oct 25.",
+   "source": "Urine drug screen log · Oct 25",
+   "provenance": "seed",
+   "substance": "stimulant",
+   "result": "positive"
+  },
+  {
+   "id": "EV-TN-05",
+   "client": "TN",
+   "kind": "withdrawal",
+   "date": "2026-10-05",
+   "label": "Stimulant withdrawal checklist",
+   "quote": "Stimulant withdrawal checklist on Oct 5: fatigue and low mood for 3 days after the last use on Sept 28; no medical withdrawal.",
+   "source": "Clinician checklist · Oct 5",
+   "provenance": "seed"
+  },
+  {
+   "id": "EV-TN-06",
+   "client": "TN",
+   "kind": "mh_screen",
+   "date": "2026-10-22",
+   "label": "PHQ-9",
+   "quote": "PHQ-9 17 on Oct 22 (18 at intake); passive thoughts of death, no plan; safety plan updated Oct 22.",
+   "source": "Screening record · Oct 22",
+   "provenance": "seed",
+   "instrument": "PHQ-9",
+   "score": 17
+  },
+  {
+   "id": "EV-TN-07",
+   "client": "TN",
+   "kind": "safety_plan",
+   "date": "2026-10-22",
+   "label": "Safety plan updated",
+   "quote": "Safety plan updated with the family on Oct 22.",
+   "source": "Clinical record · safety plan",
+   "provenance": "seed",
+   "dim": 3
+  },
+  {
+   "id": "EV-TN-08",
+   "client": "TN",
+   "kind": "engagement",
+   "date": "2026-10-26",
+   "label": "Attendance",
+   "quote": "Attended 11 of 14 scheduled groups since Oct 1; missed three evening groups for lack of a ride.",
+   "source": "Attendance log · Oct 26",
+   "provenance": "seed"
+  },
+  {
+   "id": "EV-TN-09",
+   "client": "TN",
+   "kind": "environment",
+   "date": "2026-10-12",
+   "label": "Home environment",
+   "quote": "She shares a bedroom with a cousin who sells pills; her mother works two jobs and is out until 9 pm most evenings.",
+   "source": "Family session note · Oct 12",
+   "provenance": "seed",
+   "sensitivity": "sensitive"
+  },
+  {
+   "id": "EV-TN-10",
+   "client": "TN",
+   "kind": "medical",
+   "date": "2026-10-15",
+   "label": "Medical review",
+   "quote": "Pediatrician visit on Oct 15: weight down 8 pounds in two months; labs ordered.",
+   "source": "Pediatrician letter · Oct 15",
+   "provenance": "seed"
+  },
+  {
+   "id": "EV-TN-11",
+   "client": "TN",
+   "kind": "current_service",
+   "date": "2025-09-01",
+   "label": "Weekly counseling with the referral partner, ongoing",
+   "quote": "Weekly counseling with the referral partner's counselor since September 2025, ongoing; no change in use.",
+   "source": "Referral partner counselor letter",
+   "provenance": "seed",
+   "dim": 0,
+   "provider": "Referral partner counselor",
+   "from": "2025-09",
+   "to": null,
+   "outcome": "Ongoing; no change in use."
+  },
+  {
+   "id": "EV-TN-12",
+   "client": "TN",
+   "kind": "prior_service",
+   "date": "2026-05-31",
+   "label": "Outpatient counseling, Level 1",
+   "quote": "Eleven sessions from January to May 2026; the provider ended treatment as \"not making progress\".",
+   "source": "Outpatient provider discharge letter",
+   "provenance": "seed",
+   "dim": 5,
+   "provider": "Outpatient provider (name on file)",
+   "from": "2026-01",
+   "to": "2026-05",
+   "sessions": 11,
+   "outcome": "Ended by the provider as \"not making progress\"."
+  },
+  {
+   "id": "EV-TN-13",
+   "client": "TN",
+   "kind": "placement_risk",
+   "date": "2026-10-26",
+   "label": "Level 2.5 raised",
+   "quote": "The psychiatrist raised Level 2.5 (partial hospitalization) after the Oct 22 PHQ-9; the family cannot provide rides for 20 hours a week.",
+   "source": "Psychiatrist note · Oct 26",
+   "provenance": "seed",
+   "dim": 0
+  },
+  {
+   "id": "EV-EC-01",
+   "client": "EC",
+   "kind": "use_episode",
+   "date": "2026-10-05",
+   "label": "Urine drug screen · THC positive",
+   "quote": "Urine drug screen positive for THC on Oct 5.",
+   "source": "Referral partner counselor letter",
+   "provenance": "seed",
+   "substance": "cannabis",
+   "result": "positive"
+  },
+  {
+   "id": "EV-EC-02",
+   "client": "EC",
+   "kind": "use_episode",
+   "date": "2026-10-12",
+   "label": "Found with a vape pen",
+   "quote": "Found with a vape pen at the referring site on Oct 12.",
+   "source": "Referral partner counselor letter",
+   "provenance": "seed",
+   "substance": "nicotine"
+  },
+  {
+   "id": "EV-EC-03",
+   "client": "EC",
+   "kind": "use_episode",
+   "date": "2026-10-19",
+   "label": "Found with a vape pen",
+   "quote": "Found with a vape pen at the referring site on Oct 19.",
+   "source": "Referral partner counselor letter",
+   "provenance": "seed",
+   "substance": "nicotine"
+  },
+  {
+   "id": "EV-EC-04",
+   "client": "EC",
+   "kind": "use_episode",
+   "date": "2026-10-26",
+   "label": "Reported use before group",
+   "quote": "Reported cannabis use before an intake session on Oct 26.",
+   "source": "Referral partner counselor letter",
+   "provenance": "seed",
+   "substance": "cannabis"
+  },
+  {
+   "id": "EV-EC-05",
+   "client": "EC",
+   "kind": "engagement",
+   "date": "2026-10-12",
+   "label": "Stated readiness",
+   "quote": "At intake he said use is \"not a big deal\"; he came because the referral partner required it.",
+   "source": "Intake note · Oct 12",
+   "provenance": "seed"
+  },
+  {
+   "id": "EV-EC-06",
+   "client": "EC",
+   "kind": "environment",
+   "date": "2026-10-12",
+   "label": "Home environment",
+   "quote": "His parents separated in September; he moves between two homes and neither sets rules on use. An older cousin supplies vape pens.",
+   "source": "Intake note · Oct 12",
+   "provenance": "seed",
+   "sensitivity": "sensitive"
+  },
+  {
+   "id": "EV-EC-07",
+   "client": "EC",
+   "kind": "mh_screen",
+   "date": "2026-10-12",
+   "label": "PHQ-9",
+   "quote": "PHQ-9 5 on Oct 12; denies thoughts of suicide.",
+   "source": "Screening record · Oct 12",
+   "provenance": "seed",
+   "instrument": "PHQ-9",
+   "score": 5
+  },
+  {
+   "id": "EV-EC-08",
+   "client": "EC",
+   "kind": "current_service",
+   "date": "2026-09-01",
+   "label": "Weekly counseling with the referral partner (care coordination)",
+   "quote": "Weekly counseling with the referral partner's counselor; listed under care coordination, not as a failed prior treatment.",
+   "source": "Referral partner counselor letter",
+   "provenance": "seed",
+   "dim": 0,
+   "provider": "Referral partner counselor",
+   "from": "2026-09",
+   "to": null,
+   "outcome": null
+  }
+ ],
+ "drafting_rules": [
+  {
+   "n": 1,
+   "title": "Dates within the last 30 days",
+   "text": "anything offered as current evidence; older facts carry their date",
+   "rule": "evidence.current_window_days"
+  },
+  {
+   "n": 2,
+   "title": "Counts, never percentages",
+   "text": "\"3 of 5 weekly screens negative\", \"6 dated use episodes (Oct 2, 6, 9, 14, 20, 22)\": the forms ask that way",
+   "rule": "style.counts_not_percentages"
+  },
+  {
+   "n": 3,
+   "title": "Every dimension rated Moderate or higher is documented",
+   "text": "a rating of 2 or more needs an instrument score or dated records for that dimension (D1 withdrawal screen, D3 PHQ-9 or GAD-7, D5 dated use or screens); a rating of None or Mild is not argued",
+   "rule": null
+  },
+  {
+   "n": 4,
+   "title": "Interventions named from Harvest's list",
+   "text": "with why it was used (refusal skills practice before a weekend party), not just that it happened",
+   "rule": null
+  },
+  {
+   "n": 5,
+   "title": "Every note names a treatment plan goal",
+   "text": "and states progress as a count",
+   "rule": null
+  },
+  {
+   "n": 6,
+   "title": "No \"observed\"",
+   "text": "direct-support notes say what the staffer did (\"worked with\", \"prompted\", \"used\")",
+   "rule": "style.flag_terms"
+  },
+  {
+   "n": 7,
+   "title": "Prior treatment names the level, provider, dates and outcome",
+   "text": "an empty outcome blocks the draft and asks the question; \"information about outpatient\" and pro-bono contacts do not count as prior care",
+   "rule": "evidence.prior_service_required_fields"
+  },
+  {
+   "n": 8,
+   "title": "Referral partner counseling goes under care coordination",
+   "text": "never as the failed prior treatment",
+   "rule": null
+  },
+  {
+   "n": 9,
+   "title": "State the level and the dimensions that drive it",
+   "text": "the draft names the dimensions that are above the next lower level, from the stored ratings; when the ratings fit a lower level it asks the clinician for the reason",
+   "rule": null
+  },
+  {
+   "n": 10,
+   "title": "Nothing the clinician marked exclude",
+   "text": "and nothing from the family that is not on the form's question; household disclosures stay out unless the clinician presses Include",
+   "rule": null
+  },
+  {
+   "n": 11,
+   "title": "Psyflo never rates a dimension or chooses a level",
+   "text": "ratings and the level recommendation are the clinician's; drafts quote the stored assessment and leave a blank where the clinician must decide",
+   "rule": null
+  },
+  {
+   "n": 12,
+   "title": "Answer the question and stop",
+   "text": "on information requests: three items asked, three answered, nothing added",
+   "rule": null
+  },
+  {
+   "n": 13,
+   "title": "Vary language across days",
+   "text": "if a staffer's last 30 notes share a paragraph, the enhancer varies it and the supervisor sees the pattern",
+   "rule": null
+  },
+  {
+   "n": 14,
+   "title": "Quiet day rule",
+   "text": "a day with no use, no cravings and no concerns says what skill was practiced and what still needs follow-up",
+   "rule": null
+  }
+ ]
+}

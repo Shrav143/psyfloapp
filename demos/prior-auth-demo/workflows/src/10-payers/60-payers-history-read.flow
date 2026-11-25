@@ -1,0 +1,51 @@
+title: Payers › History & Changes › Read what changed
+route: /payers/cardinal?tab=history
+intro: History & Changes has one block that needs a person and four that are history. First comes the change waiting (or one quiet line when nothing waits), with its rule, source, effective date, before and after, and the impact on workflows and open cases. Then 'What changed', and three closed sections: Workflow versions, Edit audit, Suggestions from Historian and the Earlier process view (migrated). Only the waiting change and the suggestions need a person. The older ?tab=changes opens this view.
+dir: TD
+---
+start s1 "Click the 'History & Changes' tab\n(the badge shows how many wait)\nor open a link with ?tab=changes"
+screen tab "History & Changes"
+decision dp "Is a payer change waiting?"
+screen bw "Ochre card with a megaphone\nTitle: 'Criteria changed, version 2026.3'\nWhat changed in one sentence and who can redraft which unsent drafts\n'The rule that changed', 'Source and date'\nBefore and after, then Impact, then two buttons"
+toast bg "One quiet line, no card\n'Nothing is waiting for you. Changes here are demo data,\nnot read from Beacon's policy.'"
+screen imp "Impact\nWorkflows: the payer's workflows that apply the rule\nOpen cases: unsent drafts it reaches, each keeping its workflow version\nOwner notice: who owns them, and whether Sentinel's notice is in the bell"
+screen hist "'What changed' card\nOne row per entry, newest first\nDate (10/17), bold title, one grey sentence"
+process ex "Cardinal's history\n10/17 Criteria changed (version 2026.3)\n10/12 IOP continued-stay denials up 31% in 7 days\n09/30 Portal maintenance on Sundays, 2 to 4 am\n09/02 New form for retro requests"
+process ro "History is read only\nNo search, filter or reopen"
+process add "New rows are added at the top\nwhen a change is applied"
+
+group gS "Four closed sections under it, each with a one-line summary"
+  screen s1v "Workflow versions\n'3 saved versions, newest first. Latest: ...'"
+  screen s2a "Edit audit\n'4 edits, newest first. Filter by area.'"
+  screen s3h "Suggestions from Historian\nOpens by itself when a suggestion waits"
+  screen s4e "Earlier process view (migrated)\n'Version 5, edited 09/30. Read only; the Workflow Builder\nholds the same process.'"
+endgroup
+
+click ca "Click 'Acknowledge change'"
+click cu "Click 'Review & apply changes'"
+click wl "Click a workflow name in Impact"
+process wl2 "Opens the payer's Workflow Builder"
+goto g1 "Continues in: Payers › History & Changes › Acknowledge a change"
+goto g2 "Continues in: Payers › History & Changes › Review and apply a change"
+goto g3 "Continues in: Payers › History & Changes › Workflow versions"
+goto g4 "Continues in: Payers › History & Changes › Edit audit"
+goto g5 "Continues in: Payers › History & Changes › Suggestions from Historian"
+goto g6 "Continues in: Payers › History & Changes › Earlier process view"
+goto g7 "Continues in: Payers › History & Changes › A change with no drafts"
+process dl "The drafts it names are read live\nThis payer's requests in 'Preparing' and saved New Case drafts\nCardinal: I-2207. Requests already sent are never named"
+end e1 "Person knows what changed and what is waiting"
+
+s1 --> tab --> dp
+dp -->|Yes| bw --> imp --> hist
+dp -->|No| bg --> hist
+bw --> ca --> g1
+bw --> cu --> g2
+imp --> wl --> wl2
+bw --> dl
+dl -.-> g7
+hist --> ex --> ro --> add --> s1v
+s1v --> s2a --> s3h --> s4e --> e1
+s1v --> g3
+s2a --> g4
+s3h --> g5
+s4e --> g6

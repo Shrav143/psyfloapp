@@ -1,0 +1,64 @@
+title: Authorizations › Reviews this week › The review drawer
+route: /authorizations?view=reviews&review=rv-R-0856 (drawer over the list)
+intro: Opening a review shows the draft an agent wrote, the four Integrity checks and the buttons to sign or open the case. It opens from a row's review button on any view, from the tracked quick view's 'Open review' (the quick view closes first), and from a ?review= link (the ledger case page's 'Open the review', Ask FLO, an old /manager?review= address). What the clinician can do depends on the review's status.
+dir: TD
+---
+start s1 "Click a row's 'Update the review', 'Review and sign', 'Check the review' or 'Open the review'"
+overlay o1 "Drawer slides in from the right (640 px); ?review= is in the address\nTitle 'R-0856 · Summit'\nSubtitle 'Continued-stay review 2 · Residential 3.5 · due Tue 10/20, 9:00 am'\nStatus pill at the top right"
+screen b1 "Top of the body\n'J.S., 51 · privacy mode'   'Drafted by' Scribe (Residential, Detox) or Cadence (PHP, IOP)\nOnce drafted: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
+screen b2 "'The draft'\nLarge text box with seven parts: title and payer lines, Clinical status, Treatment progress, Risk and safety, Why this level of care still fits, Request"
+screen b3 "'Integrity checks'\n'Every sentence traced to the chart'\n'Review has no errors'\n'All payer requirements covered'\n'Level of care matches the request'"
+screen b4 "Footer\n'Sign review' (green), 'Open case', 'Close'"
+
+decision d1 "What is the review's status?"
+process t1 "'Drafted', all four checks green ticks\nDraft can be edited\nBanner: 'Signing is one review at a time. Your edits to the draft are saved with the signature.'"
+process t2 "'Drafted' with 'Check to look at'\nOne check is amber with Integrity's note, for example 'The draft asks for 7 days. Beacon's usual limit at this level of care is 5.'\nDraft can be edited"
+process t3 "'Needs your update'\nAmber panel names what is missing; 'All payer requirements covered' is red\nDraft is locked: 'The draft is locked until your update is added.'\n'Sign review' is greyed, hover text 'Add your update first'"
+process t4 "'Signed'\nDraft is read-only\nFooter shows 'Signed by Heather K., LISW-S' in place of the button\nGreen banner 'Next review: Tue 10/27, 9:00 am' with 'Cadence booked it.' and either 'It is on this week's list.' or 'It falls after this week, so it is not on the list yet.'"
+process t5 "'Not drafted yet'\nGrey panel 'Not drafted yet': 'Cadence drafts each review a few days ahead. This one is not due until Sat 10/24, 9:00 am, so it has no draft and no Integrity checks yet.'\nThe line above reads 'To be drafted by' Cadence\nNo draft box and no checks\n'Sign review' is greyed, hover text 'Draft the review first'"
+click c4 "Click 'Draft this review'"
+decision dp "Is Cadence paused in Settings?"
+toast tp "'Cadence is paused in Settings'\n'It drafts no reviews until you resume it there.'"
+process pd "Button shows a spinner for about 1.3 seconds"
+store sd "Review becomes 'Drafted': the seven-part text and four green Integrity checks appear"
+toast td "'Cadence drafted 1 review'"
+
+input i1 "Edit the draft text"
+click c1 "Click 'Sign review'"
+goto g1 "Continues in: Authorizations › Reviews this week › Sign a review"
+goto g2 "Continues in: Authorizations › Reviews this week › Add your update to a review"
+
+click c2 "Click 'Open case'"
+process p1 "Go to /authorizations/case/ and the case ID, with ?tab=draft\nThe drawer is gone with the page"
+decision d3 "Is the case a request (a queue record or a Dashboard request)?"
+goto g3 "Continues in: Authorizations › Case page › Draft › Read and edit"
+goto g4 "Continues in: Authorizations › Ledger case page › Open and read"
+
+click c3 "Click 'Close', the X, the dimmed area, or press Escape\n(Escape closes one layer at a time: an open sign dialog first, the drawer next)"
+decision d2 "Was the review a draft?"
+store st1 "Edits to the draft are saved on the review\nOpen it again and the edited text is there"
+process p2 "Nothing to save"
+end e1 "Back on the list, same view and page; ?review= leaves the address"
+
+s1 --> o1 --> b1 --> b2 --> b3 --> b4 --> d1
+d1 -->|Clean draft| t1
+d1 -->|One check to look at| t2
+d1 -->|Missing item| t3
+d1 -->|Already signed| t4
+d1 -->|No draft yet| t5
+t1 --> i1
+t2 --> i1
+t1 --> c1 --> g1
+t2 --> c1
+t3 --> g2
+t4 --> c2
+t1 --> c2
+c2 --> p1 --> d3
+d3 -->|Yes| g3
+d3 -->|No: only the ledger has it| g4
+t5 --> c4 --> dp
+dp -->|Yes| tp
+dp -->|No| pd --> sd --> td --> t1
+b4 --> c3 --> d2
+d2 -->|Yes: Drafted| st1 --> e1
+d2 -->|No| p2 --> e1

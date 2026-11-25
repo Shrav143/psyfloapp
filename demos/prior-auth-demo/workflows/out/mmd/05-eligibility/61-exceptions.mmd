@@ -1,0 +1,57 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A check finishes with something to look at" }
+  q0@{ shape: diam, label: "Which warning?" }
+  subgraph gW ["The eight warnings"]
+  x1@{ shape: rect, label: "<b>Coverage is not active</b><br/>Coverage lapsed or ended on a date before the service<br/>Next: ask the payer, or request retro-eligibility<br/>Seeded: R-1101 (lapsed), R-0975 (ended)" }
+  x2@{ shape: rect, label: "<b>The payer changed</b><br/>The member is with another plan since a date. Start the request with the new plan<br/>Seeded: R-0975 (now Cardinal since 10/01)<br/>Chip: 'Payer changed'" }
+  x3@{ shape: rect, label: "<b>Member ID does not match</b><br/>No member matched, or the plan has the member under another ID. Read the card again<br/>Chips: 'Not found', 'Member ID mismatch'" }
+  x4@{ shape: rect, label: "<b>Benefit not confirmed</b><br/>The plan answered for coverage but not for this service. Caller can confirm by phone<br/>Chip: 'Benefit not confirmed'" }
+  x5@{ shape: rect, label: "<b>Service not covered</b><br/>The plan does not cover this level of care. Ask which program it pays for<br/>Seeded: R-1118. Chip: 'Not covered'" }
+  x6@{ shape: rect, label: "<b>Provider participation not confirmed</b><br/>The clinic's enrollment could not be confirmed. Navigator can check the enrollment record<br/>Chip: 'Provider not confirmed'" }
+  x7@{ shape: rect, label: "<b>Verification service unavailable</b><br/>Verify is paused in Settings, so nothing was asked. Resume Verify, then refresh" }
+  x8@{ shape: rect, label: "<b>Authorization requirement unknown</b><br/>No rule on file for this payer and level of care. Check with the payer. Nothing was assumed<br/>Chip: 'Requirement unknown'" }
+  end
+  sc@{ shape: curv-trap, label: "<b>Eligibility result: said once</b><br/>Coverage, payer changed, member ID, service, benefit and requirement are the verdict fact or a row<br/>Provider not confirmed is the verdict fact, with 'Ask Navigator to check enrollment'<br/>Benefit not confirmed adds 'Ask Caller to confirm the benefit'" }
+  sn@{ shape: curv-trap, label: "<b>New Case step 2 shows the same block in its summary, and the case can go on</b><br/>Warnings are saved with the draft" }
+  q1@{ shape: diam, label: "Is the warning 'Verification service unavailable'?" }
+  p1@{ shape: rect, label: "<b>A known patient keeps the last result with the one warning block on the result</b><br/>'Verification service unavailable. The refresh at ... could not run ... This is the last result.'<br/>Anyone else shows 'Not checked' everywhere, said in the rows" }
+  c1@{ shape: trap-t, label: "Click 'Re-check' (result) or 'Refresh verification' (New Case)" }
+  p2@{ shape: rect, label: "<b>Still paused: toast 'Could not re-check ...' and the last result stays</b><br/>Resumed: the check runs and the warning goes" }
+  p3@{ shape: rect, label: "<b>The verdict follows: 'Fix before billing', 'Authorization first' or 'Not checked'</b><br/>The sidebar badge counts it until it is cleared" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › More samples: checks that need a look" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
+  g4@{ shape: subproc, label: "Continues in: Settings" }
+  s1 --> q0
+  q0 -->|"Any of the eight"| x1 & x2 & x3 & x4 & x5 & x6 & x7 & x8
+  x1 & x2 & x3 & x4 & x5 & x6 & x8 --> sc
+  x7 --> q1
+  q1 -->|"Yes"| p1 --> c1 --> p2
+  x7 -.-> g4
+  sc --> p3 --> g1
+  sc --> sn --> g3
+  q0 -.-> g2
+  class s1 k_start
+  class q0,q1 k_decision
+  class x1,x2,x3,x4,x5,x6,x7,x8,p1,p2,p3 k_process
+  class sc,sn k_screen
+  class c1 k_click
+  class g1,g2,g3,g4 k_goto
+  style gW fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

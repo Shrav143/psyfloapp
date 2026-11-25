@@ -1,0 +1,86 @@
+title: Authorizations › New Case › Clinical documentation › Drop files and let Reader sort them
+route: /authorizations/new/:draftId (step 3 of 4, the drop bar and 'Use sample chart')
+intro: One drop bar takes the whole pile. Reader sorts files by what their names say, fills what is still blank, reads each file, and reports in one toast. 'Use sample chart' does the same job for J.M. in one click. A retroactive request has a smaller drop zone on Intake that works the same way.
+dir: TD
+---
+start s1 "On step 3, give the drop bar some files"
+input i1 "Drop files on 'Drop the chart, the insurance card and any documents, or click to choose'\nAny names, any order, several at once"
+click c1 "Click the bar, or press Enter or Space"
+process p0 "The file picker opens\nSeveral files can be chosen"
+decision dNone "Any file chosen?"
+endx eNone "Nothing happens"
+process p1 "Each file becomes a name and a size in KB\nNothing is uploaded (demo)"
+agent a1 "Reader sorts the pile\nInsurance cards first, then everything else"
+
+group gCard "1 · Card"
+  decision dCard "Is a file named like a card?\nWhole words: insurance, card, member, id"
+  process pCard "The first card fills only what is blank:\nPayer and plan, Member ID"
+  process pPayer "Payer comes from a payer name in the file name\nOtherwise Summit Medicaid HMO"
+endgroup
+
+group gChart "2 · Chart"
+  decision dChart "Is there a file that is not a card?"
+  process pFill "Fills only what is blank, from J.M.'s chart:\nPatient, Level of care, Request type, Diagnoses, Reason\nThe request type follows the Authorization type"
+  process pKeep "Never overwrites what was typed\nor what a referral or EMR Connect gave"
+endgroup
+
+group gSlot "3 · Slots"
+  agent a2 "Reader looks for document words in the file name\nasam, urine, nursing, medication, psychosocial, therapy..."
+  decision dName "Does the name match a document?\nThe longest matching word wins"
+  decision dTaken "Did an earlier file in this drop already take that slot?"
+  process pDup "Second file: 'Could not place'"
+  process pPlace "File goes into its slot\nIt replaces any file already in that slot\nand clears a 'marked not available' on it"
+  decision dOpen "No match: is a required slot still open?"
+  process pGuess "Takes the first open required slot on the payer's list, referral last\nSkips a document marked 'not available'\n'Reader guessed the slot. Check it'"
+  process pNone "'Could not place'\nAny file type is taken, but there is no slot left"
+endgroup
+
+store st1 "Draft updated once\nEach filled row remembers its file: 'Read from FILE by Reader. Check it.'"
+process pReset "If the agents had already run, the run restarts\nBecause the documents changed"
+toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
+agent a3 "Reader reads each placed file\nAbout 1 second each, one after another\nRow shows 'Reader is reading'"
+decision dFind "Does the file get a finding?\nSample files are scripted\nOther files: about 1 case in 5"
+process pOk "Row: 'N checks passed'"
+process pWarn "Row: 'Check this' with the finding text"
+toast t1 "'Reader sorted 6 files: 2 matched, 4 need a look'\n'Could not place: ... Check where Reader put: ... Findings in: ...'"
+process pTick "Checklist rows tick off\n'N of M ready' goes up\n'Start the agents' is never switched off"
+goto g30 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
+
+group gSample "Use sample chart"
+  click c2 "Click 'Use sample chart' (top right of step 3)"
+  decision dHas "Does the case already have a patient?\nFrom a referral, an EMR pull or typed initials"
+  store stAll "Fills T.W., 41, born 03/02/1985, Female · Summit Medicaid HMO · …5519\nResidential 3.5 · Admission · F10.20, F33.2 · reason"
+  store stKeep "Keeps that patient and request\nAdds only a blank member ID, start date or type"
+  store stDocs "Adds a sample file for each document on the payer's saved list\nSummit: 8 of 9. 'Therapy note from the last 14 days' is left out on purpose"
+  toast t2 "'Sample chart loaded'\n'T.W., 41. 8 of 9 documents are added and being checked.'"
+endgroup
+
+s1 --> i1
+s1 --> c1
+c1 --> p0 --> dNone
+dNone -->|No| eNone
+dNone -->|Yes| p1
+i1 --> p1
+p1 --> a1 --> dCard
+dCard -->|Yes| pCard --> pPayer --> dChart
+dCard -->|No| dChart
+dChart -->|Yes| pFill --> pKeep --> a2
+dChart -->|No| a2
+a2 --> dName
+dName -->|Yes| dTaken
+dName -->|No| dOpen
+dTaken -->|Yes| pDup --> st1
+dTaken -->|No| pPlace --> st1
+dOpen -->|Yes| pGuess --> st1
+dOpen -->|No| pNone --> st1
+st1 --> pReset --> a3 --> dFind
+pReset -.-> tStale
+dFind -->|No| pOk --> t1
+dFind -->|Yes| pWarn --> t1
+t1 --> pTick --> g30
+
+s1 --> c2
+c2 --> dHas
+dHas -->|No| stAll --> stDocs
+dHas -->|Yes| stKeep --> stDocs
+stDocs --> t2 --> a3

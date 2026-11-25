@@ -1,0 +1,84 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: curv-trap, label: "<b>Connection health</b><br/>Billing system · 'Needs attention' (amber) · '2 sync failures'<br/>'The read-only sign-in expired 2 hours ago, so remittances are not arriving. First step: renew the sign-in with Fix.'<br/>The 'Action required' line says 'Billing system needs attention.' with its own 'Fix' button" }
+  c1@{ shape: trap-t, label: "Click 'Fix' on the row, or 'Fix' in the Action required line" }
+  gg@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
+  o1@{ shape: win-pane, label: "<b>Fix billing system</b><br/>Three short steps. Nothing is written to the system.<br/>Steps: What happened, Renew access, Test" }
+  subgraph gS1 ["Step 1 of 3: What happened"]
+  a1@{ shape: rect, label: "The issue text in an amber box" }
+  a2@{ shape: rect, label: "'This is usually an expired sign-in. The first step is to renew the read-only access. The agents then pull the missed remittances.'" }
+  a3@{ shape: trap-t, label: "Click 'Next'" }
+  end
+  subgraph gS2 ["Step 2 of 3: Renew access"]
+  b1@{ shape: lean-r, label: "<b>'Who approves the new sign-in' (required)</b><br/>Filled in with the system's contact, for example 'Billing lead'" }
+  b2@{ shape: lean-r, label: "Tick 'I confirm the agents may read claims and remittances. They cannot change them.'" }
+  b3@{ shape: trap-t, label: "Click 'Renew and test'" }
+  q1@{ shape: diam, label: "Name filled in and box ticked?" }
+  t1@{ shape: odd, label: "<b>'Name the person who approves and confirm read-only access.'</b><br/>Clears when either is changed" }
+  x1@{ shape: st-rect, label: "<b>The approver renews the read-only sign-in</b><br/>Demo: simulated" }
+  end
+  subgraph gS3 ["Step 3 of 3: Test"]
+  k1@{ shape: rect, label: "Signing in with the new read-only access" }
+  k2@{ shape: rect, label: "Reading the latest remittance" }
+  k3@{ shape: rect, label: "Matching it to a claim" }
+  t2@{ shape: odd, label: "'The test passed. Access is read-only, and nothing is written back.'" }
+  f1@{ shape: trap-t, label: "<b>Click 'Finish and reconnect'</b><br/>Dimmed until the last check passes" }
+  end
+  subgraph gSave ["What finishing does"]
+  v1@{ shape: cyl, label: "<b>Billing system becomes Connected</b><br/>Last sync now, the issue text is cleared" }
+  v4@{ shape: cyl, label: "<b>Files pulled this week goes up by 12, the remittances the log line names</b><br/>Sync failures go back to 0" }
+  v2@{ shape: hex, label: "Navigator logs 'Renewed the read-only sign-in for billing system and pulled 12 remittances'" }
+  v3@{ shape: odd, label: "<b>'Billing system is connected'</b><br/>'Remittances are arriving again.'<br/>No toast when Navigator is set to 'Act on its own'" }
+  end
+  cx@{ shape: trap-t, label: "<b>Click 'Cancel' or the X, press Escape, or click the dimmed area</b><br/>There is no 'Back' in this pop-up" }
+  e2@{ shape: stadium, label: "<b>Pop-up closes</b><br/>The system still Needs attention" }
+  e1@{ shape: stadium, label: "<b>Row shows 'Last sync just now', 'Connected', '0 sync failures' and a 'Sync now' button</b><br/>The 'Action required' line moves on to the next item, or goes" }
+  g1@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Disconnect and reconnect" }
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Reconnect a system" }
+  s1 --> c1 --> gg --> o1 --> a1 --> a2 --> a3
+  a3 --> b1 --> b2 --> b3 --> q1
+  q1 -->|"No"| t1
+  t1 --> b1
+  q1 -->|"Yes"| k1
+  b3 -.-> x1
+  k1 --> k2 --> k3 --> t2 --> f1
+  f1 --> v1 & v2 & v3 & v4
+  v1 --> e1
+  v3 --> e1
+  o1 -.-> cx
+  cx --> e2
+  s1 -.->|"Another way out"| g1
+  s1 -.->|"If it is disconnected later"| g2
+  class s1 k_screen
+  class c1,a3,b3,f1,cx k_click
+  class gg,g1,g2 k_goto
+  class o1 k_overlay
+  class a1,a2,k1,k2,k3 k_process
+  class b1,b2 k_input
+  class q1 k_decision
+  class t1,t2,v3 k_toast
+  class x1 k_ext
+  class v1,v4 k_store
+  class v2 k_agent
+  class e2 k_endx
+  class e1 k_end
+  style gS1 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gS2 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gS3 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSave fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

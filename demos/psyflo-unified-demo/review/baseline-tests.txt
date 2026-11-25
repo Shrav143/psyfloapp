@@ -1,0 +1,108 @@
+# Baseline test run on the pristine Nov 8 project (2026-11-11T13:17:43Z)
+## npm test
+# Subtest: Flow C · initial SRA leaves criterion 3 blank when 1 and 2 are met, and never drafts trauma-informed care
+ok 6 - Flow C · initial SRA leaves criterion 3 blank when 1 and 2 are met, and never drafts trauma-informed care
+  ---
+  duration_ms: 0.853861
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 69.041406
+## smoke
+22 MobileAssess: ok · anchors:#suds,#dsm · Kayla · ES-1 Assessments Due this week SUDS · A.G. due Fri Two questions · about
+23 ExtDPN: ok · anchors: · http://localhost:4701/consumers/3310/session/dpn Daily Progress Note Open in its
+24 ExtWeekly: ok · anchors: · http://localhost:4701/consumers/3310/session/weekly Weekly guardian call Open in
+25 ExtMonthly: ok · anchors: · http://localhost:4701/consumers/3310/session/collateral Monthly collateral Open 
+26 ExtIncident: ok · anchors: · http://localhost:4701/consumers/4102/session/incident Incident report Open in it
+27 ReviewQueue: ok · anchors:#n1,#n2,#n3,#n4,#approve,#return,#madeup · HARVEST OUTREACH CENTER · TDT Do next 7 Referrals 4 Authorizations 7 Review queu
+28 StaffDashboard: ok · anchors: · HARVEST OUTREACH CENTER · TDT Do next 7 Referrals 4 Authorizations 7 Review queu
+29 Authorizations: ok · anchors:#demoReply,#advanceDay · HARVEST OUTREACH CENTER · TDT Do next 7 Referrals 4 Authorizations 7 Review queu
+31 ParentSurvey: ok · anchors:#next,#es · 2-minute check-in · Tyler In the last two weeks Seemed sad or down Not at all So
+32 ExtQuarterly: ok · anchors: · http://localhost:4701/consumers/3310/session/quarterly Quarterly report Open in 
+33 ExtCase: ok · anchors: · http://localhost:4701/consumers/3310/session/sra-continued CMHRS Continued Stay 
+34 InfoRequest: ok · anchors:#edit,#send,#edit,#infoPortal,#infoSend · HARVEST OUTREACH CENTER · TDT Do next 7 Referrals 4 Authorizations 7 Review queu
+35 Partials: ok · anchors:#confirm · HARVEST OUTREACH CENTER · TDT Do next 7 Referrals 4 Authorizations 7 Review queu
+36 EarlyDischarge: ok · anchors:#plan · HARVEST OUTREACH CENTER · TDT Do next 7 Referrals 4 Authorizations 7 Review queu
+37 ExtDischarge: ok · anchors: · http://localhost:4701/consumers/4102/session/discharge Discharge summary Open in
+38 PeerBrief: ok · anchors:#print,#schedule,#outcome,#schedule,#outcome · HARVEST OUTREACH CENTER · TDT Do next 7 Referrals 4 Authorizations 7 Review queu
+39 AppealLetter: ok · anchors:#edit,#es,#sign,#call · Harvest Outreach Center Ethan's insurance decision Anthem said no on Oct 22 Thei
+40 PayerPlaybook: ok · anchors: · HARVEST OUTREACH CENTER · TDT Do next 7 Referrals 4 Authorizations 7 Review queu
+42 Analytics: ok · anchors:#export,#div,#grant,#q · HARVEST OUTREACH CENTER · TDT Do next 7 Referrals 4 Authorizations 7 Review queu
+43 Users: ok · anchors:#add · HARVEST OUTREACH CENTER · TDT Do next 7 Referrals 4 Authorizations 7 Review queu
+46 ParentEnroll: ok · anchors:#en,#es,#back,#call · Enrollment packet · Tyler 0 of 7 done · before the intake visit English Español 
+47 ParentProgress: ok · anchors:#en,#es,#survey,#back,#call · How Tyler is doing Tyler's progress · plain words, no scores English Español Tyl
+48 ParentQuarterly: ok · anchors:#en,#es,#clear,#sign,#back,#call · Quarterly report · M.R. Aug 18 – Nov 13 · from Jordan Perez English Español What
+49 ParentLetters: ok · anchors:#en,#es,#back,#call · Insurance updates · Tyler Letters from the insurance company, in plain words Eng
+50 ParentSchedule: ok · anchors:#en,#es,#back,#call · Book your first call Tyler · a 30–45 minute phone call with a Harvest clinician 
+## flowA
+· family link + eligibility recorded
+· new consumer boxes typed: 6
+· pre-call boxes yellow: 6
+· prompts done while recording: 6
+· Prior services: School counseling weekly since Sep 2025 — ongoing. Outpatient: Piedmont Counseling, Mar–Jun 2025, ~6 sessions, ended (transportation); no improvement seen
+· Narrative: Screening call with the grandmother (legal guardian). She reports physical aggression toward peers 2–3× / week, lasting …
+· screening: done · referral stage: in_intake · clock30: 2026-10-29
+· CNA prior services: School counseling weekly since Sep 2025 — ongoing. Outpatient: Piedmont Counseling, Mar–Jun 2025, ~6 sessions, ended (transportation); no improvement seen
+· errors: none
+## flowB
+· daily notes today before: 4 of 6
+· Narrative: Worked with M.R. on emotional regulation and frustration tolerance through a structured Mo…
+· Direct time: 3 h 40 min · Units: 2 · Mood: Frustrated → calm
+· daily notes today after: 5 of 6 · dictation: used · M.R. units used: 86
+· errors: none
+## flowC
+file:///home/user/psyfloapp/demos/psyflo-unified-demo/test/flowC.mjs:10
+if (!no) throw new Error('Run test/flowA.mjs first (T.W. must be in Lauris)');
+               ^
+
+Error: Run test/flowA.mjs first (T.W. must be in Lauris)
+    at file:///home/user/psyfloapp/demos/psyflo-unified-demo/test/flowC.mjs:10:16
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+Node.js v22.22.0
+## flowD
+· SMS link: http://localhost:4700/f/tw-m80u1y
+· eligibility before: ← Referral REF-118 / Eligibility Family link sent Oct 29, 1:18 pm · not submitted yet T.W., 12 · waiting for the family link Back to the ref
+· family link submitted: true · eligibility: details_received
+· eligibility screen now: ← Referral REF-118 / Eligibility Family link submitted Oct 29, 1:19 pm · check not run yet T.W., 12 · details received — run the check Back to the referral Open
+· referral chip: active · Humana
+· consent: signed /files/mwc5avdjgsmq__consent_TW_2026-10-29.pdf
+· parent portal: Harvest Outreach Center Hi Denise · Tyler's page English Español Where things stand 1 to sign Referred by the school Oct 13 · your details received Oct 29 · con
+· errors: none
+## panels
+home: ok · Jordan Perez, LPC · clinician SIGNED IN AS (DEMO) Support staff Clinician Supervisor Admin Good afternoon, Jordan. Thu Oct 29 · 2 screening calls · 1 
+home-ds: ok · Kayla Hale, QMHP-C · direct support SIGNED IN AS (DEMO) Support staff Clinician Supervisor Admin Good afternoon, Kayla. Thu Oct 29 · 6 students today 
+home-admin: ok · Dana Owens · admin SIGNED IN AS (DEMO) Support staff Clinician Supervisor Admin Good afternoon, Dana. Thu Oct 29 · 3 requests need action Draft the re
+weekly: ok · Weekly guardian call · M.R. green · already in Lauris yellow · Psyflo typed — check it Recording · 14 min Grandmother, by phone · consent on file Stop
+monthly: ok · Monthly collateral · M.R. green · already in Lauris yellow · Psyflo typed — check it Recording · 11 min R. Bell, school counselor · in person Stop FIL
+incident: ok · Incident report · D.W. green · already in Lauris yellow · Psyflo typed — check it Level 2 · state portal due 2:40 pm tomorrow Clock started when the c
+quarterly: ok · Quarterly report · M.R. green · already in Lauris yellow · Psyflo typed — check it Family version · the Lauris quarterly below. The guardian sees it a
+case: ok · Continued stay · M.R. green · already in Lauris yellow · Psyflo typed — check it Draft ready for M.R. — written from 21 daily notes, 4 weekly guardian
+discharge: ok · Discharge summary · D.W. green · already in Lauris yellow · Psyflo typed — check it Draft ready for D.W. From 68 daily notes, 14 weekly calls and the 
+weekly-other: ok · Psyflo · Weekly guardian call · J.T. green · already in Lauris yellow · Psyflo typed — check it No draft for J.T. in this demo. Psyflo drafts the week
+approvals: ok · Sign-off · Forms to Approve green · already in Lauris yellow · Psyflo typed — check it 6 forms wait for a signature. Open one; Psyflo checks it agains
+sebs-off: ok · Psyflo · off for this record Psyflo is off for H.B.. This record is in SEBS. The extension works with TDT consumers only; it reads and types nothing h
+ds-screening: ok · Psyflo · Admission screening green · already in Lauris yellow · Psyflo typed — check it Admission screening drafts are for clinicians. Direct support 
+record: ok · Psyflo · M.R. · Campbell County · ES-1 green · already in Lauris yellow · Psyflo typed — check it Record the screening call Scribe · speaker or phone 
+done
+
+## flowA then flowC in sequence (flowC needs T.W. from flowA; the first run above had flowB reset it)
+· Narrative: Screening call with the grandmother (legal guardian). She reports physical aggression toward peers 2–3× / week, lasting …
+· screening: done · referral stage: in_intake · clock30: 2026-10-29
+· CNA prior services: School counseling weekly since Sep 2025 — ongoing. Outpatient: Piedmont Counseling, Mar–Jun 2025, ~6 sessions, ended (transportation); no improvement seen
+· errors: none
+· after ISP: R-0416 draft_ready · goals 3
+· C1: In the last 30 days T.W. was physically aggressive toward peers on 6 dated occasions (Oct 2, Oct 6, …
+· C3 blank: true · TIC blank: true · Goal 1 (green from ISP): Obj. 1 – T.W. will use a taught coping s
+· after Process Form: awaiting_signature
+· after Get Signature: signed /files/mwc5ek0fb030__R-0416_T.W._initial_signed.pdf
+· signed PDF: 200 application/pdf 4213 bytes
+· after Send: submitted F-2356 due 2026-11-05 · events: Initial SRA drafted from the record | Now in Forms to Approve · waiting for Ge | Get Signature pressed in Lauris · signed | Packet assembled: signed SRA · ready to  | Send pressed · faxing through Harvest's  | Sfax accepted the fax · ref F-2356 | Delivery receipt · 2 pages delivered
+· errors: none

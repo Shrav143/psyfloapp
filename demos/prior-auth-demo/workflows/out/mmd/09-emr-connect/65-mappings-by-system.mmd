@@ -1,0 +1,66 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open 'Advanced'</b><br/>Then read 'Field mappings'" }
+  t0@{ shape: curv-trap, label: "<b>Field mappings</b><br/>'{n} mapped, {m} waiting. A chart pulled in New Case leaves the waiting fields blank until you map them.'<br/>With none waiting: '{n} mapped. Every field the agents have met is mapped.'<br/>Each row: their field → what it fills, the system, who mapped it" }
+  subgraph gRes ["Clinical record · Site A: 5 mapped"]
+  r1@{ shape: cyl, label: "<b>Admit date → 'Admission date'</b><br/>Reader, 03/14" }
+  r2@{ shape: cyl, label: "<b>Primary payer → 'Payer'</b><br/>Reader, 03/14" }
+  r3@{ shape: cyl, label: "<b>Member ID → 'Member ID (masked)'</b><br/>Reader, 03/14" }
+  r4@{ shape: cyl, label: "<b>Progress note → 'Chart documents'</b><br/>Reader, 03/15" }
+  r5@{ shape: cyl, label: "<b>MAR → 'Medication record'</b><br/>Reader, 03/15" }
+  end
+  subgraph gOut ["Clinical record · Site B: 3 mapped, 2 waiting"]
+  o1@{ shape: cyl, label: "<b>Admit date → 'Admission date'</b><br/>Reader, 03/14" }
+  o2@{ shape: cyl, label: "<b>Primary payer → 'Payer'</b><br/>Reader, 03/14" }
+  o3@{ shape: cyl, label: "<b>Group note → 'Chart documents'</b><br/>Reader, 03/16" }
+  w1@{ shape: lean-r, label: "<b>'Level of care': Not mapped, button 'Map'</b><br/>Choices: IOP or PHP" }
+  w2@{ shape: lean-r, label: "<b>'Referral source': Not mapped, button 'Map'</b><br/>Choices: Payer name, Plan type or Referring provider" }
+  end
+  subgraph gBill ["Billing system (both sites): 2 mapped"]
+  b1@{ shape: cyl, label: "<b>Claim number → 'Claim reference'</b><br/>Reader, 04/02" }
+  b2@{ shape: cyl, label: "<b>Remittance date → 'Payment date'</b><br/>Reader, 04/02" }
+  end
+  subgraph gNew ["A system just connected"]
+  n1@{ shape: cyl, label: "<b>0 mapped, none waiting</b><br/>Nothing is listed for it" }
+  end
+  c1@{ shape: rect, label: "<b>Waiting rows sit at the top, tinted</b><br/>A row mapped by a person goes at the end of the list<br/>'Mapped by' reads 'You, 10/20'" }
+  d1@{ shape: doc, label: "<b>Production: a versioned field map per record system, stored as data</b><br/>Every canonical field shows its source. Changes carry a date and an author" }
+  g1@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What other screens use from EMR Connect" }
+  s1 --> t0
+  t0 --> r1 & o1 & b1 & n1
+  r1 --> r2 --> r3 --> r4 --> r5
+  o1 --> o2 --> o3 --> w1 --> w2
+  b1 --> b2
+  w1 --> c1
+  w2 --> c1
+  c1 --> g1
+  w1 -.-> g2
+  t0 -.-> d1
+  class s1 k_start
+  class t0 k_screen
+  class r1,r2,r3,r4,r5,o1,o2,o3,b1,b2,n1 k_store
+  class w1,w2 k_input
+  class c1 k_process
+  class d1 k_doc
+  class g1,g2 k_goto
+  style gRes fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gOut fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gBill fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gNew fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

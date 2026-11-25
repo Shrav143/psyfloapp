@@ -1,0 +1,59 @@
+title: Authorizations › Case page › Tabs and deep links
+route: /authorizations/case/R-1042?tab=actions
+intro: The three tabs under the header, how the address follows them, how the five old tab names still land on the merged tabs, what the two badges count, and the buttons that jump to one recommendation card.
+dir: TD
+---
+start s1 "A case page opens"
+decision d1 "What does the address name (tab=...)?"
+process ta "Recommended actions is selected\n(tab=actions, a missing or unknown name)"
+process tdr "Clinical picture & draft is selected\n(tab=draft)"
+process tpi "Clinical picture & draft is selected\nand the page scrolls to the clinical picture\n(the old tab=picture)"
+process tcr "Criteria & risk is selected\n(tab=criteria)"
+process tri "Criteria & risk is selected\nand the page scrolls to the figures and risks\n(the old tab=risk)"
+decision dW "Is the window 1024 px or narrower?"
+process fo "The clinical picture sits under the draft, folded\ntab=picture opens it"
+screen tabs "Tab strip\nRecommended actions · Clinical picture & draft · Criteria & risk"
+
+group gC "Click a tab"
+  click c1 "Click 'Recommended actions'"
+  click c2 "Click 'Clinical picture & draft'"
+  click c3 "Click 'Criteria & risk'"
+endgroup
+process url "The address changes to tab=actions, draft or criteria\nBrowser Back returns to the previous tab"
+process rec "Any tab click drops rec= from the address"
+
+process b1 "Badge on 'Recommended actions'\nNumber of open recommendations (6)\nGone when none are left"
+process b2 "Badge on 'Clinical picture & draft'\nNumber of checks that need attention (2)\nGone when all four pass"
+
+group gD "Buttons that jump to one card"
+  click l1 "Criteria & risk › a risk chip\n'No named step-down · 11 pts'"
+  click l2 "Criteria & risk › the action under a Partial criterion"
+  click l3 "Header › 'Go to this action'"
+endgroup
+process dl "Recommended actions opens with rec= set to that card's ID"
+process fc "The card scrolls to the middle of the screen\nand gets a green outline"
+
+goto g1 "Continues in: Authorizations › Case page › Recommended actions › The tab"
+goto g2 "Continues in: Authorizations › Case page › Clinical picture"
+goto g3 "Continues in: Authorizations › Case page › Criteria & risk"
+goto g5 "Continues in: Authorizations › Case page › Draft › Read and edit"
+
+s1 --> d1
+d1 -->|actions or nothing| ta --> tabs
+d1 -->|draft| tdr --> tabs
+d1 -->|picture| tpi --> dW
+dW -->|Yes| fo --> tabs
+dW -->|No| tabs
+d1 -->|criteria| tcr --> tabs
+d1 -->|risk| tri --> tabs
+tabs --> b1 & b2
+tabs --> url --> rec
+tabs --> c1 & c2 & c3
+c1 --> g1
+c2 --> g5
+c2 --> g2
+c3 --> g3
+l1 --> dl
+l2 --> dl
+l3 --> dl
+dl --> fc

@@ -1,0 +1,53 @@
+title: Authorizations › Reviews this week › The view
+route: /authorizations?view=reviews
+intro: Reviews this week is a view of the same table: every row whose continued-stay review is due before the end of Sunday, in review-time order. The Next action and Deadline columns become the review's status and time, each row's button becomes the review's own, and the header gains 'Draft all due reviews' and 'Sign all clean drafts'. Agents have already drafted most reviews.
+dir: TD
+also: Demo only, at the start: 47 rows (Site A 26, Site B 21): 35 drafted (29 clean, 6 with a check to look at), 8 that need a clinician's update, 4 weekend reviews not drafted yet. One row per request, so a signed review stays on its row as 'Signed' and the count stays 47. Case Manager's day cards, its three tiles, 'Show N more' and the 'Ready to step down?' card are gone; the step-down prompt is a note on the row.
+---
+start s1 "Click the view chip 'Reviews this week 47'"
+start s2 "Demo menu › Suggested path › 'Authorizations: reviews this week'\nor an old /manager?tab=reviews link"
+store ad "?view=reviews in the address\nThe table goes back to page 1"
+screen hd "Header: 'Draft all due reviews' and 'Sign all clean drafts' before 'New Case'"
+goto gB "Continues in: Authorizations › Reviews this week › Draft all due reviews and sign all clean drafts"
+screen tb "'47 authorizations', ordered by the review's time, today first"
+
+group gRow "What a row says in this view"
+  process r1 "Patient / request and Status as on every view\nThe request's own chip: Approved, With the payer, Ready to sign, Denial route ..."
+  process r2 "Column 'Review': 'Not drafted yet', 'Drafted', 'Needs your update' or 'Signed'\n'Check to look at' (amber) beside a draft whose checks did not all pass\nA review that needs an update shows what is missing, in amber"
+  process r3 "Column 'Due': 'Review 2 · Tue 10/20, 8:30 am'\nSorting by 'Due' sorts by that time"
+  process r4 "Owner: the agent who drafted it (Scribe for Residential and Detox, Cadence for PHP and IOP) or the request's own"
+  process r5 "Notes: 'Consider a step-down' on R-0873 and P-1522 (hover for why)"
+endgroup
+
+decision db "What does the review need?"
+process b1 "Needs your update: 'Update the review' (green)"
+process b2 "Not drafted yet: 'Open the review' (outlined)"
+process b3 "Drafted and clean: 'Review and sign' (green)"
+process b4 "Drafted with a check to look at: 'Check the review' (green)"
+process b5 "Signed: the row's own button again ('Open', 'Send to payer', 'Open on Dashboard')"
+click c1 "Click the button"
+store rv "?review= and the review ID in the address (replaces the entry)"
+goto g1 "Continues in: Authorizations › Reviews this week › The review drawer"
+click c2 "Click the ID, the row or its quick view icon"
+goto g2 "Continues in: Authorizations › Worklist › Read a row"
+process f1 "Search and every filter narrow the view; 'Any deadline' counts it (6, 16, 32)\nThere is no review-status filter: the 'Review' column shows it"
+goto gF "Continues in: Authorizations › Worklist › Search and filter"
+process p5 "A next review booked inside the week takes the signed one's place on the row\nThe week ends on Sunday night whatever the demo clock says"
+end e1 "The week's reviews are on screen"
+
+s1 --> ad
+s2 --> ad
+ad --> hd --> gB
+ad --> tb --> r1 --> r2 --> r3 --> r4 --> r5
+r2 --> db
+db -->|Missing item| b1
+db -->|No draft| b2
+db -->|Clean| b3
+db -->|Check to look at| b4
+db -->|Signed| b5
+b1 & b2 & b3 & b4 --> c1 --> rv --> g1
+tb --> c2 --> g2
+tb -.-> f1 -.-> gF
+r3 -.-> p5
+b5 --> e1
+r5 --> e1

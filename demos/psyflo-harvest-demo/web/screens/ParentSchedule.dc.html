@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Book a time — Harvest Outreach Center</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared phone look: C_CSS in js/screens/MobileApp.js */
+.c-slot{min-height:44px;padding:0 14px;border:1px solid var(--line-strong);border-radius:8px;background:var(--white);font:600 15px/20px 'DM Sans',system-ui,sans-serif;color:var(--navy);cursor:pointer}.c-slot.on{background:var(--teal-tint);border-color:var(--teal);color:var(--teal-dark)}
+</style>
+</helmet>
+<div class="c-ph">
+  {{hd}}
+  <main class="c-bd">
+    <sc-if value="{{waitingText}}"><div class="c-card"><b>{{waitingText}}</b></div></sc-if>
+    <sc-if value="{{booked}}">
+      <section class="c-card" style="border-color:var(--teal);background:var(--teal-tint)">
+        <div style="display:flex;align-items:center;gap:8px"><b>{{t.booked}}</b><span class="u-chip {{booked.cls}}" style="margin-left:auto">{{booked.chip}}</span></div>
+        <div style="font-size:20px;line-height:28px;font-weight:700;margin-top:6px">{{booked.when}}</div>
+        <div class="c-mut">{{booked.sub}}</div>
+        <sc-if value="{{booked.ride}}"><div style="margin-top:4px">{{booked.ride}}</div></sc-if>
+      </section>
+      <sc-if value="{{confirmAsk}}"><section class="c-card" style="border-color:var(--marigold)"><b>{{t.tomorrow}}</b>
+        <div style="display:flex;gap:8px;margin-top:10px"><button type="button" class="c-btn pri" onClick="{{confirmYes}}" style="flex:1">{{t.yes}}</button><button type="button" class="c-btn" onClick="{{confirmNo}}" style="flex:1">{{t.change}}</button></div></section></sc-if>
+      <sc-if value="{{rideToggle}}"><button type="button" class="c-btn" onClick="{{rideToggle}}">{{rideLabel}}</button></sc-if>
+      <button type="button" class="c-btn" onClick="{{rebook}}">{{t.pickAnother}}</button>
+    </sc-if>
+    <sc-if value="{{picking}}">
+      <sc-for list="{{days}}" as="d">
+        <section class="c-card"><b>{{d.label}}</b>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"><sc-for list="{{d.slots}}" as="x"><button type="button" class="c-slot {{x.cls}}" onClick="{{x.pick}}" aria-pressed="{{x.pressed}}">{{x.time}}</button></sc-for></div></section>
+      </sc-for>
+      <sc-if value="{{moreDays}}"><button type="button" class="c-lnk" onClick="{{showMore}}" style="text-align:left">{{t.moreDays}}</button></sc-if>
+      <sc-if value="{{isIntake}}"><label class="c-rad" style="display:flex"><label style="flex:1"><input type="checkbox" id="ride" {{rideChecked}} onChange="{{setRide}}"> {{t.needRide}}</label></label></sc-if>
+      <sc-if value="{{chosen}}"><button type="button" class="c-btn pri lg" onClick="{{book}}">{{chosen.label}}</button></sc-if>
+    </sc-if>
+  </main>
+  {{ft}}
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

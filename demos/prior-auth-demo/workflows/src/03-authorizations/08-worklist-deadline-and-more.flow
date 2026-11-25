@@ -1,0 +1,59 @@
+title: Authorizations › Worklist › Deadline, More and the Showing chip
+route: /authorizations?urgency=now
+intro: The Deadline menu narrows the list by how soon each row is due, and shows how many rows each choice keeps. 'More' opens a second row with three filters people use less: Owner, Status (the exact chip) and the Cardinal payer signal. A Dashboard 'Active' or 'Renewal due' link adds a removable 'Showing' chip. All of them stack with search and the other menus and are kept in the address.
+dir: TD
+also: Demo only, Both sites at the start on All: Act now 12, Within 24 hours 29, Next 7 days 79. Within 24 hours includes Act now, and Next 7 days includes both. The other 16 rows (15 of them approved authorizations) have no event inside the week. On Reviews this week the same menu counts that view: 6, 16 and 32. 'Showing Active' keeps 40 rows (32 approved, 6 with the payer, 2 in progress) and 'Showing Renewal due' 19, the numbers on the Dashboard's chips.
+---
+screen fb "Filter bar\n'Any deadline' and 'More' at its right end"
+
+group gD "Deadline"
+  click d1 "Click 'Any deadline'"
+  overlay d2 "Menu: 'Any deadline', 'Act now · 12', 'Within 24 hours · 29', 'Next 7 days · 79'\nThe counts are for the chosen view with every other filter"
+  input d3 "Pick one"
+  process d4 "Act now: the Act now band only\nWithin 24 hours: Act now and Within 24 hours\nNext 7 days: everything due inside the week"
+  process d5 "The band of a row\nA queue request keeps its own band\nAny other row: overdue or urgent is Act now, under a day Within 24 hours, under 7 days the week, else later\nA saved draft with a red due pill is Act now"
+  store d6 "?urgency=now, day or week"
+endgroup
+
+group gM "More"
+  click m1 "Click 'More'"
+  process m2 "A second row opens under the bar (click again to close it)\nIt is open from the start when one of its filters is on"
+  click o1 "Click 'Any owner'"
+  overlay o2 "Menu: 'Any owner' and the agents holding a row\nScribe, Cadence, Packet, Advocate, Navigator, Caller, Integrity, Reader, Criteria"
+  click s1 "Click 'Any status'"
+  overlay s2 "Menu: 'Any status' and 16 chips\nPreparing, Needs your input, Agents working, Intake not finished, Ready to sign, With the payer, Submitted, Under review, Info requested, Approved, Review due, Needs action, Partial approval, Denial route, Denied, Accepted"
+  process s3 "A row matches by its status chip or one of its extra chips"
+  click sh "Hover or focus the info icon 'What the statuses mean'"
+  overlay sh2 "Tip: Preparing, Ready to sign, With the payer, Denial route, Needs your input, and 'Approved, Denied: The payer decided. They stay in this list, under the Approved and Denied views.'\nEsc closes it"
+  click g1 "Click 'Cardinal payer signal · 4'\n(only while a request in view is affected)"
+  process g2 "The button is outlined while the filter is on; click again to turn it off"
+  store ms "?owner=scribe, ?state=Ready to sign, ?signal=1"
+endgroup
+
+group gW "The Showing chip"
+  start w0 "Dashboard › Lifecycle: click 'Active' or 'Renewal due'\n(or an old /manager?show= link)"
+  process w1 "/authorizations?view=all&show=active (or show=renewal)\nOnly rows with a ledger record that pass the Dashboard's own test"
+  screen w2 "Chip under the filter bar\n'Showing Active (approved, units left)'\nor 'Showing Renewal due (review due or ending within 7 days)', with an X"
+  click w3 "Click the X ('Remove this filter') or 'Clear filters'"
+  process w4 "?show= leaves the address; every row returns"
+endgroup
+
+process on "'More' reads 'More · on' and turns green while any of the three is on"
+process ap "Filters stack; every view chip's count follows; the table goes back to page 1"
+goto gSig "Continues in: Authorizations › Worklist › Cardinal payer signal"
+goto gF "Continues in: Authorizations › Worklist › Search and filter"
+end e1 "The list keeps the rows that pass"
+
+fb --> d1 --> d2 --> d3 --> d4 --> d6 --> ap
+d4 -.-> d5
+fb --> m1 --> m2
+m2 --> o1 --> o2 --> ms
+m2 --> s1 --> s2 --> s3 --> ms
+s1 --> sh --> sh2
+m2 --> g1 --> g2 --> ms
+g2 -.-> gSig
+ms --> on --> ap
+ap --> e1
+ap -.-> gF
+w0 --> w1 --> w2 --> ap
+w2 --> w3 --> w4 --> e1

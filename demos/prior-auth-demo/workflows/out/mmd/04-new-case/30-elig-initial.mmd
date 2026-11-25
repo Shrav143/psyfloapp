@@ -1,0 +1,80 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Continue to Eligibility & Benefits' on Intake</b><br/>Or click step 2 in the stepper" }
+  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Initial authorization</b><br/>No sentence under the title" }
+  dIn@{ shape: diam, label: "Are the payer, level of care, member ID and start date in?" }
+  sNeed@{ shape: curv-trap, label: "<b>One line 'Verify needs the payer, level of care, member ID and start date'</b><br/>and 'Open Intake'" }
+  cIntake@{ shape: trap-t, label: "Click 'Open Intake'" }
+  gIntake@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Initial authorization" }
+  dHave@{ shape: diam, label: "<b>Is there a check for this patient, payer and level of care</b><br/>that covers the dates and is under 24 hours old?" }
+  pReuse@{ shape: rect, label: "<b>The check is reused</b><br/>Chip 'Reused · checked Tue 10:42 am'; 'Refresh verification' is the way to ask again" }
+  stId@{ shape: cyl, label: "<b>The case gets its id first, so the check is filed under it</b><br/>The id falls at the case's site" }
+  aV@{ shape: hex, label: "<b>Verify checks coverage and benefits with Summit, about 1.2 seconds</b><br/>Spinner and 'Checking coverage and benefits with Summit'" }
+  xPlan@{ shape: st-rect, label: "<b>The payer's eligibility service (demo: simulated)</b><br/>Answers from the member ID's last four digits" }
+  stRec@{ shape: cyl, label: "<b>Check saved as a verification record</b><br/>The case remembers its id<br/>The same record is on Eligibility & Benefits" }
+  dOld@{ shape: diam, label: "Is the check old, or for other dates?" }
+  tOld@{ shape: odd, label: "<b>Chip 'Checked 30 h ago' or 'Covers other dates'</b><br/>The check runs again by itself for an initial request" }
+  sSum@{ shape: curv-trap, label: "<b>Verification summary</b><br/>'Coverage and benefits · Summit'<br/>'Last verified Tue 10:44 am, 2 min ago. Simulated source.'<br/>Coverage, Plan type and routing, Benefits, Authorization, Provider, Existing authorization" }
+  cRef@{ shape: trap-t, label: "Click 'Refresh verification'" }
+  pRef@{ shape: rect, label: "<b>Verify asks again</b><br/>The record is replaced" }
+  cDet@{ shape: trap-t, label: "Click 'View full verification details'" }
+  oDet@{ shape: win-pane, label: "<b>Drawer 'Verification details'</b><br/>The full record, the same as on Eligibility & Benefits" }
+  dWarn@{ shape: diam, label: "Does the check have warnings?" }
+  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions" }
+  dNoAuth@{ shape: diam, label: "Does the payer need no authorization?" }
+  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required" }
+  sNote@{ shape: curv-trap, label: "<b>Link 'Open in Eligibility & Benefits' above the summary</b><br/>The summary itself says 'Simulated source'" }
+  gEb@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The shared verification record" }
+  subgraph gFoot ["Footer bar"]
+  cBack@{ shape: trap-t, label: "Click 'Back'" }
+  cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
+  cCont@{ shape: trap-t, label: "Click 'Continue to Clinical documentation'" }
+  tHint@{ shape: odd, label: "The bar's only line is a payer workflow warning, when there is one" }
+  end
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
+  s1 --> sc --> dIn
+  dIn -->|"No"| sNeed --> cIntake --> gIntake
+  dIn -->|"Yes"| dHave
+  dHave -->|"Yes"| pReuse --> sSum
+  dHave -->|"No"| stId --> aV --> xPlan --> stRec --> sSum
+  sSum --> dOld
+  dOld -->|"Yes"| tOld
+  sSum --> cRef --> pRef --> aV
+  sSum --> cDet --> oDet
+  sSum --> dWarn
+  dWarn -->|"Yes"| gWarn
+  sSum --> dNoAuth
+  dNoAuth -->|"Yes"| gNoAuth
+  sSum -.-> sNote -.-> gEb
+  sSum --> cBack
+  sSum --> cSave
+  sSum --> cCont --> gDocs
+  sSum --> tHint
+  class s1 k_start
+  class sc,sNeed,sSum,sNote k_screen
+  class dIn,dHave,dOld,dWarn,dNoAuth k_decision
+  class cIntake,cRef,cDet,cBack,cSave,cCont k_click
+  class gIntake,gWarn,gNoAuth,gEb,gDocs k_goto
+  class pReuse,pRef k_process
+  class stId,stRec k_store
+  class aV k_agent
+  class xPlan k_ext
+  class tOld,tHint k_toast
+  class oDet k_overlay
+  style gFoot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,62 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open a payer</b><br/>On any of the four views" }
+  lab@{ shape: curv-trap, label: "<b>Label under the name</b><br/>'Demo rules. Not verified against the payer's current policy.'<br/>One label, quiet outline, never a banner" }
+  tip@{ shape: trap-t, label: "<b>Hover, focus or click the info icon beside it</b><br/>(button 'About these rules')" }
+  tipt@{ shape: win-pane, label: "<b>Info tip opens</b><br/>'Everything on Payers is sample data for this demo.<br/>None of it was read from, or checked against, a payer's current policy.<br/>Where a rule has a source in the data, Rules & Instructions shows it,<br/>and only a person can mark a rule Verified.'" }
+  esc@{ shape: trap-t, label: "Press Escape, move away or click elsewhere" }
+  cl@{ shape: rect, label: "<b>Tip closes</b><br/>Only the tip: a pop-up behind it stays" }
+  ps@{ shape: curv-trap, label: "<b>Line at the foot of the header</b><br/>'Policy status: ...'" }
+  d1@{ shape: diam, label: "Is a change waiting for this payer?" }
+  w1@{ shape: rect, label: "'Change waiting for you (Criteria changed, version 2026.3, effective 10/15).'" }
+  d2@{ shape: diam, label: "Has a person acknowledged it already?" }
+  w2@{ shape: rect, label: "<b>'Change acknowledged, drafts not updated yet (Criteria changed, version 2026.3).'</b><br/>Date: when it was acknowledged" }
+  w0@{ shape: rect, label: "'No change waiting.'" }
+  d3@{ shape: diam, label: "<b>Does 'What changed' have an entry</b><br/>that is not just the notice of a waiting change?" }
+  l1@{ shape: rect, label: "<b>'Last acknowledged or applied in Psyflo 10/12.'</b><br/>Date of the newest handled entry, or when a waiting change was acknowledged" }
+  l0@{ shape: rect, label: "'Nothing acknowledged or applied in Psyflo yet.'" }
+  d4@{ shape: diam, label: "Is it a payer added with 'Add a payer'?" }
+  s1t@{ shape: rect, label: "'Source: Psyflo benchmark, not a payer's policy'" }
+  s2t@{ shape: rect, label: "'Source: Demo sample rules, version 2026.3'" }
+  nov@{ shape: rect, label: "<b>Not shown anywhere on Payers</b><br/>No 'checked' or 'confirmed' date, no 'published policy', no 'Sentinel keeps watching'" }
+  rl@{ shape: rect, label: "<b>Rules & Instructions: every seeded rule says 'Unverified'</b><br/>and 'Source: Demo sample rules, version 2026.3'<br/>A rule edited in Psyflo says who entered it and stays Unverified<br/>Only 'Mark as verified' (a source and a date) makes a rule Verified" }
+  e1@{ shape: stadium, label: "The header says where the rules come from and what is waiting" }
+  g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Acknowledge a change" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Read the rules" }
+  s1 --> lab --> tip --> tipt --> esc --> cl --> e1
+  lab --> ps --> d1
+  d1 -->|"Yes"| d2
+  d2 -->|"Yes"| w2 --> d3
+  d2 -->|"No"| w1 --> d3
+  d1 -->|"No"| w0 --> d3
+  d3 -->|"Yes"| l1 --> d4
+  d3 -->|"No"| l0 --> d4
+  d4 -->|"Yes"| s1t --> nov
+  d4 -->|"No"| s2t --> nov
+  nov --> e1
+  w1 -.-> g1
+  nov -.-> rl --> g2
+  class s1 k_start
+  class lab,ps k_screen
+  class tip,esc k_click
+  class tipt k_overlay
+  class cl,w1,w2,w0,l1,l0,s1t,s2t,nov,rl k_process
+  class d1,d2,d3,d4 k_decision
+  class e1 k_end
+  class g1,g2 k_goto

@@ -1,0 +1,29 @@
+title: Payers › Test Workflow › Fix in builder
+route: /payers/summit?tab=test
+intro: When a test stops where it should not, 'Fix in builder' opens the builder on that workflow with the step it stopped at already selected, so the fix is a few clicks away.
+dir: TD
+---
+start s1 "A test run has finished\nResults show 'Fix in builder' and a line: 'Opens the builder at the step where it stopped.'"
+decision d1 "Did it stop at a step?"
+click c1 "Click 'Fix in builder'"
+process p1 "The address becomes ?tab=builder&workflow=the-id&node=the-step"
+screen b1 "Workflow Builder opens on that workflow\nThe stopping step is selected, the canvas moves to it and its settings are open"
+screen b2 "No step is named: the builder opens on the workflow, nothing selected\n'Opens the builder on this workflow.'"
+click c2 "Change the step: its condition, documents, rule or the line after it"
+process p2 "Edits are held in the builder until 'Save draft'"
+decision d2 "Is the workflow published?"
+store st1 "'Save draft' makes a draft of the next version\nThe published one keeps serving cases"
+store st2 "'Save draft' saves the draft in place"
+click c3 "Click 'Test'"
+process p3 "Saves the draft, then returns to Test Workflow with the same workflow\nThe made-up case is the one chosen again"
+screen t1 "Run it again: the result is labelled 'Draft: not used for cases yet'\nuntil the draft is published"
+end e1 "The fix is tested before anyone publishes it"
+goto g1 "Continues in: Payers › Workflow Builder › Save a draft and publish"
+
+s1 --> d1
+d1 -->|Yes| c1 --> p1 --> b1 --> c2 --> p2 --> d2
+d1 -->|No| c1
+p1 --> b2
+d2 -->|Yes| st1 --> c3
+d2 -->|No| st2 --> c3
+c3 --> p3 --> t1 --> e1 --> g1

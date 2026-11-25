@@ -1,0 +1,19 @@
+/* History. Every selector sits under .psy. Shared parts come from base.css. */
+
+/* ----------------------------- History ----------------------------- */
+.psy .his-root .p-h { text-transform: none; letter-spacing: 0; font-size: 12.5px; color: var(--ink-2); }
+.psy .his-n { font-size: 11px; font-weight: 700; color: var(--ink-3); background: var(--neutral-bg); border-radius: 999px; padding: 0 6px; line-height: 17px; }
+.psy .p-seg button[aria-pressed="true"] .his-n { background: var(--teal-tint); color: var(--teal-hover); }
+.psy .his-search-l { margin-top: 12px; }
+.psy .his-search { position: relative; margin-bottom: 4px; }
+.psy .his-search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink-3); pointer-events: none; }
+.psy .his-search .p-input { padding-left: 32px; }
+.psy .his-list { list-style: none; margin: 0; padding: 0; }
+.psy .his-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; margin-bottom: 8px; }
+.psy .his-item .ico { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--teal-tint); color: var(--teal); }
+.psy .his-item[data-type="session"] .ico { background: var(--gold-tint); color: var(--warn); }
+.psy .his-item .tx { min-width: 0; flex: 1; }
+.psy .his-t { font-size: 13px; }
+.psy .his-s { color: var(--ink-2); font-size: 12px; overflow-wrap: anywhere; }
+.psy .his-item .p-btn { flex: none; align-self: center; white-space: nowrap; }
+

@@ -1,0 +1,83 @@
+title: Authorizations › New Case › Intake › Find a patient and the authorization
+route: /authorizations/new/:draftId (Intake, types Concurrent review, Reauthorization, Modification; also the search under Initial and Retroactive)
+intro: A review, a renewal or a modification follows an authorization that exists, so Intake finds the patient first, then the treatment episode and the authorization. Picking a patient never creates a second one. The search covers the sites in view only: a viewer at one site never finds, counts or links to the other site's patients.
+dir: TD
+---
+start s1 "Intake, type Concurrent review, Reauthorization or Modification\nNo patient chosen yet"
+start s2 "Open a link with ?patient=CASE-ID\n(the Dashboard's 'Start renewal')"
+screen sc1 "Card 'Find the patient'\nThe type's line, then 'The patient already exists, so no one is added.'\nSearch box 'Find a patient'"
+input i1 "Type initials or a case ID\n'Initials or case ID, for example J.M. or R-1042'\n'Searches Site A only. Initials and case IDs; a name never enters the app.'"
+process p1 "Search runs on the patients at the sites in view only\nInitials with or without dots, or a case ID"
+decision d1 "Any match?"
+toast tNo "'No patient at Site A matches “Q.Z.”. Check the initials or the case ID.'\nA patient at the other site is never listed, and never counted"
+screen sList "Up to 6 rows\nInitials, age, case ID · payer · levels of care\nWith both sites in view: the site too\nPill with the latest authorization: Active, Expiring soon, None left, Not approved yet, or 'No authorization'"
+process pMore "'3 more. Type more of the initials or the case ID to narrow it down.'"
+click cPick "Click a row"
+decision dSite "Is the patient at a site in view?"
+process pGuard "Nothing happens\nA link or a stale list cannot bring in the other site's patient"
+store st1 "The case is linked to the patient, their treatment episode and authorization\nPayer, member ID (last four), level of care and site come from the patient\nNo new patient is made"
+process pStart "The request starts the day after the approval ends, or today when it already has\nA modification starts today"
+
+group gAfter "Once a patient is chosen"
+  screen sPat "Patient card\n'J.M., 34 R-1042'\n'Summit Medicaid HMO · member ID …4821 · Site A'\nButton 'Change patient'"
+  click cChange "Click 'Change patient'"
+  process pClear "Patient, episode, authorization and the check are let go\nThe search shows again"
+  decision dEp "More than one treatment episode?"
+  input iEp "Pick 'Which treatment episode?'\nLevel of care and label, payer, and each authorization's status and dates"
+  decision dAu "More than one authorization in the episode?"
+  input iAu "Pick 'Which authorization?'\nLabel and id, a status pill, the approved dates"
+  screen sCard "Authorization card\nStatus pill, 'Approved dates', 'Authorized', 'Left', 'Expires on'\nButton 'History'"
+  click cHist "Click 'History'"
+  overlay oHist "Drawer 'Authorization history'\nUnder the title: initials, age · level of care · authorization ID\nEach line: text, who acted (the payer, an agent or a person), when"
+  click cEsc "Press Escape or close the drawer"
+  decision dNone "Does the patient have an authorization on file?"
+  toast tNone "'This patient has no authorization on file.'"
+endgroup
+
+decision dStatus "What state is the authorization in?"
+process n1 "None left\n'No days are left, so the next stretch needs a request now.'"
+process n2 "Expiring soon\n'3 days left and the approval ends soon. Ask before it runs out.'"
+process n3 "Not approved yet\n'Nothing is approved yet. A review follows an approval, so check this is the right authorization.'"
+process n4 "Closed\n'This request was decided and no approved window is open.'"
+process n5 "Active\nNo sentence"
+process pNext "Intake goes on with the type's own cards: the dates and, for a modification, the proposed change\nThe sentence is one quiet line, never a banner"
+goto gType "Continues in: Authorizations › New Case › Intake › Concurrent review"
+goto gRe "Continues in: Authorizations › New Case › Intake › Reauthorization / renewal"
+goto gMod "Continues in: Authorizations › New Case › Intake › Modification / extension"
+goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
+goto gSite "Continues in: Authorizations › New Case › Sites and scope"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Concurrent review"
+
+s1 --> sc1 --> i1 --> p1 --> d1
+d1 -->|No| tNo --> i1
+d1 -->|Yes| sList --> cPick --> dSite
+sList --> pMore
+dSite -->|No| pGuard
+dSite -->|Yes| st1 --> pStart --> sPat
+s2 --> dSite
+sPat --> cChange --> pClear --> sc1
+sPat --> dEp
+dEp -->|Yes| iEp --> dAu
+dEp -->|No| dAu
+dAu -->|Yes| iAu --> sCard
+dAu -->|No| dNone
+dNone -->|Yes| sCard
+dNone -->|No| tNone
+sCard --> cHist --> oHist --> cEsc
+sCard --> dStatus
+dStatus -->|None left| n1
+dStatus -->|Expiring soon| n2
+dStatus -->|Not approved yet| n3
+dStatus -->|Closed| n4
+dStatus -->|Active| n5
+n1 --> pNext
+n2 --> pNext
+n3 --> pNext
+n4 --> pNext
+n5 --> pNext
+pNext --> gType
+pNext --> gRe
+pNext --> gMod
+sc1 -.-> gSite
+sCard -.-> gDup
+pStart -.-> gElig

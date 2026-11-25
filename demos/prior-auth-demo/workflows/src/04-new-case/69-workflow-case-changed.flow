@@ -1,0 +1,29 @@
+title: Authorizations › New Case › Workflow › The case changed after the workflow started
+route: /authorizations/new/:draftId (the Workflow line and the 'Review the workflow match' side panel)
+intro: Once the workflow has run past Intake, a change to the payer, the level of care or the Authorization type does not switch the workflow behind the person's back. The line says the case details changed and offers 'Review the match'. The side panel shows the workflow that would match now. A person decides, and the decision is written to the case's history.
+dir: TD
+---
+start s1 "The workflow is pinned\nThe person goes back to Intake and changes the payer, the level of care or the Authorization type"
+process p1 "A fresh match is made for the case as it is now"
+decision d1 "Is it a different workflow from the one the case follows?\nA workflow published later for other cases does not count: only a change to this case's own payer, level of care or type does"
+process p2 "Nothing to review\nThe pinned version keeps running with the new facts"
+screen sc1 "Workflow line, in amber\n'The case details changed since this workflow was applied.'\nButton 'Review the match'"
+click c1 "Click 'Review the match'"
+overlay o1 "Side panel 'Review the workflow match'\n'This case still follows ... version 3. A match for the case as it is now would use ... version 2.'\nThe reason it matches"
+decision d2 "Do two workflows match the changed case equally?"
+screen sc2 "The line offers 'Choose a workflow' instead of 'Review the match'\n'<A> and <B> match equally. The default is used until you choose.'"
+click c2 "Click 'Apply ...'"
+store st1 "The case follows the new match and is pinned to it"
+store st2 "History: 'Workflow changed: Initial Authorization, Residential SUD to Initial Authorization, IOP v2, reviewed by Jordan Perez'"
+toast t1 "'Workflow applied'"
+click c3 "Click 'Keep version 3', press Escape, or click outside"
+end e1 "The case follows the new match"
+endx e2 "The case keeps its workflow"
+goto g1 "Continues in: Authorizations › New Case › Workflow › Default process and equal matches"
+
+s1 --> p1 --> d1
+d1 -->|No| p2 --> e2
+d1 -->|Yes| d2
+d2 -->|Yes| sc2 --> g1
+d2 -->|No| sc1 --> c1 --> o1 --> c2 --> st1 --> st2 --> t1 --> e1
+o1 --> c3 --> e2

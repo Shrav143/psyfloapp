@@ -1,0 +1,50 @@
+title: Payers › Workspace › What the header says
+route: /payers/:id
+intro: The card above the four views. It names the payer with its organization, product and state, carries one quiet label that says its rules are demo data, shows the plan line and the policy status, and has two buttons: 'Edit log' and 'Edit payer'. What a coordinator needs next (plan type, programs, what the payer asks for, notice and reach) is one click down under 'Plan details'. Above the card a breadcrumb leads back to the list. Everything is read from the payer and its saved configuration.
+dir: TD
+---
+start s1 "Open a payer\n(or arrive from the landing page)"
+screen crumb "Breadcrumb\n'Payers › Cardinal Health Plan'"
+click cb "Click 'Payers' in the breadcrumb"
+goto g_land "Continues in: Payers › Landing › Search, filter and open a payer"
+screen head "Payer header\nName in large type, then\n'organization · product · state'\nThe demo-rules label and its info icon\nPlan line, then 'Policy status: ...'"
+screen tabs "Four tabs\nWorkflow Builder, Rules & Instructions,\nTest Workflow, History & Changes\nLeft and Right arrows move between tabs\nThe History & Changes badge counts what waits"
+click ct "Click a tab"
+process ad "Address becomes ?tab=builder, rules, test or history\nBack and Forward follow it"
+click pd "Click 'Plan details'\n(button, opens and closes)"
+
+group gF "Four rows under 'Plan details'"
+  screen f1 "'Plan type'\n'Medicaid managed care (HMO). Claims go to Summit, not to the state.'\nNothing is shown when the payer has no plan type"
+  screen f2 "'Programs'\nResidential 3.5, IOP, PHP, Detox\nor the ones chosen when the payer was added"
+  screen f3 "'Needs'\n'Initial request: required. Notice within 24 hours of admission.'\n'Continued-stay review: required. A continued-stay review every 7 days after the first 7.'"
+  screen f4 "'Notice and reach'\n'Notice due 24 hours after admission.'\n'Reached by portal, phone as backup.'"
+endgroup
+
+process cfg "Plan type, programs and needs are read from the saved configuration\nEdit a rule or a document list and the header follows"
+decision ndn "Does the saved 'Submission windows' rule\nstill have a notice line\nand a continued-stay line?"
+process need1 "Both read 'required' with the rule's own words"
+process need2 "A missing line reads 'not on file'"
+decision logn "Any edits logged for this payer?"
+screen logb1 "Button reads 'Edit log (3)'\nthe count is edits for this payer"
+screen logb0 "Button reads 'Edit log'"
+click ce "Click 'Edit payer'"
+click cl "Click 'Edit log'"
+goto g_edit "Continues in: Payers › Edit payer details"
+goto g_log "Continues in: Payers › Edit log"
+goto g_ps "Continues in: Payers › Header › Policy status and the demo-rules label"
+goto g_tabs "Continues in: Payers › Arrive on the page"
+end e1 "Header shows the payer's current state"
+
+s1 --> crumb --> head --> tabs
+crumb --> cb --> g_land
+head --> pd --> f1 & f2 & f3 & f4
+f1 & f2 & f3 -.-> cfg
+f3 --> ndn
+ndn -->|Yes| need1 --> logn
+ndn -->|No| need2 --> logn
+head --> g_ps
+logn -->|Yes| logb1 --> e1
+logn -->|No| logb0 --> e1
+head --> ce --> g_edit
+head --> cl --> g_log
+tabs --> ct --> ad --> g_tabs

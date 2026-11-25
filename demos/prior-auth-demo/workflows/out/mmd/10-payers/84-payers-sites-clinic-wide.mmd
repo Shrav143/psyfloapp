@@ -1,0 +1,73 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open Payers (the list or a workspace)</b><br/>As any of the four viewers, on any site view" }
+  p1@{ shape: rect, label: "<b>The same payers, workflows, rules, documents and changes for everyone</b><br/>The landing list, its filters and its counts do not change<br/>Sidebar badge 'Payers' stays 3 for every viewer and site view" }
+  cAck@{ shape: trap-t, label: "Acknowledge a change, or save an edit" }
+  lg@{ shape: cyl, label: "<b>Edit log and 'Acknowledged by' name the person viewing</b><br/>Jordan Perez at the start; Dr. Rivera, Alex Morgan or Sam Okafor after 'Viewing as'" }
+  cUp@{ shape: trap-t, label: "<b>Open the Update drafts step</b><br/>'Review & apply changes' (History & Changes)<br/>or the edits-waiting banner" }
+  d1@{ shape: diam, label: "Which drafts does this payer have at the sites in view?" }
+  subgraph gAll ["Both sites"]
+  a1@{ shape: curv-trap, label: "<b>Cardinal: 'Update 1 draft' (I-2207)</b><br/>Summit: 'Update 2 drafts' (R-1042, R-1101)<br/>Same numbers as before sites" }
+  end
+  subgraph gA ["Site A"]
+  b1@{ shape: curv-trap, label: "<b>Dr. Rivera, or a viewer with both sites on 'Site A'</b><br/>Cardinal: 'No open drafts are affected. New drafts for Cardinal use the change once you apply it.' Button 'Apply to new drafts'<br/>Summit (edits-waiting banner): 'Update 2 drafts' (R-1042, R-1101)" }
+  end
+  subgraph gB ["Site B"]
+  c1@{ shape: curv-trap, label: "<b>Sam Okafor, or a viewer with both sites on 'Site B'</b><br/>Cardinal: 'Update 1 draft' (I-2207)<br/>Summit (edits-waiting banner): button 'Update drafts', and its pop-up opens as 'Apply to new drafts?'" }
+  end
+  d2@{ shape: diam, label: "Can this viewer see both sites, with one chosen?" }
+  hint@{ shape: odd, label: "<b>A plain hint under the banner</b><br/>'1 more draft at Site B is not in this view, so it is not updated. Choose Both sites to include it.'" }
+  nohint@{ shape: rect, label: "<b>No word about the other site</b><br/>A one-site viewer is never told what exists there" }
+  cConf@{ shape: trap-t, label: "Confirm 'Update N drafts'" }
+  ag@{ shape: hex, label: "<b>Scribe and Integrity redraft exactly the drafts that were listed (demo: 3 seconds)</b><br/>A draft at a site the viewer cannot see is never listed, counted or changed" }
+  up@{ shape: cyl, label: "<b>Each listed draft needs a person again</b><br/>Update recorded for Authorizations and New Case" }
+  t1@{ shape: odd, label: "<b>'N drafts updated'</b><br/>Or 'No open drafts to update' when none were in view" }
+  cChk@{ shape: trap-t, label: "<b>Rules & Instructions › Clinical documentation</b><br/>› 'Try it on a case'" }
+  chk@{ shape: rect, label: "<b>The Case menu lists only 'Preparing' cases at the sites in view</b><br/>Switching the site view changes the list" }
+  g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Review and apply a change" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Try it on a case" }
+  g4@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
+  e1@{ shape: stadium, label: "Payers stay the clinic's; drafts stay with their site" }
+  s1 --> p1 --> cAck --> lg
+  p1 --> cUp --> d1
+  d1 -->|"Both sites"| a1
+  d1 -->|"Site A"| b1
+  d1 -->|"Site B"| c1
+  a1 & b1 & c1 --> d2
+  d2 -->|"Yes, one site chosen and drafts at the other"| hint
+  d2 -->|"No, or nothing at the other site"| nohint
+  hint & nohint --> cConf --> ag --> up --> t1 --> e1
+  p1 --> cChk --> chk --> g3
+  cUp -.-> g1
+  cUp -.-> g2
+  e1 --> g4
+  class s1 k_start
+  class p1,nohint,chk k_process
+  class cAck,cUp,cConf,cChk k_click
+  class lg,up k_store
+  class d1,d2 k_decision
+  class a1,b1,c1 k_screen
+  class hint,t1 k_toast
+  class ag k_agent
+  class g1,g2,g3,g4 k_goto
+  class e1 k_end
+  style gAll fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

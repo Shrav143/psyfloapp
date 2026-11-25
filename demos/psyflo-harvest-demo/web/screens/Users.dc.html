@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Psyflo — Users and roles</title></head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}.nav.on .n{background:rgba(255,255,255,.22)}
+.b3-wrap{background:var(--white);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+.b3-wrap .u-tbl{border:0;border-radius:0;min-width:640px}
+.b3-sm td{padding-top:6px;padding-bottom:6px}
+.b3-yes{width:18px;height:18px;border-radius:50%;background:var(--teal);color:#fff;display:inline-flex;align-items:center;justify-content:center}
+.b3-name{font-weight:600}
+</style>
+</helmet>
+<div class="u-app">
+<aside style="flex:0 0 240px"></aside>
+<main class="u-main">
+  <div class="u-head">
+    <h1 class="u-title">{{title}}</h1>
+    <span class="u-sp"></span><span class="u-date">{{today}}</span>
+    <button type="button" class="u-btn pri" onClick="{{add}}">Add user</button>
+  </div>
+  <div class="b3-wrap">
+    <table class="u-tbl">
+      <thead><tr><th scope="col">User</th><th scope="col">Role</th><th scope="col">Sites</th><th scope="col">Review</th><th scope="col">Last active</th></tr></thead>
+      <tbody>
+        <sc-for list="{{users}}" as="u">
+          <tr>
+            <td><span class="b3-name">{{u.name}}</span><span class="u-sub">{{u.sub}}</span></td>
+            <td><label class="sr" for="{{u.roleId}}">Role for {{u.name}}</label><select id="{{u.roleId}}" class="u-sel" onChange="{{u.setRole}}"><sc-for list="{{u.roles}}" as="r"><option value="{{r.v}}" {{r.sel}}>{{r.l}}</option></sc-for></select></td>
+            <td>{{u.sites}}</td>
+            <td><sc-if value="{{u.hasReview}}"><span class="u-chip {{u.reviewChip}}">{{u.review}}</span></sc-if></td>
+            <td>{{u.last}}</td>
+          </tr>
+        </sc-for>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="u-sec">What each role sees</h2>
+  <div class="b3-wrap">
+    <table class="u-tbl b3-sm">
+      <thead><tr><th scope="col"></th><sc-for list="{{roleHeads}}" as="h"><th scope="col">{{h}}</th></sc-for></tr></thead>
+      <tbody>
+        <sc-for list="{{sees}}" as="row">
+          <tr><td>{{row.label}}</td>
+            <sc-for list="{{row.cells}}" as="c"><td><sc-if value="{{c.yes}}"><span class="b3-yes" role="img" aria-label="Yes">{{check}}</span></sc-if><sc-if value="{{c.own}}"><span class="u-mut">Own row</span></sc-if></td></sc-for>
+          </tr>
+        </sc-for>
+      </tbody>
+    </table>
+  </div>
+</main>
+</div>
+</x-dc>
+</body>
+</html>

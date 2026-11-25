@@ -1,0 +1,58 @@
+title: Authorizations › New Case › Intake › Retroactive authorization
+route: /authorizations/new/:draftId?type=retro (Intake)
+intro: A retroactive authorization asks for approval of care that was already given. Intake is the same onboarding form (imported, a known patient, or typed in) with the dates of service in the Request section, then why no authorization was in place and the supporting documents. Once a payer is chosen, one line quotes its Backdating rule, or says none is on file.
+dir: TD
+also: Demo only: every built-in payer has a Backdating rule. A payer added on Payers has none, which shows the 'No rule on file' wording.
+---
+start s1 "Pick 'Retroactive authorization' in 'Authorization type'\nOr open ?type=retro"
+screen sc "Intake · Retroactive authorization\nThe row of ways in without 'Referrals', then the form, then one card for the reason and the documents"
+goto gWays "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
+goto gForm "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
+decision dRule "Is a payer chosen, and has it a Backdating rule on file?"
+process pNoLine "No line until a payer is chosen"
+toast tRule "One line above the form\n'Summit's Backdating rule: ...'"
+toast tNo "One amber line: 'No rule on file for Riverbend. Check with the payer.'\nReview & submit adds a note 'Retroactive rule'"
+goto gPayers "Continues in: Payers › Rules & Instructions › Edit a rule"
+screen sDup "'This looks like a request that already exists' only when one matches"
+goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
+screen sReq "Request section: 'Level of care', 'First date of service', 'Last date of service'\nNo 'Request type': it is 'Retro-authorization'"
+input iFrom "'First date of service' (required)"
+input iTo "'Last date of service' (required)\nWithout it Review & submit asks the person to acknowledge it; the first date is what blocks"
+decision dBad "Is the last date before the first?"
+toast tBad "Field error: 'Before the first date'"
+screen sWhy "'WHY IT WAS NOT OBTAINED AHEAD OF TIME'\nFour reasons to click, and 'Reason'"
+click cChip "Click a reason\n'Coverage was pending when the patient was admitted', 'The patient was admitted after hours or on a weekend, and the notice window passed', 'The payer was not known on the day of admission', 'The notice was sent but the payer has no record of it'"
+input iReason "Type or edit the 'Reason'"
+decision dReason "Is the reason empty?"
+toast tReason "Review & submit lists 'Why it was not obtained ahead of time' to acknowledge\n'The payer will ask why no authorization was in place. Add the reason.'"
+screen sDoc "'SUPPORTING DOCUMENTS'\nDrop zone 'Admission order, eligibility check, attendance'"
+input iDrop "Drop supporting documents, or click to choose files"
+agent aRead "Reader sorts the files into the document list\nShown as chips with the file names"
+store st "The request is recorded as 'Retro-authorization'\nDates of service, the reason and the files are kept on the case"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Retroactive authorization"
+goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type"
+click cSave "Click 'Save as draft'"
+click cCont "Click 'Continue to Eligibility & Benefits'"
+goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
+
+s1 --> sc
+sc -.-> gWays
+sc -.-> gForm
+sc --> dRule
+dRule -->|No payer yet| pNoLine
+dRule -->|Rule on file| tRule
+dRule -->|No rule on file| tNo -.-> gPayers
+sc --> sDup -.-> gDup
+sc --> sReq --> iFrom --> iTo --> dBad
+dBad -->|Yes| tBad --> iTo
+dBad -->|No| sWhy
+sWhy --> cChip --> iReason
+sWhy --> iReason --> dReason
+dReason -->|Yes| tReason --> sDoc
+dReason -->|No| sDoc
+sDoc --> iDrop --> aRead --> st
+sDoc --> st
+st --> gElig
+st --> gDocs
+st --> cSave --> gSave
+st --> cCont --> gElig

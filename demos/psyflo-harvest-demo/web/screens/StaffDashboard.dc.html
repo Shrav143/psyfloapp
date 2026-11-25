@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Psyflo — Documentation</title></head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#F8F6F2}
+.nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
+.nav:hover{background:#222A35;color:#fff}.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}.nav.on .n{background:rgba(255,255,255,.22)}
+.b3-wrap{background:var(--white);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+.b3-wrap .u-tbl{border:0;border-radius:0;min-width:760px}
+.b3-wrap .u-tbl tr:last-child td{border-bottom:0}
+.b3-th{display:inline-flex;align-items:center;gap:6px}
+.b3-flags{display:flex;flex-direction:column;gap:2px;min-width:0}
+.b3-flags .u-link,.b3-flags span{display:block;font-size:14px;line-height:20px}
+.b3-chipbtn{border:0;cursor:pointer;font-family:inherit}
+.b3-chipbtn:hover{filter:brightness(.96)}
+.b3-name{white-space:nowrap;font-weight:600;display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+</style>
+</helmet>
+<div class="u-app">
+<aside style="flex:0 0 240px"></aside>
+<main class="u-main">
+  <div class="u-head">
+    <h1 class="u-title">{{title}}</h1>
+    <sc-if value="{{canSup}}">
+      <nav class="u-seg" aria-label="Documentation views">
+        <a class="on" href="StaffDashboard.dc.html" aria-current="page">{{viewNote}}</a>
+        <a href="ReviewQueue.dc.html">{{viewReview}}</a>
+      </nav>
+    </sc-if>
+    <sc-if value="{{showSite}}">
+      <select class="u-sel" aria-label="Site" onChange="{{pickSite}}"><sc-for list="{{sites}}" as="o"><option value="{{o.id}}" {{o.sel}}>{{o.name}}</option></sc-for></select>
+    </sc-if>
+    <span class="u-sp"></span><span class="u-date">{{today}}</span>
+  </div>
+  <div class="b3-wrap">
+    <table class="u-tbl">
+      <thead><tr>
+        <th scope="col" style="width:150px">{{colStaff}}</th>
+        <th scope="col" style="width:96px">{{colBacklog}}</th>
+        <th scope="col" style="width:190px"><span class="b3-th">{{colTimely}} {{help}}</span></th>
+        <th scope="col" style="width:150px">{{colReview}}</th>
+        <th scope="col">{{colFlags}}</th>
+      </tr></thead>
+      <tbody>
+        <sc-for list="{{rows}}" as="r">
+          <tr>
+            <td><span class="b3-name">{{r.name}}<sc-if value="{{r.mine}}"><span class="u-chip cur">Mine</span></sc-if></span></td>
+            <td><sc-if value="{{r.backlogLate}}"><span class="u-chip late">{{r.backlog}}</span></sc-if><sc-if value="{{r.backlogOk}}">{{r.backlog}}</sc-if></td>
+            <td><sc-if value="{{r.timelyLate}}"><span class="u-chip late">{{r.timely}}</span></sc-if><sc-if value="{{r.timelyOk}}">{{r.timely}}</sc-if> <sc-if value="{{r.sample}}"><span class="u-chip info">Sample data</span></sc-if></td>
+            <td>
+              <sc-if value="{{r.canEdit}}"><button type="button" class="u-chip {{r.reviewChip}} b3-chipbtn" aria-label="{{r.reviewLabel}}" onClick="{{r.editReview}}">{{r.review}}</button></sc-if>
+              <sc-if value="{{r.noEdit}}"><span class="u-chip {{r.reviewChip}}">{{r.review}}</span></sc-if>
+            </td>
+            <td><div class="b3-flags"><sc-for list="{{r.flags}}" as="f"><sc-if value="{{f.link}}"><a class="u-link" href="{{f.href}}">{{f.text}}</a></sc-if><sc-if value="{{!f.link}}"><span>{{f.text}}</span></sc-if></sc-for></div></td>
+          </tr>
+        </sc-for>
+      </tbody>
+    </table>
+  </div>
+</main>
+</div>
+</x-dc>
+</body>
+</html>

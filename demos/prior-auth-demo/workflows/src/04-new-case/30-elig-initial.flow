@@ -1,0 +1,56 @@
+title: Authorizations › New Case › Eligibility & Benefits › Initial authorization
+route: /authorizations/new/:draftId (step 2 of 4, type 'Initial authorization')
+intro: Step 2 for a new stay. Verify runs a check for the dates asked, or reuses one made in the last 24 hours for the same patient, payer and level of care; a chip says which. It is the same record the Eligibility & Benefits page shows. Warnings say what to do next and never trap the person; only coverage confirmed inactive with no documented exception stops the final send.
+dir: TD
+---
+start s1 "Click 'Continue to Eligibility & Benefits' on Intake\nOr click step 2 in the stepper"
+screen sc "Eligibility & Benefits · Initial authorization\nNo sentence under the title"
+decision dIn "Are the payer, level of care, member ID and start date in?"
+screen sNeed "One line 'Verify needs the payer, level of care, member ID and start date'\nand 'Open Intake'"
+click cIntake "Click 'Open Intake'"
+goto gIntake "Continues in: Authorizations › New Case › Intake › Initial authorization"
+decision dHave "Is there a check for this patient, payer and level of care\nthat covers the dates and is under 24 hours old?"
+process pReuse "The check is reused\nChip 'Reused · checked Tue 10:42 am'; 'Refresh verification' is the way to ask again"
+store stId "The case gets its id first, so the check is filed under it\nThe id falls at the case's site"
+agent aV "Verify checks coverage and benefits with Summit, about 1.2 seconds\nSpinner and 'Checking coverage and benefits with Summit'"
+ext xPlan "The payer's eligibility service (demo: simulated)\nAnswers from the member ID's last four digits"
+store stRec "Check saved as a verification record\nThe case remembers its id\nThe same record is on Eligibility & Benefits"
+decision dOld "Is the check old, or for other dates?"
+toast tOld "Chip 'Checked 30 h ago' or 'Covers other dates'\nThe check runs again by itself for an initial request"
+screen sSum "Verification summary\n'Coverage and benefits · Summit'\n'Last verified Tue 10:44 am, 2 min ago. Simulated source.'\nCoverage, Plan type and routing, Benefits, Authorization, Provider, Existing authorization"
+click cRef "Click 'Refresh verification'"
+process pRef "Verify asks again\nThe record is replaced"
+click cDet "Click 'View full verification details'"
+overlay oDet "Drawer 'Verification details'\nThe full record, the same as on Eligibility & Benefits"
+decision dWarn "Does the check have warnings?"
+goto gWarn "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions"
+decision dNoAuth "Does the payer need no authorization?"
+goto gNoAuth "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required"
+screen sNote "Link 'Open in Eligibility & Benefits' above the summary\nThe summary itself says 'Simulated source'"
+goto gEb "Continues in: Authorizations › Eligibility & Benefits › The shared verification record"
+group gFoot "Footer bar"
+  click cBack "Click 'Back'"
+  click cSave "Click 'Save as draft'"
+  click cCont "Click 'Continue to Clinical documentation'"
+  toast tHint "The bar's only line is a payer workflow warning, when there is one"
+endgroup
+goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
+
+s1 --> sc --> dIn
+dIn -->|No| sNeed --> cIntake --> gIntake
+dIn -->|Yes| dHave
+dHave -->|Yes| pReuse --> sSum
+dHave -->|No| stId --> aV --> xPlan --> stRec --> sSum
+sSum --> dOld
+dOld -->|Yes| tOld
+sSum --> cRef --> pRef --> aV
+sSum --> cDet --> oDet
+sSum --> dWarn
+dWarn -->|Yes| gWarn
+sSum --> dNoAuth
+dNoAuth -->|Yes| gNoAuth
+sSum -.-> sNote -.-> gEb
+sSum --> cBack
+sSum --> cSave
+sSum --> cCont --> gDocs
+sSum --> tHint

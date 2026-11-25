@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "psyflo-demo",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start"],
+      "port": 4100,
+      "env": {
+        "APP_PORT": "4100", "LAURIS_PORT": "4101", "EXT_PORT": "4102",
+        "PSYFLO_APP_URL": "http://localhost:4100",
+        "LAURIS_URL": "http://localhost:4101",
+        "EXT_URL": "http://localhost:4102"
+      }
+    }
+  ]
+}

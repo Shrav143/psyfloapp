@@ -1,0 +1,60 @@
+title: Authorizations › Worklist › Addresses and old queue links
+route: /authorizations?view=progress&state=Ready to sign
+intro: The view, the filters, the open quick view and the open review all live in the web address, so a link opens the list already narrowed and Back returns to the same place. Only what is set is written, so the plain list has a plain address. The queue's older parameters still work and are rewritten once in today's words.
+dir: TD
+also: Every change replaces the current entry instead of adding one, so Back leaves the list rather than undoing filters one by one. The sort and the page number are not in the address. Old Case Manager addresses (/manager, /active) are drawn with the Case Manager links.
+---
+start s1 "A link, a bookmark or a typed address under /authorizations"
+start s2 "The sidebar, a 'Back to Authorizations' button or a crumb: plain /authorizations"
+
+decision dP "Is the address plain, with a view or filters used earlier in this session?"
+process pR "The last view and filters are put back in the address\n(never ?quick= or ?review=; a reload forgets them)"
+
+group gNow "Today's parameters"
+  process a1 "?view= attention, progress, payer, approved, denied or reviews (All has none)"
+  process a2 "?q=, ?payer=, ?program=, ?type=, ?urgency=, ?owner=, ?state=, ?signal=1, ?show=active or renewal"
+  process a3 "?quick=ID opens that row's quick view\n?review=ID opens that review's drawer"
+endgroup
+
+group gOld "The queue's older words"
+  process o1 "?status=you: Needs attention\n?status=input: Needs attention with the status 'Needs your input'"
+  process o2 "?status=preparing or ready: In progress with the status 'Preparing' or 'Ready to sign'"
+  process o3 "?status=payer: With the payer\n?status=denial: Denied"
+  process o4 "?urgency=, ?type=, ?payer=, ?q= and ?signal=1 keep their meaning"
+endgroup
+
+decision dO "Does the address carry ?status= (or Case Manager's ?tab=)?"
+process rw "Rewritten once in today's words, replacing the entry\n/authorizations?status=ready becomes ?view=progress&state=Ready to sign\nCase Manager's ?tab=reviews becomes ?view=reviews; any other ?tab= is dropped"
+process ig "A value that is not one of the choices is ignored (and left in the address)\n?view=bogus opens All; ?payer=nope filters nothing"
+decision dQ "Does ?quick= name a row in view that has a quick view?"
+process dq "The ID is dropped from the address; nothing opens"
+decision dR "Does ?review= name a review of a row in view?"
+process dr "No drawer opens"
+screen ls "The list opens on that view, with those filters and any panel"
+goto gQ "Continues in: Authorizations › Worklist › Quick view panel"
+goto gR "Continues in: Authorizations › Reviews this week › The review drawer"
+goto gM "Continues in: Authorizations › Old links › Case Manager addresses and links from other tabs"
+click bk "From a case page, press the browser Back button"
+process bb "The list returns with the same view, filters and open panel\nSort and page start again"
+end e1 "The address and the list agree"
+
+s1 --> dO
+s2 --> dP
+dP -->|Yes| pR --> dO
+dP -->|No| dO
+dO -->|Yes| o1 & o2 & o3
+o1 & o2 & o3 --> rw --> a1
+dO -->|No| a1
+a1 --> a2 --> a3
+o4 -.-> a2
+a2 -.-> ig
+a3 --> dQ
+dQ -->|No| dq --> dR
+dQ -->|Yes| gQ
+a3 --> dR
+dR -->|No| dr --> ls
+dR -->|Yes| gR
+dq -.-> ls
+ls --> e1
+ls --> bk --> bb --> e1
+s1 -.-> gM

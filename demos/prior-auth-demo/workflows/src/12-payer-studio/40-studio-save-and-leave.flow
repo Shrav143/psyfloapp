@@ -1,0 +1,51 @@
+title: Payers › Workflow Builder › Save a draft and publish
+route: /payers/summit?tab=builder
+intro: Edits are held in the builder with undo and redo until 'Save draft' writes them to the store, which keeps them in this browser. Leaving with unsaved edits asks first. A published workflow is never changed in place: its first save makes a draft of the next version, and the published one keeps serving new cases until the draft is published.
+dir: TD
+---
+start s1 "Change something on the canvas or in the settings"
+screen un "The bar says 'Unsaved changes.' in ochre\nbefore 'Saved in this browser · last saved ... by ...'\n'Save draft' turns green"
+click c1 "Click 'Save draft', or press Ctrl+S (Cmd+S)"
+decision d1 "Anything changed since the last save?"
+toast t0 "'Nothing to save'\n'The draft already matches what is saved.'"
+decision d2 "Is the open workflow published?"
+store st1 "A draft of the next version is made beside it\nThe published version keeps matching new cases\nVersion history gets a line such as 'Added 2 steps, changed the lines between steps'\nEdit log gets an entry"
+store st2 "The draft is saved in place, one snapshot per version"
+toast t1 "'Draft saved'\n'Saved in this browser. It is not used for cases until it is published.'"
+process p1 "Announced: 'Draft saved'\n'Unsaved changes.' goes away"
+screen bn "A published workflow now shows:\n'Published version N is still in force. This draft is version M and replaces it when published.'"
+decision d3 "Is browser storage blocked (private window, preview)?"
+process p2 "The line reads 'Memory only: browser storage is blocked here, so changes last until the tab closes'"
+click c2 "Leave: a sidebar link, another view such as Test Workflow, another workflow, 'New', 'Duplicate'\nor 'Open in Rules & Instructions'"
+decision d4 "Unsaved changes?"
+overlay o1 "'Leave without saving?'\n'You changed this workflow and have not saved it.'\n'Stay', 'Leave without saving', 'Save draft and leave'"
+click c3 "Click 'Stay'"
+click c4 "Click 'Leave without saving'"
+click c5 "Click 'Save draft and leave'"
+process p3 "The edits are dropped, the saved version is shown again"
+process p4 "Closing or reloading the tab shows the browser's own warning while edits are unsaved"
+process p5 "Reopening later restores positions and settings exactly as saved"
+end e1 "The draft is saved and survives a reload"
+endx e2 "Edits dropped"
+goto g1 "Continues in: Payers › Workflow Builder › Check a workflow before publishing"
+goto g2 "Continues in: Payers › Workflow Builder › Publish a workflow"
+
+s1 --> un --> c1 --> d1
+d1 -->|No| t0
+d1 -->|Yes| d2
+d2 -->|Yes| st1 --> t1
+d2 -->|No| st2 --> t1
+t1 --> p1 --> d3
+d3 -->|Yes| p2 --> p5
+d3 -->|No| p5
+st1 --> bn
+p5 --> e1
+un --> c2 --> d4
+d4 -->|No| e1
+d4 -->|Yes| o1
+o1 --> c3 --> un
+o1 --> c4 --> p3 --> e2
+o1 --> c5 --> c1
+un --> p4
+e1 --> g1
+e1 --> g2

@@ -1,0 +1,55 @@
+title: Denial Intelligence › Peer-to-peer › Record the call outcome
+route: /denials/D-3318/brief
+intro: After the call, the person logs how it went. 'Overturned' and 'Partly restored' close the denial; 'Upheld' starts a written appeal from the call notes.
+dir: TD
+also: Demo only: the call itself is not simulated. The clinician holds it outside the app and logs the result here.
+---
+start s1 "Click 'Record the call outcome' on the brief page"
+ext x1 "Clinician holds the peer-to-peer call with the payer's reviewer"
+overlay o1 "Modal 'Record the call outcome'\nD-3318 · Cardinal Health Plan"
+input i1 "Pick one (radio cards)\n'Overturned' (chosen at first), 'Partly restored' or 'Upheld'"
+process p1 "Card texts\nOverturned: 'Closes the denial'\nPartly restored: 'Closes with a new end date'\nUpheld: 'Starts the written appeal'"
+input i2 "Note (optional)"
+click c1 "Click 'Log the outcome'"
+click c2 "Click 'Cancel', the X, press Esc, or click the dimmed area"
+endx e1 "Nothing is logged"
+
+store st0 "Outcome saved on the denial: kind, note, time\nThe scheduled 'Peer-to-peer call' line leaves the History\nHistory: 'You logged the call outcome: ...' with the note"
+decision d1 "Which outcome?"
+
+store st1 "Request settled: leaves 'Appeal or call' (Dashboard stage 'Decided')\nChip 'Overturned' or 'Partly restored'\nLedger result approved or partly approved"
+ext x2 "Payer restores the requested days, or part of them, on the call"
+agent a1 "Cadence updates the ledger and books the next review"
+toast t1 "'Overturned' or 'Partly restored'\n'The ledger is updated and the next review is booked.'"
+process p2 "Sidebar badge goes down by one\nThe denial moves under 'Closed' on the dashboard\nThe peer-to-peer choice reads 'Overturned on the call' or 'Partly restored on the call'"
+
+store st2 "Chip 'Appeal drafting'\nClock becomes 'to file': 60 days from the denial date"
+agent a2 "Advocate starts a written appeal from the call notes"
+toast t2 "'Outcome logged: upheld'\n'Advocate started the written appeal. Open it from the denial.'"
+process p3 "Denial page shows 'Advocate is drafting the appeal' with 'Open the draft'"
+
+toast t3 "Brief page banner 'Outcome logged: overturned, partly restored or upheld' with 'Back to the denial'"
+toast t4 "Notification 'Call outcome: ...' from Advocate\nOpens the request on the Dashboard"
+click c3 "Click 'Back to the denial'"
+process p4 "The button 'Record the call outcome' stays on the brief\nLogging again runs these steps again (demo does not stop it)"
+
+goto g1 "Continues in: Denial Intelligence › A denial opened"
+goto g2 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
+goto g3 "Continues in: Dashboard › Request drawer › Open and read a request"
+end e2 "Denial is closed with the call result"
+end e3 "Written appeal is under way"
+
+s1 --> x1 --> o1
+o1 --> i1 --> p1
+o1 --> i2
+p1 --> c1
+i2 --> c1
+o1 --> c2 --> e1
+c1 --> st0 --> d1
+d1 -->|Overturned or Partly restored| x2 --> st1 --> a1 --> t1 --> p2 --> e2
+d1 -->|Upheld| st2 --> a2 --> t2 --> p3 --> e3
+st0 --> t3 --> c3 --> g1
+st0 --> t4 --> g3
+e3 --> g2
+e2 --> g1
+t3 --> p4

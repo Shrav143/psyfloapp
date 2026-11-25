@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Family link — Harvest Outreach Center</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
+<style>
+/* shared phone look: C_CSS in js/screens/MobileApp.js */
+</style>
+</helmet>
+
+<div class="c-ph">
+  {{hd}}
+  <main class="c-bd" style="gap:20px">
+    <div class="c-dots" role="progressbar" aria-valuemin="1" aria-valuemax="{{n}}" aria-valuenow="{{at}}"><sc-for list="{{dots}}" as="d"><i class="{{d}}"></i></sc-for></div>
+
+    <sc-if value="{{!done}}">
+      <h1 class="c-q" id="q">{{q}}</h1>
+      <sc-if value="{{pg.text}}"><input class="c-in" id="{{pg.id}}" data-k="{{pg.k}}" type="{{pg.itype}}" inputmode="{{pg.mode}}" autocomplete="{{pg.auto}}" placeholder="{{pg.ph}}" aria-labelledby="q"></sc-if>
+      <sc-if value="{{pg.select}}"><select class="c-in" id="{{pg.id}}" data-k="{{pg.k}}" aria-labelledby="q"><sc-for list="{{opts}}" as="o"><option value="{{o.v}}">{{o.label}}</option></sc-for></select></sc-if>
+      <sc-if value="{{pg.card}}">
+        <div><input class="c-in" id="mid" data-k="medicaid_id" type="text" inputmode="numeric" placeholder="0000 000 000 00" aria-labelledby="q"></div>
+        <div><a class="c-lnk" href="#photo">{{t.camera}}</a><sc-if value="{{photoName}}"> <span class="c-mut c-sm">{{photoName}}</span></sc-if><input type="file" id="cardphoto" accept="image/*" capture="environment" data-nobind="" style="display:none"></div>
+      </sc-if>
+      <sc-if value="{{pg.radio}}"><div class="c-rad{{pg.col}}" role="radiogroup" aria-labelledby="q"><sc-for list="{{opts}}" as="o"><label class="{{o.cls}}"><input type="radio" name="{{pg.k}}" value="{{o.v}}" {{o.chk}}>{{o.label}}</label></sc-for></div></sc-if>
+      <sc-if value="{{err}}"><div class="c-err" role="alert">{{err}}</div></sc-if>
+    </sc-if>
+
+    <sc-if value="{{done}}">
+      <h1 class="c-q">{{t.thanks}}</h1>
+      <div style="font-size:17px">{{doneText}}</div>
+    </sc-if>
+  </main>
+  <div style="padding:12px 20px 8px;display:flex;flex-direction:column;gap:12px;flex:0 0 auto">
+    <sc-if value="{{!done}}"><a class="c-btn pri lg" href="#next">{{nextLabel}}</a></sc-if>
+    <sc-if value="{{done}}"><a class="c-btn pri lg" href="{{portalHref}}">{{t.portal}}</a></sc-if>
+  </div>
+  <footer class="c-ft"><sc-if value="{{canBack}}"><a class="c-lnk" href="#back">{{t.back}}</a></sc-if><a class="c-lnk" href="#help">{{t.call}}</a></footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
