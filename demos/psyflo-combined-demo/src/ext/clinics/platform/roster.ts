@@ -1,5 +1,8 @@
 import { R1042_EVIDENCE as E } from "@/data/caseDetailR1042";
+import { SEED_ACCEPT_DENIAL } from "@/data/denials";
 import { QUEUE_ITEMS, type Phase } from "@/data/queue";
+import { SEED_REQUESTS } from "@/data/seed";
+import { PROGRAM_LABEL } from "@/data/types";
 import { siteName, siteOf } from "@/data/sites";
 import { consumerNo } from "@/ehr/model";
 import type { ChartRecord, Consumer } from "../../types";
@@ -39,7 +42,7 @@ const DOCS: Record<string, string[]> = {
 };
 const CHARTS: Record<string, ChartRecord[]> = { R1042: jm };
 
-export const consumers: Consumer[] = QUEUE_ITEMS.map((i) => {
+const fromQueue: Consumer[] = QUEUE_ITEMS.map((i) => {
   const k = i.id.replace("-", "");
   const ph = PHASE[i.phase];
   return {
@@ -48,3 +51,22 @@ export const consumers: Consumer[] = QUEUE_ITEMS.map((i) => {
     auth: { caseId: i.id, text: `${ph.text} · ${i.type}`, tone: ph.tone },
   };
 });
+
+/* A few requests exist only on the Dashboard, such as a denial whose authorization was sent weeks ago. They are consumers here too, so every request the platform can open in Lauris has a consumer. */
+const have = new Set(QUEUE_ITEMS.map((i) => i.id));
+const taken = new Set(fromQueue.map((c) => c.id));
+const extra: Consumer[] = [];
+for (const r of [...SEED_REQUESTS, SEED_ACCEPT_DENIAL]) {
+  const caseId = r.track === "denial" ? r.caseId : r.id;
+  if (!caseId || have.has(caseId) || taken.has(consumerNo(caseId))) continue;
+  have.add(caseId);
+  taken.add(consumerNo(caseId));
+  const denial = r.track === "denial";
+  extra.push({
+    id: consumerNo(caseId), ini: r.patient.initials, age: r.patient.age, program: PROGRAM_LABEL[r.program], site: siteName(siteOf(caseId)), payer: r.payerId, clinician: staffOf(caseId),
+    note: denial ? `Denied · ${r.type}` : r.type, units: null, chart: [], docs: [],
+    auth: { caseId, text: denial ? `Denied · ${r.type}` : `${r.chip} · ${r.type}`, tone: denial ? "r" : r.stage === "preparing" ? "y" : "n" },
+  });
+}
+
+export const consumers: Consumer[] = [...fromQueue, ...extra];

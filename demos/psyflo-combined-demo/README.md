@@ -1,13 +1,7 @@
-# Psyflo prior-auth demo with Lauris (EHR round)
+# Psyflo combined demo: the Psyflo platform, Lauris and the Psyflo extension
 
-This is the Oct 24 "Psyflo Prior Auth" demo (commit `4fa4038b`, the page published as artifact `9X3xYEndKX4pZ86vTcBgwH`) with two changes: the **prior authorization is edited in Lauris**, the clinic's EHR, with the **Psyflo browser extension** docked in it,
-and the whole UI is recolored to the **Unified demo palette** (navy rail, teal, paper, DM Sans). The original demo and its artifact are untouched. The contract for the EHR round is in `EHR-ROUND.md`.
-
-**The rule.** Wherever the Authorizations tab or the Denial Intelligence tab needs the person to edit the authorization form or add recommendations, a button takes them to Lauris (`/lauris/case/:id`, a separate app in its own browser tab).
-There the Psyflo extension suggests the recommendations and types them into Lauris's own form (yellow = Psyflo typed it, check it; green = already in Lauris); the person saves in Lauris. **Add in Lauris** is the main button on the case page;
-**Apply here in Psyflo** still works and ends in the same state. A denied authorization that is re-edited goes back to Lauris too (**Edit authorization in Lauris**, **Fix in Lauris**). **Appeal letters stay in Psyflo** (Draft the appeal, Appeal letter).
-Psyflo types only what its case model already holds (stored records and the person's own words) and never presses Save in Lauris.
-
+One page with two browser tabs: **Lauris Online with the Psyflo extension** (the six-icon extension design, with the prior-authorization recommendations in Scan & Enhance) and the **Psyflo platform** (the Prior Auth web app).
+What it is, how the pieces fit and how to check it: **`COMBINED.md`**. The rest of this file describes the platform half, which is the Oct 24 "Psyflo Prior Auth" demo recolored to the Unified demo palette.
 
 A clickable, interactive front-end demo of **Psyflo**: AI-native prior authorization, utilization review, documentation and denials for behavioral-health and SUD programs. All data is invented, and no clinic is named. Nothing is sent anywhere.
 
@@ -16,7 +10,7 @@ Stack: Vite 8, React 19, TypeScript (strict), Tailwind CSS v4, react-router-dom 
 ## Run it
 
 ```bash
-cd demos/psyflo-prior-auth-ehr-demo
+cd demos/psyflo-combined-demo
 bun install            # or npm install
 bun run dev            # http://localhost:5173
 bun run build          # typecheck + build to dist/index.html (open it by double-click)
