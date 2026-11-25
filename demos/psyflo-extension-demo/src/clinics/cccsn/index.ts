@@ -1,5 +1,4 @@
 import type { ClinicConfig } from "../../types";
-import { ask } from "./ask";
 import { checks } from "./checks";
 import { docs } from "./docs";
 import { forms } from "./forms";
@@ -20,6 +19,5 @@ export const cccsn: ClinicConfig = {
   docs,
   scribe,
   checks,
-  ask,
   history,
 };

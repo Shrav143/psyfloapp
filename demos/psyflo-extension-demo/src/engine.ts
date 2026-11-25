@@ -1,5 +1,5 @@
 /* Pure helpers: no state, no timers. The store calls these. */
-import type { AskTopic, Check, ClinicConfig, DocKind, DocState, FieldSpec, Finding, FormSpec, RawFinding, Severity, Val } from "./types";
+import type { Check, ClinicConfig, DocKind, DocState, FieldSpec, Finding, FormSpec, RawFinding, Severity, Val } from "./types";
 
 export const SEV_RANK: Record<Severity, number> = { low: 1, medium: 2, severe: 3 };
 export const SEV_LABEL: Record<Severity, string> = { low: "Low", medium: "Medium", severe: "Severe" };
@@ -88,23 +88,6 @@ export function checksFor(clinic: ClinicConfig, kind: DocKind): Check[] {
 
 /** A finding's identity across re-scans (so a dismissal survives). */
 export const findingSig = (f: Pick<Finding, "checkId" | "fieldKey" | "title">): string => `${f.checkId}|${f.fieldKey}|${f.title}`;
-
-/** Pick the best-matching topic for a typed question. Returns null when nothing matches well enough: Psyflo does not guess. */
-export function matchAsk(topics: AskTopic[], q: string, kind?: DocKind): AskTopic | null {
-  const words = q.toLowerCase().replace(/[^a-z0-9\s-]/g, " ").split(/\s+/).filter((w) => w.length > 2);
-  let best: { t: AskTopic; score: number } | null = null;
-  for (const t of topics) {
-    if (t.docs && kind && !t.docs.includes(kind)) continue;
-    let score = 0;
-    for (const k of t.keywords) {
-      const kk = k.toLowerCase();
-      if (q.toLowerCase().includes(kk)) score += kk.includes(" ") ? 3 : 2;
-      else if (words.some((w) => kk.startsWith(w) || w.startsWith(kk))) score += 1;
-    }
-    if (!best || score > best.score) best = { t, score };
-  }
-  return best && best.score >= 2 ? best.t : null;
-}
 
 /** Simulated timing: tests run the demo faster by setting window.__PSYFLO_SPEED__ (e.g. 40). */
 export const speed = (): number => {

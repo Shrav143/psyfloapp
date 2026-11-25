@@ -81,9 +81,5 @@ export const fixture: ClinicConfig = {
       severity: "severe", fieldKey: "lack", title: "The lack-of-progress box is empty", why: "A request that states no lack of progress is denied.", rule: "Sample plan · continued stay",
       fix: { kind: "text", text: chart("note1")!.text, source: chart("note1")!.label, mode: "replace" } }]) },
   ],
-  ask: [
-    { id: "what-payer-wants", q: "What does the plan need for a continued stay?", keywords: ["continued stay", "plan need", "payer"], answer: ["The clinic's sample criteria ask for a stated lack of progress, with dates."], sources: [{ kind: "clinic", label: "Sample criteria", detail: "Written by the clinic." }] },
-    { id: "last-notes", q: "What did {ini}'s last note say?", keywords: ["last note", "last two notes"], answer: ["The Oct 27 note: two escalations at lunch; strategy used on his own in 1 of 2."], sources: [{ kind: "chart", label: "Daily note Oct 27", detail: "Two escalations at lunch.", chart: "note1" }] },
-  ],
   history: [{ id: "h1", type: "session", doc: "dpn", consumerId: "1001", date: "2026-10-27", by: "J. Perez", status: "Typed into Lauris and saved", docId: "dpn-1001" }],
 };

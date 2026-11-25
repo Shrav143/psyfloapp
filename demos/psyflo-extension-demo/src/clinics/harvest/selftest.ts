@@ -3,7 +3,6 @@
    and the rules every fix must obey (quote the chart word for word; name no fact beyond the chart or the clinician; never come back after it is typed). */
 import { asText, checksFor, fieldByKey, fieldsOf, isEmpty, runChecks, writeInto } from "../../engine";
 import type { DocKind, FieldSpec, Finding, FormSpec, ScribeScenario, Val } from "../../types";
-import { ESCALATION_NOTES, ESCALATION_TOTAL } from "./ask";
 import { LEAVE_RE, PRIOR_OPTIONS } from "./checks";
 import { CANS_RATING_KEYS, ELOPE, HOUSEHOLD_INCLUDE } from "./forms";
 import { harvest as clinic } from "./index";
@@ -416,45 +415,14 @@ const has = (fs: Finding[], checkId: string) => fs.find((f) => f.checkId === che
 }
 
 /* ====================================================================================================
-   5. Ask, History, wording
+   5. History, wording
    ==================================================================================================== */
-section("Ask, History, wording");
-expect(clinic.ask.length >= 9, `at least 9 ask topics (${clinic.ask.length})`);
-expect(new Set(clinic.ask.map((t) => t.id)).size === clinic.ask.length, "ask ids are unique");
-const refs = clinic.ask.filter((t) => t.sources.some((s) => s.kind === "reference"));
-expect(refs.length <= 3, `at most 3 topics carry a reference (${refs.length})`);
-const ownersByKind = (docs?: DocKind[]) => clinic.consumers.filter((c) => !docs || c.docs.some((id) => docs.includes(seedOf(id).kind)));
-for (const t of clinic.ask) {
-  expect(t.q && t.keywords.length >= 2 && t.keywords.every((k) => k === k.toLowerCase()), `ask ${t.id}: question and lower-case keywords`);
-  expect(t.answer.length >= 2 && t.answer.every((p) => p.trim()), `ask ${t.id}: paragraphs`);
-  expect(!/^(it is certain|certainly|definitely|clearly|undoubtedly|always|never|you must|this will)/i.test(t.answer[0]), `ask ${t.id}: the first paragraph does not open with a claim of certainty`);
-  expect(!FORBIDDEN.test(t.answer.join(" ").replace(/“[^”]*”/g, "")), `ask ${t.id}: no "I" or "we" in the answer`);
-  expect(t.sources.length >= 1, `ask ${t.id}: has a source`);
-  expect(!/ASAM|\bIOP\b/.test(JSON.stringify(t)), `ask ${t.id}: no ASAM or IOP`);
-  for (const s of t.sources) {
-    if (s.kind === "chart") {
-      expect(s.chart, `ask ${t.id}: chart source names a record`);
-      /* every consumer who can open this topic (by document kind) has the record */
-      for (const c of ownersByKind(t.docs)) if (c.docs.length) expect(c.chart.some((r) => r.id === s.chart && r.label === s.label), `ask ${t.id}: ${c.ini} has chart record "${s.chart}" labelled "${s.label}"`);
-    }
-    if (s.kind === "clinic") expect(s.detail.length > 20, `ask ${t.id}: the clinic source says what it is`);
-    if (s.kind === "reference") expect(s.detail === "Title only; the demo does not quote it." && s.label.length > 10, `ask ${t.id}: reference is a title only`);
-  }
-}
-{
-  const t = clinic.ask.find((x) => x.id === "escalations-last-notes")!;
-  const mr = consumerOf("4471")!;
-  const notes = mr.chart.filter((r) => r.kind === "note" && /Today: \d+ escalations?/.test(r.text));
-  const total = notes.reduce((s, r) => s + Number(/Today: (\d+) escalation/.exec(r.text)![1]), 0);
-  expect(total === ESCALATION_TOTAL && notes.length === ESCALATION_NOTES.length, "escalation total is computed from the chart");
-  expect(t.answer[0].includes(`${total} escalations in ${notes.length} notes`), `escalation answer states ${total} in ${notes.length}: ${t.answer[0]}`);
-  console.log(`  escalations in M.R.'s counted notes: ${total} in ${notes.length} notes (${notes.map((n) => n.label).join(", ")})`);
-}
+section("History, wording");
 expect(clinic.history.length >= 10, `at least 10 history items (${clinic.history.length})`);
 expect(new Set(clinic.history.map((h) => h.id)).size === clinic.history.length, "history ids are unique");
 for (const h of clinic.history) {
   expect(h.date >= "2026-10-20" && h.date <= "2026-10-28", `history ${h.id}: date ${h.date} is in 10/20 to 10/28`);
-  expect(consumerOf(h.consumerId), `history ${h.id}: consumer exists`);
+  expect(h.consumerId === "" || consumerOf(h.consumerId), `history ${h.id}: consumer exists (or no patient assigned)`);
   if (h.docId) expect(clinic.docs.some((d) => d.id === h.docId && d.consumerId === h.consumerId && d.kind === h.doc), `history ${h.id}: docId matches a document of that consumer and kind`);
 }
 expect(clinic.history.filter((h) => h.docId).length >= 1 && clinic.history.filter((h) => !h.docId).length > clinic.history.filter((h) => h.docId).length, "some history items point at documents, most do not");
@@ -475,7 +443,7 @@ expect(!bareNames, `no named people beyond staff: ${bareNames?.join(", ")}`);
    ==================================================================================================== */
 section("Summary");
 console.log(`  documents: ${clinic.docs.length} · consumers: ${clinic.consumers.length} · chart records: ${clinic.consumers.reduce((n, c) => n + c.chart.length, 0)} · scenarios: ${clinic.scribe.length}`);
-console.log(`  checks: ${clinic.checks.length} · ask topics: ${clinic.ask.length} (${refs.length} with a reference) · history: ${clinic.history.length}`);
+console.log(`  checks: ${clinic.checks.length} · history: ${clinic.history.length}`);
 for (const d of clinic.docs) console.log(`  ${d.id.padEnd(12)} seed ${tally(seedFindings[d.id])}${typedFindings[d.id] ? `  |  after Scribe ${tally(typedFindings[d.id])}` : ""}`);
 if (failed) {
   console.error(`\n${failed} check${failed === 1 ? "" : "s"} FAILED`);

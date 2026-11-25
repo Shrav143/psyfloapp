@@ -194,31 +194,6 @@ export interface Check {
   run: (ctx: ScanCtx) => RawFinding[];
 }
 
-/* ----------------------------- Ask Psyflo ----------------------------- */
-
-export interface AskSource {
-  /** chart: a stored record of this consumer. clinic: the clinic's own document or rule (Clinic profile). reference: a public reference, title only. */
-  kind: "chart" | "clinic" | "reference";
-  label: string;
-  /** What the source says that the answer relies on. */
-  detail: string;
-  /** ChartRecord.id when kind is "chart". */
-  chart?: string;
-}
-
-export interface AskTopic {
-  id: string;
-  /** The question as a button/chip. */
-  q: string;
-  /** Lower-case words that make a typed question match. */
-  keywords: string[];
-  /** Paragraphs. May contain {ini} (the open consumer's initials). */
-  answer: string[];
-  sources: AskSource[];
-  /** Only offered on these document kinds; omit for all. */
-  docs?: DocKind[];
-}
-
 /* ------------------------------ Profile ------------------------------ */
 
 export interface PayerProfile {
@@ -282,7 +257,6 @@ export interface ClinicConfig {
   docs: DocSeed[];
   scribe: ScribeScenario[];
   checks: Check[];
-  ask: AskTopic[];
   history: HistoryItem[];
 }
 

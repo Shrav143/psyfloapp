@@ -1,7 +1,7 @@
 /* Self-test for the CCCSN content. Run with:  bun src/clinics/cccsn/selftest.ts
    Exits non-zero on any failure. It checks the structure of the config, every seed and Scribe scenario, runs the audit checks on each document before and
    after Scribe, simulates every proposed fix the way the store applies it, and probes the checks the demo documents do not reach. */
-import { asText, fieldByKey, fieldsOf, findingSig, isEmpty, matchAsk, runChecks, usDate, writeInto } from "../../engine";
+import { asText, fieldByKey, fieldsOf, findingSig, isEmpty, runChecks, usDate, writeInto } from "../../engine";
 import type { ClinicConfig, DocKind, DocSeed, Finding, FieldSpec, Severity, Val } from "../../types";
 import { cccsn } from "./index";
 import { REQUESTS, SUBSTANCES } from "./forms";
@@ -103,7 +103,6 @@ function structure() {
   const mods = new Set(clinic.checks.map((c) => c.module));
   for (const m of REQUIRED_MODULES) check(mods.has(m), `module ${m} has no check`);
   for (const c of clinic.checks) for (const k of c.docs) check(!!clinic.forms[k], `check ${c.id}: no form for ${k}`);
-  unique("ask ids", clinic.ask.map((t) => t.id));
   unique("history ids", clinic.history.map((h) => h.id));
   check(clinic.today === "2026-10-29", "today");
 }
@@ -351,58 +350,12 @@ function probes() {
   check(never.length === 0, `these checks never fire on any document or probe: ${never.join(", ")}`);
 }
 
-/* ------------------------------ Ask and History ------------------------------ */
+/* ------------------------------ History ------------------------------ */
 
-function askAndHistory() {
-  const topics = clinic.ask;
-  check(topics.length >= 7, `at least 7 Ask topics (have ${topics.length})`);
-  const withRef = topics.filter((t) => t.sources.some((s) => s.kind === "reference"));
-  check(withRef.length <= 2, `at most 2 topics carry a reference (have ${withRef.length})`);
-  for (const t of topics) {
-    check(t.answer.length >= 1 && t.answer.every((a) => a.length > 20), `${t.id}: answer paragraphs`);
-    check(t.sources.length >= 1, `${t.id}: needs a source`);
-    check(t.keywords.every((k) => k === k.toLowerCase()) && t.keywords.length >= 2, `${t.id}: keywords are lower-case, at least two`);
-    check(/\{[^i}]|\{i[^n}]/.test(t.answer.join(" ")) === false, `${t.id}: only {ini} may be used as a placeholder`);
-    for (const s of t.sources) {
-      if (s.kind === "reference") {
-        check(s.label === ASAM_REF, `${t.id}: reference label must be "${ASAM_REF}"`);
-        check(!/["“”]|§|\bsection\b|\bchapter\b|\bp\.\s?\d/i.test(s.detail), `${t.id}: a reference carries no quotation and no section number`);
-      }
-      if (s.kind === "chart") {
-        const holders = clinic.consumers.filter((c) => c.chart.some((r) => r.id === s.chart && r.label === s.label));
-        check(holders.length >= 1, `${t.id}: chart source "${s.label}" (${s.chart}) is not in any chart`);
-        if (t.docs) {
-          const owners = clinic.docs.filter((d) => t.docs!.includes(d.kind)).map((d) => d.consumerId);
-          check(holders.some((h) => owners.includes(h.id)), `${t.id}: chart source ${s.chart} is not in the chart of a consumer who has a ${t.docs.join("/")} document`);
-        }
-      }
-    }
-    check(matchAsk(topics, t.q)?.id === t.id, `${t.id}: its own question does not find it (found ${matchAsk(topics, t.q)?.id})`);
-  }
-  const phrasing: [string, string][] = [
-    ["what are the asam dimensions", "asam-dimensions"],
-    ["how many sessions are left on the auth", "sessions-left"],
-    ["how should I word the D5 rationale for someone abstinent", "d5-wording"],
-    ["what do the uds say", "uds-facts"],
-    ["what does silversummit want", "silversummit-uds"],
-    ["tell me about the five sessions at a time rule", "five-session"],
-  ];
-  for (const [q, id] of phrasing) check(matchAsk(topics, q)?.id === id, `typed question "${q}" should find ${id} (found ${matchAsk(topics, q)?.id ?? "nothing"})`);
-  check(matchAsk(topics, "what is the capital of France") === null, "an unrelated question must not match");
-
-  // the sessions-left answer is computed from the roster and the chart
-  const mr = clinic.consumers.find((c) => c.id === "c101")!;
-  const sl = topics.find((t) => t.id === "sessions-left")!;
-  const sra = clinic.docs.find((d) => d.id === "sra-c101")!;
-  const used = /^(\d+) of (\d+)/.exec(asText(sra.values.used));
-  check(used && Number(used[2]) - Number(used[1]) === mr.units?.left, "sra-c101 'Units used' disagrees with the units left on the roster");
-  check(sl.answer.join(" ").includes(`${mr.units?.left} units left`) && sl.answer.join(" ").includes(`${Math.floor((mr.units?.left ?? 0) / 3)} IOP days`), "sessions-left answer does not match the roster");
-  const udsTopic = topics.find((t) => t.id === "uds-facts")!;
-  check(udsTopic.answer.join(" ").includes("8 of 8") && mr.chart.find((r) => r.id === "uds")!.text.includes("8 of 8 UDS negative since Sep 24"), "uds-facts answer does not match the chart");
-
+function history() {
   check(clinic.history.length >= 8, `at least 8 history items (have ${clinic.history.length})`);
   for (const h of clinic.history) {
-    check(clinic.consumers.some((c) => c.id === h.consumerId), `${h.id}: consumer ${h.consumerId}`);
+    check(h.consumerId === "" || clinic.consumers.some((c) => c.id === h.consumerId), `${h.id}: consumer ${h.consumerId}`);
     check(/^\d{4}-\d\d-\d\d$/.test(h.date) && h.date <= clinic.today, `${h.id}: date`);
     if (h.docId) {
       const d = clinic.docs.find((x) => x.id === h.docId);
@@ -416,9 +369,9 @@ hygiene();
 seeds();
 documents();
 probes();
-askAndHistory();
+history();
 
-console.log(`\n${clinic.profile.short}: ${clinic.forms ? Object.keys(clinic.forms).length : 0} forms, ${clinic.consumers.length} consumers, ${clinic.docs.length} documents, ${clinic.scribe.length} Scribe scenarios, ${clinic.checks.length} checks in ${new Set(clinic.checks.map((c) => c.module)).size} modules, ${clinic.ask.length} Ask topics, ${clinic.history.length} history items.`);
+console.log(`\n${clinic.profile.short}: ${clinic.forms ? Object.keys(clinic.forms).length : 0} forms, ${clinic.consumers.length} consumers, ${clinic.docs.length} documents, ${clinic.scribe.length} Scribe scenarios, ${clinic.checks.length} checks in ${new Set(clinic.checks.map((c) => c.module)).size} modules, ${clinic.history.length} history items.`);
 if (warnings.length) console.log(`\n${warnings.length} note${warnings.length === 1 ? "" : "s"} (a fix opens a follow-up the clinician then sees):\n- ${warnings.join("\n- ")}`);
 if (errors.length) {
   console.error(`\nFAILED: ${errors.length} problem${errors.length === 1 ? "" : "s"}\n- ${errors.join("\n- ")}`);

@@ -4,7 +4,7 @@ import { useStore, type PanelTab } from "@/store";
 import HelpView from "./views/HelpView";
 import HistoryView from "./views/HistoryView";
 import PatientsView from "./views/PatientsView";
-import ScanScreen from "./views/ScanScreen";
+import ScanView from "./views/ScanView";
 import ScribeView from "./views/ScribeView";
 import SettingsView from "./views/SettingsView";
 import "./panel-nav.css";
@@ -15,8 +15,8 @@ const ICONS: { id: PanelTab; label: string; tip: string; icon: typeof Mic; accen
   { id: "history", label: "History", tip: "History: your documents and sessions", icon: List },
   { id: "patients", label: "Patients", tip: "Patients: your roster", icon: Users },
   { id: "scan", label: "Scan & Enhance", tip: "Scan & Enhance: check a saved document and get fixes", icon: ScanSearch, accent: true },
-  { id: "help", label: "Help", tip: "Help: what the colors and buttons mean", icon: CircleHelp },
-  { id: "settings", label: "Settings", tip: "Settings: you, recording, saving, your clinic", icon: User },
+  { id: "help", label: "Help", tip: "Help: chat with Psyflo, FAQs, training videos", icon: CircleHelp },
+  { id: "settings", label: "Settings", tip: "Settings: recording and check before save", icon: User },
 ];
 
 /** The Psyflo extension, docked in the browser: title, pin and close; a row of six icons; "what am I reading"; then the screen the icon opens. */
@@ -85,7 +85,7 @@ export default function Panel() {
       </div>
 
       <div className="psy-view" role="tabpanel" aria-labelledby={`tab-${tab}`} style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-        {tab === "scribe" ? <ScribeView /> : tab === "history" ? <HistoryView /> : tab === "patients" ? <PatientsView /> : tab === "scan" ? <ScanScreen /> : tab === "help" ? <HelpView /> : <SettingsView />}
+        {tab === "scribe" ? <ScribeView /> : tab === "history" ? <HistoryView /> : tab === "patients" ? <PatientsView /> : tab === "scan" ? <ScanView /> : tab === "help" ? <HelpView /> : <SettingsView />}
       </div>
     </div>
   );

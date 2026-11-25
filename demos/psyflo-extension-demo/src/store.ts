@@ -1,10 +1,10 @@
-/* All behaviour of the demo, in one store: the mock EHR's pages and documents, the extension's tabs, Scribe, Scan & Enhance, Check before save, Ask, History.
+/* All behaviour of the demo, in one store: the mock EHR's pages and documents, the extension's tabs, Scribe, Scan & Enhance, Check before save, History.
    Screens only read this and call its actions. Nothing here knows which clinic is loaded except through ClinicConfig. */
 import { create } from "zustand";
 import { cccsn } from "./clinics/cccsn";
 import { harvest } from "./clinics/harvest";
-import { SEV_RANK, usDate, asText, boxState, fieldByKey, fieldsOf, findingSig, initialDocState, isEmpty, matchAsk, runChecks, speed, wait, writeInto } from "./engine";
-import type { AskTopic, ClinicConfig, ClinicId, DocKind, DocSeed, DocState, Finding, FindingStatus, HistoryItem, ScribeScenario, Severity, Val } from "./types";
+import { SEV_RANK, usDate, asText, boxState, fieldByKey, fieldsOf, findingSig, initialDocState, isEmpty, runChecks, speed, wait, writeInto } from "./engine";
+import type { ClinicConfig, ClinicId, DocKind, DocSeed, DocState, Finding, FindingStatus, HistoryItem, ScribeScenario, Severity, Val } from "./types";
 
 export const CLINICS: Record<ClinicId, ClinicConfig> = { harvest, cccsn };
 
@@ -42,16 +42,6 @@ export interface ScanState {
   stale: boolean;
 }
 
-export interface AskMsg {
-  id: number;
-  who: "you" | "psyflo";
-  text: string;
-  topic?: AskTopic;
-  /** A fallback offers these instead of an answer. */
-  suggest?: AskTopic[];
-  docId?: string;
-}
-
 export interface CheckSettings { pauseAt: Severity | "never"; onSave: boolean }
 
 interface State {
@@ -72,8 +62,6 @@ interface State {
   prefs: Prefs;
   pinned: boolean;
   history: HistoryItem[];
-  asks: AskMsg[];
-  asking: boolean;
 
   setClinic: (id: ClinicId) => void;
   togglePanel: (open?: boolean) => void;
@@ -112,9 +100,6 @@ interface State {
   fixAllReady: (docId: string) => void;
   focusFinding: (id: string | null) => void;
 
-  askSend: (text: string) => void;
-  askTopic: (topic: AskTopic) => void;
-  askClear: () => void;
 }
 
 const blankScribe = (mode: "live" | "dictation" = "live"): ScribeState => ({
@@ -131,13 +116,12 @@ function fresh(id: ClinicId) {
     scribe: blankScribe(), scans: {} as Record<string, ScanState>, focus: null, checking: null, pause: null, flash: null,
     settings: { pauseAt: clinic.profile.checks.pauseAt, onSave: clinic.profile.checks.onSave },
     prefs: { telehealth: false, language: "English", mic: "Built-in microphone (simulated)" } as Prefs, pinned: true,
-    history: [...clinic.history], asks: [] as AskMsg[], asking: false,
+    history: [...clinic.history],
   };
 }
 
 let tick: ReturnType<typeof setInterval> | null = null;
 const stopTick = () => { if (tick) clearInterval(tick); tick = null; };
-let msgId = 0;
 let histId = 0;
 
 export const useStore = create<State>()((set, get) => {
@@ -245,17 +229,6 @@ export const useStore = create<State>()((set, get) => {
     set({ scribe: { ...s.scribe, stage: "review", draft } });
   }
 
-  function answer(q: string, topic: AskTopic | null, docId: string | undefined, kind: DocKind | undefined) {
-    const s = get();
-    const sugg = s.clinic.ask.filter((t) => !t.docs || !kind || t.docs.includes(kind)).slice(0, 3);
-    set({ asks: [...s.asks, { id: ++msgId, who: "you", text: q }], asking: true });
-    void wait(900).then(() => {
-      const msg: AskMsg = topic
-        ? { id: ++msgId, who: "psyflo", text: "", topic, docId }
-        : { id: ++msgId, who: "psyflo", text: "I do not have a source for that in this chart, in your clinic's documents or in the reference list, so I will not guess.", suggest: sugg };
-      set((x) => ({ asks: [...x.asks, msg], asking: false }));
-    });
-  }
 
   return {
     ...fresh("harvest"),
@@ -447,23 +420,7 @@ export const useStore = create<State>()((set, get) => {
     },
     focusFinding: (focus) => set(focus ? { focus, tab: "scan" } : { focus }),
 
-    /* ----------------------------------- Ask ----------------------------------- */
-    askSend: (text) => {
-      const q = text.trim();
-      if (!q || get().asking) return;
-      const s = get();
-      const docId = s.page.kind === "form" ? s.page.docId : undefined;
-      const kind = docId ? kindOf(docId) : undefined;
-      const topic = matchAsk(s.clinic.ask, q, kind);
-      answer(q, topic, docId, kind);
-    },
-    askTopic: (topic) => {
-      const s = get();
-      if (s.asking) return;
-      const docId = s.page.kind === "form" ? s.page.docId : undefined;
-      answer(topic.q, topic, docId, docId ? kindOf(docId) : undefined);
-    },
-    askClear: () => set({ asks: [] }),
+
   };
 });
 

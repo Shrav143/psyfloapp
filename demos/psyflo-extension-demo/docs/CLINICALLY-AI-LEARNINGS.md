@@ -34,9 +34,9 @@ Source: the Nov 20 demo call (Granola transcript), the screenshots shared from t
 | 4 | Microphone icon, first in the row | The recording screen: Start New Session. It is highlighted whenever you are on Start Session or Session Capturing. | Seen on screen | First icon: Scribe, which opens Start a new session. |
 | 5 | List icon, second | The history screen. It is highlighted on the screen with the Documents and Sessions tabs. | Seen on screen | Second icon: History, with Sessions and Documents lists, a clinician filter and search by patient. |
 | 6 | Two-person icon, third | Not shown on any screen we have. Most likely a patient or team list. | Best guess | Third icon: Patients, the roster (your reading of it, which Psyflo follows). |
-| 7 | Orange speech-bubble icon, fourth | Not shown on any screen we have. Either Signals, which Garrett said lives inside the extension, or Comply, which you read it as. Comply’s alert chips appear on the EHR page and its dashboard is a separate web app, so I cannot tell. | Best guess | Fourth icon: Scan & Enhance (your reading: their Comply). Ask Psyflo, our evidence chat, sits inside it. |
-| 8 | Question-mark icon | Not shown. Probably help. | Best guess | Fifth icon: Help, options only: chat with Psyflo, FAQs and training videos. |
-| 9 | Person icon, last | Not shown. Probably the account or settings. | Best guess | Sixth icon: Settings: you, recording, Check before save and the clinic profile (read-only). |
+| 7 | Orange speech-bubble icon, fourth | Not shown on any screen we have. Either Signals, which Garrett said lives inside the extension, or Comply, which you read it as. Comply’s alert chips appear on the EHR page and its dashboard is a separate web app, so I cannot tell. | Best guess | Fourth icon: Scan & Enhance (your reading: their Comply). |
+| 8 | Question-mark icon | Not shown. Probably help. | Best guess | Fifth icon: Help: Chat with Psyflo (Help Scout), FAQs and training videos. |
+| 9 | Person icon, last | Not shown. Probably the account or settings. | Best guess | Sixth icon: Settings: recording and Check before save, nothing else. |
 | 10 | Second × at the end of the icon row | Probably closes the current screen and returns to the idle state. | Best guess | Same: closes the screen and returns to Scribe. |
 
 ### Start New Session

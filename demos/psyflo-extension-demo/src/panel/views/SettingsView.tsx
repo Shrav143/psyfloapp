@@ -1,41 +1,39 @@
-import { Lock } from "lucide-react";
-import type { ReactNode } from "react";
 import { useCurrent } from "@/hooks";
 import { useStore } from "@/store";
-import { CheckBeforeSave, ClinicProfile } from "./ClinicView";
-import "../panel-more.css";
+import type { Severity } from "@/types";
 import "../panel-nav.css";
 
-function Section({ id, title, open, children }: { id: string; title: string; open?: boolean; children: ReactNode }) {
-  return (
-    <details className="cln-sec" open={open} data-section={id}>
-      <summary><span className="ttl" style={{ marginLeft: 4 }}>{title}</span></summary>
-      <div className="cln-in">{children}</div>
-    </details>
-  );
-}
+const PAUSE: { value: Severity | "never"; label: string }[] = [
+  { value: "severe", label: "Severe" },
+  { value: "medium", label: "Medium" },
+  { value: "low", label: "Low" },
+  { value: "never", label: "Never" },
+];
 
-/** The person icon: you, how recording starts, what happens on save, and what Psyflo knows about your clinic (read-only). */
+/** The person icon: two things only. How recording starts, and what happens when you press Save in the EHR. */
 export default function SettingsView() {
-  const { clinic } = useCurrent();
+  useCurrent();
   const prefs = useStore((s) => s.prefs);
   const setPrefs = useStore((s) => s.setPrefs);
-  const u = clinic.user;
-  const initials = u.name.split(/[ ,]+/).filter((w) => /^[A-Z]/.test(w)).slice(0, 2).map((w) => w[0]).join("");
+  const settings = useStore((s) => s.settings);
+  const setSettings = useStore((s) => s.setSettings);
+
+  const hint = !settings.onSave
+    ? "Off. The EHR saves straight away and Psyflo does not check first."
+    : settings.pauseAt === "never"
+      ? "Psyflo checks the document, but never pauses the save."
+      : settings.pauseAt === "severe"
+        ? "Psyflo pauses the save when a severe alert is open."
+        : settings.pauseAt === "medium"
+          ? "Psyflo pauses the save when a medium or severe alert is open."
+          : "Psyflo pauses the save when any alert is open.";
+
   return (
     <div className="psy-body" data-testid="settings">
       <h2 className="p-big">Settings</h2>
-      <p className="nv-lead">Your account, how Scribe starts, what happens when you save, and your clinic.</p>
 
-      <Section id="you" title="You" open>
-        <div className="st-me">
-          <span className="av" aria-hidden="true">{initials}</span>
-          <div><b>{u.name}</b><div className="p-note">{u.role} · {clinic.profile.short}</div><div className="p-note">Signed in to Lauris as {u.short}</div></div>
-        </div>
-        <button type="button" className="p-btn sm" style={{ marginTop: 10 }} disabled title="Not part of this demo">Sign out</button>
-      </Section>
-
-      <Section id="recording" title="Recording">
+      <section className="p-card" aria-labelledby="st-rec">
+        <h3 className="p-title" id="st-rec">Recording</h3>
         <div className="st-field">
           <label className="p-lbl" htmlFor="st-mic">Microphone</label>
           <select id="st-mic" className="p-input" data-testid="set-mic" value={prefs.mic} onChange={(e) => setPrefs({ mic: e.target.value })}>
@@ -54,19 +52,24 @@ export default function SettingsView() {
           <button type="button" role="switch" aria-checked={prefs.telehealth} className="p-switch" data-testid="set-telehealth" onClick={() => setPrefs({ telehealth: !prefs.telehealth })}>
             <i aria-hidden="true" /><span>Start sessions as telehealth with headphones</span>
           </button>
-          <p className="p-note">Turn this on if most of your sessions are over a call.</p>
         </div>
-        <p className="p-note" style={{ marginTop: 10 }}>Transcripts: {clinic.profile.retention.transcripts}. Set by your admin.</p>
-      </Section>
+      </section>
 
-      <CheckBeforeSave />
-
-      <Section id="clinic" title={`Clinic profile · ${clinic.profile.short}`}>
-        <p className="p-note" style={{ margin: "0 0 8px" }}><Lock size={12} aria-hidden="true" style={{ verticalAlign: "-1px" }} /> Set by your admin. You can read it, not change it.</p>
-        <ClinicProfile />
-      </Section>
-
-      <p className="p-note" style={{ marginTop: 14 }}>Psyflo extension demo · sample data, initials only.</p>
+      <section className="p-card" aria-labelledby="st-save">
+        <h3 className="p-title" id="st-save">Check before save</h3>
+        <div className="st-field">
+          <button type="button" role="switch" aria-checked={settings.onSave} className="p-switch" data-testid="set-onsave" onClick={() => setSettings({ onSave: !settings.onSave })}>
+            <i aria-hidden="true" /><span>Check the document when I press Save</span>
+          </button>
+        </div>
+        <div className="st-field">
+          <label className="p-lbl" htmlFor="set-pauseat">Pause saving at</label>
+          <select id="set-pauseat" className="p-input" data-testid="set-pauseat" value={settings.pauseAt} onChange={(e) => setSettings({ pauseAt: e.target.value as Severity | "never" })}>
+            {PAUSE.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </div>
+        <p className="p-note" data-testid="set-hint" style={{ marginTop: 8 }}>{hint}</p>
+      </section>
     </div>
   );
 }
