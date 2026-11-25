@@ -1,5 +1,7 @@
 # What every button in the Clinically AI extension means
 
+> **Updated Nov 25 (second call, Nov 23).** Pricing: scribe $50 per clinician per month annual ($60 monthly), Comply $17, about $500 setup, about $200 a year EHR fee, no usage charges, free scribe sandbox, BAA first. Comply has no built-in payer knowledge: their team builds an audit agent per program or payer, and policy changes are updated by hand. Document Builder (bundled) audits an uploaded chart in 2 to 3 minutes and drafts appeals and peer-to-peer letters. Signal (evidence chat) cites PubMed and similar sources; not released. Connect is early alpha; Front Door, Supervise and an eligibility and billing product are coming in 2027. Lauris was not raised on the second call and is still unconfirmed. The two-page summary is the "Clinically AI Brief" artifact.
+
 Source: the Nov 20 demo call (Granola transcript), the screenshots shared from the call, and the product notes. The visual version, with annotated screens and a flow diagram, is the published page "Clinically AI Extension Guide" (https://claude.ai/artifact/EcLxKwpHJ9gBzurrV74BP2). Every row below says how sure we are:
 
 - **Said on the call**: Garrett said it out loud.
