@@ -1,13 +1,11 @@
 /* All behaviour of the demo, in one store: the mock EHR's pages and documents, the extension's tabs, Scribe, Scan & Enhance, Check before save, History.
    Screens only read this and call its actions. Nothing here knows which clinic is loaded except through ClinicConfig. */
 import { create } from "zustand";
-import { cccsn } from "./clinics/cccsn";
-import { harvest } from "./clinics/harvest";
-import { platform } from "./clinics/platform";
+import { clinic as CLINIC } from "./clinics";
 import { SEV_RANK, usDate, asText, boxState, fieldByKey, fieldsOf, findingSig, initialDocState, isEmpty, runChecks, speed, wait, writeInto } from "./engine";
-import type { ClinicConfig, ClinicId, DocKind, DocSeed, DocState, Finding, FindingStatus, HistoryItem, ScribeScenario, Severity, Val } from "./types";
+import type { ClinicConfig, DocKind, DocSeed, DocState, Finding, FindingStatus, HistoryItem, ScribeScenario, Severity, Val } from "./types";
 
-export const CLINICS: Record<ClinicId, ClinicConfig> = { platform, harvest, cccsn };
+export { CLINIC };
 
 /** The six icons, in order: Scribe (mic), History (list), Patients (people), Scan & Enhance, Help, Settings. */
 export type PanelTab = "scribe" | "history" | "patients" | "scan" | "help" | "settings";
@@ -47,7 +45,6 @@ export interface ScanState {
 export interface CheckSettings { pauseAt: Severity | "never"; onSave: boolean }
 
 interface State {
-  clinicId: ClinicId;
   clinic: ClinicConfig;
   page: LaurisPage;
   panelOpen: boolean;
@@ -67,7 +64,8 @@ interface State {
   pinned: boolean;
   history: HistoryItem[];
 
-  setClinic: (id: ClinicId) => void;
+  /** Back to the start: every document as Lauris had it, nothing typed, nothing scanned. */
+  reset: () => void;
   togglePanel: (open?: boolean) => void;
   setTab: (t: PanelTab) => void;
   goConsumers: () => void;
@@ -115,12 +113,12 @@ const blankScribe = (mode: "live" | "dictation" = "live"): ScribeState => ({
 });
 const blankScan = (): ScanState => ({ running: false, scannedAt: null, findings: [], status: {}, answers: {}, stale: false });
 
-function fresh(id: ClinicId) {
-  const clinic = CLINICS[id];
+function fresh() {
+  const clinic: ClinicConfig = CLINIC;
   const docs: Record<string, DocState> = {};
   for (const d of clinic.docs) docs[d.id] = initialDocState(d);
   return {
-    clinicId: id, clinic, page: { kind: "consumers" } as LaurisPage, panelOpen: true, tab: "scribe" as PanelTab, docs,
+    clinic, page: { kind: "consumers" } as LaurisPage, panelOpen: true, tab: "scribe" as PanelTab, docs,
     scribe: blankScribe(), scans: {} as Record<string, ScanState>, focus: null, checking: null, pause: null, authSave: null as State["authSave"], flash: null,
     settings: { pauseAt: clinic.profile.checks.pauseAt, onSave: clinic.profile.checks.onSave },
     prefs: { telehealth: false, language: "English", mic: "Built-in microphone (simulated)" } as Prefs, pinned: true,
@@ -239,9 +237,9 @@ export const useStore = create<State>()((set, get) => {
 
 
   return {
-    ...fresh("platform"),
+    ...fresh(),
 
-    setClinic: (id) => { stopTick(); set(fresh(id)); },
+    reset: () => { stopTick(); set(fresh()); },
     togglePanel: (open) => set((s) => ({ panelOpen: open ?? !s.panelOpen })),
     setTab: (tab) => set({ tab }),
 

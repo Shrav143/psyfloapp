@@ -271,7 +271,8 @@ export function buildWorkRows(input: WorkInput): WorkRow[] {
   }
 
   /* 4. Drafts saved in New Case that are not a request yet. A draft of a request already listed stays on that row. */
-  for (const d of drafts) {
+  // New Case no longer exists, so a saved draft is never a row of its own.
+  for (const d of drafts.filter(() => false)) {
     if (!d.saved || d.sent) continue;
     const known = find(d.caseId, d.id);
     if (known) {

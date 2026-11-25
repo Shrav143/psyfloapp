@@ -49,7 +49,7 @@ const seedCapacity = (): Record<Program, Capacity> => Object.fromEntries(PROGRAM
 export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice> = (set, get) => {
   const update = (id: string, fn: (r: Referral) => Referral): void => set((s) => ({ referrals: s.referrals.map((r) => (r.id === id ? fn(r) : r)) }));
   const find = (id: string): Referral | undefined => get().referrals.find((r) => r.id === id);
-  const link = (id: string): string => paths.referral(id);
+  const link = (_id: string): string => paths.dashboard();
 
   return {
     referrals: SEED_REFERRALS,

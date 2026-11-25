@@ -12,9 +12,7 @@ export function useOpenLauris(): (to: { case: string; view?: "auth" | "denial" }
     (to) => {
       useStore.getState().ehrOpen(pathname + search);
       const ext = useExt.getState();
-      // the case is a consumer of the sample treatment center; if another demo clinic is showing, bring that one back first
-      if (ext.clinicId !== "platform") ext.setClinic("platform");
-      useExt.getState().openAuth(to.case, to.view);
+      ext.openAuth(to.case, to.view);
       navigate(paths.lauris());
     },
     [navigate, pathname, search],

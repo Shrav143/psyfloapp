@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, FastForward, FlaskConical, PanelRight, RotateCcw, Sparkles } from "lucide-react";
+import { Bell, FastForward, FlaskConical, RotateCcw, Sparkles } from "lucide-react";
 import { useEscape } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { DAY, HOUR, clockTime, stamp, toDate } from "@/lib/time";
 import { paths } from "@/routes";
 import { resetDemo, useStore } from "@/store";
 import { useStore as useExt } from "@/ext/store";
+import { ViewToggle } from "@/components/ViewToggle";
 import { UnreadDot } from "./Panels";
 import { SiteSwitcher } from "./SiteSwitcher";
 import { VIEWERS } from "@/data/viewers";
@@ -15,7 +16,6 @@ import { Check } from "lucide-react";
 const PATH: [string, string][] = [
   ["Dashboard: where every request stands", paths.dashboard()],
   ["Authorizations: every request in one list", paths.authorizations()],
-  ["New Case: start from a referral", paths.referrals()],
   ["Eligibility & Benefits: verify a patient", paths.eligibilityVerify()],
   ["Denial Intelligence: D-3318", paths.denials("D-3318")],
   ["Payers: Cardinal, Changes", paths.payers("cardinal", "changes")],
@@ -74,7 +74,7 @@ function DemoMenu() {
             </button>
           ))}
           <div className="my-1.5 border-t border-line" />
-          <button type="button" className={cn(item, "text-risk-ink")} onClick={() => { resetDemo(); useExt.getState().setClinic(useExt.getState().clinicId); setOpen(false); nav(paths.dashboard()); toast({ title: "Demo data reset", body: "Everything is back to the starting point.", tone: "neutral" }); }}>
+          <button type="button" className={cn(item, "text-risk-ink")} onClick={() => { resetDemo(); useExt.getState().reset(); setOpen(false); nav(paths.dashboard()); toast({ title: "Demo data reset", body: "Everything is back to the starting point.", tone: "neutral" }); }}>
             <RotateCcw size={16} className="ico" />Reset demo data
           </button>
         </div>
@@ -93,10 +93,8 @@ export function Topbar() {
   return (
     <div className="sticky top-0 z-30 flex h-[60px] items-center gap-3 border-b border-[#EAE4DA] bg-canvas/90 px-4 backdrop-blur lg:px-7">
       <SiteSwitcher />
+      <ViewToggle on="platform" className="ml-2" />
       <div className="ml-auto flex items-center gap-2 lg:gap-3.5">
-        <button type="button" data-testid="open-lauris" onClick={() => nav(paths.lauris())} title="Open Lauris with the Psyflo extension" className="flex h-9 items-center gap-2 rounded-xl border border-forest bg-forest px-3 text-[13px] font-semibold whitespace-nowrap text-white hover:bg-forest-dark">
-          <PanelRight size={16} className="ico" /><span className="max-lg:sr-only">Lauris + extension</span>
-        </button>
         <DemoMenu />
         <button type="button" aria-label="Ask FLO" title="Ask FLO" onClick={() => setAsk(!askOpen)} className={btn}>
           <Sparkles size={18} className="ico" />

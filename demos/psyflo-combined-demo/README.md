@@ -1,6 +1,6 @@
 # Psyflo combined demo: the Psyflo platform, Lauris and the Psyflo extension
 
-One page with two browser tabs: **Lauris Online with the Psyflo extension** (the six-icon extension design, with the prior-authorization recommendations in Scan & Enhance) and the **Psyflo platform** (the Prior Auth web app).
+One page with a toggle at the top: **Extension** (Lauris Online with the six-icon Psyflo extension, with the prior-authorization recommendations in Scan & Enhance) and **Psyflo platform** (the Prior Auth web app, simplified: no New Case, no EMR Connect, an icon dashboard, Payers as context for the agents).
 What it is, how the pieces fit and how to check it: **`COMBINED.md`**. The rest of this file describes the platform half, which is the Oct 24 "Psyflo Prior Auth" demo recolored to the Unified demo palette.
 
 A clickable, interactive front-end demo of **Psyflo**: AI-native prior authorization, utilization review, documentation and denials for behavioral-health and SUD programs. All data is invented, and no clinic is named. Nothing is sent anywhere.

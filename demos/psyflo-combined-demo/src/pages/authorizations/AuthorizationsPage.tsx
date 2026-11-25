@@ -130,10 +130,8 @@ export default function AuthorizationsPage() {
         break;
       }
       case "draft":
-        navigate(paths.newCase({ draft: go.draftId }));
-        break;
       case "draftFromRequest":
-        navigate(paths.newCase({ draft: useStore.getState().draftFromRequest(go.requestId) }));
+        navigate(paths.case(r.caseId));
         break;
       case "review":
         setParam("review", go.reviewId);
@@ -142,7 +140,7 @@ export default function AuthorizationsPage() {
         navigate(paths.denials(go.id));
         break;
       case "renew":
-        navigate(paths.newCase({ type: "reauth", patient: go.caseId }));
+        navigate(paths.case(go.caseId));
         break;
       case "dashboard":
         navigate(paths.dashboard({ request: go.requestId }));
@@ -164,7 +162,6 @@ export default function AuthorizationsPage() {
         <div className="flex flex-wrap items-center gap-3">
           {reviewButtons}
           {view === "payer" && sentToday.length ? <Button variant="ghost" icon={Send} onClick={() => navigate(paths.dashboard({ stage: "received" }))}>{sentToday.length} sent today</Button> : null}
-          <Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Case</Button>
         </div>
       </div>
       {signalHidden || signalCount === 0 ? null : (
@@ -178,7 +175,7 @@ export default function AuthorizationsPage() {
           <TableHelp avgChance={avgChance} />
         </div>
         {shown.length === 0 ? (
-          <EmptyState icon={SearchX} title={rows.length ? "No authorizations match" : "Nothing to track yet"} action={rows.length ? <Button onClick={() => { clear(); update("all", NO_WORK_FILTERS); }}>Clear filters</Button> : <Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Case</Button>} />
+          <EmptyState icon={SearchX} title={rows.length ? "No authorizations match" : "Nothing to track yet"} action={rows.length ? <Button onClick={() => { clear(); update("all", NO_WORK_FILTERS); }}>Clear filters</Button> : undefined} />
         ) : (
           <WorkTable
             rows={shown} view={view} page={page} onPage={(p) => setPaging({ key: pageKey, page: p })} sort={sort} onSort={onSort}

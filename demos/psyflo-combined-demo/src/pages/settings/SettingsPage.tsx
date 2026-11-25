@@ -82,7 +82,7 @@ export default function SettingsPage() {
           </CardBody>
         </Card>
         <Card>
-          <CardHeader title="What each level changes" subtitle="Set per agent. Applied in EMR Connect" />
+          <CardHeader title="What each level changes" subtitle="Set per agent." />
           <CardBody className="flex flex-col gap-3 text-sm">
             {LEVELS.map((l) => (
               <div key={l.value} className="flex gap-3"><span className="w-[92px] shrink-0 font-semibold">{FREEDOM_LABEL[l.value]}</span><span className="text-ink2">{l.line}</span></div>

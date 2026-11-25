@@ -128,7 +128,7 @@ export const SEED_REQUESTS: PsyRequest[] = [
   S({ id: "I-2218", who: "O.H.", age: 28, payer: "cardinal", prog: "IOP", type: "Continued stay", stage: "info_requested", chip: "Info requested", tone: "mid", pos: 2, inStage: 5 * HOUR, typ: DAY, agent: "packet", next: "Packet is drafting the answer", chance: 68 }),
   S({ id: "R-0975", who: "B.N.", age: 53, payer: "evergreen", prog: "RES", type: "Continued stay", stage: "info_requested", chip: "Info requested", tone: "mid", pos: 2, inStage: 2 * HOUR, typ: DAY, agent: "packet", next: "Packet is drafting the answer", chance: 71, via: "phone" }),
   /* ----- Decided today: approved (6) ----- */
-  S({ id: "R-0951", who: "F.W.", age: 47, payer: "evergreen", prog: "RES", type: "Continued stay", stage: "decided", chip: "Approved", tone: "good", pos: 3, inStage: 90, typ: 2 * DAY, agent: "cadence", next: "Next review booked. Write-back waits for you", decidedToday: true, outcome: "approved", via: "phone" }),
+  S({ id: "R-0951", who: "F.W.", age: 47, payer: "evergreen", prog: "RES", type: "Continued stay", stage: "decided", chip: "Approved", tone: "good", pos: 3, inStage: 90, typ: 2 * DAY, agent: "cadence", next: "Next review booked. The approval is on file", decidedToday: true, outcome: "approved", via: "phone" }),
   S({ id: "I-2144", who: "G.N.", age: 33, payer: "summit", prog: "IOP", type: "Recertification", stage: "decided", chip: "Approved", tone: "good", pos: 3, inStage: 150, typ: 1.5 * DAY, agent: "cadence", next: "Ledger updated. Next review in 10 days", decidedToday: true, outcome: "approved" }),
   S({ id: "R-0944", who: "M.B.", age: 40, payer: "beacon", prog: "RES", type: "Continued stay", stage: "decided", chip: "Approved", tone: "good", pos: 3, inStage: 200, typ: DAY, agent: "cadence", next: "Ledger updated. Next review in 7 days", decidedToday: true, outcome: "approved" }),
   S({ id: "I-2171", who: "Q.Z.", age: 25, payer: "lakeshore", prog: "IOP", type: "Initial request", stage: "decided", chip: "Approved", tone: "good", pos: 3, inStage: 260, typ: 2 * DAY, agent: "cadence", next: "Ledger updated. Next review in 14 days", decidedToday: true, outcome: "approved", via: "fax" }),
@@ -163,9 +163,9 @@ if (r1042) r1042.referralId = "RF-2050";
 /* ------------------------------------------------------------------ notifications */
 export const SEED_NOTIFICATIONS: AppNotification[] = [
   { id: "n1", at: -16, agent: "packet", title: "Payer asked for info", body: "Harborview MA wants more on P-1499. Packet drafted the answer.", to: "/dashboard?request=P-1499", read: false, tone: "mid" },
-  { id: "n2", at: -38, agent: "scribe", title: "Scribe has a question", body: "R-1042 needs one answer before the draft can finish.", to: "/authorizations/new/draft-r1042", read: false, tone: "mid" },
+  { id: "n2", at: -38, agent: "scribe", title: "Scribe has a question", body: "R-1042 needs one answer before the draft can finish.", to: "/authorizations/case/R-1042", read: false, tone: "mid" },
   { id: "n3", at: -80, agent: "advocate", title: "Denied today", body: "Cardinal denied D-3297 (units cut 48 to 30). A call is booked.", to: "/denials?id=D-3297", read: false, tone: "risk" },
-  { id: "n4", at: -90, agent: "cadence", title: "Approved", body: "Evergreen approved R-0951 for 14 days. Write-back waits for you.", to: "/dashboard?request=R-0951", read: true, tone: "good" },
-  { id: "n5", at: -240, agent: "sentinel", title: "Payer rule changed", body: "Cardinal updated its criteria (version 2026.3). Your open Cardinal drafts are affected.", to: "/payers/cardinal?tab=changes", read: false, tone: "mid" },
+  { id: "n4", at: -90, agent: "cadence", title: "Approved", body: "Evergreen approved R-0951 for 14 days.", to: "/dashboard?request=R-0951", read: true, tone: "good" },
+  { id: "n5", at: -240, agent: "sentinel", title: "Payer rule changed", body: "Cardinal updated its criteria (version 2026.3). Your open Cardinal drafts are affected.", to: "/payers/cardinal", read: false, tone: "mid" },
   { id: "n6", at: -300, agent: "caller", title: "Very late", body: "Evergreen has had R-0912 for 4 days. Caller is phoning.", to: "/dashboard?request=R-0912", read: true, tone: "risk" },
 ];

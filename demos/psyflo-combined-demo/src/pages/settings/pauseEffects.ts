@@ -14,10 +14,9 @@ export function pauseEffects(paused: AgentKey[], all: boolean, nameOf: (a: Agent
   const inRun = RUNS_IN_NEW_CASE.filter(has);
   const emr = [...(has("reader") ? ["sync", "connect"] : []), ...(has("navigator") ? ["fix", "reconnect"] : [])];
   return [
-    inRun.length ? (all ? "New Case stops running agents." : `A New Case run holds when it reaches ${join(inRun.map(nameOf), "or")}.`) : "",
+    inRun.length ? (all ? "Agents stop preparing requests." : `A request holds when it reaches ${join(inRun.map(nameOf), "or")}.`) : "",
     has("navigator") ? "Check all now on the Dashboard waits." : "",
     has("cadence") ? "Draft all due reviews in Case Manager waits." : "",
     has("verify") ? "Eligibility & Benefits stops its automatic re-checks." : "",
-    emr.length ? `EMR Connect will not ${join(emr, "or")} a system.` : "",
   ].filter(Boolean);
 }

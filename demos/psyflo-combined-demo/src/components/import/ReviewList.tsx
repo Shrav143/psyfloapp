@@ -105,14 +105,6 @@ export function ReviewList({ found, sourceLabel, thumb, simulated, current, onAp
           {found.unread.map((u) => (
             <li key={u.key + u.problem}>
               <span className="font-medium text-ink2">{u.label}:</span> {u.problem}
-              {u.mapping ? (
-                <>
-                  {" "}
-                  <Link to={paths.emr()} className="font-medium text-forest underline underline-offset-2">
-                    Map it
-                  </Link>
-                </>
-              ) : null}
             </li>
           ))}
         </ul>

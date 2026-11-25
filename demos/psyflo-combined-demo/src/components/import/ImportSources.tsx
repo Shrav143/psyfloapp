@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ClipboardPaste, CloudDownload, FileUp, ImageUp, Upload, X } from "lucide-react";
 import { Button, Spinner } from "@/components/ui";
 import { cn } from "@/lib/cn";
-import { EmrPull } from "./EmrPull";
 import { makeDoc } from "./fields";
 import { MappingStep } from "./MappingStep";
 import { ReviewList, type Found } from "./ReviewList";
@@ -97,7 +96,7 @@ export function ImportSources({ target, onImport, emr, compact, className, curre
   const [error, setError] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
-  const offerEmr = !!emr && target !== "denial_letter";
+  const offerEmr = false;
 
   const open = (m: ImportSource | null) => {
     clearTimeout(timer.current);
@@ -205,7 +204,6 @@ export function ImportSources({ target, onImport, emr, compact, className, curre
     if (phase.at === "review") {
       return <ReviewList found={phase.found} sourceLabel={phase.sourceLabel} thumb={phase.thumb} simulated={phase.simulated} current={current} onCancel={() => open(phase.source)} onApply={(f, d) => apply(phase, f, d)} />;
     }
-    if (mode === "emr") return <EmrPull target={target} preferred={emrChart} onFound={(found, label) => review(found, "emr", label)} />;
     if (mode === "file") {
       const sample = SAMPLE_CSV[target];
       return (

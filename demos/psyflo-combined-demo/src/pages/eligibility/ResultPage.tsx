@@ -90,14 +90,6 @@ export default function ResultPage() {
 
   const actions = (
     <>
-      {v === "auth_first" ? (
-        <Button size="sm" variant="primary" icon={ShieldPlus} onClick={() => nav(paths.newCase({ verification: id, type: "initial" }))}>
-          Start authorization
-        </Button>
-      ) : null}
-      <Button size="sm" icon={FilePlus2} onClick={() => nav(paths.newCase({ verification: id }))}>
-        Create authorization from verification
-      </Button>
       {state === "lapsed" ? (
         <Button size="sm" icon={ScanText} onClick={ask("Retro-eligibility requested", `Navigator will ask Ohio Medicaid to restore coverage from ${patient.eligibility.on}. You will be told when it answers.`)}>
           Request retro-eligibility

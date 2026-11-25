@@ -1,66 +1,50 @@
-import { useEffect, useState } from "react";
-import { SearchX } from "lucide-react";
+import { useEffect } from "react";
+import { BookOpenCheck, Clock3, SearchX } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button, Crumbs, EmptyState, Page } from "@/components/ui";
-import { paths, type PayerTabId } from "@/routes";
+import { payerById } from "@/data/seed";
+import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { EditLogDrawer } from "./EditLogDrawer";
-import { EditPayerModal } from "./EditPayerModal";
-import { HistoryChangesTab } from "./HistoryChangesTab";
-import { useAllWorkflows } from "./lib/studio";
-import { payerRows, waitingCount } from "./lib/payers";
-import { PAYER_TABS, resolveTab, TAB_LABEL } from "./lib/tabs";
-import { PayerHeader } from "./PayerHeader";
-import { PayerTabs } from "./PayerTabs";
+import { payerRows } from "./lib/payers";
+import { resolveTab } from "./lib/tabs";
+import { stateName } from "./lib/states";
+import { PayerContext } from "./PayerContext";
 import { RulesInstructionsTab } from "./RulesInstructionsTab";
-import { TestWorkflowTab, WorkflowBuilderTab } from "./studio";
-import { Unapplied } from "./Unapplied";
+import { useAllWorkflows } from "./lib/studio";
 
-/** One payer: breadcrumb back to the list, the header, and four views. /payers/:id?tab=builder|rules|test|history picks the view.
-    The older ids (process, documents, changes) open the matching view; documents also opens the Clinical documentation group. */
+/** One payer on one page. Above: tell the agents anything Psyflo does not know about this payer (a box and a list of what you have said). Below: the rules Psyflo already follows for it, in groups that open one at a time.
+    There is no workflow to build and nothing to test: the agents work from the rules and from what you tell them. A link can still open one rule (?rule=) or one group (?group=). */
 export function PayerWorkspace({ id }: { id: string }) {
-  const [params, setParams] = useSearchParams();
+  const [params] = useSearchParams();
   const custom = useStore((s) => s.customPayers);
   const config = useStore((s) => s.payerConfig);
   const edits = useStore((s) => s.payerEdits);
   const workflows = useAllWorkflows();
-  const [dialog, setDialog] = useState<"edit" | "log" | null>(null);
-  const { tab, group } = resolveTab(params.get("tab"), params.get("group"));
-  // Tab changes made by hand never carry the old group along.
-  const setTab = (t: PayerTabId) => setParams({ tab: t });
-
+  const { group } = resolveTab(params.get("tab"), params.get("group"));
   const row = payerRows(custom, config, workflows, edits).find((r) => r.id === id);
   const cfg = config[id];
-  // A payer opened from a bookmark keeps its place at the top of the page.
-  useEffect(() => {
-    window.scrollTo({ top: 0 });
-  }, [id]);
+  useEffect(() => { window.scrollTo({ top: 0 }); }, [id]);
 
   if (!row || !cfg) {
     return (
       <Page>
-        <EmptyState icon={SearchX} title="That payer is not in the demo" action={<Link to={paths.payers()}><Button variant="primary">Back to all payers</Button></Link>}>
-          Pick a payer from the list.
-        </EmptyState>
+        <EmptyState icon={SearchX} title="That payer is not in the demo" action={<Link to={paths.payers()}><Button variant="primary">Back to all payers</Button></Link>}>Pick a payer from the list.</EmptyState>
       </Page>
     );
   }
-  const mine = edits.filter((e) => e.payerId === id);
-
+  const reach = payerById(id as never)?.reachedBy ?? cfg.reachedBy;
   return (
     <Page>
       <Crumbs items={[{ label: "Payers", to: paths.payers() }, { label: row.name }]} />
-      <PayerHeader row={row} cfg={cfg} edits={mine.length} onEdit={() => setDialog("edit")} onLog={() => setDialog("log")} compact={tab === "builder" || tab === "test"} />
-      <PayerTabs<PayerTabId> value={tab} onChange={setTab} tabs={PAYER_TABS.map((t) => ({ id: t, label: TAB_LABEL[t], waiting: t === "history" ? waitingCount(cfg) : 0 }))} />
-      <div id="payer-panel" role="tabpanel" aria-labelledby={`payer-tab-${tab}`} className="flex min-w-0 flex-col gap-4">
-        {tab === "rules" || tab === "history" ? <Unapplied id={id} name={row.shortName} cfg={cfg} /> : null}
-        {tab === "builder" ? <WorkflowBuilderTab key={id} payerId={id} /> : null}
-        {tab === "rules" ? <RulesInstructionsTab key={`${id}-${group ?? ""}-${params.get("rule") ?? ""}`} payerId={id} name={row.shortName} cfg={cfg} openGroup={group} openRule={params.get("rule")} /> : null}
-        {tab === "test" ? <TestWorkflowTab key={id} payerId={id} /> : null}
-        {tab === "history" ? <HistoryChangesTab key={id} payerId={id} name={row.shortName} cfg={cfg} /> : null}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <h1 className="font-serif text-[24px] leading-tight font-semibold">{row.name}</h1>
+        <span className="text-[13px] text-muted">{row.product} · {stateName(row.state)}</span>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-bg px-2.5 py-1 text-[12px] text-neutral-ink" title="How requests reach this payer">{reach}</span>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-bg px-2.5 py-1 text-[12px] text-neutral-ink" title="Notice due"><Clock3 size={13} className="ico" aria-hidden="true" />{cfg.facts.noticeDue}</span>
       </div>
-      {dialog === "edit" ? <EditPayerModal id={id} cfg={cfg} onClose={() => setDialog(null)} /> : null}
-      {dialog === "log" ? <EditLogDrawer name={row.name} edits={mine} onClose={() => setDialog(null)} /> : null}
+      <PayerContext payerId={id} name={row.shortName} />
+      <h2 className="mt-2 flex items-center gap-2 text-[15px] font-semibold text-ink2"><BookOpenCheck size={17} className="ico text-forest" aria-hidden="true" />What Psyflo already knows</h2>
+      <RulesInstructionsTab key={`${id}-${group ?? ""}-${params.get("rule") ?? ""}`} payerId={id} name={row.shortName} cfg={cfg} openGroup={group} openRule={params.get("rule")} />
     </Page>
   );
 }

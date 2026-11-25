@@ -77,11 +77,7 @@ export function WorkTable({ rows, view, page, onPage, sort, onSort, quickKey, on
               >
                 <Td className="min-w-[160px] max-w-[240px]">
                   <div className="flex flex-wrap items-baseline gap-x-1.5">
-                    {r.src.draft && !r.src.item && !r.src.ledger && !r.src.request ? (
-                      <Link to={paths.newCase({ draft: r.src.draft.id })} className="font-semibold underline decoration-1 underline-offset-[3px] hover:text-forest">{r.id}</Link>
-                    ) : (
-                      <Link to={paths.case(r.caseId)} className="font-semibold underline decoration-1 underline-offset-[3px] hover:text-forest">{r.id}</Link>
-                    )}
+                    <Link to={paths.case(r.caseId)} className="font-semibold underline decoration-1 underline-offset-[3px] hover:text-forest">{r.id}</Link>
                     <span className="text-[13px] text-muted">· {r.initials || "No patient yet"}{r.age ? `, ${r.age}` : ""}</span>
                     {quickable ? (
                       <button type="button" data-quick={r.id} aria-label={`Quick view ${r.id}`} title="Quick view" aria-haspopup="dialog" onClick={(e) => onQuick(r, e.currentTarget)} className="inline-grid h-6 w-6 translate-y-[3px] place-items-center rounded-md text-muted hover:bg-black/5 hover:text-ink">
@@ -121,11 +117,6 @@ export function WorkTable({ rows, view, page, onPage, sort, onSort, quickKey, on
                   ) : (
                     <>
                       <span className="line-clamp-2">{r.next}</span>
-                      {r.src.draft && r.src.item && r.life === "progress" ? (
-                        <Link to={paths.newCase({ draft: r.src.draft.id })} className="text-[12px] font-semibold text-forest hover:underline">
-                          Open the draft in New Case
-                        </Link>
-                      ) : null}
                     </>
                   )}
                 </Td>

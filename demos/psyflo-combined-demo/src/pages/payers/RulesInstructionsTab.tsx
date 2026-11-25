@@ -60,7 +60,7 @@ export function RulesInstructionsTab({ payerId, name, cfg, openGroup, openRule }
     <div className="flex flex-col gap-4">
       <Card className="px-6 py-4">
         <h2 className="font-serif text-[18px] leading-tight font-semibold tracking-tight">
-          Rules the agents and workflows follow{" "}
+          Rules the agents follow{" "}
           <InfoTip label="About these rules">
             Each rule is stored once, with its source and whether a person verified it, and workflows point at it. All of {name}'s seeded rules are demo samples, so they say Unverified. Edit saves a new version with your reason in the edit log. New drafts use a saved edit at once; sent requests keep what they were sent with.
           </InfoTip>

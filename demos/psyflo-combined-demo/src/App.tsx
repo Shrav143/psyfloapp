@@ -13,12 +13,9 @@ import ReportPage from "@/pages/denials/ReportPage";
 import EligibilityListPage from "@/pages/eligibility/EligibilityListPage";
 import ResultPage from "@/pages/eligibility/ResultPage";
 import VerifyPage from "@/pages/eligibility/VerifyPage";
-import EmrPage from "@/pages/emr/EmrPage";
 import CaseRoute from "@/pages/manager/CaseRoute";
 import ManagerRedirect from "@/pages/manager/ManagerRedirect";
-import NewCasePage from "@/pages/newcase/NewCasePage";
 import PayersPage from "@/pages/payers/PayersPage";
-import ReferralDetailPage from "@/pages/referrals/ReferralDetailPage";
 import SettingsPage from "@/pages/settings/SettingsPage";
 import LaurisShell from "@/ext/LaurisShell";
 import { SearchX } from "lucide-react";
@@ -30,12 +27,6 @@ function NotFound() {
       <EmptyState icon={SearchX} title="Nothing here">Use the sidebar to get back on track.</EmptyState>
     </Page>
   );
-}
-
-/** Referrals used to have their own tab. Old links land on the referral inside New Case. */
-function OldReferralLink() {
-  const { id = "" } = useParams();
-  return <Navigate to={paths.referral(id)} replace />;
 }
 
 /** Hash routing keeps the single-file build working when opened straight from disk. The hosted preview runs in a frame that has no address bar of its own, so it keeps the route in memory. */
@@ -50,13 +41,8 @@ export default function App() {
         <Route element={<Shell />}>
           <Route index element={<Navigate to="/lauris" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/referrals" element={<Navigate to={paths.referrals()} replace />} />
-          <Route path="/referrals/:id" element={<OldReferralLink />} />
           <Route path="/authorizations" element={<AuthorizationsPage />} />
           <Route path="/authorizations/case/:id" element={<CaseRoute />} />
-          <Route path="/authorizations/new" element={<NewCasePage />} />
-          <Route path="/authorizations/new/referral/:id" element={<ReferralDetailPage />} />
-          <Route path="/authorizations/new/:draftId" element={<NewCasePage />} />
           <Route path="/authorizations/eligibility" element={<EligibilityListPage />} />
           <Route path="/authorizations/eligibility/verify" element={<VerifyPage />} />
           <Route path="/authorizations/eligibility/:id" element={<ResultPage />} />
@@ -67,7 +53,6 @@ export default function App() {
           <Route path="/active" element={<ManagerRedirect />} />
           <Route path="/manager" element={<ManagerRedirect />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
-          <Route path="/emr" element={<EmrPage />} />
           <Route path="/payers" element={<PayersPage />} />
           <Route path="/payers/:id" element={<PayersPage />} />
           <Route path="/settings" element={<SettingsPage />} />

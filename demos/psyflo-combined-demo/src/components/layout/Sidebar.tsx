@@ -112,7 +112,6 @@ export function Sidebar() {
   const requests = useStore((s) => s.requests);
   const { viewer, filter } = useScope();
   const dash = filter(requests, (r) => r.caseId).filter((r) => r.stage === "info_requested").length;
-  const referrals = useStore(selectReferralBadge);
   const queue = useStore(selectQueueBadge);
   const eb = useStore(selectEbBadge);
   const denials = useStore(selectDenialBadge);
@@ -126,7 +125,6 @@ export function Sidebar() {
       subs: [
         // The same page as the parent: the one worklist. It is the highlighted item on the worklist and on a case page.
         { to: paths.authorizations(), label: "All Authorizations", icon: ListChecks, isOn: (p) => p === "/authorizations" || p.startsWith("/authorizations/case") },
-        { to: "/authorizations/new", label: "New Case", icon: PlusCircle, badge: referrals },
         { to: paths.eligibility(), label: "Eligibility & Benefits", icon: ShieldCheck, badge: eb },
       ],
     },
@@ -134,7 +132,6 @@ export function Sidebar() {
     { to: paths.analytics(), label: "Analytics", icon: BarChart3, match: ["/analytics"] },
   ];
   const conn: Item[] = [
-    { to: paths.emr(), label: "EMR Connect", icon: RefreshCw, match: ["/emr"] },
     { to: paths.payers(), label: "Payers", icon: Building2, badge: payers, match: ["/payers"] },
   ];
 

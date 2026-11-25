@@ -1,88 +1,82 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui";
-import type { StageKey } from "@/data/types";
+import { CalendarClock, CalendarDays, CircleAlert, CircleCheck, Clock, Hourglass, RefreshCw, Scale, Send, X } from "lucide-react";
+import { Button, Dropdown } from "@/components/ui";
 import { OutOfSite } from "@/components/layout/OutOfSite";
-import { doNext, type DoGo, type FactsContext } from "@/lib/doNext";
+import type { FactsContext } from "@/lib/doNext";
 import { dueByRequest } from "@/lib/floFacts";
 import { plural } from "@/lib/format";
-import { draftNeeds, draftsInPreparation, readyToSignIds } from "@/lib/preparing";
 import { useScope } from "@/lib/scope";
 import { useLedgerRows } from "@/pages/manager/ledgerRows";
-import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { selectWriteBackOn } from "@/store/emr";
-import { applyBaseFilters, inStage } from "@/store/selectors";
-import { buildRows, defaultOrder } from "./caseRows";
-import { CasesTable, PAGE_SIZE } from "./CasesTable";
-import { DoNext } from "./DoNext";
-import { hasNarrowingFilter } from "./helpers";
-import { Lifecycle } from "./Lifecycle";
-import { headline, ledgerChips, stageTotals, stateChips, statusOptions } from "./lifecycle";
+import { applyBaseFilters } from "@/store/selectors";
+import { buildRows } from "./caseRows";
+import { DashTable, PAGE_SIZE } from "./DashTable";
+import { PROGRAM_OPTIONS, TYPE_OPTIONS, hasNarrowingFilter, payerOptions } from "./helpers";
+import { ledgerChips } from "./lifecycle";
+import { DUE, TIER_ORDER, UPDATED, byUrgency, inDates, tierOf, type DueRange, type Tier, type UpdatedRange } from "./model";
 import { RequestDrawer } from "./RequestDrawer";
-import { nextSort, sortRows, type RowSort } from "./sort-rows";
-import { TableControls } from "./TableControls";
+import { Tiles, type TileSpec } from "./Tiles";
 import { useFilterSync, useRequestParam } from "./useDashboardParams";
 
-/** The cockpit: a title, the Lifecycle (five states that filter the table, two counts that open Case Manager), what to do next, and one table with a line per authorization.
-    Everything is derived from the requests, the queue, the ledger, the clock, the filters and the site in view. */
+type Pick = Tier | "payer" | "denied" | null;
+
+/** The dashboard: a summary you read at a glance, then one table. Menus on top (two for dates, then payer, program and request type), six icons with a number each,
+    and the table grouped by colour, so what needs you now is the first thing in it. Words are kept to a minimum; every icon has a tooltip. */
 export default function DashboardPage() {
   useFilterSync();
-  const navigate = useNavigate();
   const scope = useScope();
   const allRequests = useStore((s) => s.requests);
   const allQueue = useStore((s) => s.queueItems);
-  const drafts = useStore((s) => s.caseDrafts);
   const clock = useStore((s) => s.clock);
   const filters = useStore((s) => s.filters);
-  const navigatorPaused = useStore((s) => s.agentPaused.navigator);
-  const writeBackOn = useStore(selectWriteBackOn);
+  const setFilter = useStore((s) => s.setFilter);
   const clearFilters = useStore((s) => s.clearFilters);
+  const navigatorPaused = useStore((s) => s.agentPaused.navigator);
   const ledgerRows = useLedgerRows();
   const { requestId, open, close, swap } = useRequestParam();
   const [checking, setChecking] = useState(false);
-  const [sort, setSort] = useState<RowSort | null>(null);
-  const [needsToday, setNeedsToday] = useState(false);
+  const [updated, setUpdated] = useState<UpdatedRange>("all");
+  const [due, setDue] = useState<DueRange>("any");
+  const [pick, setPick] = useState<Pick>(null);
   const [paging, setPaging] = useState({ key: "", n: PAGE_SIZE });
 
   // Everything below reads only what the viewer may see: the requests, the queue and the ledger of the sites in view.
   const requests = useMemo(() => scope.filter(allRequests, (r) => r.caseId), [scope, allRequests]);
   const queueItems = useMemo(() => scope.filter(allQueue, (i) => i.id), [scope, allQueue]);
   const ledger = useMemo(() => scope.filter(ledgerRows, (c) => c.caseId), [scope, ledgerRows]);
-  const ready = useMemo(() => readyToSignIds(drafts, requests), [drafts, requests]);
   const dues = useMemo(() => dueByRequest(requests, queueItems), [requests, queueItems]);
-  const ctx: FactsContext = useMemo(() => ({ clock, writeBackOn, ready, dues, ledger }), [clock, writeBackOn, ready, dues, ledger]);
+  const ctx: FactsContext = useMemo(() => ({ clock, writeBackOn: false, ready: new Set<string>(), dues, ledger }), [clock, dues, ledger]);
   const rows = useMemo(() => buildRows(requests, ctx), [requests, ctx]);
 
-  /** Payer, Program and Request type narrow every count; the Status chip and menu, and the toggle, only narrow the table. */
+  /** The menus narrow every count; the tiles narrow only the table. */
   const base = useMemo(() => {
     const keep = new Set(applyBaseFilters(requests, filters));
-    return rows.filter((x) => keep.has(x.r));
-  }, [rows, requests, filters]);
-  const saved = useMemo(() => draftsInPreparation(drafts, requests, filters, scope.sites), [drafts, requests, filters, scope.sites]);
-  const savedCounts = useMemo(() => ({ total: saved.length, ready: draftNeeds(saved).ready }), [saved]);
-  const savedAll = useMemo(() => draftNeeds(draftsInPreparation(drafts, requests, { payer: "all", program: "all", type: "all", stage: "all" }, scope.sites)), [drafts, requests, scope.sites]);
+    return rows.filter((x) => keep.has(x.r) && inDates(x, clock, updated, due) && (filters.stage === "all" || x.r.stage === filters.stage));
+  }, [rows, requests, filters, clock, updated, due]);
 
-  const shown = useMemo(() => {
-    const stage = filters.stage;
-    const byStage = stage === "all" ? base : base.filter((x) => inStage(x.r, stage));
-    const byToday = needsToday ? byStage.filter((x) => x.action.today) : byStage;
-    return sort ? sortRows(byToday, sort) : defaultOrder(byToday);
-  }, [base, filters.stage, needsToday, sort]);
+  const tiers = useMemo(() => new Map(base.map((x) => [x.r.id, tierOf(x, clock)] as const)), [base, clock]);
+  const count = (t: Tier) => base.filter((x) => tiers.get(x.r.id) === t).length;
+  const withPayer = base.filter((x) => ["received", "under_review", "info_requested"].includes(x.r.stage)).length;
+  const denied = base.filter((x) => x.r.stage === "appeal").length;
+  const chips = useMemo(() => ledgerChips(ledger, requests, clock), [ledger, requests, clock]);
 
-  const chips = useMemo(() => stateChips(base, savedCounts, clock), [base, savedCounts, clock]);
-  const ledgerChip = useMemo(() => ledgerChips(ledger, requests, clock), [ledger, requests, clock]);
-  const todo = useMemo(
-    () => doNext({ requests, queueItems, ledger, clock, writeBackOn, ready, savedNeedingYou: savedAll.needYou + savedAll.ready }),
-    [requests, queueItems, ledger, clock, writeBackOn, ready, savedAll.needYou, savedAll.ready],
-  );
-  const todayAll = rows.filter((x) => x.action.today).length;
-  const todayShown = todo.items.filter((i) => i.caseId !== "" && i.kind !== "renewal").length;
+  const tiles: TileSpec[] = [
+    { id: "attention", icon: CircleAlert, label: "Now", hint: "Needs a person now: a question waiting, a notice due within hours, a decision that is late.", count: count("attention"), tone: "risk", tier: "attention" },
+    { id: "upcoming", icon: Clock, label: "Soon", hint: "Coming up: a deadline inside two days, a review or renewal due, a state that is taking longer than usual.", count: count("upcoming"), tone: "mid", tier: "upcoming" },
+    { id: "payer", icon: Send, label: "With payer", hint: "Sent and waiting for the payer's decision or answer.", count: withPayer, tone: "neutral", tier: "payer" },
+    { id: "denied", icon: Scale, label: "Denied", hint: "Denied: a call or an appeal is being worked.", count: denied, tone: "risk", tier: "denied" },
+    { id: "active", icon: CircleCheck, label: "Active", hint: chips[0]?.note ? `Approved, units left. ${chips[0].note}.` : "Approved, units left.", count: chips[0]?.count ?? 0, tone: "good", to: chips[0]?.to },
+    { id: "renewal", icon: Hourglass, label: "Expiring", hint: chips[1]?.note ? `Review due or ending within 7 days. ${chips[1].note}.` : "Review due or ending within 7 days.", count: chips[1]?.count ?? 0, tone: "mid", to: chips[1]?.to },
+  ];
 
-  const head = headline(requests, requests.filter((r) => r.needsYou).length + savedAll.needYou + savedAll.ready);
-  const canClear = hasNarrowingFilter(filters) || needsToday;
-  const key = JSON.stringify([filters, sort, needsToday]);
+  const groups = useMemo(() => {
+    const cmp = byUrgency(clock);
+    const sel = (x: (typeof base)[number]) => (pick === null ? true : pick === "payer" ? ["received", "under_review", "info_requested"].includes(x.r.stage) : pick === "denied" ? x.r.stage === "appeal" : tiers.get(x.r.id) === pick);
+    return TIER_ORDER.map((tier) => ({ tier, rows: base.filter((x) => tiers.get(x.r.id) === tier && sel(x)).sort(cmp) }));
+  }, [base, tiers, pick, clock]);
+
+  const narrowed = hasNarrowingFilter(filters) || updated !== "all" || due !== "any" || pick !== null;
+  const key = JSON.stringify([filters, updated, due, pick]);
   const visible = paging.key === key ? paging.n : PAGE_SIZE;
   const current = requestId ? allRequests.find((r) => r.id === requestId) : undefined;
 
@@ -93,38 +87,7 @@ export default function DashboardPage() {
     return () => clearTimeout(t);
   }, [requestId, current, close]);
 
-  const clearAll = () => {
-    setNeedsToday(false);
-    clearFilters();
-  };
-  /** A state chip applies its filter; the same chip again clears it. */
-  const pickState = (stage: StageKey) => useStore.getState().setFilter("stage", filters.stage === stage ? "all" : stage);
-
-  const go = (to: DoGo) => {
-    switch (to.to) {
-      case "draft":
-        navigate(paths.newCase({ draft: useStore.getState().draftFromRequest(to.requestId) }));
-        break;
-      case "request":
-        open(to.requestId);
-        break;
-      case "denial":
-        navigate(paths.denials(to.id));
-        break;
-      case "renew":
-        navigate(paths.newCase({ type: "reauth", patient: to.caseId }));
-        break;
-      case "saved":
-        navigate(paths.manager("cases"));
-        break;
-    }
-  };
-
-  const showToday = () => {
-    setNeedsToday(true);
-    document.getElementById("authorizations-table")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
+  const clearAll = () => { setUpdated("all"); setDue("any"); setPick(null); clearFilters(); };
   const checkAll = () => {
     setChecking(true);
     setTimeout(() => {
@@ -140,40 +103,23 @@ export default function DashboardPage() {
   if (current && !scope.has(current.caseId)) return <OutOfSite id={current.id} what="case" />;
 
   return (
-    <div className="flex flex-col gap-[22px]">
-      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
-        <div className="min-w-0">
-          <h1 className="font-serif text-[24px] font-semibold leading-[1.2] tracking-tight">{head.title}</h1>
-          {head.sub ? <p className="mt-1 text-[13px] text-muted">{head.sub}</p> : null}
-        </div>
-        <div className="flex flex-col items-end gap-1.5">
-          <Button icon={RefreshCw} loading={checking} disabled={navigatorPaused} onClick={checkAll}>
-            Check all now
-          </Button>
-          {navigatorPaused ? (
-            <Link to={paths.settings()} className="text-[13px] text-muted underline underline-offset-[3px] hover:text-forest">
-              Navigator is paused in Settings
-            </Link>
-          ) : null}
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+        <h1 className="font-serif text-[24px] font-semibold leading-[1.2] tracking-tight">Dashboard</h1>
+        <div className="flex flex-wrap items-center gap-2.5" role="group" aria-label="Filters" data-testid="dash-filters">
+          <span className="grid h-9 w-9 place-items-center text-muted" title="Dates" aria-hidden="true"><CalendarDays size={18} className="ico" /></span>
+          <Dropdown ariaLabel="Updated" value={updated} defaultValue="all" options={UPDATED.map((o) => ({ value: o.value, label: o.value === "all" ? "Updated: any date" : `Updated: ${o.label.toLowerCase()}` }))} onChange={setUpdated} menuWidth={220} />
+          <Dropdown ariaLabel="Due" value={due} defaultValue="any" options={DUE.map((o) => ({ value: o.value, label: o.label }))} onChange={setDue} menuWidth={200} />
+          <span className="mx-0.5 h-6 w-px bg-edge" aria-hidden="true" />
+          <Dropdown ariaLabel="Payer" value={filters.payer} defaultValue="all" options={payerOptions()} onChange={(v) => setFilter("payer", v)} menuWidth={250} />
+          <Dropdown ariaLabel="Program" value={filters.program} defaultValue="all" options={PROGRAM_OPTIONS} onChange={(v) => setFilter("program", v)} />
+          <Dropdown ariaLabel="Request type" value={filters.type} defaultValue="all" options={TYPE_OPTIONS} onChange={(v) => setFilter("type", v)} menuWidth={240} />
+          {narrowed ? <Button variant="ghost" size="sm" icon={X} onClick={clearAll} aria-label="Clear filters" title="Clear filters" /> : null}
+          <Button variant="ghost" size="sm" icon={RefreshCw} loading={checking} disabled={navigatorPaused} onClick={checkAll} aria-label="Check all now" title={navigatorPaused ? "Navigator is paused in Settings" : "Check every open request with its payer now"} />
         </div>
       </div>
-      <Lifecycle chips={chips} ledger={ledgerChip} active={filters.stage} onPick={pickState} />
-      <DoNext items={todo.items} moreToday={Math.max(0, todayAll - todayShown)} onGo={go} onShowMore={showToday} />
-      <CasesTable
-        title={plural(shown.length, "authorization")}
-        controls={<TableControls needsToday={needsToday} onNeedsToday={setNeedsToday} statusOptions={statusOptions(stageTotals(base.map((x) => x.r), savedCounts))} canClear={canClear} onClear={clearAll} />}
-        rows={shown}
-        visible={visible}
-        clock={clock}
-        onOpen={open}
-        onMore={() => setPaging({ key, n: visible + PAGE_SIZE })}
-        onClear={clearAll}
-        narrowed={hasNarrowingFilter(filters)}
-        needsToday={needsToday}
-        sort={sort}
-        onSort={(k) => setSort((cur) => nextSort(cur, k))}
-        more={needsToday ? 0 : filters.stage === "all" || filters.stage === "preparing" ? saved.length : 0}
-      />
+      <Tiles tiles={tiles} active={pick} onPick={(id) => setPick((cur) => (cur === (id as Pick) ? null : (id as Pick)))} />
+      <DashTable groups={groups} visible={visible} clock={clock} onOpen={open} onMore={() => setPaging({ key, n: visible + PAGE_SIZE })} onClear={clearAll} narrowed={narrowed} />
       {current ? <RequestDrawer request={current} onClose={close} onSwitch={swap} /> : null}
     </div>
   );

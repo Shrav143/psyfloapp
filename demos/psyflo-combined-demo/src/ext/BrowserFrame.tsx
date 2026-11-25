@@ -4,8 +4,8 @@ import { useEhrCase } from "@/ehr/model";
 import { paths } from "@/routes";
 import { useStore as usePlatform } from "@/store";
 import { tally, useCurrent } from "./hooks";
-import { CLINICS, useStore } from "./store";
-import type { ClinicId } from "./types";
+import { ViewToggle } from "@/components/ViewToggle";
+import { useStore } from "./store";
 
 /** The thin browser around the EHR. Two tabs: Psyflo platform (the web app, opened in its own tab) and Lauris Online (the clinic's EHR, with the extension docked in it). The Psyflo button shows or hides the extension panel.
     The demo-only switch picks which sample clinic Lauris shows: the platform's own consumers, or the Harvest and CCCSN content of the extension demo. */
@@ -14,8 +14,6 @@ export default function BrowserFrame() {
   const returnTo = usePlatform((s) => s.ehr.returnTo);
   const panelOpen = useStore((s) => s.panelOpen);
   const togglePanel = useStore((s) => s.togglePanel);
-  const clinicId = useStore((s) => s.clinicId);
-  const setClinic = useStore((s) => s.setClinic);
   const { page, spec, consumer, scan } = useCurrent();
   const authCase = useEhrCase(page.kind === "auth" ? page.caseId : undefined);
   const t = scan ? tally(scan.findings, scan.status) : null;
@@ -31,14 +29,7 @@ export default function BrowserFrame() {
           <span className="fav ps" aria-hidden="true">p</span><span>Psyflo platform</span><span className="go" aria-hidden="true">↗</span>
         </button>
         <div role="tab" aria-selected="true" aria-current="page" className="shell-tab" data-testid="tab-lauris"><span className="fav" aria-hidden="true">»</span><span>Lauris Online — {title}</span></div>
-        <div className="shell-demo">
-          <label id="demo-clinic-label">Demo data</label>
-          <div className="seg" role="group" aria-labelledby="demo-clinic-label">
-            {(Object.keys(CLINICS) as ClinicId[]).map((id) => (
-              <button key={id} type="button" aria-pressed={clinicId === id} data-clinic={id} title={CLINICS[id].profile.name} onClick={() => clinicId !== id && setClinic(id)}>{CLINICS[id].profile.short}</button>
-            ))}
-          </div>
-        </div>
+        <div className="shell-demo"><ViewToggle on="extension" /></div>
       </div>
       <div className="shell-nav">
         <span className="shell-btn" aria-hidden="true"><ArrowLeft size={16} /></span>

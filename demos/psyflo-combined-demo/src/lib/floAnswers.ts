@@ -320,6 +320,5 @@ export function answerFor(q: string, all: AppState, route: FloRoute): FloAnswer 
       link: { label: "Open Do next on the Dashboard", to: paths.dashboard() },
     };
   }
-  if (t.includes("referral")) return { text: "New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.", link: { label: "Start a case from a referral", to: paths.referrals() } };
   return { text: "I did not find an answer to that in the demo data. Try one of the suggestions below.", fallback: true };
 }

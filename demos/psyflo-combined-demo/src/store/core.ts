@@ -137,8 +137,8 @@ export const createCoreSlice: StateCreator<AppState, [], [], CoreSlice> = (set, 
       set((s) => ({ requests: s.requests.map((x) => (x.id === id ? { ...x, ...base, needsYou: true, stage: "info_requested", chip: "Info requested", tone: "mid", progress: 2, typicalMin: DAY, agent: "packet", next: "Packet drafted the answer. Waiting for your review", events: [...keep, ev("payer", "The payer asked for more information", clock), ev("packet", "Packet drafted the answer. Waiting for your review", clock + 5)] } : x)) }));
       get().notify({ agent: "packet", title: "Payer asked for info", body: `The payer wants more on ${id}. Packet drafted the answer.`, to: `/dashboard?request=${id}`, tone: "mid" });
     } else if (reply === "approve") {
-      set((s) => ({ requests: s.requests.map((x) => (x.id === id ? { ...x, ...base, stage: "decided", chip: "Approved", tone: "good", progress: 3, decidedToday: true, outcome: "approved", agent: "cadence", next: "Next review booked. Write-back waits for you", events: [...keep, ev("payer", "The payer approved the request", clock), ev("cadence", "Cadence updated the ledger and booked the next review", clock + 3)] } : x)) }));
-      get().notify({ agent: "cadence", title: "Approved", body: `${id} was approved. Write-back waits for you.`, to: `/dashboard?request=${id}`, tone: "good" });
+      set((s) => ({ requests: s.requests.map((x) => (x.id === id ? { ...x, ...base, stage: "decided", chip: "Approved", tone: "good", progress: 3, decidedToday: true, outcome: "approved", agent: "cadence", next: "Next review booked. The approval is on file", events: [...keep, ev("payer", "The payer approved the request", clock), ev("cadence", "Cadence updated the ledger and booked the next review", clock + 3)] } : x)) }));
+      get().notify({ agent: "cadence", title: "Approved", body: `${id} was approved.`, to: `/dashboard?request=${id}`, tone: "good" });
     } else {
       const newId = `D-${denialSeq++}`;
       const outcome = reply === "partial" ? "partly_approved" : "denied";

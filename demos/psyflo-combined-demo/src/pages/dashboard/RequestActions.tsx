@@ -81,14 +81,7 @@ export function StateActions({ request: r }: { request: PsyRequest }) {
   if (r.stage === "decided" && r.outcome === "approved" && r.next.includes("Write-back")) {
     // EMR Connect decides whether anything is written back at all.
     if (!writeBackOn) {
-      return (
-        <Banner>
-          Write-back is off for your records system.{" "}
-          <Link to={paths.emr()} className="font-semibold underline underline-offset-[3px]">
-            Turn it on in EMR Connect.
-          </Link>
-        </Banner>
-      );
+      return null;
     }
     return (
       <>

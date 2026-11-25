@@ -1,81 +1,54 @@
 import { useMemo, useState } from "react";
-import { Plus } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Card, Dropdown, EmptyState, Page, PageHeader, SearchInput } from "@/components/ui";
-import { PAYER_GROUPS } from "@/data/payerConfig";
+import { MessageSquarePlus, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button, Card, EmptyState, Page, PageHeader, SearchInput } from "@/components/ui";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { AddPayerModal } from "./AddPayerModal";
-import { savedWhere, useAllWorkflows } from "./lib/studio";
 import { stateName } from "./lib/states";
-import { ALL, filterRows, filtersActive, NO_FILTERS, payerRows, type PayerFilters, type WfFilter } from "./lib/payers";
-import { PayersTable } from "./PayersTable";
+import { useAllWorkflows } from "./lib/studio";
+import { payerRows } from "./lib/payers";
 
-const WF_OPTIONS: { value: WfFilter; label: string }[] = [
-  { value: ALL, label: "Any workflow status" },
-  { value: "published", label: "Has a published workflow" },
-  { value: "drafts", label: "Only drafts" },
-  { value: "none", label: "No workflow" },
-];
-
-/** Payers: a calm list of every payer with search, three filters and Add a payer. A row opens that payer's workspace (/payers/:id).
-    The filters live in the address (?q, state, type, wf), so Back from a workspace returns to the same list. */
+/** Payers: a plain list. Open one to tell the agents what Psyflo does not know about it. */
 export function PayersLandingPage() {
   const nav = useNavigate();
-  const [params, setParams] = useSearchParams();
   const custom = useStore((s) => s.customPayers);
   const config = useStore((s) => s.payerConfig);
   const edits = useStore((s) => s.payerEdits);
+  const notes = useStore((s) => s.payerNotes);
   const workflows = useAllWorkflows();
   const [adding, setAdding] = useState(false);
-
+  const [q, setQ] = useState("");
   const rows = useMemo(() => payerRows(custom, config, workflows, edits), [custom, config, workflows, edits]);
-  const wf = params.get("wf");
-  const filters: PayerFilters = {
-    query: params.get("q") ?? "",
-    state: params.get("state") ?? ALL,
-    group: params.get("type") ?? ALL,
-    wf: WF_OPTIONS.some((o) => o.value === wf) ? (wf as WfFilter) : ALL,
-  };
-  const set = (patch: Partial<PayerFilters>) => {
-    const next = { ...filters, ...patch };
-    const q = new URLSearchParams();
-    if (next.query) q.set("q", next.query);
-    if (next.state !== ALL) q.set("state", next.state);
-    if (next.group !== ALL) q.set("type", next.group);
-    if (next.wf !== ALL) q.set("wf", next.wf);
-    setParams(q, { replace: true });
-  };
-
-  const shown = filterRows(rows, filters);
-  const waiting = rows.filter((r) => r.waiting).length;
-  const states = [...new Set(rows.map((r) => r.state))].sort((a, b) => stateName(a).localeCompare(stateName(b)));
-  const active = filtersActive(filters);
-
+  const shown = rows.filter((r) => !q.trim() || `${r.name} ${r.org} ${r.product}`.toLowerCase().includes(q.trim().toLowerCase()));
   return (
     <Page>
-      <PageHeader title={`${rows.length} payers. The agents know how each one works.`} sub="Workflows, rules and documents for every payer. Every edit is logged with your reason." actions={<Button variant="primary" icon={Plus} onClick={() => setAdding(true)}>Add a payer</Button>} />
-      <Card className="@container overflow-hidden">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5 px-6 pt-5 pb-4">
-          <SearchInput className="min-w-[200px] flex-1 @3xl:max-w-[320px]" value={filters.query} onChange={(query) => set({ query })} placeholder="Search payers" />
-          <Dropdown ariaLabel="State" value={filters.state} defaultValue={ALL} options={[{ value: ALL, label: "All states" }, ...states.map((s) => ({ value: s, label: stateName(s) }))]} onChange={(state) => set({ state })} menuWidth={200} />
-          <Dropdown ariaLabel="Insurance type" value={filters.group} defaultValue={ALL} options={[{ value: ALL, label: "All insurance types" }, ...PAYER_GROUPS.map((g) => ({ value: g as string, label: g }))]} onChange={(group) => set({ group })} menuWidth={230} />
-          <Dropdown ariaLabel="Workflow status" value={filters.wf} defaultValue={ALL} options={WF_OPTIONS} onChange={(w) => set({ wf: w })} menuWidth={250} />
-          {active ? <Button size="sm" variant="ghost" onClick={() => set(NO_FILTERS)}>Clear filters</Button> : null}
-          <p className="ml-auto text-xs text-muted" aria-live="polite">
-            {shown.length === rows.length ? `${rows.length} payers` : `${shown.length} of ${rows.length} payers`} · {waiting ? `${waiting} with a change waiting` : "No change waiting"}
-          </p>
-        </div>
+      <PageHeader title="Payers" sub="Open a payer to tell the agents anything Psyflo does not know about it." actions={<Button variant="primary" icon={Plus} onClick={() => setAdding(true)}>Add a payer</Button>} />
+      <Card className="overflow-hidden">
+        <div className="px-6 pt-5 pb-4"><SearchInput className="max-w-[340px]" value={q} onChange={setQ} placeholder="Search payers" /></div>
         {shown.length ? (
-          <PayersTable rows={shown} onOpen={(id) => nav(paths.payers(id))} />
+          <ul aria-label="Payers" data-testid="payers-list">
+            {shown.map((r) => {
+              const n = notes.filter((x) => x.payerId === r.id && x.active).length;
+              return (
+                <li key={r.id}>
+                  <button type="button" onClick={() => nav(paths.payers(r.id))} data-payer={r.id} className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 border-t border-line px-6 py-3.5 text-left hover:bg-tile">
+                    <span className="min-w-[200px] flex-1">
+                      <span className="block font-semibold">{r.name}</span>
+                      <span className="block text-xs text-muted">{r.product} · {stateName(r.state)}</span>
+                    </span>
+                    <span className="text-[13px] text-ink2">{r.group}</span>
+                    <span className={n ? "inline-flex items-center gap-1.5 rounded-full bg-sage-bg px-2.5 py-1 text-[12px] font-semibold text-forest" : "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] text-faint"} title={n ? `${n} note${n === 1 ? "" : "s"} from you for the agents` : "Nothing added for the agents yet"}>
+                      <MessageSquarePlus size={14} className="ico" aria-hidden="true" />{n}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
         ) : (
-          <div className="border-t border-line">
-            <EmptyState title={filters.query.trim() ? `No payer matches “${filters.query.trim()}”.` : "No payer matches these filters."} action={<Button size="sm" onClick={() => set(NO_FILTERS)}>Clear filters</Button>}>
-              Try a different word, or clear the filters to see every payer.
-            </EmptyState>
-          </div>
+          <div className="border-t border-line"><EmptyState title="No payer matches" action={<Button size="sm" onClick={() => setQ("")}>Clear search</Button>}>Try a different word.</EmptyState></div>
         )}
-        <p className="border-t border-line px-6 py-3 text-xs text-muted">{savedWhere()} Reset demo data in the Demo menu restores the sample payers, workflows and rules. Sample rules are not verified against any payer's policy.</p>
       </Card>
       {adding ? <AddPayerModal onClose={() => setAdding(false)} onAdded={(pid) => nav(paths.payers(pid))} /> : null}
     </Page>

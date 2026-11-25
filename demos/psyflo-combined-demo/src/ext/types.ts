@@ -2,7 +2,7 @@
    Rule for every string in a config: it is either (a) text that was in a stored record, (b) the clinic's own rule or wording, (c) a label the EHR itself shows,
    or (d) a sentence Psyflo composes from the clinician's own words (`Fix.kind === "ask"`). Psyflo never writes clinical judgement. Sample data is labelled Simulated. */
 
-export type ClinicId = "platform" | "harvest" | "cccsn";
+export type ClinicId = "cccsn";
 
 /** The five document types the extension works on. A clinic may name them differently (`FormSpec.title`) and may have none of a kind. */
 export type DocKind = "dpn" | "admission" | "intake" | "assessment" | "sra";

@@ -2,8 +2,7 @@
      npx vite build                          (HashRouter, the normal build)
      node scripts/e2e.mjs dist/index.html
      VITE_HOSTED=1 npx vite build --outDir dist-hosted && node scripts/e2e.mjs dist-hosted/index.html hosted
-   The hosted build keeps the route in memory, so everything is reached by clicking. The extension's own behavior (Scribe, Scan & Enhance, History, Help, Settings on the Harvest and CCCSN content)
-   is checked by scripts/ext-e2e.mjs. Exit code 1 if any check fails or the page logs an error. SHOTS=/some/dir saves screenshots. */
+   The hosted build keeps the route in memory, so everything is reached by clicking. Exit code 1 if any check fails or the page logs an error. SHOTS=/some/dir saves screenshots. */
 import { createRequire } from "node:module";
 import path from "node:path";
 
@@ -30,8 +29,8 @@ async function fresh(browser, viewport = { width: 1440, height: 900 }) {
 const wait = (page, ms) => page.waitForTimeout(ms);
 const panelText = async (page) => (await page.locator(T("panel")).innerText()).replace(/\s+/g, " ");
 const mainText = async (page) => (await page.locator(".lauris .l-main").innerText()).replace(/\s+/g, " ");
-const toPlatform = async (page) => { await page.locator(T("open-platform")).click(); await wait(page, 500); };
-const toLauris = async (page) => { await page.locator(T("open-lauris")).click(); await page.waitForSelector(T("lauris-shell")); await wait(page, 250); };
+const toPlatform = async (page) => { await page.locator(T("view-platform")).click(); await wait(page, 500); };
+const toLauris = async (page) => { await page.locator(T("view-extension")).click(); await page.waitForSelector(T("lauris-shell")); await wait(page, 250); };
 const openAuthOf = async (page, consumerNo) => {
   await page.locator('.lauris a.lnav', { hasText: "Consumers" }).first().click();
   await page.locator(`a[data-consumer="${consumerNo}"]`).click();
@@ -63,27 +62,29 @@ async function openPlatformDenial(page, id) {
 
 const browser = await chromium.launch();
 
-/* ---- A. one link: the demo opens on Lauris with the extension; the Psyflo platform is the other tab ---- */
+/* ---- A. one link: the demo opens on Lauris with the extension; a toggle at the top goes to the Psyflo platform and back ---- */
 {
   const page = await fresh(browser);
   const names = await page.locator(".psy-ic[role=tab]").evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")));
   check("A1 the demo opens on Lauris with the extension docked, six icons in order", JSON.stringify(names) === JSON.stringify(["Scribe", "History", "Patients", "Scan & Enhance", "Help", "Settings"]), names.join(","));
-  check("A2 the browser has a Psyflo platform tab and a Lauris Online tab", (await page.locator(T("open-platform")).count()) === 1 && /Lauris Online/.test(await page.locator(T("tab-lauris")).innerText()));
-  check("A3 Demo data offers the platform's consumers, Harvest and CCCSN", (await page.locator(".shell-demo [data-clinic]").evaluateAll((els) => els.map((e) => e.getAttribute("data-clinic")))).join() === "platform,harvest,cccsn");
+  check("A2 a toggle at the top switches between the Extension and the Psyflo platform", (await page.locator(T("view-extension")).getAttribute("aria-pressed")) === "true" && (await page.locator(T("view-platform")).count()) === 1);
+  check("A3 there is only one demo clinic: no Harvest or CCCSN switch", (await page.locator(".shell-demo [data-clinic]").count()) === 0);
   const rows = await page.locator(`${T("consumers-table")} a[data-consumer]`).count();
-  check("A4 Lauris lists every consumer of the platform's queue (56 or more)", rows >= 56, `rows=${rows}`);
-  check("A5 each consumer row shows where the authorization stands", (await page.locator(`${T("consumers-table")} tbody .st`).count()) >= 56);
-  check("A6 the panel is 400px wide and opens on Start a new session", Math.round((await page.locator(".shell-panel").boundingBox()).width) === 400 && /Start a new session/.test(await panelText(page)));
+  check("A4 Lauris lists the clinic's own clients first, then every consumer of the platform's queue", rows >= 62 && (await page.locator(`${T("consumers-table")} a[data-consumer]`).first().getAttribute("data-consumer")) === "c101", `rows=${rows}`);
+  check("A5 platform consumers show where the authorization stands", (await page.locator(`${T("consumers-table")} tbody .st`).count()) >= 56);
+  check("A6 the panel is 400px wide, opens on Start a new session and names the clinic", Math.round((await page.locator(".shell-panel").boundingBox()).width) === 400 && /Start a new session/.test(await panelText(page)) && /CCCSN/.test(await page.locator(".psy-head").innerText()));
+  const chrome = (await page.locator("body").innerText()).replace(/\s+/g, " ");
+  check("A7 the language is substance use treatment: no school, TDT or child-mental-health wording", !/TDT|Harvest|school|CANS|therapeutic day/i.test(chrome));
   await snap(page, "a1-start");
 
   await page.locator('a[data-consumer="4042"]').click();
   await wait(page, 200);
   await toPlatform(page);
-  check("A7 the Psyflo platform tab opens the platform (dashboard with its sidebar, no Lauris)", (await page.getByRole("navigation", { name: "Main" }).count()) > 0 && (await page.locator(T("lauris-shell")).count()) === 0);
+  check("A8 the toggle opens the platform (dashboard with its sidebar, no Lauris)", (await page.getByRole("navigation", { name: "Main" }).count()) > 0 && (await page.locator(T("lauris-shell")).count()) === 0);
   await snap(page, "a2-platform");
-  check("A8 the platform has a button that goes back to Lauris with the extension", (await page.locator(T("open-lauris")).count()) === 1);
+  check("A9 the platform has the same toggle, with the platform side on", (await page.locator(T("view-platform")).getAttribute("aria-pressed")) === "true" && (await page.locator(T("view-extension")).count()) === 1);
   await toLauris(page);
-  check("A9 going back finds Lauris where it was left (J.M.'s record)", /J\.M\./.test(await mainText(page)) && (await page.locator(T("auth-card")).count()) === 1);
+  check("A10 going back finds Lauris where it was left (J.M.'s record)", /J\.M\./.test(await mainText(page)) && (await page.locator(T("auth-card")).count()) === 1);
   await page.close();
 }
 
@@ -134,7 +135,7 @@ const browser = await chromium.launch();
   await wait(page, 700);
   check("C2 Add in Lauris opens J.M.'s authorization form with the extension's suggestions", (await page.locator(T("auth-page")).count()) === 1 && (await page.locator(T("rec-card")).count()) === 6);
   check("C3 no Psyflo shell inside Lauris (a separate app in its own tab)", (await page.getByRole("navigation", { name: "Main" }).count()) === 0);
-  await page.locator(T("open-platform")).click();
+  await page.locator(T("view-platform")).click();
   await wait(page, 700);
   check("C4 the Psyflo platform tab returns to the case page it came from", (await page.getByText("R-1042").count()) > 0 && (await page.locator(T("add-in-lauris")).count()) === 1);
   // the same recommendations added in Psyflo still work
@@ -164,7 +165,7 @@ const browser = await chromium.launch();
   await snap(page, "d1-denial-typed");
   await page.locator(T("lauris-save")).click();
   await wait(page, 500);
-  await page.locator(T("open-platform")).click();
+  await page.locator(T("view-platform")).click();
   await wait(page, 800);
   check("D5 the Psyflo tab returns to the denial, which marks the corrections Added in Lauris", (await page.getByText("Added in Lauris").count()) >= 1);
   await page.getByRole("button", { name: /Draft the appeal/ }).click();
@@ -202,91 +203,129 @@ const browser = await chromium.launch();
   await page.close();
 }
 
-/* ---- F. Scribe a daily note for a platform consumer, scan it, save it ---- */
+/* ---- F. Scribe a progress note for one of the clinic's clients, scan it, save it ---- */
 {
   const page = await fresh(browser);
   await page.locator(T("tab-patients")).click();
-  await page.locator(T("pat-search")).fill("J.M.");
+  await page.locator(T("pat-search")).fill("M.R.");
   await wait(page, 200);
-  check("F1 Patients is one searchable roster", (await page.locator(T("pat-row")).count()) === 1);
-  await page.locator(T("pat-row")).click();
-  check("F2 a patient shows the authorization form and their documents", (await page.locator(T("pat-auth")).count()) === 1 && (await page.locator(T("pat-doc")).count()) === 3);
-  await page.locator(`${T("pat-doc")}[data-doc-id="dpn-4042"] ${T("pat-scribe")}`).click();
+  check("F1 Patients is one searchable roster that holds the clinic's clients and the platform's consumers", (await page.locator(T("pat-row")).count()) >= 2);
+  await page.locator(`${T("pat-row")}[data-patient="c101"]`).click();
+  check("F2 a client shows their documents", (await page.locator(T("pat-doc")).count()) === 2);
+  await page.locator(`${T("pat-doc")}[data-doc-id="dpn-c101"] ${T("pat-scribe")}`).click();
   await page.locator(T("scribe-start")).click();
   await page.locator(T("consent-yes")).click();
   await page.waitForSelector(T("scribe-complete"));
   await wait(page, 900);
   await page.locator(T("scribe-complete")).click();
-  await page.waitForSelector('[data-draft="duration"]', { timeout: 15000 });
+  await page.waitForSelector('[data-draft="time"]', { timeout: 15000 });
   const cards = await page.locator("[data-draft]").evaluateAll((els) => els.map((e) => e.getAttribute("data-draft")));
-  check("F3 Scribe drafts from what was said: minutes, intervention, response, craving and safety", ["duration", "intervention", "response", "sx", "risk"].every((k) => cards.includes(k)), cards.join());
-  check("F4 what nobody said is Not stated (plan goal and next step)", (await panelText(page)).includes("Not stated") || (await page.locator('[data-draft="goal"]').count()) === 1);
+  check("F3 Scribe drafts from what was said: the time, units, goal, intervention and response", ["time", "units", "goal", "intervention", "response"].every((k) => cards.includes(k)), cards.join());
   await page.locator(T("scribe-reviewed")).check();
   await page.locator(T("scribe-type")).click();
   await page.waitForSelector(T("scribe-typed"));
-  check("F5 the typed fields are yellow in Lauris", (await page.locator('[data-field="duration"]').first().getAttribute("data-state")) === "typed" && /45 min/.test(await page.locator('[data-field="duration"] input').first().inputValue()));
-  check("F6 the safety screen was typed from what was said, not guessed", /None reported/.test(await mainText(page)) && (await page.locator('[data-field="goal"]').first().getAttribute("data-state")) !== "typed");
+  check("F4 the typed fields are yellow in Lauris", (await page.locator('.lauris [data-state="typed"]').count()) >= 5);
   await snap(page, "f1-typed");
   await page.locator(T("scribe-to-scan")).click();
   await page.locator(T("scan-run")).click();
-  await wait(page, 1000);
-  const goal = page.locator(`${T("rec-card")}, [data-finding]`).filter({ hasText: /No plan goal is named/ });
-  check("F7 Scan & Enhance finds the plan goal nobody named and offers the clinic's own goals to pick from", (await goal.count()) === 1 && (await goal.locator("[data-option]").count()) === 4);
-  await goal.locator("[data-option]").first().click();
-  await goal.locator(T("fix-add")).click();
-  await wait(page, 600);
-  check("F8 the picked goal is typed into the select (Psyflo never preselects)", /Goal 1/.test(await page.locator('[data-field="goal"] select').first().evaluate((el) => el.options[el.selectedIndex]?.text ?? "")));
+  await wait(page, 1100);
+  const plan = page.locator("[data-finding]").filter({ hasText: /Plan \/ next steps is blank/ });
+  check("F5 Scan & Enhance finds the one thing nobody said (the next step)", (await plan.count()) === 1 && /Medium 1/.test((await page.locator(T("scan-tally")).innerText()).replace(/\s+/g, " ")));
+  await plan.locator(T("fix-answer")).fill("Continue the craving plan and attend Thursday's group.");
+  await plan.locator(T("fix-add")).click();
+  await wait(page, 500);
+  check("F6 the person's own words went into the box (yellow) and the finding does not come back", /craving plan and attend Thursday/.test(await page.locator('[data-field="plan"]').first().innerText()) && (await page.locator("[data-finding][data-status=open]").count()) === 0);
   await page.locator(T("lauris-save")).click();
-  await wait(page, 1900);
-  const pausedOrSaved = (await page.locator(T("lauris-flash")).count()) + (await page.locator(T("lauris-pause")).count());
-  check("F9 Save checks first, then saves (or pauses on what is still severe)", pausedOrSaved >= 1);
-  if (await page.locator(T("lauris-pause")).count()) { await page.locator(T("lauris-save")).click(); await wait(page, 500); }
+  await page.waitForSelector(T("lauris-flash"), { timeout: 5000 });
+  check("F7 Save checks first, then saves, and the typed text turns green", (await page.locator('.lauris [data-state="typed"]').count()) === 0);
   await page.locator(T("tab-history")).click();
-  check("F10 History lists the session that was scribed", (await page.locator(`${T("hist-item")}`).count()) >= 1);
+  check("F8 History lists the session that was scribed", (await page.locator(T("hist-item")).count()) >= 1);
   await page.close();
 }
 
 /* ---- G. Scan & Enhance on a saved note written by someone else ---- */
 {
   const page = await fresh(browser);
-  await openDocOf(page, "4207", "dpn-4207");
+  await openDocOf(page, "c103", "dpn-c103");
   await page.locator(T("tab-scan")).click();
   await page.locator(T("scan-run")).click();
-  await wait(page, 1100);
+  await wait(page, 1200);
   const tally = (await page.locator(T("scan-tally")).innerText()).replace(/\s+/g, " ");
-  check("G1 the scan finds the gaps in the saved note (severe, medium, low)", /Severe 1/.test(tally) && /Medium 4/.test(tally) && /Low 1/.test(tally), tally);
-  const wording = page.locator("[data-finding]").filter({ hasText: /noncompliant/ });
-  check("G2 the wording check flags the label and asks the clinician for their own words", (await wording.count()) === 1 && (await wording.locator(T("fix-answer")).count()) === 1);
-  await wording.locator(T("fix-answer")).fill("Missed the sign-in time on two mornings.");
-  await wording.locator(T("fix-add")).click();
+  check("G1 the scan finds the gaps in the saved note (2 severe, 4 medium)", /Severe 2/.test(tally) && /Medium 4/.test(tally), tally);
+  const observed = page.locator("[data-finding]").filter({ hasText: /Observed.*describes watching/ });
+  check("G2 the wording check flags the word and asks the clinician for their own words", (await observed.count()) === 1 && (await observed.locator(T("fix-answer")).count()) === 1);
+  await observed.locator(T("fix-answer")).fill("Facilitated relapse prevention skills with the group.");
+  await observed.locator(T("fix-add")).click();
   await wait(page, 500);
-  check("G3 the person's sentence replaced the label in Lauris, yellow, and the finding does not come back", /Missed the sign-in time on two mornings\./.test(await page.locator('[data-field="response"]').first().innerText()) && (await page.locator("[data-finding]").filter({ hasText: /noncompliant/ }).locator('[data-status="open"]').count()) === 0);
+  check("G3 the person's sentence replaced the word in Lauris, yellow", /Facilitated relapse prevention skills/.test(await page.locator('[data-field="intervention"]').first().innerText()));
   check("G4 Lauris shows Psyflo chips beside the fields that have findings", (await page.locator(`.l-main ${T("chip")}`).count()) >= 3);
   await page.locator(T("lauris-save")).click();
   await page.waitForSelector(T("lauris-pause"));
-  check("G5 Save pauses on the severe safety gap", (await page.locator(T("pause-card")).count()) === 1);
+  check("G5 Save pauses on what is still severe, and the panel shows the paused-save card", (await page.locator(T("pause-card")).count()) === 1);
   await snap(page, "g1-paused");
+  await page.locator(T("save-anyway")).click();
+  await wait(page, 600);
+  check("G6 Save anyway saves and says alerts were still open", /still open/.test(await page.locator(T("lauris-flash")).innerText()));
   await page.close();
 }
 
-/* ---- H. any patient, any document; the clinic switch ---- */
+/* ---- H. any client, any document; Help and Settings ---- */
 {
   const page = await fresh(browser);
   await page.locator(T("tab-scribe")).click();
   await page.locator(T("pick-patient")).selectOption({ label: "K.W., 26 (4101)" });
-  await page.locator(T("pick-doc")).selectOption({ label: "Assessment summary (new)" });
+  await page.locator(T("pick-doc")).selectOption({ label: "ASAM assessment (new)" });
   await page.waitForSelector("[data-field]");
-  check("H1 any patient, any kind of document: a new blank document opens in Lauris", /ASAM Assessment Summary/.test(await mainText(page)) && /K\.W\./.test(await mainText(page)));
+  check("H1 any consumer, any kind of document: a new blank document opens in Lauris", /ASAM assessment/i.test(await mainText(page)) && /K\.W\./.test(await mainText(page)));
   check("H2 the panel is ready to scribe it", (await page.locator(T("scribe-start")).count()) === 1);
-  await page.locator(T("open-platform")).click();
+  await page.locator(T("tab-help")).click();
+  check("H3 Help is three options: Chat with Psyflo, FAQs, Training videos", (await page.locator('[data-testid^="help-"]').count()) === 3);
+  await page.locator(T("tab-settings")).click();
+  check("H4 Settings is Recording and Check before save", (await page.locator(T("set-onsave")).count()) === 1 && (await page.locator(T("set-mic")).count()) === 1);
+  await page.close();
+}
+
+/* ---- J. the simplified platform: no New Case, no EMR Connect, an icon dashboard, Payers as context for the agents ---- */
+{
+  const page = await fresh(browser);
+  await toPlatform(page);
+  const nav = (await page.getByRole("navigation", { name: "Main" }).innerText()).replace(/\s+/g, " ");
+  check("J1 the sidebar has no New Case and no EMR Connect, and keeps Eligibility and Payers", !/New Case/i.test(nav) && !/EMR/i.test(nav) && /Payers/.test(nav) && /Denial Intelligence/.test(nav));
+  const body = (await page.locator("main").innerText()).replace(/\s+/g, " ");
+  check("J2 the dashboard has no Do next card and no Lifecycle card", !/Do next/i.test(body) && !/Lifecycle/i.test(body));
+  check("J3 it is six icon tiles with a number each", (await page.locator(`${T("dash-tiles")} [data-tile]`).count()) === 6);
+  check("J4 the first group of the table is what needs attention, in red", (await page.locator("[data-group]").first().getAttribute("data-group")) === "attention" && (await page.locator('[data-tier="attention"]').count()) >= 3);
+  check("J5 two date menus, then payer, program and request type", (await page.locator(`${T("dash-filters")} button[aria-haspopup]`).count()) >= 5 || (await page.locator(`${T("dash-filters")} [role=combobox], ${T("dash-filters")} button`).count()) >= 5);
+  await snap(page, "j1-dashboard");
+  const all = await page.locator("tr[data-request]").count();
+  await page.locator('[data-tile="upcoming"]').click();
+  await wait(page, 200);
+  const soon = await page.locator("tr[data-request]").count();
+  check("J6 a tile filters the table to that colour", soon > 0 && soon < all && (await page.locator('tr[data-request]:not([data-tier="upcoming"])').count()) === 0, `all=${all} soon=${soon}`);
+  await page.locator('[data-tile="upcoming"]').click();
+  await page.locator("tr[data-request] button[data-action]").first().click();
   await wait(page, 500);
-  await toLauris(page);
-  await page.locator('[data-clinic="harvest"]').click();
-  await page.waitForSelector('a[data-consumer="4471"]');
-  check("H3 the Harvest content of the extension demo is one click away", (await page.locator(`${T("consumers-table")} a[data-consumer]`).count()) < 20);
-  await page.locator('[data-clinic="platform"]').click();
-  await page.waitForSelector('a[data-consumer="4042"]');
-  check("H4 and the platform's consumers come back", (await page.locator(`${T("consumers-table")} a[data-consumer]`).count()) >= 56);
+  check("J7 a row's icon button opens that request", (await page.getByRole("dialog").count()) >= 1);
+  await page.keyboard.press("Escape");
+  // payers
+  await page.getByRole("link", { name: /^Payers/ }).first().click();
+  await wait(page, 500);
+  check("J8 Payers is a plain list with how many notes each payer has", (await page.locator(`${T("payers-list")} li`).count()) >= 6);
+  await page.locator('[data-payer="cardinal"]').click();
+  await wait(page, 500);
+  check("J9 a payer is one page: a box to tell the agents, and the rules Psyflo already follows", (await page.locator(T("payer-context-input")).count()) === 1 && /What Psyflo already knows/.test(await page.locator("main").innerText()) && (await page.getByRole("tab", { name: /Workflow Builder|Test Workflow/ }).count()) === 0);
+  await page.locator(T("payer-context-input")).fill("Cardinal asks for the drug screen on every continued-stay request.");
+  await page.locator(T("payer-context-add")).click();
+  await wait(page, 300);
+  check("J10 what you add is listed, and the agents will read it", (await page.locator(`${T("payer-notes")} li`).count()) === 2 && /drug screen on every continued-stay/.test(await page.locator(T("payer-notes")).innerText()));
+  await page.getByRole("button", { name: /What the agents will read/ }).click();
+  check("J11 the prompt the agents read includes the note", /drug screen on every continued-stay/.test(await page.locator(T("payer-prompt")).innerText()));
+  // eligibility stays
+  await page.getByRole("link", { name: /^Authorizations/ }).first().click();
+  await wait(page, 400);
+  await page.getByRole("link", { name: /Eligibility/ }).first().click();
+  await wait(page, 500);
+  check("J12 Eligibility & Benefits is still there", /Eligibility/.test(await page.locator("main").innerText()));
   await page.close();
 }
 
