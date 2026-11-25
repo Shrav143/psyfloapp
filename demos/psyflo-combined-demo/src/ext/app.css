@@ -43,3 +43,7 @@
 .shell-tab .fav.ps { background: #151B24; color: #F0B44C; }
 .shell-tab .go { margin-left: 2px; color: #217A78; font-weight: 800; }
 .shell-tab:focus-visible { outline: 2px solid #217A78; outline-offset: -2px; }
+
+/* the platform's toasts sit beside the docked panel, not over its buttons */
+.shell:has(.shell-panel) > [aria-live="polite"] { right: 424px; }
+@media (max-width: 760px) { .shell:has(.shell-panel) > [aria-live="polite"] { right: 16px; } }
